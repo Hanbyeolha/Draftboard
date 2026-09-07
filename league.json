@@ -1,0 +1,49 @@
+[
+  {
+    "club": "AllianceForChampions",
+    "tag": "AFC",
+    "ort": "Braunschweig",
+    "teams": [
+      "AFC1",
+      "AFC2"
+    ]
+  },
+  {
+    "club": "SV Innerstetal",
+    "tag": "SVI",
+    "ort": "Wolfenbüttel",
+    "teams": [
+      "SV Innerstetal"
+    ]
+  },
+  {
+    "club": "Braunschweig eSports e.V.",
+    "tag": "BSeS",
+    "ort": "Braunschweig",
+    "teams": []
+  },
+  {
+    "club": "MTV Lichtenberg",
+    "tag": "MTV",
+    "ort": "Salzgitter",
+    "teams": [
+      "MTV Lichtenberg"
+    ]
+  },
+  {
+    "club": "SSV Remlingen",
+    "tag": "SSV",
+    "ort": "Wolfenbüttel",
+    "teams": [
+      "SSV Remlingen"
+    ]
+  },
+  {
+    "club": "TSV Salzgitter",
+    "tag": "TSV",
+    "ort": "Salzgitter",
+    "teams": [
+      "TSV Salzgitter"
+    ]
+  }
+]

@@ -1,0 +1,666 @@
+[
+  {
+    "series": "Bo1",
+    "game": 1,
+    "format": "normal",
+    "date": "2026-08-20",
+    "blue": "TSV Salzgitter",
+    "red": "MTV Lichtenberg",
+    "winner": "MTV Lichtenberg",
+    "picks": {
+      "TSV Salzgitter": [
+        {
+          "role": "TOP",
+          "champ": "Dr. Mundo",
+          "player": "snakegerman"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "mazl"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Xerath",
+          "player": "MurphyyLOL"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Caitlyn",
+          "player": "xHydralisk"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Nautilus",
+          "player": "Triplos"
+        }
+      ],
+      "MTV Lichtenberg": [
+        {
+          "role": "TOP",
+          "champ": "Mordekaiser",
+          "player": "abcdasher"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "Niklas Knueppel"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Orianna",
+          "player": "Zoom"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Xayah",
+          "player": "lightníngs"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Leona",
+          "player": "I am Mayham"
+        }
+      ]
+    },
+    "bans": {
+      "TSV Salzgitter": [],
+      "MTV Lichtenberg": []
+    },
+    "note": "Die Bans kann ich nicht sehen"
+  },
+  {
+    "series": "Bo3",
+    "game": 1,
+    "format": "normal",
+    "date": "2026-08-25",
+    "blue": "TSV Salzgitter",
+    "red": "SSV Remlingen",
+    "winner": "SSV Remlingen",
+    "picks": {
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Mordekaiser",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Lee Sin",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Sylas",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Caitlyn",
+          "player": "Weltwunder24"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Milio",
+          "player": "NebelFlasche"
+        }
+      ],
+      "TSV Salzgitter": [
+        {
+          "role": "TOP",
+          "champ": "Camille",
+          "player": "snakegerman"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Pantheon",
+          "player": "Druma"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Galio",
+          "player": "MurphyyLOL"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Kai'Sa",
+          "player": "xHydralisk"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Leona",
+          "player": "Triplos"
+        }
+      ]
+    },
+    "bans": {
+      "SSV Remlingen": [],
+      "TSV Salzgitter": []
+    },
+    "note": "Jungler war Druma bans kann ich nicht sehen"
+  },
+  {
+    "series": "Bo3",
+    "game": 2,
+    "format": "normal",
+    "date": "2026-08-25",
+    "blue": "TSV Salzgitter",
+    "red": "SSV Remlingen",
+    "winner": "SSV Remlingen",
+    "picks": {
+      "TSV Salzgitter": [
+        {
+          "role": "TOP",
+          "champ": "Malphite",
+          "player": "snakegerman"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Xin Zhao",
+          "player": ""
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Mel",
+          "player": "MurphyyLOL"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Xayah",
+          "player": "xHydralisk"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lulu",
+          "player": "Triplos"
+        }
+      ],
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Zaahen",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Sylas",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Tristana",
+          "player": "Weltwunder24"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Nautilus",
+          "player": "NebelFlasche"
+        }
+      ]
+    },
+    "bans": {
+      "TSV Salzgitter": [],
+      "SSV Remlingen": []
+    },
+    "note": "Jungler war Druma bans kann ich nicht sehen"
+  },
+  {
+    "series": "BO3 Fearless vs MTV Lichtenberg",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-09-01",
+    "blue": "MTV Lichtenberg",
+    "red": "SSV Remlingen",
+    "winner": "SSV Remlingen",
+    "picks": {
+      "MTV Lichtenberg": [
+        {
+          "role": "TOP",
+          "champ": "Darius",
+          "player": "abcdasher"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Sejuani",
+          "player": "lightníngs"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Taliyah",
+          "player": "Zoom"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Caitlyn",
+          "player": "xSPEXx"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Leona",
+          "player": "I am Mayham"
+        }
+      ],
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Mordekaiser",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Lee Sin",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Ahri",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Sivir",
+          "player": "Weltwunder24"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Nautilus",
+          "player": "NebelFlasche"
+        }
+      ]
+    },
+    "bans": {
+      "MTV Lichtenberg": [],
+      "SSV Remlingen": []
+    }
+  },
+  {
+    "series": "BO3 Fearless vs MTV Lichtenberg",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-09-01",
+    "blue": "SSV Remlingen",
+    "red": "MTV Lichtenberg",
+    "winner": "MTV Lichtenberg",
+    "picks": {
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Vladimir",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jhin",
+          "player": "Leonard"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Milio",
+          "player": "NebelFlasche"
+        }
+      ],
+      "MTV Lichtenberg": [
+        {
+          "role": "TOP",
+          "champ": "Kayle",
+          "player": "abcdasher"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Vi",
+          "player": "lightníngs"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Viktor",
+          "player": "Zoom"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Yasuo",
+          "player": "xSPEXx"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rakan",
+          "player": "I am Mayham"
+        }
+      ]
+    },
+    "bans": {
+      "SSV Remlingen": [],
+      "MTV Lichtenberg": []
+    },
+    "note": "Jhin heisst Leonard"
+  },
+  {
+    "series": "BO3 Fearless vs MTV Lichtenberg",
+    "game": 3,
+    "format": "fearless",
+    "date": "2026-09-01",
+    "blue": "MTV Lichtenberg",
+    "red": "SSV Remlingen",
+    "winner": "MTV Lichtenberg",
+    "picks": {
+      "MTV Lichtenberg": [
+        {
+          "role": "TOP",
+          "champ": "Teemo",
+          "player": "abcdasher"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "lightníngs"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Yone",
+          "player": "Zoom"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Ezreal",
+          "player": "xSPEXx"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rell",
+          "player": "I am Mayham"
+        }
+      ],
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Urgot",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jax",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Sylas",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Kai'Sa",
+          "player": "Leonard"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lulu",
+          "player": "NebelFlasche"
+        }
+      ]
+    },
+    "bans": {
+      "MTV Lichtenberg": [],
+      "SSV Remlingen": []
+    }
+  },
+  {
+    "series": "AFC1 vs Innerstetal – BO3 Fearless (02.09.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-09-02",
+    "blue": "AFC1",
+    "red": "SV Innerstetal",
+    "winner": "SV Innerstetal",
+    "picks": {
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Olaf",
+          "player": "jasxnbrg"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "bandit"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Cassiopeia",
+          "player": "Køstja"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Syndra",
+          "player": "smiling"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Thresh",
+          "player": "Aaghn"
+        }
+      ],
+      "SV Innerstetal": [
+        {
+          "role": "TOP",
+          "champ": "Gnar",
+          "player": "Thueringerkloss"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Lillia",
+          "player": "zPiro"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Galio",
+          "player": "TWM Nirwana"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Tristana",
+          "player": "Summer Vibes"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "God Razor"
+        }
+      ]
+    },
+    "bans": {
+      "AFC1": [
+        "Zyra",
+        "Sylas",
+        "Nasus",
+        "Malphite",
+        "Lee Sin"
+      ],
+      "SV Innerstetal": [
+        "Jinx",
+        "Seraphine",
+        "Xerath",
+        "Mordekaiser",
+        "Sion"
+      ]
+    },
+    "note": "Test"
+  },
+  {
+    "series": "AFC1 vs Innerstetal – BO3 Fearless (02.09.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-09-02",
+    "matchId": "EUW1_7970995761",
+    "blue": "SV Innerstetal",
+    "red": "AFC1",
+    "winner": "AFC1",
+    "picks": {
+      "SV Innerstetal": [
+        {
+          "role": "TOP",
+          "player": "Thueringerkloss",
+          "champ": "Jayce"
+        },
+        {
+          "role": "JUNGLE",
+          "player": "zPiro",
+          "champ": "Wukong"
+        },
+        {
+          "role": "MIDDLE",
+          "player": "TWM Nirwana",
+          "champ": "Annie"
+        },
+        {
+          "role": "BOTTOM",
+          "player": "Summer Vibes",
+          "champ": "Ziggs"
+        },
+        {
+          "role": "UTILITY",
+          "player": "God Razor",
+          "champ": "Zilean"
+        }
+      ],
+      "AFC1": [
+        {
+          "role": "TOP",
+          "player": "bandit",
+          "champ": "Garen"
+        },
+        {
+          "role": "JUNGLE",
+          "player": "HartzFor",
+          "champ": "Lee Sin"
+        },
+        {
+          "role": "MIDDLE",
+          "player": "Køstja",
+          "champ": "Ahri"
+        },
+        {
+          "role": "BOTTOM",
+          "player": "smiling",
+          "champ": "Xayah"
+        },
+        {
+          "role": "UTILITY",
+          "player": "Aaghn",
+          "champ": "Rakan"
+        }
+      ]
+    },
+    "bans": {
+      "SV Innerstetal": [
+        "Jinx",
+        "Seraphine",
+        "Vi",
+        "Dr. Mundo",
+        "Diana"
+      ],
+      "AFC1": [
+        "Zyra",
+        "Sylas",
+        "Veigar",
+        "Malphite",
+        "Orianna"
+      ]
+    }
+  },
+  {
+    "series": "AFC1 vs Innerstetal – BO3 Fearless (02.09.2026)",
+    "game": 3,
+    "format": "fearless",
+    "date": "2026-09-02",
+    "matchId": "EUW1_7971081673",
+    "blue": "AFC1",
+    "red": "SV Innerstetal",
+    "winner": "AFC1",
+    "picks": {
+      "AFC1": [
+        {
+          "role": "TOP",
+          "player": "bandit",
+          "champ": "Mordekaiser"
+        },
+        {
+          "role": "JUNGLE",
+          "player": "HartzFor",
+          "champ": "Amumu"
+        },
+        {
+          "role": "MIDDLE",
+          "player": "Køstja",
+          "champ": "Viktor"
+        },
+        {
+          "role": "BOTTOM",
+          "player": "smiling",
+          "champ": "Jinx"
+        },
+        {
+          "role": "UTILITY",
+          "player": "Aaghn",
+          "champ": "Milio"
+        }
+      ],
+      "SV Innerstetal": [
+        {
+          "role": "TOP",
+          "player": "Thueringerkloss",
+          "champ": "Malphite"
+        },
+        {
+          "role": "JUNGLE",
+          "player": "zPiro",
+          "champ": "Viego"
+        },
+        {
+          "role": "MIDDLE",
+          "player": "TWM Nirwana",
+          "champ": "Malzahar"
+        },
+        {
+          "role": "BOTTOM",
+          "player": "Summer Vibes",
+          "champ": "Yunara"
+        },
+        {
+          "role": "UTILITY",
+          "player": "God Razor",
+          "champ": "Lulu"
+        }
+      ]
+    },
+    "bans": {
+      "AFC1": [
+        "Zyra",
+        "Veigar",
+        "Sylas",
+        "Zeri",
+        "Twitch"
+      ],
+      "SV Innerstetal": [
+        "Vi",
+        "Seraphine",
+        "Dr. Mundo",
+        "Xin Zhao",
+        "Nocturne"
+      ]
+    }
+  }
+]

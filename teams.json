@@ -1,0 +1,234 @@
+[
+  {
+    "team": "AFC1",
+    "region": "euw",
+    "players": [
+      {
+        "label": "bandit",
+        "riotId": "bandit#0059",
+        "role": "TOP"
+      },
+      {
+        "label": "HartzFor",
+        "riotId": "HartzFor#EUW",
+        "role": "JUNGLE"
+      },
+      {
+        "label": "Køstja",
+        "riotId": "Køstja#ATZE",
+        "role": "MIDDLE"
+      },
+      {
+        "label": "smiling",
+        "riotId": "smiling#LUSQ",
+        "role": "BOTTOM"
+      },
+      {
+        "label": "Aaghn",
+        "riotId": "Aaghn#EUW",
+        "role": "UTILITY"
+      },
+      {
+        "label": "jasxnbrg",
+        "riotId": "jasxnbrg#EUW",
+        "role": "TOP",
+        "bench": true
+      },
+      {
+        "label": "Route65",
+        "riotId": "Route65#EUW",
+        "role": "MIDDLE",
+        "bench": true
+      },
+      {
+        "label": "Oloro",
+        "riotId": "Oloro#EUW",
+        "role": "UTILITY",
+        "bench": true
+      }
+    ]
+  },
+  {
+    "team": "AFC2",
+    "region": "euw",
+    "players": [
+      {
+        "label": "AFC AFC",
+        "riotId": "AFC AFC#AFC",
+        "role": "TOP"
+      },
+      {
+        "label": "AFC X4nder",
+        "riotId": "AFC X4nder#AFC",
+        "role": "JUNGLE"
+      },
+      {
+        "label": "Zeryn",
+        "riotId": "Zeryn#2307",
+        "role": "MIDDLE"
+      },
+      {
+        "label": "AFC Bernard Bär",
+        "riotId": "AFC Bernard Bär#AFC",
+        "role": "BOTTOM",
+        "note": "vom Nutzer als 'AFC Bernard Bär#AF' genannt - richtiger Tag ist #AFC"
+      },
+      {
+        "label": "Töner Deller",
+        "riotId": "Töner Deller#EUW",
+        "role": "UTILITY"
+      }
+    ]
+  },
+  {
+    "team": "SV Innerstetal",
+    "region": "euw",
+    "players": [
+      {
+        "label": "Thueringerkloss",
+        "riotId": "Thueringerkloss#EUW",
+        "role": "TOP"
+      },
+      {
+        "label": "zPiro",
+        "riotId": "zPiro#thrsh",
+        "role": "JUNGLE"
+      },
+      {
+        "label": "TWM Nirwana",
+        "riotId": "Verveigar#SVI",
+        "role": "MIDDLE"
+      },
+      {
+        "label": "Summer Vibes",
+        "riotId": "AutoAttackAndy#2077",
+        "role": "BOTTOM",
+        "note": "op.gg fuehrt den Account noch als AutoAttackAndy#2077 - Rename"
+      },
+      {
+        "label": "God Razor",
+        "riotId": "God Razor#EUW",
+        "role": "UTILITY"
+      }
+    ]
+  },
+  {
+    "team": "SSV Remlingen",
+    "region": "euw",
+    "players": [
+      {
+        "label": "JaybLm",
+        "riotId": "JaybLm#EUW",
+        "role": "TOP"
+      },
+      {
+        "label": "snekvin",
+        "riotId": "snekvin#SNKVN",
+        "role": "JUNGLE"
+      },
+      {
+        "label": "Schnallo",
+        "riotId": "Schnallo#EUW",
+        "role": "MIDDLE"
+      },
+      {
+        "label": "Weltwunder24",
+        "riotId": "Weltwunder24#EUW",
+        "role": "BOTTOM"
+      },
+      {
+        "label": "NebelFlasche",
+        "riotId": "NebelFlasche#EUW",
+        "role": "UTILITY"
+      },
+      {
+        "label": "Leonard",
+        "riotId": "Leonard#ELC",
+        "role": "BOTTOM",
+        "bench": true
+      }
+    ]
+  },
+  {
+    "team": "MTV Lichtenberg",
+    "region": "euw",
+    "players": [
+      {
+        "label": "abcdasher",
+        "riotId": "abcdasher#miau",
+        "role": "TOP"
+      },
+      {
+        "label": "lightníngs",
+        "riotId": "lightníngs#EUW",
+        "role": "JUNGLE"
+      },
+      {
+        "label": "Zoom",
+        "riotId": "Zoom#AZB",
+        "role": "MIDDLE"
+      },
+      {
+        "label": "xSPEXx",
+        "riotId": "xSPEXx#EUW",
+        "role": "BOTTOM"
+      },
+      {
+        "label": "I am Mayham",
+        "riotId": "I am Mayham#EUW",
+        "role": "UTILITY"
+      },
+      {
+        "label": "UIMAnsumke",
+        "riotId": "UIMAnsumke#RIPAT",
+        "role": "TOP",
+        "bench": true,
+        "note": "Ersatz für Top und Jungle"
+      },
+      {
+        "label": "Niklas Knueppel",
+        "riotId": "Niklas Knueppel#4242",
+        "role": "JUNGLE",
+        "bench": true,
+        "note": "Ersatz für Jungle und ADC"
+      }
+    ]
+  },
+  {
+    "team": "TSV Salzgitter",
+    "region": "euw",
+    "players": [
+      {
+        "label": "snakegerman",
+        "riotId": "snakegerman#EUW",
+        "role": "TOP"
+      },
+      {
+        "label": "mazl",
+        "riotId": "mazl#1337",
+        "role": "JUNGLE"
+      },
+      {
+        "label": "MurphyyLOL",
+        "riotId": "MurphyyLOL#EUW",
+        "role": "MIDDLE"
+      },
+      {
+        "label": "xHydralisk",
+        "riotId": "xHydralisk#2020",
+        "role": "BOTTOM"
+      },
+      {
+        "label": "Triplos",
+        "riotId": "Triplos#EUW",
+        "role": "UTILITY"
+      },
+      {
+        "label": "Gumagod",
+        "riotId": "Gumagod#SKTT1",
+        "role": "UNKNOWN",
+        "bench": true
+      }
+    ]
+  }
+]

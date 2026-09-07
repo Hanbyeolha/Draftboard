@@ -1,0 +1,68 @@
+[
+  {
+    "team": "AFC1",
+    "players": {
+      "bandit":   {"blind":[],"likes":[]},
+      "HartzFor": {"blind":[],"likes":[]},
+      "Køstja":   {"blind":["Ahri","Syndra","Viktor","Hwei"],"likes":[]},
+      "smiling":  {"blind":["Jhin","Kai'Sa","Seraphine","Syndra","Jinx"],"likes":["Ashe","Zeri","Xayah","Yunara","Miss Fortune","Nilah","Senna","Varus","Karthus"]},
+      "Aaghn":    {"blind":["Thresh","Nautilus"],"likes":["Milio","Blitzcrank"]},
+      "jasxnbrg": {"blind":["Gangplank"],"likes":[]},
+      "Route65":  {"blind":["Vladimir","Galio"],"likes":["Sylas","Anivia","Cassiopeia"]},
+      "Oloro":    {"blind":[],"likes":[]}
+    }
+  },
+  {
+    "team": "AFC2",
+    "players": {
+      "AFC AFC":         {"blind":[],"likes":[]},
+      "AFC X4nder":      {"blind":[],"likes":[]},
+      "Zeryn":           {"blind":[],"likes":[]},
+      "AFC Bernard Bär": {"blind":[],"likes":[]},
+      "Töner Deller":    {"blind":[],"likes":[]}
+    }
+  },
+  {
+    "team": "SV Innerstetal",
+    "players": {
+      "Thueringerkloss": {"blind":[],"likes":[]},
+      "zPiro":           {"blind":[],"likes":[]},
+      "TWM Nirwana":     {"blind":[],"likes":[]},
+      "Summer Vibes":    {"blind":[],"likes":[]},
+      "God Razor":       {"blind":[],"likes":[]}
+    }
+  },
+  {
+    "team": "SSV Remlingen",
+    "players": {
+      "JaybLm":       {"blind":[],"likes":[]},
+      "snekvin":      {"blind":[],"likes":[]},
+      "Schnallo":     {"blind":[],"likes":[]},
+      "Weltwunder24": {"blind":[],"likes":[]},
+      "NebelFlasche": {"blind":[],"likes":[]}
+    }
+  },
+  {
+    "team": "MTV Lichtenberg",
+    "players": {
+      "abcdasher":       {"blind":[],"likes":[]},
+      "lightníngs":      {"blind":[],"likes":[]},
+      "Zoom":            {"blind":[],"likes":[]},
+      "xSPEXx":          {"blind":[],"likes":[]},
+      "I am Mayham":     {"blind":[],"likes":[]},
+      "UIMAnsumke":      {"blind":[],"likes":[]},
+      "Niklas Knueppel": {"blind":[],"likes":[]}
+    }
+  },
+  {
+    "team": "TSV Salzgitter",
+    "players": {
+      "snakegerman": {"blind":[],"likes":[]},
+      "mazl":        {"blind":[],"likes":[]},
+      "MurphyyLOL":  {"blind":[],"likes":[]},
+      "xHydralisk":  {"blind":[],"likes":[]},
+      "Triplos":     {"blind":[],"likes":[]},
+      "Gumagod":     {"blind":[],"likes":[]}
+    }
+  }
+]
