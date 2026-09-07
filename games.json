@@ -148,33 +148,6 @@
     "red": "SSV Remlingen",
     "winner": "SSV Remlingen",
     "picks": {
-      "SSV Remlingen": [
-        {
-          "role": "TOP",
-          "champ": "Zaahen",
-          "player": "JaybLm"
-        },
-        {
-          "role": "JUNGLE",
-          "champ": "Jarvan IV",
-          "player": "snekvin"
-        },
-        {
-          "role": "MIDDLE",
-          "champ": "Sylas",
-          "player": "Schnallo"
-        },
-        {
-          "role": "BOTTOM",
-          "champ": "Tristana",
-          "player": "Weltwunder24"
-        },
-        {
-          "role": "UTILITY",
-          "champ": "Nautilus",
-          "player": "NebelFlasche"
-        }
-      ],
       "TSV Salzgitter": [
         {
           "role": "TOP",
@@ -201,11 +174,38 @@
           "champ": "Lulu",
           "player": "Triplos"
         }
+      ],
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Zaahen",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Sylas",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Tristana",
+          "player": "Weltwunder24"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Nautilus",
+          "player": "NebelFlasche"
+        }
       ]
     },
     "bans": {
-      "SSV Remlingen": [],
-      "TSV Salzgitter": []
+      "TSV Salzgitter": [],
+      "SSV Remlingen": []
     },
     "note": "Jungler war Druma bans kann ich nicht sehen"
   },
@@ -662,5 +662,75 @@
         "Nocturne"
       ]
     }
+  },
+  {
+    "series": "BO1 MTV Lichtenberg",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-09-07",
+    "blue": "MTV Lichtenberg",
+    "red": "SSV Remlingen",
+    "winner": "SSV Remlingen",
+    "picks": {
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Pantheon",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Vladimir",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Caitlyn",
+          "player": "Weltwunder24"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "NebelFlasche"
+        }
+      ],
+      "MTV Lichtenberg": [
+        {
+          "role": "TOP",
+          "champ": "Illaoi",
+          "player": "UIMAnsumke"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "Niklas Knueppel"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Tristana",
+          "player": "Zoom"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Veigar",
+          "player": "abcdasher"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Karma",
+          "player": "I am Mayham"
+        }
+      ]
+    },
+    "bans": {
+      "SSV Remlingen": [],
+      "MTV Lichtenberg": []
+    },
+    "note": "MTV Lichtenberg mit vielen supps und of role"
   }
 ]

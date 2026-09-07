@@ -324,7 +324,7 @@ def embed_fonts():
     return "<style>\n" + "\n".join(faces) + "\n</style>"
 
 
-def build(embed=False):
+def build(embed=False, pages=False):
     raw_players, raw_queues, icons, version, scraped, raw_names = load_raw()
     plan = load_plan()
     roster = json.loads((ROOT / "teams.json").read_text(encoding="utf-8"))
@@ -395,6 +395,11 @@ def build(embed=False):
                 .replace("__DATA__", payload),
         encoding="utf-8")
 
+    # Fuer GitHub Pages muss die Seite als index.html im Hauptordner liegen.
+    if pages:
+        page = ROOT / "index.html"
+        page.write_text(target.read_text(encoding="utf-8"), encoding="utf-8")
+        print(f"index.html  {page.stat().st_size / 1024:.0f} KB  (fuer GitHub Pages)")
     print(f"{target.relative_to(ROOT)}  {target.stat().st_size / 1024:.0f} KB")
     for team in teams:
         counts = {}
@@ -418,4 +423,7 @@ def build(embed=False):
 
 
 if __name__ == "__main__":
-    build(embed="--standalone" in sys.argv or "--embed-icons" in sys.argv)
+    # --pages bettet immer ein: die Seite im Netz darf nichts nachladen.
+    pages = "--pages" in sys.argv
+    build(embed=pages or "--standalone" in sys.argv or "--embed-icons" in sys.argv,
+          pages=pages)

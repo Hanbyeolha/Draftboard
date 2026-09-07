@@ -565,7 +565,9 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     <summary>Programm</summary>
     <p class="hint" id="tools-hint"></p>
     <div class="row">
-      <button class="more" type="button" id="make-share">Datei für Mitspieler erzeugen</button>
+      <button class="more" type="button" id="make-share"
+              title="Baut die Datei zum Verschicken und aktualisiert index.html für GitHub Pages"
+              >Dateien erzeugen (Mitspieler + Netz)</button>
       <button class="more" type="button" id="reveal">Ordner öffnen</button>
       <button class="more" type="button" id="do-scrape">op.gg neu laden</button>
     </div>
@@ -2264,12 +2266,15 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   };
 
   document.getElementById("make-share").addEventListener("click", async () => {
-    toolsNote("Baue die Datei ...");
+    toolsNote("Baue die Dateien ...");
     try {
       const info = await (await fetch("api/share", {method: "POST"})).json();
-      toolsNote(info.path
-        ? "Fertig: " + info.path + "  (" + Math.round(info.size / 1024) + " KB)"
-        : "Fehlgeschlagen.");
+      if (!info.path) { toolsNote("Fehlgeschlagen."); return; }
+      const kb = (bytes) => Math.round(bytes / 1024) + " KB";
+      toolsNote("Zum Verschicken: " + info.path + " (" + kb(info.size) + ")"
+        + (info.page ? "  ·  Fürs Netz aktualisiert: " + info.page + " ("
+                       + kb(info.pageSize) + ") — jetzt noch Veroeffentlichen.cmd "
+                       + "doppelklicken, damit es online geht." : ""));
     } catch (e) { toolsNote("Fehlgeschlagen: " + e.message); }
   });
 

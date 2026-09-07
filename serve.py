@@ -41,10 +41,14 @@ scrape_state = {"running": False, "lines": collections.deque(maxlen=400), "done"
 
 
 def rebuild():
-    """build.py aufrufen und seine Ausgabe einsammeln."""
+    """build.py aufrufen und seine Ausgabe einsammeln.
+
+    pages=True schreibt zusaetzlich index.html im Hauptordner - die Datei, die
+    GitHub Pages ausliefert. So kann der veroeffentlichte Stand nicht hinter dem
+    lokalen zurueckbleiben; zum Hochladen fehlt dann nur noch der Push."""
     out = io.StringIO()
     with contextlib.redirect_stdout(out):
-        build.build(embed=True)
+        build.build(embed=True, pages=True)
     return out.getvalue().splitlines()
 
 
@@ -194,9 +198,12 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/api/share":
             log = rebuild()
             target = built_file()
+            page = ROOT / "index.html"
             self.send_json({"ok": True, "log": log,
                             "path": str(target) if target else None,
-                            "size": target.stat().st_size if target else 0})
+                            "size": target.stat().st_size if target else 0,
+                            "page": str(page) if page.exists() else None,
+                            "pageSize": page.stat().st_size if page.exists() else 0})
         elif path == "/api/reveal":
             target = built_file()
             if target:
