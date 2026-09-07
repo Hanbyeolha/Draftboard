@@ -2273,8 +2273,8 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       const kb = (bytes) => Math.round(bytes / 1024) + " KB";
       toolsNote("Zum Verschicken: " + info.path + " (" + kb(info.size) + ")"
         + (info.page ? "  ·  Fürs Netz aktualisiert: " + info.page + " ("
-                       + kb(info.pageSize) + ") — jetzt noch Veroeffentlichen.cmd "
-                       + "doppelklicken, damit es online geht." : ""));
+                       + kb(info.pageSize) + ") — zum Online-Stellen noch "
+                       + "git add -A, git commit, git push." : ""));
     } catch (e) { toolsNote("Fehlgeschlagen: " + e.message); }
   });
 
