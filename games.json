@@ -672,33 +672,6 @@
     "red": "SSV Remlingen",
     "winner": "SSV Remlingen",
     "picks": {
-      "SSV Remlingen": [
-        {
-          "role": "TOP",
-          "champ": "Ornn",
-          "player": "JaybLm"
-        },
-        {
-          "role": "JUNGLE",
-          "champ": "Pantheon",
-          "player": "snekvin"
-        },
-        {
-          "role": "MIDDLE",
-          "champ": "Vladimir",
-          "player": "Schnallo"
-        },
-        {
-          "role": "BOTTOM",
-          "champ": "Caitlyn",
-          "player": "Weltwunder24"
-        },
-        {
-          "role": "UTILITY",
-          "champ": "Braum",
-          "player": "NebelFlasche"
-        }
-      ],
       "MTV Lichtenberg": [
         {
           "role": "TOP",
@@ -725,12 +698,202 @@
           "champ": "Karma",
           "player": "I am Mayham"
         }
+      ],
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Pantheon",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Vladimir",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Caitlyn",
+          "player": "Weltwunder24"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "NebelFlasche"
+        }
       ]
     },
     "bans": {
-      "SSV Remlingen": [],
-      "MTV Lichtenberg": []
+      "MTV Lichtenberg": [],
+      "SSV Remlingen": []
     },
     "note": "MTV Lichtenberg mit vielen supps und of role"
+  },
+  {
+    "series": "BO3 SSV Remlingen",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-09-08",
+    "blue": "SSV Remlingen",
+    "red": "AFC1",
+    "winner": "SSV Remlingen",
+    "picks": {
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Kai'Sa",
+          "player": "bandit"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Gragas",
+          "player": "HartzFor"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Nasus",
+          "player": "Køstja"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Zeri",
+          "player": "smiling"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Milio",
+          "player": "Aaghn"
+        }
+      ],
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Lee Sin",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Vladimir",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Sivir",
+          "player": "Weltwunder24"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "NebelFlasche"
+        }
+      ]
+    },
+    "bans": {
+      "AFC1": [
+        "Mordekaiser",
+        "Pantheon",
+        "Sylas",
+        "Jinx",
+        "Caitlyn"
+      ],
+      "SSV Remlingen": [
+        "Jarvan IV",
+        "Thresh",
+        "Syndra",
+        "Ahri",
+        "Cassiopeia"
+      ]
+    },
+    "note": "Ausgeblutet seit Minute 1"
+  },
+  {
+    "series": "BO3 SSV Remlingen",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-09-08",
+    "blue": "SSV Remlingen",
+    "red": "AFC1",
+    "winner": "SSV Remlingen",
+    "picks": {
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Urgot",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Viktor",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Ashe",
+          "player": "Weltwunder24"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lulu",
+          "player": "NebelFlasche"
+        }
+      ],
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Garen",
+          "player": "bandit"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "HartzFor"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Annie",
+          "player": "Køstja"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Seraphine",
+          "player": "smiling"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Zyra",
+          "player": "Aaghn"
+        }
+      ]
+    },
+    "bans": {
+      "SSV Remlingen": [
+        "Thresh",
+        "Syndra",
+        "Dr. Mundo",
+        "Malphite",
+        "Diana"
+      ],
+      "AFC1": [
+        "Pantheon",
+        "Sylas",
+        "Mordekaiser",
+        "Zaahen",
+        "Yone"
+      ]
+    }
   }
 ]
