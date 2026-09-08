@@ -33,6 +33,14 @@ ROOT = pathlib.Path(__file__).parent
 # Nur diese beiden Dateien darf die Seite beschreiben.
 WRITABLE = {"draftplan": ROOT / "draftplan.json", "games": ROOT / "games.json"}
 ROLES = {"TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY", "UNKNOWN"}
+# Die Regionen, die op.gg in der URL kennt. Etwas anderes fuehrt beim Scrapen
+# nur dazu, dass jeder Spieler als "nicht gefunden" gemeldet wird.
+REGIONS = {"euw", "eune", "na", "kr", "jp", "oce", "br", "las", "lan",
+           "ru", "tr", "sg", "ph", "tw", "vn", "th", "me"}
+# auto_scrape.py holt Solo/Flex sonst nur fuer die laufende Season. Alle
+# Rohdateien muessen aber denselben Umfang haben - sonst ueberschreibt ein
+# Lauf die aelteren Seasons der anderen Dateien beim Zusammenfuehren.
+QUEUE_SEASONS = "33,31,29"
 MAX_BODY = 4 * 1024 * 1024
 
 # Ausgabe des laufenden Scrapes, damit die Seite den Fortschritt zeigen kann.
@@ -59,6 +67,163 @@ def built_file():
     return files[0] if files else None
 
 
+def read_roster():
+    return json.loads((ROOT / "teams.json").read_text(encoding="utf-8"))
+
+
+def write_roster(roster):
+    """teams.json schreiben, den vorherigen Stand als .bak daneben legen."""
+    path = ROOT / "teams.json"
+    path.with_suffix(".json.bak").write_text(
+        path.read_text(encoding="utf-8"), encoding="utf-8")
+    path.write_text(json.dumps(roster, ensure_ascii=False, indent=2) + "\n",
+                    encoding="utf-8")
+
+
+def add_team(data):
+    """Ein neues, leeres Team in teams.json anlegen.
+
+    Ohne Spieler taucht es im Board noch nicht auf - dafuer aber in der
+    Teamauswahl des Spielerformulars, damit man es fuellen kann."""
+    name = str(data.get("team") or "").strip()
+    region = str(data.get("region") or "euw").strip().lower() or "euw"
+    if not name:
+        raise ValueError("Der Teamname fehlt.")
+    if region not in REGIONS:
+        raise ValueError("Unbekannte Region: " + region + " (möglich: "
+                         + ", ".join(sorted(REGIONS)) + ")")
+    roster = read_roster()
+    if any(t["team"].lower() == name.lower() for t in roster):
+        raise ValueError(f"Das Team {name} gibt es schon.")
+    roster.append({"team": name, "region": region, "players": []})
+    write_roster(roster)
+    return name
+
+
+def raw_file_for(team_name):
+    """Die juengste Rohdatei dieses Teams."""
+    found = None
+    for path in sorted((ROOT / "data" / "raw").glob("*.json")):
+        blob = json.loads(path.read_text(encoding="utf-8"))
+        drin = {p["meta"]["team"] for p in blob.get("players", {}).values()}
+        if drin == {team_name}:
+            found = path
+    return found
+
+
+def patch_raw(team_name, label, aenderung=None, loeschen=False):
+    """Rolle, Bank, Name und Riot-ID stehen auch in der Rohdatei - build.py
+    liest sie von dort. Ohne diesen Eingriff wuerde eine Aenderung erst nach
+    dem naechsten Scrape sichtbar."""
+    path = raw_file_for(team_name)
+    if path is None:
+        return False
+    blob = json.loads(path.read_text(encoding="utf-8"))
+    key = next((k for k, p in blob.get("players", {}).items()
+                if p["meta"].get("label") == label), None)
+    if key is None:
+        return False
+    if loeschen:
+        blob["players"].pop(key, None)
+        blob.get("queues", {}).pop(key, None)
+    else:
+        blob["players"][key]["meta"].update(aenderung or {})
+        neu = (aenderung or {}).get("label")
+        if neu and neu != key:
+            blob["players"][neu] = blob["players"].pop(key)
+            if key in blob.get("queues", {}):
+                blob["queues"][neu] = blob["queues"].pop(key)
+    path.write_text(json.dumps(blob, ensure_ascii=False), encoding="utf-8")
+    return True
+
+
+def patch_plan(team_name, label, neues_label=None):
+    """Der Draftplan haengt am Label - beim Umbenennen mitziehen, beim
+    Loeschen mit entfernen."""
+    path = ROOT / "draftplan.json"
+    if not path.exists():
+        return
+    plan = json.loads(path.read_text(encoding="utf-8"))
+    for eintrag in plan:
+        if eintrag.get("team") != team_name:
+            continue
+        spieler = eintrag.get("players") or {}
+        if label not in spieler:
+            continue
+        if neues_label:
+            spieler[neues_label] = spieler.pop(label)
+        else:
+            spieler.pop(label)
+    path.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + "\n",
+                    encoding="utf-8")
+
+
+def edit_player(data):
+    """Einen vorhandenen Spieler aendern. Gibt (Team, Label, riotIdNeu) zurueck."""
+    team_name = str(data.get("team") or "").strip()
+    alt = str(data.get("label") or "").strip()
+    roster = read_roster()
+    team = next((t for t in roster if t["team"] == team_name), None)
+    if team is None:
+        raise ValueError("Unbekanntes Team: " + team_name)
+    spieler = next((p for p in team["players"] if p["label"] == alt), None)
+    if spieler is None:
+        raise ValueError(f"{alt} steht nicht in {team_name}.")
+
+    neu = str(data.get("newLabel") or alt).strip() or alt
+    riot_id = str(data.get("riotId") or spieler["riotId"]).strip()
+    role = str(data.get("role") or spieler.get("role", "UNKNOWN")).strip().upper()
+    bench = bool(data.get("bench"))
+
+    if "#" not in riot_id or not riot_id.partition("#")[0].strip() \
+            or not riot_id.partition("#")[2].strip():
+        raise ValueError("Die Riot-ID muss die Form Name#TAG haben.")
+    if role not in ROLES:
+        raise ValueError("Unbekannte Rolle: " + role)
+    for anderer in team["players"]:
+        if anderer is spieler:
+            continue
+        if anderer["label"].lower() == neu.lower():
+            raise ValueError(f"{neu} steht schon in {team_name}.")
+        if anderer["riotId"].lower() == riot_id.lower():
+            raise ValueError(f"{riot_id} steht schon als {anderer['label']} drin.")
+
+    riot_geaendert = riot_id.lower() != spieler["riotId"].lower()
+    spieler["label"] = neu
+    spieler["riotId"] = riot_id
+    spieler["role"] = role
+    if bench:
+        spieler["bench"] = True
+    else:
+        spieler.pop("bench", None)
+    write_roster(roster)
+
+    patch_raw(team_name, alt, {"label": neu, "riotId": riot_id,
+                               "role": role, "bench": bench})
+    if neu != alt:
+        patch_plan(team_name, alt, neu)
+    return team_name, neu, riot_geaendert
+
+
+def delete_player(data):
+    """Einen Spieler aus Roster, Rohdaten und Draftplan entfernen.
+    Eingetragene Turnierspiele bleiben - die sind Geschichte."""
+    team_name = str(data.get("team") or "").strip()
+    label = str(data.get("label") or "").strip()
+    roster = read_roster()
+    team = next((t for t in roster if t["team"] == team_name), None)
+    if team is None:
+        raise ValueError("Unbekanntes Team: " + team_name)
+    vorher = len(team["players"])
+    team["players"] = [p for p in team["players"] if p["label"] != label]
+    if len(team["players"]) == vorher:
+        raise ValueError(f"{label} steht nicht in {team_name}.")
+    write_roster(roster)
+    patch_raw(team_name, label, loeschen=True)
+    patch_plan(team_name, label)
+    return team_name, label
+
+
 def add_player(data):
     """Einen Spieler in teams.json eintragen. Gibt (Team, Label) zurueck."""
     team_name = str(data.get("team") or "").strip()
@@ -75,8 +240,7 @@ def add_player(data):
     if role not in ROLES:
         raise ValueError("Unbekannte Rolle: " + role)
 
-    path = ROOT / "teams.json"
-    roster = json.loads(path.read_text(encoding="utf-8"))
+    roster = read_roster()
     team = next((t for t in roster if t["team"] == team_name), None)
     if team is None:
         raise ValueError("Unbekanntes Team: " + team_name)
@@ -90,17 +254,14 @@ def add_player(data):
     if data.get("bench"):
         entry["bench"] = True
     team["players"].append(entry)
-    path.with_suffix(".json.bak").write_text(
-        path.read_text(encoding="utf-8"), encoding="utf-8")
-    path.write_text(json.dumps(roster, ensure_ascii=False, indent=2) + "\n",
-                    encoding="utf-8")
+    write_roster(roster)
     return team_name, label
 
 
 def run_scrape(teams, extra=()):
     """auto_scrape.py als eigenen Prozess starten und mitlesen."""
     cmd = ([sys.executable, "-u", str(ROOT / "auto_scrape.py")]
-           + list(teams) + list(extra))
+           + list(teams) + ["--queue-seasons", QUEUE_SEASONS] + list(extra))
     with scrape_lock:
         scrape_state["running"] = True
         scrape_state["done"] = None
@@ -182,7 +343,17 @@ class Handler(BaseHTTPRequestHandler):
             # Die Seite prueft daran, ob der laufende Server ihre Wege kennt.
             self.send_json({"server": True, "project": str(ROOT),
                             "file": target.name if target else None,
-                            "features": ["save", "share", "reveal", "scrape", "player"]})
+                            "features": ["save", "share", "reveal", "scrape",
+                                         "player", "team", "edit"]})
+        elif path == "/api/teams":
+            # Auch Teams ohne Spieler - die stehen noch in keinem Board.
+            self.send_json({"teams": [
+                {"team": t["team"], "region": t.get("region", "euw"),
+                 "players": [{"label": p["label"], "riotId": p["riotId"],
+                              "role": p.get("role", "UNKNOWN"),
+                              "bench": bool(p.get("bench"))}
+                             for p in (t.get("players") or [])]}
+                for t in read_roster()]})
         elif path == "/api/scrape":
             with scrape_lock:
                 self.send_json({"running": scrape_state["running"],
@@ -210,6 +381,31 @@ class Handler(BaseHTTPRequestHandler):
                 # Explorer oeffnen und die Datei markieren - nur Windows.
                 subprocess.Popen(["explorer", "/select,", str(target)])
             self.send_json({"ok": bool(target)})
+        elif path == "/api/team":
+            try:
+                name = add_team(json.loads(self.read_body() or "{}"))
+            except (ValueError, KeyError) as exc:
+                self.send_json({"ok": False, "error": str(exc)}, 400)
+                return
+            self.send_json({"ok": True, "team": name})
+        elif path == "/api/player/edit":
+            try:
+                team, label, neu_gescrapt = edit_player(
+                    json.loads(self.read_body() or "{}"))
+            except (ValueError, KeyError) as exc:
+                self.send_json({"ok": False, "error": str(exc)}, 400)
+                return
+            rebuild()
+            self.send_json({"ok": True, "team": team, "label": label,
+                            "riotChanged": neu_gescrapt})
+        elif path == "/api/player/delete":
+            try:
+                team, label = delete_player(json.loads(self.read_body() or "{}"))
+            except (ValueError, KeyError) as exc:
+                self.send_json({"ok": False, "error": str(exc)}, 400)
+                return
+            rebuild()
+            self.send_json({"ok": True, "team": team, "label": label})
         elif path == "/api/player":
             with scrape_lock:
                 busy = scrape_state["running"]
@@ -232,13 +428,18 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json({"ok": False, "error": "Es läuft schon ein Scrape."}, 409)
                 return
             body = self.read_body() or ""
-            teams = []
+            teams, extra = [], []
             if body.strip():
                 try:
-                    teams = [str(t) for t in (json.loads(body).get("teams") or [])]
+                    wunsch = json.loads(body)
+                    teams = [str(t) for t in (wunsch.get("teams") or [])]
+                    # only = einen einzelnen Spieler nachziehen, etwa nach
+                    # einer Umbenennung; der Rest der Datei bleibt stehen.
+                    if wunsch.get("only"):
+                        extra = ["--only", str(wunsch["only"])]
                 except ValueError:
-                    teams = []
-            run_scrape(teams)
+                    teams, extra = [], []
+            run_scrape(teams, extra)
             self.send_json({"ok": True})
         else:
             self.send_json({"error": "unbekannt"}, 404)

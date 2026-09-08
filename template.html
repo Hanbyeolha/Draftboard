@@ -578,10 +578,26 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     <span class="hint" id="tools-note"></span>
 
     <div class="row" style="margin-top:0.4rem">
+      <span class="label">Neues Team</span>
+      <input type="text" id="nt-name" placeholder="Teamname" style="min-width:12rem">
+      <select id="nt-region">
+        <option value="euw">EUW</option>
+        <option value="eune">EUNE</option>
+        <option value="na">NA</option>
+        <option value="kr">KR</option>
+        <option value="tr">TR</option>
+        <option value="br">BR</option>
+      </select>
+      <button class="more" type="button" id="nt-add">Team anlegen</button>
+      <span class="hint" id="nt-note"></span>
+    </div>
+
+    <div class="row" style="margin-top:0.4rem">
       <span class="label">Neuer Spieler</span>
       <span class="hint" id="np-hint"></span>
     </div>
     <div class="row">
+      <select id="np-team" title="In welches Team der Spieler kommt"></select>
       <input type="text" id="np-riot" placeholder="Name#TAG" style="min-width:12rem">
       <input type="text" id="np-label" placeholder="Anzeigename (optional)"
              style="min-width:10rem">
@@ -597,6 +613,29 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       <button class="action" type="button" id="np-add">Anlegen und scrapen</button>
     </div>
     <span class="hint" id="np-note"></span>
+
+    <div class="row" style="margin-top:0.4rem">
+      <span class="label">Spieler bearbeiten</span>
+      <span class="hint">Umbenannt, Rolle gewechselt, Bank rein oder raus, oder weg</span>
+    </div>
+    <div class="row">
+      <select id="ed-team" title="Team"></select>
+      <select id="ed-player" title="Spieler"></select>
+      <input type="text" id="ed-label" placeholder="Anzeigename" style="min-width:9rem">
+      <input type="text" id="ed-riot" placeholder="Name#TAG" style="min-width:11rem">
+      <select id="ed-role">
+        <option value="TOP">Top</option>
+        <option value="JUNGLE">Jungle</option>
+        <option value="MIDDLE">Mid</option>
+        <option value="BOTTOM">Bot</option>
+        <option value="UTILITY">Support</option>
+        <option value="UNKNOWN">Rolle offen</option>
+      </select>
+      <label class="field"><input type="checkbox" id="ed-bench"> Bank</label>
+      <button class="action" type="button" id="ed-save">Speichern</button>
+      <button class="del" type="button" id="ed-delete">Spieler löschen</button>
+    </div>
+    <span class="hint" id="ed-note"></span>
 
     <pre id="scrape-log" hidden></pre>
   </details>
@@ -1105,7 +1144,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     renderPlan();          // haengt an derselben Queue- und Season-Auswahl
     if (SERVER) {
       document.getElementById("np-hint").textContent =
-        "wird zu " + team.team + " hinzugefügt und sofort von op.gg geholt";
+        "wird ins gewählte Team eingetragen und sofort von op.gg geholt";
     }
   }
 
@@ -1402,6 +1441,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     // Ohne das hiessen die Knoepfe weiter "ausblenden" statt "löschen".
     renderPlayers();
     renderGames();
+    ladeTeamAuswahl(team.team);
     // Laeuft gerade ein Scrape? Dann Protokoll weiter mitschreiben.
     try {
       const lauf = await (await fetch("api/scrape", {cache: "no-store"})).json();
@@ -2359,6 +2399,154 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     tick();
   }
 
+  // Die Teamauswahl kommt aus teams.json, nicht aus dem gebauten Board:
+  // ein frisch angelegtes Team hat noch keine Spieler und steht deshalb
+  // nirgends im Board - befüllbar muss es trotzdem sein.
+  let ROSTER = [];        // teams.json, wie der Server sie kennt
+
+  async function ladeTeamAuswahl(vorwahl) {
+    try {
+      const info = await (await fetch("api/teams", {cache: "no-store"})).json();
+      ROSTER = info.teams || [];
+    } catch (e) { return; }            // aeltere Fassung ohne diesen Weg
+
+    for (const [id, wahl] of [["np-team", vorwahl], ["ed-team", null]]) {
+      const auswahl = document.getElementById(id);
+      if (!auswahl) continue;
+      const bisher = wahl || auswahl.value || team.team;
+      auswahl.textContent = "";
+      for (const t of ROSTER) {
+        const zahl = (t.players || []).length;
+        auswahl.append(el("option", {value: t.team},
+          t.team + (zahl ? "" : "  (noch leer)")));
+      }
+      if ([...auswahl.options].some((o) => o.value === bisher)) auswahl.value = bisher;
+    }
+    ladeSpielerAuswahl();
+  }
+
+  // Spielerliste zum gewaehlten Team, danach die Felder fuellen.
+  function ladeSpielerAuswahl(vorwahl) {
+    const auswahl = document.getElementById("ed-player");
+    if (!auswahl) return;
+    const gewaehlt = document.getElementById("ed-team").value;
+    const t = ROSTER.find((x) => x.team === gewaehlt);
+    const bisher = vorwahl || auswahl.value;
+    auswahl.textContent = "";
+    for (const p of (t && t.players) || []) {
+      auswahl.append(el("option", {value: p.label},
+        p.label + (p.bench ? "  (Bank)" : "")));
+    }
+    if ([...auswahl.options].some((o) => o.value === bisher)) auswahl.value = bisher;
+    fuelleSpielerFelder();
+  }
+
+  function fuelleSpielerFelder() {
+    const t = ROSTER.find((x) => x.team === document.getElementById("ed-team").value);
+    const p = ((t && t.players) || [])
+      .find((x) => x.label === document.getElementById("ed-player").value);
+    document.getElementById("ed-label").value = p ? p.label : "";
+    document.getElementById("ed-riot").value = p ? p.riotId : "";
+    document.getElementById("ed-role").value = p ? p.role : "UNKNOWN";
+    document.getElementById("ed-bench").checked = !!(p && p.bench);
+    for (const id of ["ed-save", "ed-delete"]) {
+      document.getElementById(id).disabled = !p;
+    }
+  }
+
+  document.getElementById("ed-team").addEventListener("change", () => ladeSpielerAuswahl());
+  document.getElementById("ed-player").addEventListener("change", fuelleSpielerFelder);
+
+  document.getElementById("nt-add").addEventListener("click", async () => {
+    const note = document.getElementById("nt-note");
+    const name = document.getElementById("nt-name").value.trim();
+    if (!name) { note.textContent = "Der Teamname fehlt."; return; }
+    note.textContent = "Lege an ...";
+    try {
+      const answer = await fetch("api/team", {method: "POST",
+        body: JSON.stringify({team: name,
+                              region: document.getElementById("nt-region").value})});
+      if (answer.status === 404) {
+        note.textContent = "Das laufende Programm kennt diesen Knopf noch nicht. "
+          + "Schwarzes Fenster schließen und „Draftboard starten.cmd“ neu starten.";
+        return;
+      }
+      const info = await answer.json().catch(() => ({}));
+      if (!info.ok) { note.textContent = info.error || "Fehlgeschlagen."; return; }
+      document.getElementById("nt-name").value = "";
+      await ladeTeamAuswahl(info.team);
+      note.textContent = info.team + " ist angelegt und unten vorausgewählt. "
+        + "Jetzt Spieler eintragen — auf dem Board erscheint das Team, sobald "
+        + "der erste gescrapt ist.";
+    } catch (e) { note.textContent = "Fehlgeschlagen: " + e.message; }
+  });
+
+  async function spielerSchicken(weg, koerper, note) {
+    const answer = await fetch(weg, {method: "POST", body: JSON.stringify(koerper)});
+    if (answer.status === 404) {
+      note.textContent = "Das laufende Programm kennt diesen Knopf noch nicht. "
+        + "Schwarzes Fenster schließen und „Draftboard starten.cmd“ neu starten.";
+      return null;
+    }
+    const info = await answer.json().catch(() => ({}));
+    if (!info.ok) { note.textContent = info.error || "Fehlgeschlagen."; return null; }
+    return info;
+  }
+
+  document.getElementById("ed-save").addEventListener("click", async () => {
+    const note = document.getElementById("ed-note");
+    const team_ = document.getElementById("ed-team").value;
+    const alt = document.getElementById("ed-player").value;
+    note.textContent = "Speichere ...";
+    try {
+      const info = await spielerSchicken("api/player/edit", {
+        team: team_, label: alt,
+        newLabel: document.getElementById("ed-label").value.trim(),
+        riotId: document.getElementById("ed-riot").value.trim(),
+        role: document.getElementById("ed-role").value,
+        bench: document.getElementById("ed-bench").checked,
+      }, note);
+      if (!info) return;
+      await ladeTeamAuswahl();
+      document.getElementById("ed-team").value = info.team;
+      ladeSpielerAuswahl(info.label);
+      // Neue Riot-ID heisst: die alten Zahlen gehoeren zu einem anderen Konto.
+      if (info.riotChanged
+          && confirm("Die Riot-ID hat sich geändert.\n\n"
+                   + "Jetzt " + info.label + " neu von op.gg holen? "
+                   + "Dauert gut eine Minute.")) {
+        const start = await fetch("api/scrape", {method: "POST",
+          body: JSON.stringify({teams: [info.team], only: info.label})});
+        const lauf = await start.json().catch(() => ({}));
+        if (lauf.ok) { note.textContent = "Gespeichert, hole op.gg ..."; scrapeButtons(false); pollScrape(); return; }
+        note.textContent = "Gespeichert. Der Scrape ließ sich nicht starten: "
+          + (lauf.error || "unbekannt");
+        return;
+      }
+      note.textContent = "Gespeichert. Seite neu laden, um es im Board zu sehen.";
+    } catch (e) { note.textContent = "Fehlgeschlagen: " + e.message; }
+  });
+
+  document.getElementById("ed-delete").addEventListener("click", async () => {
+    const note = document.getElementById("ed-note");
+    const team_ = document.getElementById("ed-team").value;
+    const label = document.getElementById("ed-player").value;
+    if (!confirm(label + " aus " + team_ + " entfernen?\n\n"
+               + "Roster, Scrape-Daten und Draftplan-Eintrag werden gelöscht. "
+               + "Eingetragene Turnierspiele bleiben erhalten.")) return;
+    note.textContent = "Lösche ...";
+    try {
+      const info = await spielerSchicken("api/player/delete",
+        {team: team_, label}, note);
+      if (!info) return;
+      await ladeTeamAuswahl();
+      document.getElementById("ed-team").value = info.team;
+      ladeSpielerAuswahl();
+      note.textContent = info.label + " ist entfernt. Seite neu laden, um es im "
+        + "Board zu sehen.";
+    } catch (e) { note.textContent = "Fehlgeschlagen: " + e.message; }
+  });
+
   // Neuen Spieler ins Team aufnehmen und sein op.gg gleich holen.
   document.getElementById("np-add").addEventListener("click", async () => {
     const note = document.getElementById("np-note");
@@ -2371,7 +2559,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     try {
       const answer = await fetch("api/player", {method: "POST",
         body: JSON.stringify({
-          team: team.team,
+          team: document.getElementById("np-team").value || team.team,
           riotId,
           label: document.getElementById("np-label").value.trim(),
           role: document.getElementById("np-role").value,
@@ -2390,6 +2578,8 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       document.getElementById("np-riot").value = "";
       document.getElementById("np-label").value = "";
       document.getElementById("np-bench").checked = false;
+      ladeTeamAuswahl(info.team);
+      scrapeButtons(false);
       pollScrape();
     } catch (e) { note.textContent = "Fehlgeschlagen: " + e.message; }
   });
