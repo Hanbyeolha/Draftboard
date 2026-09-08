@@ -569,7 +569,11 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
               title="Baut die Datei zum Verschicken und aktualisiert index.html für GitHub Pages"
               >Dateien erzeugen (Mitspieler + Netz)</button>
       <button class="more" type="button" id="reveal">Ordner öffnen</button>
-      <button class="more" type="button" id="do-scrape">op.gg neu laden</button>
+      <button class="more" type="button" id="do-scrape"
+              title="Holt nur das oben gewählte Team">op.gg neu laden</button>
+      <button class="more" type="button" id="do-scrape-all"
+              title="Holt die Profile aller Teams - dauert entsprechend lange"
+              >Alle Teams neu laden</button>
     </div>
     <span class="hint" id="tools-note"></span>
 
@@ -1398,6 +1402,15 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     // Ohne das hiessen die Knoepfe weiter "ausblenden" statt "löschen".
     renderPlayers();
     renderGames();
+    // Laeuft gerade ein Scrape? Dann Protokoll weiter mitschreiben.
+    try {
+      const lauf = await (await fetch("api/scrape", {cache: "no-store"})).json();
+      if (lauf.running) {
+        toolsNote("Läuft ...");
+        scrapeButtons(false);
+        pollScrape();
+      }
+    } catch (e) { /* aeltere Fassung ohne diesen Weg */ }
   }
 
   async function saveToServer(what, text) {
@@ -2282,19 +2295,46 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     fetch("api/reveal", {method: "POST"}).catch(() => {});
   });
 
-  document.getElementById("do-scrape").addEventListener("click", async () => {
-    const ok = confirm("op.gg für " + team.team + " neu laden?\n\n"
-      + "Das dauert etwa eine Minute je Spieler und öffnet ein Browserfenster, "
-      + "das offen bleiben muss. Solange kannst du hier weiterarbeiten.");
+  // Leere Teamliste heisst fuer auto_scrape.py: alle Teams.
+  async function startScrape(teams, was, spieler) {
+    const dauer = Math.round(spieler * 1.2);
+    const ok = confirm(was + " neu laden?\n\n"
+      + spieler + " Profile, also grob " + dauer + " Minuten. Es öffnet sich ein "
+      + "Browserfenster, das offen bleiben muss — hier kannst du solange "
+      + "weiterarbeiten.");
     if (!ok) return;
+    for (const id of ["do-scrape", "do-scrape-all"]) {
+      document.getElementById(id).disabled = true;
+    }
     try {
       const info = await (await fetch("api/scrape", {method: "POST",
-        body: JSON.stringify({teams: [team.team]})})).json();
-      if (!info.ok) { toolsNote(info.error || "Start fehlgeschlagen."); return; }
+        body: JSON.stringify({teams})})).json();
+      if (!info.ok) {
+        toolsNote(info.error || "Start fehlgeschlagen.");
+        scrapeButtons(true);
+        return;
+      }
       toolsNote("Läuft ...");
       pollScrape();
-    } catch (e) { toolsNote("Start fehlgeschlagen: " + e.message); }
-  });
+    } catch (e) {
+      toolsNote("Start fehlgeschlagen: " + e.message);
+      scrapeButtons(true);
+    }
+  }
+
+  function scrapeButtons(an) {
+    for (const id of ["do-scrape", "do-scrape-all"]) {
+      const knopf = document.getElementById(id);
+      if (knopf) knopf.disabled = !an;
+    }
+  }
+
+  document.getElementById("do-scrape").addEventListener("click", () =>
+    startScrape([team.team], "op.gg für " + team.team, team.players.length));
+
+  document.getElementById("do-scrape-all").addEventListener("click", () =>
+    startScrape([], "op.gg für alle " + TEAMS.length + " Teams",
+                TEAMS.reduce((n, t) => n + t.players.length, 0)));
 
   function pollScrape() {
     const log = document.getElementById("scrape-log");
@@ -2305,6 +2345,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
         log.textContent = info.lines.join("\n");
         log.scrollTop = log.scrollHeight;
         if (info.running) { setTimeout(tick, 2000); return; }
+        scrapeButtons(true);
         if (info.done !== 0) { toolsNote("Abgebrochen — siehe Protokoll."); return; }
         // Nur neu laden, wenn nichts Ungespeichertes verlorengehen kann.
         const offen = localGames.length || hidden.length
