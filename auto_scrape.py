@@ -283,7 +283,9 @@ def main():
                 if not roster:
                     continue
                 base = load_existing(name)      # die uebrigen Spieler behalten
-                if not base:
+                # Bei einem frischen Team gibt es nichts zu behalten - nur warnen,
+                # wenn im Roster noch andere stehen, deren Zahlen fehlen wuerden.
+                if not base and len(team["players"]) > len(roster):
                     warn.append(f"{name}: keine vorhandene Datei - darin steht "
                                 f"danach nur "
                                 + ", ".join(p["label"] for p in roster))

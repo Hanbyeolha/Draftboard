@@ -734,6 +734,282 @@
     "note": "MTV Lichtenberg mit vielen supps und of role"
   },
   {
+    "series": "AFC2 vs SC Victoria raunschweig",
+    "game": 1,
+    "format": "normal",
+    "date": "2026-09-08",
+    "blue": "SC Victoria Braunschweig",
+    "red": "AFC2",
+    "winner": "SC Victoria Braunschweig",
+    "picks": {
+      "SC Victoria Braunschweig": [
+        {
+          "role": "TOP",
+          "champ": "Aatrox",
+          "player": "Hyro"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Rammus",
+          "player": "ShendNoods"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Twisted Fate",
+          "player": "Naoya was right"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Caitlyn",
+          "player": "Salzu"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Mel",
+          "player": "LegendOctavian"
+        }
+      ],
+      "AFC2": [
+        {
+          "role": "TOP",
+          "champ": "Shen",
+          "player": "AFC AFC"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Nocturne",
+          "player": "PlayboiiHieu"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Diana",
+          "player": "Zeryn"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jhin",
+          "player": "AFC Bernard Bär"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Seraphine",
+          "player": "AFC X4nder"
+        }
+      ]
+    },
+    "bans": {
+      "SC Victoria Braunschweig": [],
+      "AFC2": []
+    }
+  },
+  {
+    "series": "AFC2 vs SC Victoria raunschweig",
+    "game": 2,
+    "format": "normal",
+    "date": "2026-09-08",
+    "blue": "SC Victoria Braunschweig",
+    "red": "AFC2",
+    "winner": "SC Victoria Braunschweig",
+    "picks": {
+      "SC Victoria Braunschweig": [
+        {
+          "role": "TOP",
+          "champ": "Renekton",
+          "player": "Hyro"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "ShendNoods"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Orianna",
+          "player": "Naoya was right"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Lucian",
+          "player": "Salzu"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Taric",
+          "player": "LegendOctavian"
+        }
+      ],
+      "AFC2": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "AFC AFC"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "PlayboiiHieu"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "LeBlanc",
+          "player": "Zeryn"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Zeri",
+          "player": "AFC Bernard Bär"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Milio",
+          "player": "AFC X4nder"
+        }
+      ]
+    },
+    "bans": {
+      "SC Victoria Braunschweig": [],
+      "AFC2": []
+    }
+  },
+  {
+    "series": "BO3 Lichtenberg vs Innerstetal",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-09-08",
+    "blue": "MTV Lichtenberg",
+    "red": "SV Innerstetal",
+    "winner": "SV Innerstetal",
+    "picks": {
+      "MTV Lichtenberg": [
+        {
+          "role": "TOP",
+          "champ": "Garen",
+          "player": "abcdasher"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Kayn",
+          "player": "Niklas Knueppel"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Syndra",
+          "player": "Zoom"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Senna",
+          "player": "lightníngs"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Leona",
+          "player": "I am Mayham"
+        }
+      ],
+      "SV Innerstetal": [
+        {
+          "role": "TOP",
+          "champ": "Vladimir",
+          "player": "Thueringerkloss"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "zPiro"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Galio",
+          "player": "TWM Nirwana"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jinx",
+          "player": "Summer Vibes"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Milio",
+          "player": "God Razor"
+        }
+      ]
+    },
+    "bans": {
+      "MTV Lichtenberg": [],
+      "SV Innerstetal": []
+    }
+  },
+  {
+    "series": "BO3 Lichtenberg vs Innerstetal",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-09-08",
+    "blue": "SV Innerstetal",
+    "red": "MTV Lichtenberg",
+    "winner": "SV Innerstetal",
+    "picks": {
+      "SV Innerstetal": [
+        {
+          "role": "TOP",
+          "champ": "Malphite",
+          "player": "Thueringerkloss"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Gragas",
+          "player": "zPiro"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Ahri",
+          "player": "Verveigar"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Draven",
+          "player": "Summer Vibes"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Nautilus",
+          "player": "God Razor"
+        }
+      ],
+      "MTV Lichtenberg": [
+        {
+          "role": "TOP",
+          "champ": "Kayle",
+          "player": "abcdasher"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "Niklas Knueppel"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Vex",
+          "player": "Zoom"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Xayah",
+          "player": "lightníngs"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rakan",
+          "player": "I am Mayham"
+        }
+      ]
+    },
+    "bans": {
+      "SV Innerstetal": [],
+      "MTV Lichtenberg": []
+    }
+  },
+  {
     "series": "BO3 SSV Remlingen",
     "game": 1,
     "format": "fearless",
@@ -742,33 +1018,6 @@
     "red": "AFC1",
     "winner": "SSV Remlingen",
     "picks": {
-      "AFC1": [
-        {
-          "role": "TOP",
-          "champ": "Kai'Sa",
-          "player": "bandit"
-        },
-        {
-          "role": "JUNGLE",
-          "champ": "Gragas",
-          "player": "HartzFor"
-        },
-        {
-          "role": "MIDDLE",
-          "champ": "Nasus",
-          "player": "Køstja"
-        },
-        {
-          "role": "BOTTOM",
-          "champ": "Zeri",
-          "player": "smiling"
-        },
-        {
-          "role": "UTILITY",
-          "champ": "Milio",
-          "player": "Aaghn"
-        }
-      ],
       "SSV Remlingen": [
         {
           "role": "TOP",
@@ -795,22 +1044,49 @@
           "champ": "Braum",
           "player": "NebelFlasche"
         }
+      ],
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Kai'Sa",
+          "player": "bandit"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Gragas",
+          "player": "HartzFor"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Nasus",
+          "player": "Køstja"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Zeri",
+          "player": "smiling"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Milio",
+          "player": "Aaghn"
+        }
       ]
     },
     "bans": {
-      "AFC1": [
-        "Mordekaiser",
-        "Pantheon",
-        "Sylas",
-        "Jinx",
-        "Caitlyn"
-      ],
       "SSV Remlingen": [
         "Jarvan IV",
         "Thresh",
         "Syndra",
         "Ahri",
         "Cassiopeia"
+      ],
+      "AFC1": [
+        "Mordekaiser",
+        "Pantheon",
+        "Sylas",
+        "Jinx",
+        "Caitlyn"
       ]
     },
     "note": "Ausgeblutet seit Minute 1"
@@ -894,6 +1170,144 @@
         "Zaahen",
         "Yone"
       ]
+    }
+  },
+  {
+    "series": "AFC1 vs Remlingen 2",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-09-12",
+    "blue": "SSV Remlingen 2",
+    "red": "AFC1",
+    "winner": "AFC1",
+    "picks": {
+      "SSV Remlingen 2": [
+        {
+          "role": "TOP",
+          "champ": "Urgot",
+          "player": "Meister FiTTi"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Xin Zhao",
+          "player": "Der Bup"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Vex",
+          "player": "Eleonee"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jinx",
+          "player": "KOOOOAHLLLL"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lux",
+          "player": "Discalon"
+        }
+      ],
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Gangplank",
+          "player": "jasxnbrg"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Sejuani",
+          "player": "Sir Johny"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Ahri",
+          "player": "Route65"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Caitlyn",
+          "player": "Køstja"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "Aaghn"
+        }
+      ]
+    },
+    "bans": {
+      "SSV Remlingen 2": [],
+      "AFC1": []
+    }
+  },
+  {
+    "series": "AFC1 vs Remlingen 2",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-09-12",
+    "blue": "SSV Remlingen 2",
+    "red": "AFC1",
+    "winner": "AFC1",
+    "picks": {
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Camille",
+          "player": "jasxnbrg"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Rek'Sai",
+          "player": "Sir Johny"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Cassiopeia",
+          "player": "Route65"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jhin",
+          "player": "Køstja"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Thresh",
+          "player": "Aaghn"
+        }
+      ],
+      "SSV Remlingen 2": [
+        {
+          "role": "TOP",
+          "champ": "Cho'Gath",
+          "player": "Meister FiTTi"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Vi",
+          "player": "Der Bup"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Viktor",
+          "player": "Eleonee"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Ezreal",
+          "player": "KOOOOAHLLLL"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Morgana",
+          "player": "Discalon"
+        }
+      ]
+    },
+    "bans": {
+      "AFC1": [],
+      "SSV Remlingen 2": []
     }
   }
 ]

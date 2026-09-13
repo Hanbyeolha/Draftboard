@@ -107,6 +107,7 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--blue); outl
 .control-row .label { margin-left: 0.35rem; }
 .control-row .label:first-child { margin-left: 0; }
 .spacer { flex: 1 1 0; min-width: 0; }
+.team-select { font-weight: 600; min-width: 13rem; padding: 0.4rem 0.6rem; }
 /* Feste Hoehe: der Hinweis erscheint nur bei manchen Queues, ohne sie
    huepfen die Karten beim Umschalten. */
 #queue-hint { min-height: 1.2rem; margin-top: 0.2rem; }
@@ -344,6 +345,13 @@ button.del.edit { color: var(--blue); }
               border: 1px solid var(--border); border-radius: var(--radius);
               padding: 0.6rem 0.7rem; }
 
+/* Neue Spieler: dieselben Felder wie beim Bearbeiten, eine Zeile je Spieler. */
+#np-rows { display: flex; flex-direction: column; gap: 0.35rem; }
+.np-row { margin: 0; }
+.np-row input.bad { border-color: var(--red); color: var(--red); }
+.np-row input.dup { border-color: var(--warn); background: var(--warn-soft); }
+.np-row .del { font-size: 0.9rem; padding: 0.1rem 0.4rem; }
+
 /* Was nur im Browser liegt, muss auf jedem Reiter sichtbar sein - sonst
    merkt man erst beim naechsten Bauen, dass etwas fehlt. */
 .unsaved { display: flex; align-items: center; gap: 0.5rem 0.75rem; flex-wrap: wrap;
@@ -454,7 +462,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       </div>
       <span class="spacer"></span>
       <span class="label">Team</span>
-      <div class="switch" id="team-switch"></div>
+      <select id="team-select" class="team-select" title="Team wählen"></select>
     </div>
     <div class="control-row" id="player-controls">
       <span class="label">Queue</span>
@@ -593,26 +601,16 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     </div>
 
     <div class="row" style="margin-top:0.4rem">
-      <span class="label">Neuer Spieler</span>
-      <span class="hint" id="np-hint"></span>
+      <span class="label">Neue Spieler</span>
+      <select id="np-team" title="In welches Team die Spieler kommen"></select>
+      <span class="hint">Eine Zeile je Spieler, die nächste erscheint von selbst.
+        Mehrere Spieler aus dem Chat lassen sich auch ins Riot-ID-Feld einfügen.</span>
     </div>
+    <div id="np-rows"></div>
     <div class="row">
-      <select id="np-team" title="In welches Team der Spieler kommt"></select>
-      <input type="text" id="np-riot" placeholder="Name#TAG" style="min-width:12rem">
-      <input type="text" id="np-label" placeholder="Anzeigename (optional)"
-             style="min-width:10rem">
-      <select id="np-role">
-        <option value="TOP">Top</option>
-        <option value="JUNGLE">Jungle</option>
-        <option value="MIDDLE">Mid</option>
-        <option value="BOTTOM">Bot</option>
-        <option value="UTILITY">Support</option>
-        <option value="UNKNOWN">Rolle offen</option>
-      </select>
-      <label class="field"><input type="checkbox" id="np-bench"> Bank</label>
-      <button class="action" type="button" id="np-add">Anlegen und scrapen</button>
+      <button class="action" type="button" id="np-add" disabled>Anlegen und scrapen</button>
+      <span class="hint" id="np-note"></span>
     </div>
-    <span class="hint" id="np-note"></span>
 
     <div class="row" style="margin-top:0.4rem">
       <span class="label">Spieler bearbeiten</span>
@@ -663,9 +661,9 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   // dort keine Season-Aufteilung; TURNIER kommt aus den eingetragenen Spielen.
   const QUEUES = [
     ["RANKED", "Ranked"], ["SOLO", "Solo/Duo"], ["FLEX", "Flex"],
-    ["NORMAL", "Normal 5v5"], ["TOURNAMENT", "Turnier"], ["ALL", "Alle"],
+    ["TOURNAMENT", "Turnier"], ["ALL", "Alle"],
   ];
-  const SEASONLESS = new Set(["NORMAL", "TOURNAMENT"]);
+  const SEASONLESS = new Set(["TOURNAMENT"]);
   const STORE_KEY = "league-picks-games-v1";
   const ROW_LIMIT = 12;
   const ROW_LIMIT_COMPACT = 10;
@@ -891,10 +889,11 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   }
 
   // Welche gescrapten Queue-Bloecke die aktuelle Auswahl umfasst. "Alle" nimmt
-  // RANKED (= Solo + Flex) plus Normal - Solo/Flex einzeln waeren doppelt.
+  // RANKED (= Solo + Flex) - Solo/Flex einzeln waeren doppelt. Normal-Spiele
+  // zeigt das Board bewusst nicht mehr; sie verwaessern die Championpools.
   function queuesFor(player) {
     const has = (name) => (player.queues[name] ? [player.queues[name]] : []);
-    if (queue === "ALL") return [...has("RANKED"), ...has("NORMAL")];
+    if (queue === "ALL") return has("RANKED");
     if (queue === "TOURNAMENT") return [];
     return has(queue);
   }
@@ -1142,10 +1141,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       team.players.length + " Spieler · " + scope + " · op.gg-Stand " + deDate(DATA.scrapedAt) +
       " · Patch " + VERSION;
     renderPlan();          // haengt an derselben Queue- und Season-Auswahl
-    if (SERVER) {
-      document.getElementById("np-hint").textContent =
-        "wird ins gewählte Team eingetragen und sofort von op.gg geholt";
-    }
+
   }
 
   // ------------------------------------------------ Reiter 2: Draftplan
@@ -1428,7 +1424,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     // Die Seite wird bei jedem Bau neu erzeugt, serve.py laeuft aber weiter.
     // Nach einer Erweiterung kennt der laufende Server neue Wege noch nicht.
     const features = SERVER_INFO.features || [];
-    const veraltet = !features.includes("player");
+    const veraltet = !features.includes("players");
     document.getElementById("tools-hint").textContent = veraltet
       ? "Achtung: Das Programm läuft noch in einer älteren Fassung. Schließe das "
         + "schwarze Fenster und starte „Draftboard starten.cmd“ neu — sonst "
@@ -1436,7 +1432,8 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       : "Das Board läuft als Programm aus " + (location.host || "diesem Rechner")
         + ": Speichern schreibt direkt in die Dateien und baut neu.";
     document.getElementById("tools-hint").style.color = veraltet ? "var(--warn)" : "";
-    document.getElementById("np-add").disabled = veraltet;
+    if (veraltet) document.getElementById("np-add").disabled = true;
+    else pruefeNpZeilen();
     // Die Abfrage laeuft asynchron - beim ersten Zeichnen war noch Dateibetrieb.
     // Ohne das hiessen die Knoepfe weiter "ausblenden" statt "löschen".
     renderPlayers();
@@ -1590,18 +1587,35 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     }
   }
 
+  // Eine Auswahlliste statt Knoepfen nebeneinander: bei sieben Teams und mehr
+  // wird die Reihe sonst zu lang. Die eigenen Teams stehen oben.
   function renderTeamSwitch() {
-    if (TEAMS.length < 2) { document.getElementById("team-switch").hidden = true; return; }
-    renderSwitch("team-switch", TEAMS.map((t) => [t.team, t.team]), team.team, (value) => {
-      team = TEAMS.find((t) => t.team === value);
+    const auswahl = document.getElementById("team-select");
+    auswahl.textContent = "";
+    const eigene = new Set(DATA.ownTeams || []);
+    const option = (t) => el("option", {value: t.team},
+      t.team + "  (" + t.players.length + ")");
+    const gruppen = [["Eigene Teams", TEAMS.filter((t) => eigene.has(t.team))],
+                     ["Gegner", TEAMS.filter((t) => !eigene.has(t.team))]]
+      .filter(([, liste]) => liste.length);
+    if (gruppen.length > 1) {
+      for (const [name, liste] of gruppen) {
+        auswahl.append(el("optgroup", {label: name}, liste.map(option)));
+      }
+    } else {
+      auswahl.append(...TEAMS.map(option));
+    }
+    auswahl.value = team.team;
+    auswahl.disabled = TEAMS.length < 2;
+    auswahl.onchange = () => {
+      team = TEAMS.find((t) => t.team === auswahl.value) || team;
       expanded.clear();
-      renderTeamSwitch();
       renderQueueSwitch();
       renderSeasonSwitch();
       renderPlayers();
       buildPickRows();
       renderGames();
-    });
+    };
   }
 
   const queueLabel = () => (QUEUES.find((q) => q[0] === queue) || [null, queue])[1];
@@ -1655,9 +1669,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     document.getElementById("season-switch").hidden = seasonless;
     document.getElementById("season-label").hidden = seasonless;
     document.getElementById("queue-hint").textContent = seasonless
-      ? (queue === "NORMAL"
-          ? "Normal-Spiele liefert op.gg nur als Gesamtwert, ohne Season-Aufteilung."
-          : "Zeigt nur die unter „Turnierspiele“ eingetragenen Picks.")
+      ? "Zeigt nur die unter „Turnierspiele“ eingetragenen Picks."
       : "";
     if (seasonless) return;
     const options = SEASONS.map((s) => [s, seasonLabel(s), seasonFull(s)]);
@@ -2547,24 +2559,181 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     } catch (e) { note.textContent = "Fehlgeschlagen: " + e.message; }
   });
 
-  // Neuen Spieler ins Team aufnehmen und sein op.gg gleich holen.
+  // ------------------------------------------- Mehrere Spieler anlegen
+  // Nimmt dasselbe Format, in dem Roster sonst im Chat verschickt werden:
+  //   snakegerman#EUW Top / mazl#1337 Jungle / Gumagod#SKTT1 Bank
+  const ROLLEN_WOERTER = {
+    top: "TOP",
+    jungle: "JUNGLE", jungler: "JUNGLE", jgl: "JUNGLE", jng: "JUNGLE", jg: "JUNGLE",
+    mid: "MIDDLE", middle: "MIDDLE",
+    adc: "BOTTOM", bot: "BOTTOM", bottom: "BOTTOM", carry: "BOTTOM",
+    supp: "UTILITY", support: "UTILITY", sup: "UTILITY",
+  };
+  const BANK_WOERTER = new Set(["bank", "ersatz", "ersatzbank", "sub", "bench"]);
+  const ROLLEN_NAMEN = {TOP: "Top", JUNGLE: "Jungle", MIDDLE: "Mid",
+                        BOTTOM: "Bot", UTILITY: "Support", UNKNOWN: "Rolle offen"};
+
+  function leseSpielerListe(text) {
+    const zeilen = String(text || "").split(/\n|\//)
+      .map((z) => z.trim()).filter(Boolean);
+    const gesehen = new Set();
+    return zeilen.map((zeile) => {
+      let label = "";
+      let rest = zeile;
+      // "Anzeigename = Name#TAG" - der Name vor dem Gleichheitszeichen
+      const gleich = zeile.indexOf("=");
+      if (gleich > 0 && zeile.indexOf("#") > gleich) {
+        label = zeile.slice(0, gleich).trim();
+        rest = zeile.slice(gleich + 1).trim();
+      }
+      // Riot-Namen duerfen Leerzeichen haben, der Tag nicht: alles bis zum
+      // ersten Leerzeichen nach dem # gehoert zur ID.
+      const treffer = rest.match(/^(.+?#\S+)\s*(.*)$/);
+      if (!treffer) return {zeile, fehler: "keine Riot-ID (Name#TAG)"};
+      const riotId = treffer[1].trim();
+      let role = "UNKNOWN";
+      let bench = false;
+      const woerter = treffer[2].toLowerCase().replace(/role\s*:/g, " ")
+        .split(/[\s,;:]+/).filter(Boolean);
+      for (const wort of woerter) {
+        if (ROLLEN_WOERTER[wort]) role = ROLLEN_WOERTER[wort];
+        else if (BANK_WOERTER.has(wort)) bench = true;
+      }
+      const eintrag = {zeile, riotId, role, bench,
+                       label: label || riotId.split("#")[0].trim()};
+      const schluessel = riotId.toLowerCase();
+      if (gesehen.has(schluessel)) eintrag.fehler = "steht in der Liste doppelt";
+      gesehen.add(schluessel);
+      return eintrag;
+    });
+  }
+
+  // Zeilen wie bei "Spieler bearbeiten": Anzeigename, Riot-ID, Rolle, Bank.
+  // Am Ende steht immer eine leere Zeile - wird sie ausgefuellt, kommt die
+  // naechste, genau wie bei den Feldern im Draftplan.
+  const ROLLEN_REIHE = ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"];
+  let npZeilen = [];
+
+  const npGefuellt = (z) => !!(z.riot.value.trim() || z.label.value.trim());
+
+  function neueSpielerZeile(werte) {
+    const w = werte || {};
+    const label = el("input", {type: "text", placeholder: "Anzeigename (optional)",
+                               style: "min-width:9rem"});
+    const riot = el("input", {type: "text", placeholder: "Name#TAG",
+                              style: "min-width:11rem"});
+    const role = el("select", {}, Object.entries(ROLLEN_NAMEN)
+      .map(([wert, text]) => el("option", {value: wert}, text)));
+    const bench = el("input", {type: "checkbox"});
+    const weg = el("button", {class: "del", type: "button", title: "Zeile entfernen"}, "✕");
+
+    label.value = w.label || "";
+    riot.value = w.riotId || "";
+    // Neue Zeilen schlagen die naechste Rolle vor: Top, Jungle, Mid, Bot, Support.
+    role.value = w.role || ROLLEN_REIHE[npZeilen.length] || "UNKNOWN";
+    bench.checked = !!w.bench;
+
+    const zeile = {label, riot, role, bench};
+    zeile.node = el("div", {class: "row np-row"}, label, riot, role,
+                    el("label", {class: "field"}, bench, " Bank"), weg);
+
+    for (const feld of [label, riot]) feld.addEventListener("input", npGeaendert);
+    role.addEventListener("change", npGeaendert);
+    bench.addEventListener("change", npGeaendert);
+    weg.addEventListener("click", () => {
+      npZeilen = npZeilen.filter((x) => x !== zeile);
+      npGeaendert();
+    });
+    // Mehrere Spieler auf einmal einfuegen, etwa aus dem Chat:
+    //   snakegerman#EUW Top / mazl#1337 Jungle / Gumagod#SKTT1 Bank
+    riot.addEventListener("paste", (event) => {
+      const text = (event.clipboardData || window.clipboardData).getData("text");
+      if (!/[\n/]/.test(text) || !text.includes("#")) return;
+      event.preventDefault();
+      const liste = leseSpielerListe(text);
+      if (!liste.length) return;
+      const stelle = npZeilen.indexOf(zeile);
+      const neu = liste.map((e) => neueSpielerZeile(e.fehler
+        ? {riotId: e.zeile}
+        : {riotId: e.riotId, label: e.label === e.riotId.split("#")[0].trim() ? "" : e.label,
+           role: e.role, bench: e.bench}));
+      npZeilen.splice(stelle, npGefuellt(zeile) ? 0 : 1, ...neu);
+      npGeaendert();
+    });
+    return zeile;
+  }
+
+  function npGeaendert() {
+    const letzte = npZeilen[npZeilen.length - 1];
+    if (!letzte || npGefuellt(letzte)) npZeilen.push(neueSpielerZeile());
+    const host = document.getElementById("np-rows");
+    host.textContent = "";
+    for (const z of npZeilen) host.append(z.node);
+    pruefeNpZeilen();
+  }
+
+  // Liefert die ausgefuellten Zeilen und markiert die fehlerhaften.
+  function pruefeNpZeilen() {
+    const knopf = document.getElementById("np-add");
+    const note = document.getElementById("np-note");
+    const gesehen = new Map();
+    let fehler = 0;
+    const gut = [];
+    for (const z of npZeilen) {
+      z.riot.classList.remove("bad", "dup");
+      z.riot.title = "";
+      if (!npGefuellt(z)) continue;
+      const riotId = z.riot.value.trim();
+      const name = riotId.split("#")[0].trim();
+      const tag = riotId.includes("#") ? riotId.slice(riotId.indexOf("#") + 1).trim() : "";
+      if (!name || !tag || /\s/.test(tag)) {
+        z.riot.classList.add("bad");
+        z.riot.title = "Die Riot-ID braucht die Form Name#TAG";
+        fehler += 1;
+        continue;
+      }
+      const schluessel = riotId.toLowerCase();
+      if (gesehen.has(schluessel)) {
+        z.riot.classList.add("dup");
+        gesehen.get(schluessel).riot.classList.add("dup");
+        z.riot.title = "Steht in der Liste doppelt";
+        fehler += 1;
+        continue;
+      }
+      gesehen.set(schluessel, z);
+      gut.push({riotId, label: z.label.value.trim() || name,
+                role: z.role.value, bench: z.bench.checked});
+    }
+    if (knopf) {
+      const veraltet = SERVER && !((SERVER_INFO.features || []).includes("players"));
+      knopf.disabled = veraltet || !gut.length || fehler > 0;
+      knopf.textContent = gut.length > 1 ? gut.length + " Spieler anlegen und scrapen"
+                                         : "Anlegen und scrapen";
+    }
+    if (note && !note.dataset.laeuft) {
+      note.textContent = fehler
+        ? fehler + (fehler === 1 ? " Zeile ist" : " Zeilen sind")
+          + " fehlerhaft — rot: keine gültige Riot-ID, gelb: doppelt."
+        : "";
+    }
+    return {gut, fehler};
+  }
+
+  npGeaendert();
+
   document.getElementById("np-add").addEventListener("click", async () => {
     const note = document.getElementById("np-note");
-    const riotId = document.getElementById("np-riot").value.trim();
-    if (!riotId.includes("#")) {
-      note.textContent = "Die Riot-ID braucht die Form Name#TAG.";
-      return;
-    }
+    const {gut: liste, fehler} = pruefeNpZeilen();
+    const ziel = document.getElementById("np-team").value || team.team;
+    if (!liste.length || fehler) return;
+    if (!confirm(liste.length + " Spieler in " + ziel + " anlegen und von op.gg holen?\n\n"
+        + "Dauert gut " + Math.max(1, Math.round(liste.length * 1.2)) + " Minuten; "
+        + "das Browserfenster muss dabei offen bleiben.")) return;
+    note.dataset.laeuft = "1";
     note.textContent = "Trage ein ...";
     try {
-      const answer = await fetch("api/player", {method: "POST",
-        body: JSON.stringify({
-          team: document.getElementById("np-team").value || team.team,
-          riotId,
-          label: document.getElementById("np-label").value.trim(),
-          role: document.getElementById("np-role").value,
-          bench: document.getElementById("np-bench").checked,
-        })});
+      const answer = await fetch("api/players", {method: "POST",
+        body: JSON.stringify({team: ziel, players: liste})});
       if (answer.status === 404) {
         note.textContent = "Das laufende Programm kennt diesen Knopf noch nicht. "
           + "Schwarzes Fenster schließen und „Draftboard starten.cmd“ neu starten.";
@@ -2572,16 +2741,18 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       }
       const info = await answer.json().catch(() => ({}));
       if (!info.ok) { note.textContent = info.error || "Fehlgeschlagen."; return; }
-      note.textContent = info.label + " steht jetzt in " + info.team
-        + ". op.gg wird geholt — dauert gut eine Minute, das Browserfenster "
-        + "muss dabei offen bleiben.";
-      document.getElementById("np-riot").value = "";
-      document.getElementById("np-label").value = "";
-      document.getElementById("np-bench").checked = false;
+      note.textContent = info.labels.join(", ") + " stehen jetzt in " + info.team
+        + ". op.gg wird geholt ...";
+      npZeilen = [];
+      npGeaendert();
       ladeTeamAuswahl(info.team);
       scrapeButtons(false);
       pollScrape();
-    } catch (e) { note.textContent = "Fehlgeschlagen: " + e.message; }
+    } catch (e) {
+      note.textContent = "Fehlgeschlagen: " + e.message;
+    } finally {
+      delete note.dataset.laeuft;
+    }
   });
 
   // Championliste einmal fuellen - Spielformular und Draftplan haengen dran.

@@ -45,6 +45,12 @@
         "riotId": "Oloro#EUW",
         "role": "UTILITY",
         "bench": true
+      },
+      {
+        "label": "Sir Johny",
+        "riotId": "Sir Johny#EUW",
+        "role": "UNKNOWN",
+        "bench": true
       }
     ]
   },
@@ -77,6 +83,36 @@
         "label": "Töner Deller",
         "riotId": "Töner Deller#EUW",
         "role": "UTILITY"
+      },
+      {
+        "label": "Phung",
+        "riotId": "Phung#2404",
+        "role": "MIDDLE",
+        "bench": true
+      },
+      {
+        "label": "Dominixnlp",
+        "riotId": "Dominixnlp#EUW",
+        "role": "UTILITY",
+        "bench": true
+      },
+      {
+        "label": "PlayboiiHieu",
+        "riotId": "PlayboiiHieu#Hieu",
+        "role": "JUNGLE",
+        "bench": true
+      },
+      {
+        "label": "Dadana Aürüm",
+        "riotId": "Dadana Aürüm#EUW",
+        "role": "UNKNOWN",
+        "bench": true
+      },
+      {
+        "label": "DeLouis",
+        "riotId": "DeLouis#EUW",
+        "role": "TOP",
+        "bench": true
       }
     ]
   },
@@ -109,6 +145,24 @@
         "label": "God Razor",
         "riotId": "God Razor#EUW",
         "role": "UTILITY"
+      },
+      {
+        "label": "Legktar",
+        "riotId": "Legktar#EUW",
+        "role": "UNKNOWN",
+        "bench": true
+      },
+      {
+        "label": "Durotano",
+        "riotId": "Durotano#EUW",
+        "role": "UNKNOWN",
+        "bench": true
+      },
+      {
+        "label": "Eleone",
+        "riotId": "Eleone#1008",
+        "role": "UNKNOWN",
+        "bench": true
       }
     ]
   },
@@ -228,6 +282,181 @@
         "riotId": "Gumagod#SKTT1",
         "role": "UNKNOWN",
         "bench": true
+      },
+      {
+        "label": "Would love Some",
+        "riotId": "Would love Some#420",
+        "role": "UNKNOWN",
+        "bench": true
+      },
+      {
+        "label": "Clown Angel",
+        "riotId": "Clown Angel#MtoL",
+        "role": "UNKNOWN",
+        "bench": true
+      }
+    ]
+  },
+  {
+    "team": "SC Victoria Braunschweig",
+    "region": "euw",
+    "players": [
+      {
+        "label": "Salzu",
+        "riotId": "Salzu#ooga",
+        "role": "JUNGLE"
+      },
+      {
+        "label": "Kneu",
+        "riotId": "Kneu#Duke",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "Naoya was right",
+        "riotId": "Naoya was right#men",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "Hyro",
+        "riotId": "Hyro#161",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "no need âdc",
+        "riotId": "no need âdc#EUW",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "ShendNoods",
+        "riotId": "ShendNoods#EINS",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "LegendOctavian",
+        "riotId": "LegendOctavian#monke",
+        "role": "UNKNOWN"
+      }
+    ]
+  },
+  {
+    "team": "Braunschweig eSports e.V. B",
+    "region": "euw",
+    "players": [
+      {
+        "label": "BSeS Angel",
+        "riotId": "BSeS Angel#EUW",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "TGameRex23",
+        "riotId": "TGameRex23#ADN",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "Frixxum",
+        "riotId": "Frixxum#R4G",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "BSeS Dezzad",
+        "riotId": "BSeS Dezzad#381",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "Glaceon",
+        "riotId": "Glaceon#evo",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "N0k0ri",
+        "riotId": "N0k0ri#EUW",
+        "role": "UNKNOWN"
+      }
+    ]
+  },
+  {
+    "team": "MTV Hattorf",
+    "region": "euw",
+    "players": [
+      {
+        "label": "Daddy JosCo",
+        "riotId": "Daddy JosCo#2110",
+        "role": "JUNGLE"
+      },
+      {
+        "label": "JackSh3ppard",
+        "riotId": "JackSh3ppard#EUW",
+        "role": "MIDDLE"
+      },
+      {
+        "label": "Xîmon",
+        "riotId": "Xîmon#EUW",
+        "role": "BOTTOM"
+      },
+      {
+        "label": "BigMeeks",
+        "riotId": "BigMeeks#GOAT",
+        "role": "UTILITY"
+      },
+      {
+        "label": "GeneralKnabe",
+        "riotId": "GeneralKnabe#GER",
+        "role": "TOP"
+      },
+      {
+        "label": "Akuma",
+        "riotId": "Akuma#9102",
+        "role": "UNKNOWN",
+        "bench": true
+      },
+      {
+        "label": "LethalRaptorJD",
+        "riotId": "LethalRaptorJD#EUW",
+        "role": "UNKNOWN",
+        "bench": true
+      }
+    ]
+  },
+  {
+    "team": "SSV Remlingen 2",
+    "region": "euw",
+    "players": [
+      {
+        "label": "Eleonee",
+        "riotId": "Eleonee#1008",
+        "role": "MIDDLE"
+      },
+      {
+        "label": "FGG Lewer",
+        "riotId": "FGG Lewer#EUW",
+        "role": "UNKNOWN",
+        "bench": true
+      },
+      {
+        "label": "ziggler10",
+        "riotId": "ziggler10#EUW",
+        "role": "UNKNOWN",
+        "bench": true
+      },
+      {
+        "label": "Der Bup",
+        "riotId": "Der Bup#EUW",
+        "role": "JUNGLE"
+      },
+      {
+        "label": "KOOOOAHLLLL",
+        "riotId": "KOOOOAHLLLL#EUW",
+        "role": "BOTTOM"
+      },
+      {
+        "label": "Meister FiTTi",
+        "riotId": "Meister FiTTi#EUW",
+        "role": "TOP"
+      },
+      {
+        "label": "Discalon",
+        "riotId": "Discalon#6774",
+        "role": "UTILITY"
       }
     ]
   }

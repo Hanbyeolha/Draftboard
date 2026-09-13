@@ -140,6 +140,21 @@ def multisearch_url(region, members):
             f"?summoners={urllib.parse.quote(ids, safe=',')}")
 
 
+def own_teams(teams):
+    """Die Teams des eigenen Vereins: der Verein aus league.json, zu dem das
+    erste Team in teams.json gehoert. Die Teamauswahl stellt sie nach oben."""
+    if not teams:
+        return []
+    first = teams[0]["team"]
+    path = ROOT / "league.json"
+    if path.exists():
+        for club in json.loads(path.read_text(encoding="utf-8")):
+            names = club.get("teams") or [club["club"]]
+            if first in names:
+                return [n for n in names if any(t["team"] == n for t in teams)]
+    return [first]
+
+
 def league_opponents(teams):
     """Alle Teamnamen der Liga fuer die Gegnerauswahl: gescoutete Teams plus die
     Vereine aus league.json, zu denen noch kein Roster existiert."""
@@ -376,6 +391,7 @@ def build(embed=False, pages=False):
         # Vereine der Liga: Gegner, zu denen (noch) keine Spielerdaten
         # vorliegen - stehen nur als Auswahl im Turnierformular.
         "opponents": league_opponents(teams),
+        "ownTeams": own_teams(teams),
     }
     if embed:
         data["iconData"] = embed_icons(icons, version)

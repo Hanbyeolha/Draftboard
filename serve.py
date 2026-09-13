@@ -42,6 +42,7 @@ REGIONS = {"euw", "eune", "na", "kr", "jp", "oce", "br", "las", "lan",
 # Lauf die aelteren Seasons der anderen Dateien beim Zusammenfuehren.
 QUEUE_SEASONS = "33,31,29"
 MAX_BODY = 4 * 1024 * 1024
+NL = chr(10)
 
 # Ausgabe des laufenden Scrapes, damit die Seite den Fortschritt zeigen kann.
 scrape_lock = threading.Lock()
@@ -67,6 +68,15 @@ def built_file():
     return files[0] if files else None
 
 
+def write_data(path, text):
+    """Datendatei schreiben. Enthaelt der Text schon Wagenruecklaeufe (etwa
+    aus dem Browser oder einer vorher gelesenen Datei), setzt Python unter
+    Windows im Textmodus noch einen davor - aus jedem Speichern wuerde CR CR LF.
+    Deshalb erst alle CR entfernen; geschrieben wird dann genau ein CRLF je
+    Zeile, wie in den uebrigen Dateien."""
+    pathlib.Path(path).write_text(str(text).replace(chr(13), ""), encoding="utf-8")
+
+
 def read_roster():
     return json.loads((ROOT / "teams.json").read_text(encoding="utf-8"))
 
@@ -74,10 +84,8 @@ def read_roster():
 def write_roster(roster):
     """teams.json schreiben, den vorherigen Stand als .bak daneben legen."""
     path = ROOT / "teams.json"
-    path.with_suffix(".json.bak").write_text(
-        path.read_text(encoding="utf-8"), encoding="utf-8")
-    path.write_text(json.dumps(roster, ensure_ascii=False, indent=2) + "\n",
-                    encoding="utf-8")
+    write_data(path.with_suffix(".json.bak"), path.read_text(encoding="utf-8"))
+    write_data(path, json.dumps(roster, ensure_ascii=False, indent=2) + NL)
 
 
 def add_team(data):
@@ -133,7 +141,7 @@ def patch_raw(team_name, label, aenderung=None, loeschen=False):
             blob["players"][neu] = blob["players"].pop(key)
             if key in blob.get("queues", {}):
                 blob["queues"][neu] = blob["queues"].pop(key)
-    path.write_text(json.dumps(blob, ensure_ascii=False), encoding="utf-8")
+    write_data(path, json.dumps(blob, ensure_ascii=False))
     return True
 
 
@@ -154,8 +162,26 @@ def patch_plan(team_name, label, neues_label=None):
             spieler[neues_label] = spieler.pop(label)
         else:
             spieler.pop(label)
-    path.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + "\n",
-                    encoding="utf-8")
+    write_data(path, plan_text(plan))
+
+
+def plan_text(plan):
+    """draftplan.json in derselben Form, die die Seite schreibt: eine Zeile je
+    Spieler. json.dumps mit indent wuerde jede Liste aufklappen und die Datei
+    fuer das Bearbeiten von Hand unbrauchbar machen."""
+    bloecke = []
+    for eintrag in plan:
+        spieler = eintrag.get("players") or {}
+        schluessel = [json.dumps(k, ensure_ascii=False) for k in spieler]
+        breite = max((len(k) for k in schluessel), default=0)
+        zeilen = ["      " + k + ":" + " " * (breite - len(k) + 1)
+                  + json.dumps(v, ensure_ascii=False, separators=(",", ":"))
+                  for k, v in zip(schluessel, spieler.values())]
+        bloecke.append("  {\n    \"team\": "
+                       + json.dumps(eintrag.get("team"), ensure_ascii=False)
+                       + ",\n    \"players\": {\n" + ",\n".join(zeilen)
+                       + "\n    }\n  }")
+    return "[\n" + ",\n".join(bloecke) + "\n]\n"
 
 
 def edit_player(data):
@@ -222,6 +248,57 @@ def delete_player(data):
     patch_raw(team_name, label, loeschen=True)
     patch_plan(team_name, label)
     return team_name, label
+
+
+def add_players(data):
+    """Mehrere Spieler auf einmal eintragen. Gibt (Team, [Labels]) zurueck.
+
+    Alles oder nichts: ist eine Zeile fehlerhaft, wird keine geschrieben -
+    sonst stuende ein halb importiertes Team da, und beim erneuten Versuch
+    wuerden die schon angelegten als Doppelte abgelehnt."""
+    team_name = str(data.get("team") or "").strip()
+    eintraege = data.get("players") or []
+    if not eintraege:
+        raise ValueError("Keine Spieler angegeben.")
+    roster = read_roster()
+    team = next((t for t in roster if t["team"] == team_name), None)
+    if team is None:
+        raise ValueError("Unbekanntes Team: " + team_name)
+
+    labels = {p["label"].lower(): p["label"] for p in team["players"]}
+    ids = {p["riotId"].lower(): p["label"] for p in team["players"]}
+    neu, fehler = [], []
+    for nummer, e in enumerate(eintraege, 1):
+        riot_id = str(e.get("riotId") or "").strip()
+        name_part, _, tag = riot_id.partition("#")
+        label = str(e.get("label") or "").strip() or name_part.strip()
+        role = str(e.get("role") or "UNKNOWN").strip().upper()
+        if not name_part.strip() or not tag.strip():
+            fehler.append(f"Zeile {nummer}: keine gültige Riot-ID ({riot_id or 'leer'})")
+            continue
+        if role not in ROLES:
+            fehler.append(f"Zeile {nummer}: unbekannte Rolle {role}")
+            continue
+        if label.lower() in labels:
+            fehler.append(f"Zeile {nummer}: {label} steht schon drin")
+            continue
+        if riot_id.lower() in ids:
+            fehler.append(f"Zeile {nummer}: {riot_id} steht schon als "
+                          f"{ids[riot_id.lower()]} drin")
+            continue
+        # Auch Doppelte innerhalb derselben Liste abfangen.
+        labels[label.lower()] = label
+        ids[riot_id.lower()] = label
+        eintrag = {"label": label, "riotId": riot_id, "role": role}
+        if e.get("bench"):
+            eintrag["bench"] = True
+        neu.append(eintrag)
+
+    if fehler:
+        raise ValueError("Nichts angelegt - " + "; ".join(fehler))
+    team["players"].extend(neu)
+    write_roster(roster)
+    return team_name, [e["label"] for e in neu]
 
 
 def add_player(data):
@@ -344,7 +421,7 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json({"server": True, "project": str(ROOT),
                             "file": target.name if target else None,
                             "features": ["save", "share", "reveal", "scrape",
-                                         "player", "team", "edit"]})
+                                         "player", "players", "team", "edit"]})
         elif path == "/api/teams":
             # Auch Teams ohne Spieler - die stehen noch in keinem Board.
             self.send_json({"teams": [
@@ -388,6 +465,21 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json({"ok": False, "error": str(exc)}, 400)
                 return
             self.send_json({"ok": True, "team": name})
+        elif path == "/api/players":
+            with scrape_lock:
+                busy = scrape_state["running"]
+            if busy:
+                self.send_json({"ok": False, "error": "Es läuft schon ein Scrape."}, 409)
+                return
+            try:
+                team_name, labels = add_players(json.loads(self.read_body() or "{}"))
+            except (ValueError, KeyError) as exc:
+                self.send_json({"ok": False, "error": str(exc)}, 400)
+                return
+            # Ein Lauf fuer alle Neuen - die uebrigen bleiben aus der Datei.
+            extra = [x for label in labels for x in ("--only", label)]
+            run_scrape([team_name], extra)
+            self.send_json({"ok": True, "team": team_name, "labels": labels})
         elif path == "/api/player/edit":
             try:
                 team, label, neu_gescrapt = edit_player(
@@ -460,9 +552,9 @@ class Handler(BaseHTTPRequestHandler):
             return
         # Sicherheitsnetz: der vorherige Stand bleibt als .bak liegen.
         if target.exists():
-            target.with_suffix(".json.bak").write_text(
-                target.read_text(encoding="utf-8"), encoding="utf-8")
-        target.write_text(body, encoding="utf-8")
+            write_data(target.with_suffix(".json.bak"),
+                       target.read_text(encoding="utf-8"))
+        write_data(target, body)
         try:
             log = rebuild()
         except Exception as exc:               # noqa: BLE001 - Bau darf melden
