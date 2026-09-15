@@ -1250,33 +1250,6 @@
     "red": "AFC1",
     "winner": "AFC1",
     "picks": {
-      "AFC1": [
-        {
-          "role": "TOP",
-          "champ": "Camille",
-          "player": "jasxnbrg"
-        },
-        {
-          "role": "JUNGLE",
-          "champ": "Rek'Sai",
-          "player": "Sir Johny"
-        },
-        {
-          "role": "MIDDLE",
-          "champ": "Cassiopeia",
-          "player": "Route65"
-        },
-        {
-          "role": "BOTTOM",
-          "champ": "Jhin",
-          "player": "Køstja"
-        },
-        {
-          "role": "UTILITY",
-          "champ": "Thresh",
-          "player": "Aaghn"
-        }
-      ],
       "SSV Remlingen 2": [
         {
           "role": "TOP",
@@ -1303,11 +1276,200 @@
           "champ": "Morgana",
           "player": "Discalon"
         }
+      ],
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Camille",
+          "player": "jasxnbrg"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Rek'Sai",
+          "player": "Sir Johny"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Cassiopeia",
+          "player": "Route65"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jhin",
+          "player": "Køstja"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Thresh",
+          "player": "Aaghn"
+        }
       ]
     },
     "bans": {
-      "AFC1": [],
-      "SSV Remlingen 2": []
+      "SSV Remlingen 2": [],
+      "AFC1": []
+    }
+  },
+  {
+    "series": "AFC1 vs AFC2",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-09-15",
+    "blue": "AFC2",
+    "red": "AFC1",
+    "winner": "AFC1",
+    "picks": {
+      "AFC2": [
+        {
+          "role": "TOP",
+          "champ": "Trundle",
+          "player": "AFC AFC"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Amumu",
+          "player": "AFC X4nder"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Ahri",
+          "player": "Zeryn"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Caitlyn",
+          "player": "AFC Bernard Bär"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Leona",
+          "player": "Töner Deller"
+        }
+      ],
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Malphite",
+          "player": "bandit"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "HartzFor"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Syndra",
+          "player": "Køstja"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Sivir",
+          "player": "smiling"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Thresh",
+          "player": "Aaghn"
+        }
+      ]
+    },
+    "bans": {
+      "AFC2": [
+        "Viktor",
+        "Lee Sin",
+        "Seraphine",
+        "Dr. Mundo",
+        "Orianna"
+      ],
+      "AFC1": [
+        "Shen",
+        "Twitch",
+        "Rammus",
+        "Mordekaiser",
+        "Diana"
+      ]
+    }
+  },
+  {
+    "series": "AFC1 vs AFC2",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-09-15",
+    "blue": "AFC1",
+    "red": "AFC2",
+    "winner": "AFC1",
+    "picks": {
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Dr. Mundo",
+          "player": "bandit"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "HartzFor"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Garen",
+          "player": "Køstja"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jinx",
+          "player": "smiling"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "Aaghn"
+        }
+      ],
+      "AFC2": [
+        {
+          "role": "TOP",
+          "champ": "Ambessa",
+          "player": "AFC AFC"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Zac",
+          "player": "AFC X4nder"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Katarina",
+          "player": "Zeryn"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Zeri",
+          "player": "AFC Bernard Bär"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lulu",
+          "player": "Töner Deller"
+        }
+      ]
+    },
+    "bans": {
+      "AFC1": [
+        "Shen",
+        "Twitch",
+        "Rammus",
+        "Diana",
+        "Sett"
+      ],
+      "AFC2": [
+        "Lee Sin",
+        "Viktor",
+        "Seraphine",
+        "Orianna",
+        "Mordekaiser"
+      ]
     }
   }
 ]
