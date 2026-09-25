@@ -1,9 +1,10 @@
 [
   {
-    "series": "Bo1",
+    "series": "MTV Lichtenberg vs TSV Salzgitter - Freundschaftsspiel (20.08.2026)",
     "game": 1,
     "format": "normal",
     "date": "2026-08-20",
+    "matchId": "EUW1_7956707276",
     "blue": "TSV Salzgitter",
     "red": "MTV Lichtenberg",
     "winner": "MTV Lichtenberg",
@@ -54,7 +55,7 @@
         {
           "role": "BOTTOM",
           "champ": "Xayah",
-          "player": "lightníngs"
+          "player": "Lightníngs"
         },
         {
           "role": "UTILITY",
@@ -64,16 +65,28 @@
       ]
     },
     "bans": {
-      "TSV Salzgitter": [],
-      "MTV Lichtenberg": []
+      "TSV Salzgitter": [
+        "Shyvana",
+        "Kai'Sa",
+        "Zed",
+        "Malphite",
+        "Fizz"
+      ],
+      "MTV Lichtenberg": [
+        "Jinx",
+        "Thresh",
+        "Syndra",
+        "Mel"
+      ]
     },
     "note": "Die Bans kann ich nicht sehen"
   },
   {
-    "series": "Bo3",
+    "series": "SSV Remlingen vs TSV Salzgitter - Freundschaftsspiel (26.08.2026)",
     "game": 1,
     "format": "normal",
-    "date": "2026-08-25",
+    "date": "2026-08-26",
+    "matchId": "EUW1_7962928289",
     "blue": "TSV Salzgitter",
     "red": "SSV Remlingen",
     "winner": "SSV Remlingen",
@@ -134,16 +147,29 @@
       ]
     },
     "bans": {
-      "TSV Salzgitter": [],
-      "SSV Remlingen": []
+      "TSV Salzgitter": [
+        "Vladimir",
+        "Akali",
+        "Braum",
+        "Zaahen",
+        "Yone"
+      ],
+      "SSV Remlingen": [
+        "Graves",
+        "Viego",
+        "Jinx",
+        "Xerath",
+        "Aatrox"
+      ]
     },
     "note": "Jungler war Druma bans kann ich nicht sehen"
   },
   {
-    "series": "Bo3",
+    "series": "SSV Remlingen vs TSV Salzgitter - Freundschaftsspiel (26.08.2026)",
     "game": 2,
     "format": "normal",
-    "date": "2026-08-25",
+    "date": "2026-08-26",
+    "matchId": "EUW1_7963057714",
     "blue": "TSV Salzgitter",
     "red": "SSV Remlingen",
     "winner": "SSV Remlingen",
@@ -204,16 +230,28 @@
       ]
     },
     "bans": {
-      "TSV Salzgitter": [],
-      "SSV Remlingen": []
+      "TSV Salzgitter": [
+        "Akali",
+        "Naafiri",
+        "Vladimir",
+        "Syndra"
+      ],
+      "SSV Remlingen": [
+        "Viego",
+        "Graves",
+        "Jinx",
+        "Aatrox",
+        "Xerath"
+      ]
     },
     "note": "Jungler war Druma bans kann ich nicht sehen"
   },
   {
-    "series": "BO3 Fearless vs MTV Lichtenberg",
+    "series": "MTV Lichtenberg vs SSV Remlingen - Best-of-3 (01.09.2026)",
     "game": 1,
     "format": "fearless",
     "date": "2026-09-01",
+    "matchId": "EUW1_7969804307",
     "blue": "MTV Lichtenberg",
     "red": "SSV Remlingen",
     "winner": "SSV Remlingen",
@@ -227,7 +265,7 @@
         {
           "role": "JUNGLE",
           "champ": "Sejuani",
-          "player": "lightníngs"
+          "player": "Lightníngs"
         },
         {
           "role": "MIDDLE",
@@ -264,7 +302,7 @@
         {
           "role": "BOTTOM",
           "champ": "Sivir",
-          "player": "Weltwunder24"
+          "player": "Leonard"
         },
         {
           "role": "UTILITY",
@@ -274,15 +312,28 @@
       ]
     },
     "bans": {
-      "MTV Lichtenberg": [],
-      "SSV Remlingen": []
+      "MTV Lichtenberg": [
+        "Malzahar",
+        "Syndra",
+        "Vladimir",
+        "Gnar",
+        "Orianna"
+      ],
+      "SSV Remlingen": [
+        "Tristana",
+        "Nocturne",
+        "Thresh",
+        "Garen",
+        "Malphite"
+      ]
     }
   },
   {
-    "series": "BO3 Fearless vs MTV Lichtenberg",
+    "series": "MTV Lichtenberg vs SSV Remlingen - Best-of-3 (01.09.2026)",
     "game": 2,
     "format": "fearless",
     "date": "2026-09-01",
+    "matchId": "EUW1_7969858362",
     "blue": "SSV Remlingen",
     "red": "MTV Lichtenberg",
     "winner": "MTV Lichtenberg",
@@ -323,7 +374,7 @@
         {
           "role": "JUNGLE",
           "champ": "Vi",
-          "player": "lightníngs"
+          "player": "Lightníngs"
         },
         {
           "role": "MIDDLE",
@@ -343,16 +394,29 @@
       ]
     },
     "bans": {
-      "SSV Remlingen": [],
-      "MTV Lichtenberg": []
+      "SSV Remlingen": [
+        "Tristana",
+        "Nocturne",
+        "Thresh",
+        "Malphite",
+        "Garen"
+      ],
+      "MTV Lichtenberg": [
+        "Malzahar",
+        "Jarvan IV",
+        "Syndra",
+        "Gnar",
+        "Lucian"
+      ]
     },
     "note": "Jhin heisst Leonard"
   },
   {
-    "series": "BO3 Fearless vs MTV Lichtenberg",
+    "series": "MTV Lichtenberg vs SSV Remlingen - Best-of-3 (01.09.2026)",
     "game": 3,
     "format": "fearless",
     "date": "2026-09-01",
+    "matchId": "EUW1_7969935947",
     "blue": "MTV Lichtenberg",
     "red": "SSV Remlingen",
     "winner": "MTV Lichtenberg",
@@ -366,7 +430,7 @@
         {
           "role": "JUNGLE",
           "champ": "Jarvan IV",
-          "player": "lightníngs"
+          "player": "Lightníngs"
         },
         {
           "role": "MIDDLE",
@@ -413,91 +477,21 @@
       ]
     },
     "bans": {
-      "MTV Lichtenberg": [],
-      "SSV Remlingen": []
-    }
-  },
-  {
-    "series": "AFC1 vs Innerstetal – BO3 Fearless (02.09.2026)",
-    "game": 1,
-    "format": "fearless",
-    "date": "2026-09-02",
-    "blue": "AFC1",
-    "red": "SV Innerstetal",
-    "winner": "SV Innerstetal",
-    "picks": {
-      "AFC1": [
-        {
-          "role": "TOP",
-          "champ": "Olaf",
-          "player": "jasxnbrg"
-        },
-        {
-          "role": "JUNGLE",
-          "champ": "Jarvan IV",
-          "player": "bandit"
-        },
-        {
-          "role": "MIDDLE",
-          "champ": "Cassiopeia",
-          "player": "Køstja"
-        },
-        {
-          "role": "BOTTOM",
-          "champ": "Syndra",
-          "player": "smiling"
-        },
-        {
-          "role": "UTILITY",
-          "champ": "Thresh",
-          "player": "Aaghn"
-        }
-      ],
-      "SV Innerstetal": [
-        {
-          "role": "TOP",
-          "champ": "Gnar",
-          "player": "Thueringerkloss"
-        },
-        {
-          "role": "JUNGLE",
-          "champ": "Lillia",
-          "player": "zPiro"
-        },
-        {
-          "role": "MIDDLE",
-          "champ": "Galio",
-          "player": "TWM Nirwana"
-        },
-        {
-          "role": "BOTTOM",
-          "champ": "Tristana",
-          "player": "Summer Vibes"
-        },
-        {
-          "role": "UTILITY",
-          "champ": "Braum",
-          "player": "God Razor"
-        }
-      ]
-    },
-    "bans": {
-      "AFC1": [
-        "Zyra",
-        "Sylas",
-        "Nasus",
-        "Malphite",
-        "Lee Sin"
-      ],
-      "SV Innerstetal": [
+      "MTV Lichtenberg": [
+        "Malzahar",
+        "Ekko",
+        "Annie",
         "Jinx",
-        "Seraphine",
-        "Xerath",
-        "Mordekaiser",
-        "Sion"
+        "Olaf"
+      ],
+      "SSV Remlingen": [
+        "Tristana",
+        "Nocturne",
+        "Thresh",
+        "Syndra",
+        "Garen"
       ]
-    },
-    "note": "Test"
+    }
   },
   {
     "series": "AFC1 vs Innerstetal – BO3 Fearless (02.09.2026)",
@@ -664,10 +658,94 @@
     }
   },
   {
-    "series": "BO1 MTV Lichtenberg",
+    "series": "AFC1 vs SV Innerstetal - Best-of-3 (02.09.2026)",
     "game": 1,
     "format": "fearless",
+    "date": "2026-09-02",
+    "matchId": "EUW1_7970910074",
+    "blue": "AFC1",
+    "red": "SV Innerstetal",
+    "winner": "SV Innerstetal",
+    "picks": {
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Olaf",
+          "player": "jasxnbrg"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "bandit"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Cassiopeia",
+          "player": "Køstja"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Syndra",
+          "player": "smiling"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Thresh",
+          "player": "Aaghn"
+        }
+      ],
+      "SV Innerstetal": [
+        {
+          "role": "TOP",
+          "champ": "Gnar",
+          "player": "Thueringerkloss"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Lillia",
+          "player": "zPiro"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Galio",
+          "player": "Verveigar"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Tristana",
+          "player": "AutoAttackAndy"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "God Razor"
+        }
+      ]
+    },
+    "bans": {
+      "AFC1": [
+        "Zyra",
+        "Sylas",
+        "Nasus",
+        "Teemo",
+        "Lee Sin"
+      ],
+      "SV Innerstetal": [
+        "Jinx",
+        "Seraphine",
+        "Xerath",
+        "Mordekaiser",
+        "Sion"
+      ]
+    },
+    "note": "Test"
+  },
+  {
+    "series": "MTV Lichtenberg vs SSV Remlingen - Freundschaftsspiel (07.09.2026)",
+    "game": 1,
+    "format": "normal",
     "date": "2026-09-07",
+    "matchId": "EUW1_7976447782",
     "blue": "MTV Lichtenberg",
     "red": "SSV Remlingen",
     "winner": "SSV Remlingen",
@@ -728,292 +806,29 @@
       ]
     },
     "bans": {
-      "MTV Lichtenberg": [],
-      "SSV Remlingen": []
+      "MTV Lichtenberg": [
+        "Mordekaiser",
+        "Lee Sin",
+        "Sivir",
+        "Zaahen",
+        "Jinx"
+      ],
+      "SSV Remlingen": [
+        "Nautilus",
+        "Leona",
+        "Bel'Veth",
+        "Aatrox",
+        "Sett"
+      ]
     },
     "note": "MTV Lichtenberg mit vielen supps und of role"
   },
   {
-    "series": "AFC2 vs SC Victoria raunschweig",
-    "game": 1,
-    "format": "normal",
-    "date": "2026-09-08",
-    "blue": "SC Victoria Braunschweig",
-    "red": "AFC2",
-    "winner": "SC Victoria Braunschweig",
-    "picks": {
-      "SC Victoria Braunschweig": [
-        {
-          "role": "TOP",
-          "champ": "Aatrox",
-          "player": "Hyro"
-        },
-        {
-          "role": "JUNGLE",
-          "champ": "Rammus",
-          "player": "ShendNoods"
-        },
-        {
-          "role": "MIDDLE",
-          "champ": "Twisted Fate",
-          "player": "Naoya was right"
-        },
-        {
-          "role": "BOTTOM",
-          "champ": "Caitlyn",
-          "player": "Salzu"
-        },
-        {
-          "role": "UTILITY",
-          "champ": "Mel",
-          "player": "LegendOctavian"
-        }
-      ],
-      "AFC2": [
-        {
-          "role": "TOP",
-          "champ": "Shen",
-          "player": "AFC AFC"
-        },
-        {
-          "role": "JUNGLE",
-          "champ": "Nocturne",
-          "player": "PlayboiiHieu"
-        },
-        {
-          "role": "MIDDLE",
-          "champ": "Diana",
-          "player": "Zeryn"
-        },
-        {
-          "role": "BOTTOM",
-          "champ": "Jhin",
-          "player": "AFC Bernard Bär"
-        },
-        {
-          "role": "UTILITY",
-          "champ": "Seraphine",
-          "player": "AFC X4nder"
-        }
-      ]
-    },
-    "bans": {
-      "SC Victoria Braunschweig": [],
-      "AFC2": []
-    }
-  },
-  {
-    "series": "AFC2 vs SC Victoria raunschweig",
-    "game": 2,
-    "format": "normal",
-    "date": "2026-09-08",
-    "blue": "SC Victoria Braunschweig",
-    "red": "AFC2",
-    "winner": "SC Victoria Braunschweig",
-    "picks": {
-      "SC Victoria Braunschweig": [
-        {
-          "role": "TOP",
-          "champ": "Renekton",
-          "player": "Hyro"
-        },
-        {
-          "role": "JUNGLE",
-          "champ": "Wukong",
-          "player": "ShendNoods"
-        },
-        {
-          "role": "MIDDLE",
-          "champ": "Orianna",
-          "player": "Naoya was right"
-        },
-        {
-          "role": "BOTTOM",
-          "champ": "Lucian",
-          "player": "Salzu"
-        },
-        {
-          "role": "UTILITY",
-          "champ": "Taric",
-          "player": "LegendOctavian"
-        }
-      ],
-      "AFC2": [
-        {
-          "role": "TOP",
-          "champ": "Ornn",
-          "player": "AFC AFC"
-        },
-        {
-          "role": "JUNGLE",
-          "champ": "Jarvan IV",
-          "player": "PlayboiiHieu"
-        },
-        {
-          "role": "MIDDLE",
-          "champ": "LeBlanc",
-          "player": "Zeryn"
-        },
-        {
-          "role": "BOTTOM",
-          "champ": "Zeri",
-          "player": "AFC Bernard Bär"
-        },
-        {
-          "role": "UTILITY",
-          "champ": "Milio",
-          "player": "AFC X4nder"
-        }
-      ]
-    },
-    "bans": {
-      "SC Victoria Braunschweig": [],
-      "AFC2": []
-    }
-  },
-  {
-    "series": "BO3 Lichtenberg vs Innerstetal",
+    "series": "AFC1 vs SSV Remlingen - Best-of-3 (08.09.2026)",
     "game": 1,
     "format": "fearless",
     "date": "2026-09-08",
-    "blue": "MTV Lichtenberg",
-    "red": "SV Innerstetal",
-    "winner": "SV Innerstetal",
-    "picks": {
-      "MTV Lichtenberg": [
-        {
-          "role": "TOP",
-          "champ": "Garen",
-          "player": "abcdasher"
-        },
-        {
-          "role": "JUNGLE",
-          "champ": "Kayn",
-          "player": "Niklas Knueppel"
-        },
-        {
-          "role": "MIDDLE",
-          "champ": "Syndra",
-          "player": "Zoom"
-        },
-        {
-          "role": "BOTTOM",
-          "champ": "Senna",
-          "player": "lightníngs"
-        },
-        {
-          "role": "UTILITY",
-          "champ": "Leona",
-          "player": "I am Mayham"
-        }
-      ],
-      "SV Innerstetal": [
-        {
-          "role": "TOP",
-          "champ": "Vladimir",
-          "player": "Thueringerkloss"
-        },
-        {
-          "role": "JUNGLE",
-          "champ": "Wukong",
-          "player": "zPiro"
-        },
-        {
-          "role": "MIDDLE",
-          "champ": "Galio",
-          "player": "TWM Nirwana"
-        },
-        {
-          "role": "BOTTOM",
-          "champ": "Jinx",
-          "player": "Summer Vibes"
-        },
-        {
-          "role": "UTILITY",
-          "champ": "Milio",
-          "player": "God Razor"
-        }
-      ]
-    },
-    "bans": {
-      "MTV Lichtenberg": [],
-      "SV Innerstetal": []
-    }
-  },
-  {
-    "series": "BO3 Lichtenberg vs Innerstetal",
-    "game": 2,
-    "format": "fearless",
-    "date": "2026-09-08",
-    "blue": "SV Innerstetal",
-    "red": "MTV Lichtenberg",
-    "winner": "SV Innerstetal",
-    "picks": {
-      "SV Innerstetal": [
-        {
-          "role": "TOP",
-          "champ": "Malphite",
-          "player": "Thueringerkloss"
-        },
-        {
-          "role": "JUNGLE",
-          "champ": "Gragas",
-          "player": "zPiro"
-        },
-        {
-          "role": "MIDDLE",
-          "champ": "Ahri",
-          "player": "Verveigar"
-        },
-        {
-          "role": "BOTTOM",
-          "champ": "Draven",
-          "player": "Summer Vibes"
-        },
-        {
-          "role": "UTILITY",
-          "champ": "Nautilus",
-          "player": "God Razor"
-        }
-      ],
-      "MTV Lichtenberg": [
-        {
-          "role": "TOP",
-          "champ": "Kayle",
-          "player": "abcdasher"
-        },
-        {
-          "role": "JUNGLE",
-          "champ": "Jarvan IV",
-          "player": "Niklas Knueppel"
-        },
-        {
-          "role": "MIDDLE",
-          "champ": "Vex",
-          "player": "Zoom"
-        },
-        {
-          "role": "BOTTOM",
-          "champ": "Xayah",
-          "player": "lightníngs"
-        },
-        {
-          "role": "UTILITY",
-          "champ": "Rakan",
-          "player": "I am Mayham"
-        }
-      ]
-    },
-    "bans": {
-      "SV Innerstetal": [],
-      "MTV Lichtenberg": []
-    }
-  },
-  {
-    "series": "BO3 SSV Remlingen",
-    "game": 1,
-    "format": "fearless",
-    "date": "2026-09-08",
+    "matchId": "EUW1_7977485856",
     "blue": "SSV Remlingen",
     "red": "AFC1",
     "winner": "SSV Remlingen",
@@ -1092,10 +907,11 @@
     "note": "Ausgeblutet seit Minute 1"
   },
   {
-    "series": "BO3 SSV Remlingen",
+    "series": "AFC1 vs SSV Remlingen - Best-of-3 (08.09.2026)",
     "game": 2,
     "format": "fearless",
     "date": "2026-09-08",
+    "matchId": "EUW1_7977548812",
     "blue": "SSV Remlingen",
     "red": "AFC1",
     "winner": "SSV Remlingen",
@@ -1173,10 +989,339 @@
     }
   },
   {
-    "series": "AFC1 vs Remlingen 2",
+    "series": "AFC2 vs SC Victoria Braunschweig - Best-of-3 (08.09.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-09-08",
+    "matchId": "EUW1_7977554773",
+    "blue": "SC Victoria Braunschweig",
+    "red": "AFC2",
+    "winner": "SC Victoria Braunschweig",
+    "picks": {
+      "SC Victoria Braunschweig": [
+        {
+          "role": "TOP",
+          "champ": "Renekton",
+          "player": "Hyro"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "ShendNoods"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Orianna",
+          "player": "Xen"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Lucian",
+          "player": "Salzu"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Taric",
+          "player": "LegendOctavian"
+        }
+      ],
+      "AFC2": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "AFC AFC"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "PlayboiiHieu"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "LeBlanc",
+          "player": "Zeryn"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Zeri",
+          "player": "AFC Bernard Bär"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Milio",
+          "player": "AFC Xander"
+        }
+      ]
+    },
+    "bans": {
+      "SC Victoria Braunschweig": [
+        "Nocturne",
+        "Caitlyn",
+        "Yuumi",
+        "Syndra",
+        "Shen"
+      ],
+      "AFC2": [
+        "Olaf",
+        "Shaco",
+        "Fizz",
+        "Nami",
+        "Darius"
+      ]
+    }
+  },
+  {
+    "series": "AFC2 vs SC Victoria Braunschweig - Best-of-3 (08.09.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-09-08",
+    "matchId": "EUW1_7977636949",
+    "blue": "SC Victoria Braunschweig",
+    "red": "AFC2",
+    "winner": "SC Victoria Braunschweig",
+    "picks": {
+      "SC Victoria Braunschweig": [
+        {
+          "role": "TOP",
+          "champ": "Aatrox",
+          "player": "Hyro"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Rammus",
+          "player": "ShendNoods"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Twisted Fate",
+          "player": "Xen"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Caitlyn",
+          "player": "Salzu"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Mel",
+          "player": "LegendOctavian"
+        }
+      ],
+      "AFC2": [
+        {
+          "role": "TOP",
+          "champ": "Shen",
+          "player": "AFC AFC"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Nocturne",
+          "player": "PlayboiiHieu"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Diana",
+          "player": "Zeryn"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jhin",
+          "player": "AFC Bernard Bär"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Seraphine",
+          "player": "AFC Xander"
+        }
+      ]
+    },
+    "bans": {
+      "SC Victoria Braunschweig": [
+        "Illaoi",
+        "Twitch",
+        "Kog'Maw",
+        "Jinx",
+        "Ashe"
+      ],
+      "AFC2": [
+        "Darius",
+        "Kayle",
+        "Viktor",
+        "Mordekaiser",
+        "Kled"
+      ]
+    }
+  },
+  {
+    "series": "MTV Lichtenberg vs SV Innerstetal - Best-of-3 (08.09.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-09-08",
+    "matchId": "EUW1_7977400860",
+    "blue": "MTV Lichtenberg",
+    "red": "SV Innerstetal",
+    "winner": "SV Innerstetal",
+    "picks": {
+      "MTV Lichtenberg": [
+        {
+          "role": "TOP",
+          "champ": "Garen",
+          "player": "abcdasher"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Kayn",
+          "player": "Niklas Knueppel"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Syndra",
+          "player": "Zoom"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Senna",
+          "player": "Lightníngs"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Leona",
+          "player": "I am Mayham"
+        }
+      ],
+      "SV Innerstetal": [
+        {
+          "role": "TOP",
+          "champ": "Vladimir",
+          "player": "Thueringerkloss"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "zPiro"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Galio",
+          "player": "Verveigar"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jinx",
+          "player": "AutoAttackAndy"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Milio",
+          "player": "God Razor"
+        }
+      ]
+    },
+    "bans": {
+      "MTV Lichtenberg": [
+        "Veigar",
+        "Thresh",
+        "Tristana",
+        "Camille",
+        "Ornn"
+      ],
+      "SV Innerstetal": [
+        "Vi",
+        "Nocturne",
+        "Darius",
+        "Mordekaiser",
+        "Viktor"
+      ]
+    }
+  },
+  {
+    "series": "MTV Lichtenberg vs SV Innerstetal - Best-of-3 (08.09.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-09-08",
+    "matchId": "EUW1_7977451823",
+    "blue": "SV Innerstetal",
+    "red": "MTV Lichtenberg",
+    "winner": "SV Innerstetal",
+    "picks": {
+      "SV Innerstetal": [
+        {
+          "role": "TOP",
+          "champ": "Malphite",
+          "player": "Thueringerkloss"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Gragas",
+          "player": "zPiro"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Ahri",
+          "player": "Verveigar"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Draven",
+          "player": "AutoAttackAndy"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Nautilus",
+          "player": "God Razor"
+        }
+      ],
+      "MTV Lichtenberg": [
+        {
+          "role": "TOP",
+          "champ": "Kayle",
+          "player": "abcdasher"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "Niklas Knueppel"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Vex",
+          "player": "Zoom"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Xayah",
+          "player": "Lightníngs"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rakan",
+          "player": "I am Mayham"
+        }
+      ]
+    },
+    "bans": {
+      "SV Innerstetal": [
+        "Nocturne",
+        "Vi",
+        "Mordekaiser",
+        "Darius",
+        "Viktor"
+      ],
+      "MTV Lichtenberg": [
+        "Veigar",
+        "Tristana",
+        "Thresh",
+        "Nasus",
+        "Ornn"
+      ]
+    }
+  },
+  {
+    "series": "AFC1 vs SSV Remlingen 2 - Best-of-3 (12.09.2026)",
     "game": 1,
     "format": "fearless",
     "date": "2026-09-12",
+    "matchId": "EUW1_7981667827",
     "blue": "SSV Remlingen 2",
     "red": "AFC1",
     "winner": "AFC1",
@@ -1237,15 +1382,28 @@
       ]
     },
     "bans": {
-      "SSV Remlingen 2": [],
-      "AFC1": []
+      "SSV Remlingen 2": [
+        "Lee Sin",
+        "Gnar",
+        "Sylas",
+        "Vladimir",
+        "Mordekaiser"
+      ],
+      "AFC1": [
+        "Veigar",
+        "Yorick",
+        "Jarvan IV",
+        "Syndra",
+        "Malphite"
+      ]
     }
   },
   {
-    "series": "AFC1 vs Remlingen 2",
+    "series": "AFC1 vs SSV Remlingen 2 - Best-of-3 (12.09.2026)",
     "game": 2,
     "format": "fearless",
     "date": "2026-09-12",
+    "matchId": "EUW1_7981724426",
     "blue": "SSV Remlingen 2",
     "red": "AFC1",
     "winner": "AFC1",
@@ -1306,15 +1464,28 @@
       ]
     },
     "bans": {
-      "SSV Remlingen 2": [],
-      "AFC1": []
+      "SSV Remlingen 2": [
+        "Sylas",
+        "Vladimir",
+        "Lee Sin",
+        "Gnar",
+        "Syndra"
+      ],
+      "AFC1": [
+        "Veigar",
+        "Yorick",
+        "Jarvan IV",
+        "Malphite",
+        "Jax"
+      ]
     }
   },
   {
-    "series": "AFC1 vs AFC2",
+    "series": "AFC1 vs AFC2 - Best-of-3 (15.09.2026)",
     "game": 1,
     "format": "fearless",
     "date": "2026-09-15",
+    "matchId": "EUW1_7984853317",
     "blue": "AFC2",
     "red": "AFC1",
     "winner": "AFC1",
@@ -1328,7 +1499,7 @@
         {
           "role": "JUNGLE",
           "champ": "Amumu",
-          "player": "AFC X4nder"
+          "player": "AFC Xander"
         },
         {
           "role": "MIDDLE",
@@ -1343,7 +1514,7 @@
         {
           "role": "UTILITY",
           "champ": "Leona",
-          "player": "Töner Deller"
+          "player": "Captain Hook"
         }
       ],
       "AFC1": [
@@ -1392,10 +1563,11 @@
     }
   },
   {
-    "series": "AFC1 vs AFC2",
+    "series": "AFC1 vs AFC2 - Best-of-3 (15.09.2026)",
     "game": 2,
     "format": "fearless",
     "date": "2026-09-15",
+    "matchId": "EUW1_7984941827",
     "blue": "AFC1",
     "red": "AFC2",
     "winner": "AFC1",
@@ -1436,7 +1608,7 @@
         {
           "role": "JUNGLE",
           "champ": "Zac",
-          "player": "AFC X4nder"
+          "player": "AFC Xander"
         },
         {
           "role": "MIDDLE",
@@ -1451,7 +1623,7 @@
         {
           "role": "UTILITY",
           "champ": "Lulu",
-          "player": "Töner Deller"
+          "player": "Captain Hook"
         }
       ]
     },
@@ -1469,6 +1641,1480 @@
         "Seraphine",
         "Orianna",
         "Mordekaiser"
+      ]
+    }
+  },
+  {
+    "series": "SC Victoria Braunschweig vs SSV Remlingen - Best-of-3 (15.09.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-09-15",
+    "matchId": "EUW1_7984776243",
+    "blue": "SSV Remlingen",
+    "red": "SC Victoria Braunschweig",
+    "winner": "SSV Remlingen",
+    "picks": {
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Pantheon",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Ahri",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Caitlyn",
+          "player": "Weltwunder24"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "NebelFlasche"
+        }
+      ],
+      "SC Victoria Braunschweig": [
+        {
+          "role": "TOP",
+          "champ": "Gwen",
+          "player": "Salzu"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "ShendNoods"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Viktor",
+          "player": "Xen"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Yunara",
+          "player": "LegendOctavian"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rakan",
+          "player": "Kneu"
+        }
+      ]
+    },
+    "bans": {
+      "SSV Remlingen": [
+        "Shen",
+        "Syndra",
+        "Swain",
+        "Kayle",
+        "Orianna"
+      ],
+      "SC Victoria Braunschweig": [
+        "Vladimir",
+        "Milio",
+        "Jinx",
+        "Mordekaiser",
+        "Naafiri"
+      ]
+    }
+  },
+  {
+    "series": "SC Victoria Braunschweig vs SSV Remlingen - Best-of-3 (15.09.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-09-15",
+    "matchId": "EUW1_7984834450",
+    "blue": "SC Victoria Braunschweig",
+    "red": "SSV Remlingen",
+    "winner": "SSV Remlingen",
+    "picks": {
+      "SC Victoria Braunschweig": [
+        {
+          "role": "TOP",
+          "champ": "Jax",
+          "player": "ShendNoods"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Talon",
+          "player": "Salzu"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Orianna",
+          "player": "Xen"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Ashe",
+          "player": "LegendOctavian"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Alistar",
+          "player": "Kneu"
+        }
+      ],
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Zaahen",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Annie",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Sivir",
+          "player": "Weltwunder24"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lulu",
+          "player": "NebelFlasche"
+        }
+      ]
+    },
+    "bans": {
+      "SC Victoria Braunschweig": [
+        "Vladimir",
+        "Milio",
+        "Jinx",
+        "Nautilus",
+        "Mordekaiser"
+      ],
+      "SSV Remlingen": [
+        "Shen",
+        "Syndra",
+        "Swain",
+        "Seraphine",
+        "Kayle"
+      ]
+    }
+  },
+  {
+    "series": "AFC2 vs TSV Salzgitter - Best-of-3 (16.09.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-09-16",
+    "matchId": "EUW1_7985828868",
+    "blue": "TSV Salzgitter",
+    "red": "AFC2",
+    "winner": "TSV Salzgitter",
+    "picks": {
+      "TSV Salzgitter": [
+        {
+          "role": "TOP",
+          "champ": "Darius",
+          "player": "snakegerman"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Kayn",
+          "player": "mazl"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Malzahar",
+          "player": "MurphyyLOL"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Ashe",
+          "player": "xHydralisk"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Leona",
+          "player": "Triplos"
+        }
+      ],
+      "AFC2": [
+        {
+          "role": "TOP",
+          "champ": "Shen",
+          "player": "AFC AFC"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Nocturne",
+          "player": "PlayboiiHieu"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Galio",
+          "player": "DeLouis"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Caitlyn",
+          "player": "AFC Bernard Bär"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Thresh",
+          "player": "Captain Hook"
+        }
+      ]
+    },
+    "bans": {
+      "TSV Salzgitter": [
+        "Twitch",
+        "Sett",
+        "Shyvana",
+        "Rammus",
+        "Syndra"
+      ],
+      "AFC2": [
+        "Aatrox",
+        "Xerath",
+        "Jinx",
+        "Mordekaiser",
+        "Lux"
+      ]
+    }
+  },
+  {
+    "series": "AFC2 vs TSV Salzgitter - Best-of-3 (16.09.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-09-16",
+    "matchId": "EUW1_7985903008",
+    "blue": "TSV Salzgitter",
+    "red": "AFC2",
+    "winner": "AFC2",
+    "picks": {
+      "TSV Salzgitter": [
+        {
+          "role": "TOP",
+          "champ": "Renekton",
+          "player": "snakegerman"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Nunu & Willump",
+          "player": "mazl"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Annie",
+          "player": "MurphyyLOL"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Kai'Sa",
+          "player": "xHydralisk"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Nautilus",
+          "player": "Triplos"
+        }
+      ],
+      "AFC2": [
+        {
+          "role": "TOP",
+          "champ": "Malphite",
+          "player": "AFC AFC"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "PlayboiiHieu"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Ahri",
+          "player": "DeLouis"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Yunara",
+          "player": "AFC Bernard Bär"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lulu",
+          "player": "Captain Hook"
+        }
+      ]
+    },
+    "bans": {
+      "TSV Salzgitter": [
+        "Twitch",
+        "Shyvana",
+        "Blitzcrank",
+        "Syndra",
+        "Mordekaiser"
+      ],
+      "AFC2": [
+        "Aatrox",
+        "Xerath",
+        "Jinx",
+        "Veigar",
+        "Mel"
+      ]
+    }
+  },
+  {
+    "series": "AFC2 vs TSV Salzgitter - Best-of-3 (16.09.2026)",
+    "game": 3,
+    "format": "fearless",
+    "date": "2026-09-16",
+    "matchId": "EUW1_7985996067",
+    "blue": "TSV Salzgitter",
+    "red": "AFC2",
+    "winner": "TSV Salzgitter",
+    "picks": {
+      "TSV Salzgitter": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "snakegerman"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Graves",
+          "player": "Clown Angel"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Yasuo",
+          "player": "mazl"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Ziggs",
+          "player": "MurphyyLOL"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rakan",
+          "player": "Triplos"
+        }
+      ],
+      "AFC2": [
+        {
+          "role": "TOP",
+          "champ": "Mordekaiser",
+          "player": "AFC AFC"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Xin Zhao",
+          "player": "PlayboiiHieu"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Yone",
+          "player": "DeLouis"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Xayah",
+          "player": "AFC Bernard Bär"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "Captain Hook"
+        }
+      ]
+    },
+    "bans": {
+      "TSV Salzgitter": [
+        "Twitch",
+        "Syndra",
+        "Shyvana",
+        "Rammus",
+        "Amumu"
+      ],
+      "AFC2": [
+        "Aatrox",
+        "Xerath",
+        "Jinx",
+        "Diana"
+      ]
+    }
+  },
+  {
+    "series": "AFC2 vs SSV Remlingen 2 - Best-of-3 (21.09.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-09-21",
+    "matchId": "EUW1_7990926408",
+    "blue": "SSV Remlingen 2",
+    "red": "AFC2",
+    "winner": "SSV Remlingen 2",
+    "picks": {
+      "SSV Remlingen 2": [
+        {
+          "role": "TOP",
+          "champ": "Garen",
+          "player": "FGG Lewer"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "Meister FiTTi"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Vex",
+          "player": "Eleonee"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Caitlyn",
+          "player": "KOOOOAHLLLL"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Karma",
+          "player": "ziggler10"
+        }
+      ],
+      "AFC2": [
+        {
+          "role": "TOP",
+          "champ": "Gnar",
+          "player": "AFC AFC"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Zac",
+          "player": "AFC Xander"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Ahri",
+          "player": "Zeryn"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Yunara",
+          "player": "AFC Bernard Bär"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lulu",
+          "player": "DeLouis"
+        }
+      ]
+    },
+    "bans": {
+      "SSV Remlingen 2": [
+        "Zeri",
+        "Jinx",
+        "Shen",
+        "Illaoi",
+        "K'Sante"
+      ],
+      "AFC2": [
+        "Veigar",
+        "Kai'Sa",
+        "Syndra",
+        "Tahm Kench",
+        "Malphite"
+      ]
+    }
+  },
+  {
+    "series": "AFC2 vs SSV Remlingen 2 - Best-of-3 (21.09.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-09-21",
+    "matchId": "EUW1_7991022495",
+    "blue": "AFC2",
+    "red": "SSV Remlingen 2",
+    "winner": "SSV Remlingen 2",
+    "picks": {
+      "AFC2": [
+        {
+          "role": "TOP",
+          "champ": "Sett",
+          "player": "AFC AFC"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Rammus",
+          "player": "AFC Xander"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Gwen",
+          "player": "Zeryn"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Xayah",
+          "player": "AFC Bernard Bär"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rakan",
+          "player": "DeLouis"
+        }
+      ],
+      "SSV Remlingen 2": [
+        {
+          "role": "TOP",
+          "champ": "Tahm Kench",
+          "player": "FGG Lewer"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Amumu",
+          "player": "Meister FiTTi"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Ziggs",
+          "player": "Eleonee"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Draven",
+          "player": "KOOOOAHLLLL"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Nautilus",
+          "player": "ziggler10"
+        }
+      ]
+    },
+    "bans": {
+      "AFC2": [
+        "Veigar",
+        "Syndra",
+        "Orianna",
+        "Malphite",
+        "Viktor"
+      ],
+      "SSV Remlingen 2": [
+        "Shen",
+        "Zeri",
+        "Jinx",
+        "Galio",
+        "Volibear"
+      ]
+    }
+  },
+  {
+    "series": "MTV Hattorf vs SSV Remlingen - Best-of-3 (21.09.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-09-21",
+    "matchId": "EUW1_7991002375",
+    "blue": "MTV Hattorf",
+    "red": "SSV Remlingen",
+    "winner": "MTV Hattorf",
+    "picks": {
+      "MTV Hattorf": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "GeneralKnabe"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "Daddy JosCo"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Syndra",
+          "player": "JackSh3ppard"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Yunara",
+          "player": "Xîmon"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "BigMeeks"
+        }
+      ],
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Urgot",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Pantheon",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Viktor",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Sivir",
+          "player": "Weltwunder24"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lulu",
+          "player": "NebelFlasche"
+        }
+      ]
+    },
+    "bans": {
+      "MTV Hattorf": [
+        "Zaahen",
+        "Ahri",
+        "Vladimir",
+        "Mordekaiser",
+        "Sylas"
+      ],
+      "SSV Remlingen": [
+        "Caitlyn",
+        "Malzahar",
+        "Xayah",
+        "Xerath",
+        "Nami"
+      ]
+    }
+  },
+  {
+    "series": "MTV Hattorf vs SSV Remlingen - Best-of-3 (21.09.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-09-21",
+    "matchId": "EUW1_7991092326",
+    "blue": "SSV Remlingen",
+    "red": "MTV Hattorf",
+    "winner": "SSV Remlingen",
+    "picks": {
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Kennen",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Lee Sin",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Annie",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Caitlyn",
+          "player": "Weltwunder24"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Milio",
+          "player": "NebelFlasche"
+        }
+      ],
+      "MTV Hattorf": [
+        {
+          "role": "TOP",
+          "champ": "Kled",
+          "player": "GeneralKnabe"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Viego",
+          "player": "Daddy JosCo"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Anivia",
+          "player": "JackSh3ppard"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Ashe",
+          "player": "Xîmon"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Blitzcrank",
+          "player": "BigMeeks"
+        }
+      ]
+    },
+    "bans": {
+      "SSV Remlingen": [
+        "Malzahar",
+        "Xayah",
+        "Tristana",
+        "Malphite",
+        "Xerath"
+      ],
+      "MTV Hattorf": [
+        "Zaahen",
+        "Sylas",
+        "Vladimir",
+        "Mordekaiser",
+        "Ahri"
+      ]
+    }
+  },
+  {
+    "series": "MTV Hattorf vs SSV Remlingen - Best-of-3 (21.09.2026)",
+    "game": 3,
+    "format": "fearless",
+    "date": "2026-09-21",
+    "matchId": "EUW1_7991155164",
+    "blue": "MTV Hattorf",
+    "red": "SSV Remlingen",
+    "winner": "MTV Hattorf",
+    "picks": {
+      "MTV Hattorf": [
+        {
+          "role": "TOP",
+          "champ": "Shen",
+          "player": "GeneralKnabe"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Elise",
+          "player": "Daddy JosCo"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Vex",
+          "player": "JackSh3ppard"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jinx",
+          "player": "Xîmon"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Seraphine",
+          "player": "BigMeeks"
+        }
+      ],
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Akali",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Ambessa",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Sylas",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Miss Fortune",
+          "player": "Weltwunder24"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Leona",
+          "player": "NebelFlasche"
+        }
+      ]
+    },
+    "bans": {
+      "MTV Hattorf": [
+        "Zaahen",
+        "Ahri",
+        "Vladimir",
+        "Mordekaiser",
+        "Wukong"
+      ],
+      "SSV Remlingen": [
+        "Malzahar",
+        "Xayah",
+        "Tristana",
+        "Zyra",
+        "Nautilus"
+      ]
+    }
+  },
+  {
+    "series": "AFC1 vs SC Victoria Braunschweig - Best-of-3 (22.09.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-09-22",
+    "matchId": "EUW1_7991900212",
+    "blue": "SC Victoria Braunschweig",
+    "red": "AFC1",
+    "winner": "AFC1",
+    "picks": {
+      "SC Victoria Braunschweig": [
+        {
+          "role": "TOP",
+          "champ": "Jax",
+          "player": "Hyro"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "ShendNoods"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Syndra",
+          "player": "Xen"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Kalista",
+          "player": "Salzu"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Nautilus",
+          "player": "Kneu"
+        }
+      ],
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Garen",
+          "player": "bandit"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Cho'Gath",
+          "player": "HartzFor"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Hwei",
+          "player": "Køstja"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jinx",
+          "player": "smiling"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "Aaghn"
+        }
+      ]
+    },
+    "bans": {
+      "SC Victoria Braunschweig": [
+        "Thresh",
+        "Seraphine",
+        "Vi",
+        "Malphite",
+        "Dr. Mundo"
+      ],
+      "AFC1": [
+        "Caitlyn",
+        "Jarvan IV",
+        "Swain",
+        "Sylas",
+        "Galio"
+      ]
+    }
+  },
+  {
+    "series": "AFC1 vs SC Victoria Braunschweig - Best-of-3 (22.09.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-09-22",
+    "matchId": "EUW1_7991961892",
+    "blue": "AFC1",
+    "red": "SC Victoria Braunschweig",
+    "winner": "SC Victoria Braunschweig",
+    "picks": {
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Sett",
+          "player": "bandit"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Sejuani",
+          "player": "HartzFor"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Lissandra",
+          "player": "Køstja"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Caitlyn",
+          "player": "smiling"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Nami",
+          "player": "Aaghn"
+        }
+      ],
+      "SC Victoria Braunschweig": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "Xen"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "ShendNoods"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Locke",
+          "player": "Hyro"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Smolder",
+          "player": "Salzu"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Pantheon",
+          "player": "Kneu"
+        }
+      ]
+    },
+    "bans": {
+      "AFC1": [
+        "Swain",
+        "Galio",
+        "Ryze",
+        "Camille",
+        "Malphite"
+      ],
+      "SC Victoria Braunschweig": [
+        "Dr. Mundo",
+        "Thresh",
+        "Seraphine",
+        "Mordekaiser",
+        "Sylas"
+      ]
+    }
+  },
+  {
+    "series": "AFC1 vs SC Victoria Braunschweig - Best-of-3 (22.09.2026)",
+    "game": 3,
+    "format": "fearless",
+    "date": "2026-09-22",
+    "matchId": "EUW1_7992037350",
+    "blue": "SC Victoria Braunschweig",
+    "red": "AFC1",
+    "winner": "SC Victoria Braunschweig",
+    "picks": {
+      "SC Victoria Braunschweig": [
+        {
+          "role": "TOP",
+          "champ": "Illaoi",
+          "player": "Xen"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Shen",
+          "player": "ShendNoods"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Anivia",
+          "player": "Hyro"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Zeri",
+          "player": "Salzu"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lulu",
+          "player": "Kneu"
+        }
+      ],
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Kayle",
+          "player": "bandit"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Lee Sin",
+          "player": "HartzFor"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Cassiopeia",
+          "player": "Køstja"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Yunara",
+          "player": "smiling"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Blitzcrank",
+          "player": "Aaghn"
+        }
+      ]
+    },
+    "bans": {
+      "SC Victoria Braunschweig": [
+        "Thresh",
+        "Dr. Mundo",
+        "Vi",
+        "Mordekaiser",
+        "Malphite"
+      ],
+      "AFC1": [
+        "Swain",
+        "Galio",
+        "Seraphine",
+        "Ryze",
+        "Orianna"
+      ]
+    }
+  },
+  {
+    "series": "Hub Hannover I vs SSV Remlingen - Best-of-3 (22.09.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-09-22",
+    "matchId": "EUW1_7991903364",
+    "blue": "Hub Hannover I",
+    "red": "SSV Remlingen",
+    "winner": "SSV Remlingen",
+    "picks": {
+      "Hub Hannover I": [
+        {
+          "role": "TOP",
+          "champ": "Darius",
+          "player": "GLaDOS"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "ZEN Preacher"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Galio",
+          "player": "Arisé"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Ziggs",
+          "player": "TooLateForMercy"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Janna",
+          "player": "midnight rain"
+        }
+      ],
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Kennen",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Ambessa",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Viktor",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Caitlyn",
+          "player": "Weltwunder24"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "NebelFlasche"
+        }
+      ]
+    },
+    "bans": {
+      "Hub Hannover I": [
+        "Vladimir",
+        "Milio",
+        "Jinx",
+        "Ahri",
+        "Sylas"
+      ],
+      "SSV Remlingen": [
+        "Syndra",
+        "Zyra",
+        "Ashe",
+        "Sett",
+        "Malzahar"
+      ]
+    }
+  },
+  {
+    "series": "Hub Hannover I vs SSV Remlingen - Best-of-3 (22.09.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-09-22",
+    "matchId": "EUW1_7991993969",
+    "blue": "SSV Remlingen",
+    "red": "Hub Hannover I",
+    "winner": "Hub Hannover I",
+    "picks": {
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Zaahen",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Pantheon",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Annie",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Sivir",
+          "player": "Weltwunder24"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Seraphine",
+          "player": "NebelFlasche"
+        }
+      ],
+      "Hub Hannover I": [
+        {
+          "role": "TOP",
+          "champ": "Jax",
+          "player": "GLaDOS"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "ZEN Preacher"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Ahri",
+          "player": "Arisé"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jinx",
+          "player": "TooLateForMercy"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lulu",
+          "player": "midnight rain"
+        }
+      ]
+    },
+    "bans": {
+      "SSV Remlingen": [
+        "Syndra",
+        "Zyra",
+        "Nami",
+        "Karma",
+        "Sett"
+      ],
+      "Hub Hannover I": [
+        "Vladimir",
+        "Milio",
+        "Sylas",
+        "Thresh",
+        "Nautilus"
+      ]
+    }
+  },
+  {
+    "series": "Hub Hannover I vs SSV Remlingen - Best-of-3 (22.09.2026)",
+    "game": 3,
+    "format": "fearless",
+    "date": "2026-09-22",
+    "matchId": "EUW1_7992057201",
+    "blue": "Hub Hannover I",
+    "red": "SSV Remlingen",
+    "winner": "SSV Remlingen",
+    "picks": {
+      "Hub Hannover I": [
+        {
+          "role": "TOP",
+          "champ": "Jayce",
+          "player": "GLaDOS"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Vi",
+          "player": "ZEN Preacher"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Syndra",
+          "player": "Arisé"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Ashe",
+          "player": "TooLateForMercy"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rakan",
+          "player": "midnight rain"
+        }
+      ],
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Lee Sin",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Fizz",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Lucian",
+          "player": "Weltwunder24"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Leona",
+          "player": "NebelFlasche"
+        }
+      ]
+    },
+    "bans": {
+      "Hub Hannover I": [
+        "Vladimir",
+        "Milio",
+        "Xayah",
+        "Mordekaiser",
+        "Nautilus"
+      ],
+      "SSV Remlingen": [
+        "Nami",
+        "Zyra",
+        "Sett",
+        "Karma"
+      ]
+    }
+  },
+  {
+    "series": "AFC2 vs MTV Lichtenberg - Best-of-3 (24.09.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-09-24",
+    "matchId": "EUW1_7993776372",
+    "blue": "MTV Lichtenberg",
+    "red": "AFC2",
+    "winner": "MTV Lichtenberg",
+    "picks": {
+      "MTV Lichtenberg": [
+        {
+          "role": "TOP",
+          "champ": "Cho'Gath",
+          "player": "abcdasher"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Graves",
+          "player": "UIMAnsumke"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Vex",
+          "player": "Zoom"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Tristana",
+          "player": "Lightníngs"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Nautilus",
+          "player": "I am Mayham"
+        }
+      ],
+      "AFC2": [
+        {
+          "role": "TOP",
+          "champ": "K'Sante",
+          "player": "AFC AFC"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Shyvana",
+          "player": "Phung"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Orianna",
+          "player": "Zeryn"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Sivir",
+          "player": "AFC Bernard Bär"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Leona",
+          "player": "DeLouis"
+        }
+      ]
+    },
+    "bans": {
+      "MTV Lichtenberg": [
+        "Lulu",
+        "Shen",
+        "Jarvan IV",
+        "Nocturne",
+        "Wukong"
+      ],
+      "AFC2": [
+        "Mordekaiser",
+        "Kayn",
+        "Viktor",
+        "Darius",
+        "Malphite"
+      ]
+    }
+  },
+  {
+    "series": "AFC2 vs MTV Lichtenberg - Best-of-3 (24.09.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-09-24",
+    "matchId": "EUW1_7993846199",
+    "blue": "MTV Lichtenberg",
+    "red": "AFC2",
+    "winner": "MTV Lichtenberg",
+    "picks": {
+      "MTV Lichtenberg": [
+        {
+          "role": "TOP",
+          "champ": "Kennen",
+          "player": "abcdasher"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Aatrox",
+          "player": "UIMAnsumke"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Ahri",
+          "player": "Dazorax361"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Zeri",
+          "player": "hnes"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rell",
+          "player": "I am Mayham"
+        }
+      ],
+      "AFC2": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "AFC AFC"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Sejuani",
+          "player": "Phung"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Fizz",
+          "player": "DeLouis"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Twitch",
+          "player": "AFC Bernard Bär"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Yuumi",
+          "player": "AFC Xander"
+        }
+      ]
+    },
+    "bans": {
+      "MTV Lichtenberg": [
+        "Shen",
+        "Lulu",
+        "Jarvan IV",
+        "Dr. Mundo",
+        "Nasus"
+      ],
+      "AFC2": [
+        "Mordekaiser",
+        "Kayn",
+        "Syndra",
+        "Darius",
+        "Malphite"
       ]
     }
   }

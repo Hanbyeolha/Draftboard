@@ -175,6 +175,9 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--blue); outl
 .chip.main { background: var(--ink); border-color: var(--ink); color: var(--ground); }
 .chip.main b { color: var(--ground); }
 .chip.warn { background: var(--warn-soft); border-color: var(--warn); color: var(--warn); }
+.chip.mix { display: inline-flex; align-items: center; gap: 0.25rem; }
+.chip.mix img { width: 15px; height: 15px; border-radius: 2px; display: block; }
+.chip.mix .sep { color: var(--line); }
 /* Der Rang ist beim Scouten die erste Zahl, auf die man schaut - deshalb
    zweizeilig mit grossem Emblem statt als kleingedruckte Zeile. */
 .rank { padding: 0.28rem 0.6rem 0.28rem 0.3rem; border-radius: var(--radius);
@@ -360,6 +363,12 @@ button.del.edit { color: var(--blue); }
 .unsaved .what { font-weight: 600; color: var(--warn); }
 .unsaved .step { flex-basis: 100%; font-size: 0.78rem; color: var(--ink-muted); }
 .unsaved .step code { font-family: "IBM Plex Mono", monospace; }
+.unsaved.info { border-color: var(--line-strong); background: var(--raise); }
+.unsaved.info .what { color: var(--ink); }
+
+.liga-raster { display: grid; gap: 1rem; grid-template-columns: 1fr 1fr; }
+@media (max-width: 900px) { .liga-raster { grid-template-columns: 1fr; } }
+#liga-meta td:first-child, #liga-rekorde td:first-child { white-space: nowrap; }
 
 /* ------------------------------------------------------------ Draftplan */
 .plan-block { display: flex; flex-direction: column; gap: 0.3rem; }
@@ -432,7 +441,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   body { background: #fff; font-size: 8.6pt; }
   .wrap { max-width: none; padding: 0; gap: 0.8rem; }
   .controls, .masthead-side, details.entry, .more, .actions,
-  #unsaved, #queue-hint, .opgg, #tools { display: none !important; }
+  #unsaved, #liga-zugang, #queue-hint, .opgg, #tools { display: none !important; }
   .panel, .game-card, .series, .game-note, .plan-champ, tr { break-inside: avoid; }
   .cards.columns { grid-template-columns: repeat(3, 1fr) !important; }
   a { color: inherit; text-decoration: none; }
@@ -458,6 +467,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       <div class="tabs" role="tablist">
         <button class="tab" id="tab-players" role="tab" aria-selected="true">Spieler</button>
         <button class="tab" id="tab-plan" role="tab" aria-selected="false">Draftplan</button>
+        <button class="tab" id="tab-liga" role="tab" aria-selected="false">Liga</button>
         <button class="tab" id="tab-games" role="tab" aria-selected="false">Turnierspiele <span class="sub" id="game-count"></span></button>
       </div>
       <span class="spacer"></span>
@@ -477,6 +487,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   </div>
 
   <div class="unsaved" id="unsaved" hidden></div>
+  <div class="unsaved" id="liga-zugang" hidden></div>
 
   <section id="panel-players">
     <p class="hint" id="queue-hint"></p>
@@ -502,6 +513,39 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       </form>
       <textarea id="plan-out" rows="16" readonly hidden></textarea>
     </details>
+  </section>
+
+  <section id="panel-liga" hidden>
+    <p class="hint" id="liga-stand"></p>
+    <div class="chips" id="liga-zahlen"></div>
+    <div class="panel" id="liga-rollen-panel" hidden>
+      <h2>Meta nach Rollen <span class="sub">Was auf welcher Position läuft</span></h2>
+      <p class="hint" id="liga-rollen-hinweis"></p>
+      <div class="liga-raster" id="liga-rollen"></div>
+    </div>
+    <div class="liga-raster">
+      <div class="panel">
+        <h2>Blau gegen Rot</h2>
+        <div class="scroll"><table id="liga-seiten"></table></div>
+      </div>
+      <div class="panel">
+        <h2>Mannschaften</h2>
+        <div class="scroll"><table id="liga-teams"></table></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:1rem">
+      <h2>Meta <span class="sub">Was gepickt und gebannt wird</span></h2>
+      <p class="hint">Präsenz = in wie vielen Partien der Champion gepickt oder
+        gebannt war. Hohe Präsenz bei wenigen Picks heißt: Der Champion wird
+        vor allem weggebannt.</p>
+      <input type="text" id="liga-filter" placeholder="Champion filtern ..."
+             style="max-width:16rem;margin-bottom:0.5rem">
+      <div class="scroll"><table id="liga-meta"></table></div>
+    </div>
+    <div class="panel" style="margin-top:1rem">
+      <h2>Rekorde</h2>
+      <div class="scroll"><table id="liga-rekorde"></table></div>
+    </div>
   </section>
 
   <section id="panel-games" hidden>
@@ -577,6 +621,9 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
               title="Baut die Datei zum Verschicken und aktualisiert index.html für GitHub Pages"
               >Dateien erzeugen (Mitspieler + Netz)</button>
       <button class="more" type="button" id="reveal">Ordner öffnen</button>
+      <button class="more" type="button" id="do-liga"
+              title="Turnierzahlen, Spieler und alle Partien von leagueofregions.com holen - dauert ein paar Minuten"
+              >Liga-Daten holen</button>
       <button class="more" type="button" id="do-scrape"
               title="Holt nur das oben gewählte Team">op.gg neu laden</button>
       <button class="more" type="button" id="do-scrape-all"
@@ -661,9 +708,9 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   // dort keine Season-Aufteilung; TURNIER kommt aus den eingetragenen Spielen.
   const QUEUES = [
     ["RANKED", "Ranked"], ["SOLO", "Solo/Duo"], ["FLEX", "Flex"],
-    ["TOURNAMENT", "Turnier"], ["ALL", "Alle"],
+    ["LIGA", "Turnier"], ["ALL", "Alle"],
   ];
-  const SEASONLESS = new Set(["TOURNAMENT"]);
+  const SEASONLESS = new Set(["LIGA"]);
   const STORE_KEY = "league-picks-games-v1";
   const ROW_LIMIT = 12;
   const ROW_LIMIT_COMPACT = 10;
@@ -891,10 +938,11 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   // Welche gescrapten Queue-Bloecke die aktuelle Auswahl umfasst. "Alle" nimmt
   // RANKED (= Solo + Flex) - Solo/Flex einzeln waeren doppelt. Normal-Spiele
   // zeigt das Board bewusst nicht mehr; sie verwaessern die Championpools.
+  // LIGA bleibt aus "Alle" heraus: dieselben Partien stehen oft auch in
+  // games.json und wuerden sonst doppelt zaehlen.
   function queuesFor(player) {
     const has = (name) => (player.queues[name] ? [player.queues[name]] : []);
     if (queue === "ALL") return has("RANKED");
-    if (queue === "TOURNAMENT") return [];
     return has(queue);
   }
 
@@ -932,12 +980,9 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       const parts = key.split("|");
       if (parts[0] !== player.label) continue;
       const cur = merged.get(parts[1]) || blank(parts[1]);
+      // Nur fuer die Spalte T. Die Zahlen der Turnier-Queue kommen aus der
+      // Liga; beides zusammenzurechnen wuerde dieselben Spiele doppelt zaehlen.
       cur.turnier = val;
-      if (queue === "TOURNAMENT" || queue === "ALL") {
-        cur.play += val.g;                 // Picks
-        cur.decided += val.d;              // davon mit Ergebnis
-        cur.win += val.w;
-      }
       merged.set(parts[1], cur);
     }
 
@@ -1004,6 +1049,32 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     player.role === "UNKNOWN" ? (player.bench ? "Bank" : "—")
       : roleLabel(player.role) + (player.bench ? " · Bank" : "");
 
+  // Wer in der Liga die Rolle gewechselt hat: welche Champions auf welcher
+  // Position. Kommt aus den einzelnen Partien - die Statistikseite nennt nur
+  // Rollenanteile ohne Champions.
+  function rollenMischung(player, compact) {
+    const rollen = player.ligaRollen;
+    if (!rollen || rollen.length < 2) return null;
+    const name = (r) => (ROLES.find((x) => x[0] === r) || [null, r])[1];
+    return el("div", {class: "chips"},
+      el("span", {class: "label", title: "Aus den Turnierpartien - nur Spiele "
+                  + "mit Riot-Daten"}, "Turnierrollen"),
+      rollen.map((r) => el("span", {class: "chip mix",
+          title: name(r.role) + ": " + r.partien + " Partien - "
+                 + r.champs.map((c) => c.champ + " " + c.partien + "x ("
+                     + c.siege + " Siege)").join(", ")},
+        el("b", {}, name(r.role)), " " + r.partien,
+        el("span", {class: "sep"}, "|"),
+        r.champs.map((c) => {
+          const src = iconUrl(c.champ);
+          const bild = src ? el("img", {src, alt: "", loading: "lazy",
+                                        title: c.champ + " " + c.partien + "x"}) : null;
+          return compact ? bild
+            : el("span", {class: "champ-cell"}, bild,
+                 el("span", {}, c.champ + (c.partien > 1 ? " " + c.partien + "x" : "")));
+        }))));
+  }
+
   function playerCard(player, turnier) {
     const rows = championRows(player, turnier);
     const plan = planOf(player);
@@ -1013,14 +1084,6 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
         played += c.win + c.lose;
         decided += c.win + c.lose;
         won += c.win;
-      }
-    }
-    if (queue === "TOURNAMENT" || queue === "ALL") {
-      for (const [key, val] of turnier) {
-        if (key.split("|")[0] !== player.label) continue;
-        played += val.g;
-        decided += val.d;      // Turnierspiele ohne Ergebnis zaehlen nicht in die Winrate
-        won += val.w;
       }
     }
 
@@ -1062,7 +1125,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       ? el("tbody", {}, visible.map((r) => el("tr", {title: rowTitle(r)}, cells(r))))
       : el("tbody", {}, el("tr", {}, el("td", {colspan: columns.length, class: "empty"},
           filter ? "Kein Champion passt zum Filter."
-          : queue === "TOURNAMENT" ? "Für diesen Spieler ist noch kein Turnierpick eingetragen."
+          : queue === "LIGA" ? "Für diesen Spieler hat die Liga keine Partien."
           : SEASONLESS.has(queue) ? "Keine Spiele in dieser Queue."
           : "Keine Spiele in dieser Queue und Season.")));
 
@@ -1082,6 +1145,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
            played + " Spiele · " + pct(won, decided) + (compact ? "" : " · " + queueLabel())),
         compact || !player.lastUpdated ? null
           : el("span", {class: "chip"}, "op.gg: " + player.lastUpdated)),
+      rollenMischung(player, compact),
       compact || !chips.roles.length ? null : el("div", {class: "chips"}, chips.roles),
       compact || !chips.facts.length ? null : el("div", {class: "chips"},
         chips.facts.map(([k, v]) => el("span", {class: "chip"}, el("b", {}, k), " " + v))),
@@ -1201,6 +1265,57 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
         + "Gegner zu kennen; Spielt gerne = was er ohnehin am liebsten spielt.";
     renderUnsaved();
     ensurePlanRows();
+  }
+
+  // Kommen wir ueberhaupt noch an neue Partien? Der Zugang zur Liga laeuft
+  // regelmaessig ab, und dann holt liga.py klaglos den alten Stand - ohne
+  // Anzeige faellt das erst auf, wenn Spiele fehlen.
+  async function pruefeLigaZugang() {
+    const host = document.getElementById("liga-zugang");
+    if (!SERVER || !(SERVER_INFO.features || []).includes("ligastatus")) return;
+    let stand;
+    try {
+      stand = await (await fetch("api/liga/status", {cache: "no-store"})).json();
+    } catch (e) { return; }
+
+    const fehlend = (stand.ligaPartien || 0) - (stand.gesichert || 0);
+    let kopf = null, schritt = null, art = "info";
+    if (!stand.erreichbar) {
+      art = "";
+      kopf = "leagueofregions.com ist gerade nicht erreichbar.";
+      schritt = "Die angezeigten Zahlen sind der gesicherte Stand"
+              + (stand.geholtAm ? " vom " + deDate(stand.geholtAm) : "") + ".";
+    } else if (!stand.token) {
+      art = "";
+      kopf = "Keine Anmeldung hinterlegt — Picks, Bans und Aufstellungen "
+           + "können nicht geholt werden.";
+      schritt = "Auf leagueofregions.com anmelden, F12 → Netzwerk → einen "
+              + "Aufruf an /api/ anklicken, bei den Anfrage-Kopfzeilen die "
+              + "Zeile Cookie kopieren und in liga-token.txt speichern. "
+              + "Nur in diese Datei — nie in einen Chat oder Screenshot.";
+    } else if (stand.tokenGueltig === false) {
+      art = "";
+      kopf = "Der Zugang zur Liga ist abgelaufen — neue Partien kommen nicht "
+           + "mehr an.";
+      schritt = "Neu anmelden, die Zeile Cookie erneut nach liga-token.txt "
+              + "kopieren, dann auf „Liga-Daten holen“.";
+    } else if (fehlend > 0) {
+      art = "";
+      kopf = "Die Liga führt " + stand.ligaPartien + " Partien, hier liegen "
+           + stand.gesichert + " — " + fehlend
+           + (fehlend === 1 ? " fehlt." : " fehlen.");
+      schritt = "Ein Klick auf „Liga-Daten holen“ unten unter Programm holt sie.";
+    } else if (stand.ligaPartien) {
+      kopf = "Liga: alle " + stand.ligaPartien + " Partien geholt"
+           + (stand.geholtAm ? ", Stand " + deDate(stand.geholtAm) : "") + ".";
+    }
+
+    host.textContent = "";
+    if (!kopf) { host.hidden = true; return; }
+    host.className = "unsaved" + (art ? " " + art : "");
+    host.hidden = false;
+    host.append(el("span", {class: "what"}, kopf));
+    if (schritt) host.append(el("span", {class: "step"}, schritt));
   }
 
   // Eine Stelle fuer "das steht noch in keiner Datei" - auf jedem Reiter.
@@ -1439,6 +1554,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     renderPlayers();
     renderGames();
     ladeTeamAuswahl(team.team);
+    pruefeLigaZugang();
     // Laeuft gerade ein Scrape? Dann Protokoll weiter mitschreiben.
     try {
       const lauf = await (await fetch("api/scrape", {cache: "no-store"})).json();
@@ -1652,7 +1768,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       for (const name of Object.keys(player.queues)) available.add(name);
     }
     const options = QUEUES.filter(([value]) =>
-      value === "TOURNAMENT" || value === "ALL" || available.has(value));
+      value === "ALL" || available.has(value));
     if (!options.some(([value]) => value === queue)) queue = options[0][0];
     renderSwitch("queue-switch", options, queue, (value) => {
       queue = value;
@@ -1668,9 +1784,15 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     const seasonless = SEASONLESS.has(queue);
     document.getElementById("season-switch").hidden = seasonless;
     document.getElementById("season-label").hidden = seasonless;
-    document.getElementById("queue-hint").textContent = seasonless
-      ? "Zeigt nur die unter „Turnierspiele“ eingetragenen Picks."
-      : "";
+    const ligaInfo = (DATA.liga || {})[team.team];
+    document.getElementById("queue-hint").textContent = !seasonless ? ""
+      : queue !== "LIGA" ? ""
+        : ligaInfo
+          ? "Echte Partien von leagueofregions.com als " + ligaInfo.name
+            + " — Freundschafts- und Ligaspiele zusammen: " + ligaInfo.partien
+            + " Spiele, " + ligaInfo.siege + " gewonnen. Stand "
+            + deDate(ligaInfo.geholtAm) + "."
+          : "Für dieses Team liegen keine Turnierdaten der Liga vor.";
     if (seasonless) return;
     const options = SEASONS.map((s) => [s, seasonLabel(s), seasonFull(s)]);
     options.push([null, "Alle", "Alle Seasons zusammengerechnet"]);
@@ -2221,11 +2343,192 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     }
   });
 
+  // --------------------------------------------- Reiter: Liga (Gesamtzahlen)
+  // Ligaweite Zahlen, unabhaengig vom gewaehlten Team: Meta, Seiten, Rekorde.
+  const LIGA = DATA.ligaGesamt || null;
+  let ligaFilter = "";
+
+  const tabelle = (kopf, zeilen) => [
+    el("thead", {}, el("tr", {}, kopf.map(([text, cls]) =>
+      el("th", cls ? {class: cls} : {}, text)))),
+    el("tbody", {}, zeilen.length ? zeilen
+      : el("tr", {}, el("td", {colspan: kopf.length, class: "empty"}, "Keine Daten."))),
+  ];
+
+  const dauer = (sek) => Math.floor(sek / 60) + ":" + String(sek % 60).padStart(2, "0");
+
+  function renderLiga() {
+    if (!LIGA) return;
+    const u = LIGA.uebersicht || {};
+    document.getElementById("liga-stand").textContent =
+      "Alle Partien der Liga, Stand " + deDate(LIGA.geholtAm) + ". "
+      + (LIGA.partienLiga
+          ? LIGA.partienLiga + " davon Ligaspiele, der Rest Freundschaftsspiele."
+          : "Bisher ausschließlich Freundschaftsspiele — die Ligasaison hat dort "
+            + "noch nicht begonnen.");
+
+    const zahlen = document.getElementById("liga-zahlen");
+    zahlen.textContent = "";
+    for (const [wert, name] of [[u.partien, "Partien"], [u.mannschaften, "Mannschaften"],
+                                [u.spieler, "Spieler"], [u.champions, "Champions"],
+                                [u.dauer_schnitt_sek ? dauer(u.dauer_schnitt_sek) : null,
+                                 "Ø Spieldauer"]]) {
+      if (wert === null || wert === undefined) continue;
+      zahlen.append(el("span", {class: "chip"}, el("b", {}, String(wert)), " " + name));
+    }
+
+    // Blau gegen Rot - erste Frage vor jedem Draft: lohnt sich die Seitenwahl?
+    const s = LIGA.seiten || {};
+    const seitenZeilen = [
+      ["Siege", "siege"], ["First Blood", "first_blood"], ["First Tower", "first_tower"],
+      ["Drachen", "drachen"], ["Barone", "barone"], ["Türme", "tuerme"],
+    ].map(([name, feld]) => {
+      const b = (s.blau || {})[feld], r = (s.rot || {})[feld];
+      const anteil = (b + r) ? Math.round(b / (b + r) * 100) : null;
+      return el("tr", {},
+        el("td", {}, name),
+        el("td", {class: "num"}, b === undefined ? "—" : b),
+        el("td", {class: "num"}, r === undefined ? "—" : r),
+        el("td", {class: "num dim"}, anteil === null ? "—" : anteil + "% blau"));
+    });
+    const seiten = document.getElementById("liga-seiten");
+    seiten.textContent = "";
+    seiten.append(...tabelle([["", null], ["Blau", "num"], ["Rot", "num"],
+                              ["Anteil", "num"]], seitenZeilen));
+
+    const teams = document.getElementById("liga-teams");
+    teams.textContent = "";
+    teams.append(...tabelle(
+      [["Mannschaft", null], ["Sp.", "num"], ["Siege", "num"], ["Quote", "num"]],
+      (LIGA.mannschaften || []).map((m) => el("tr", {},
+        el("td", {}, m.name),
+        el("td", {class: "num"}, m.partien),
+        el("td", {class: "num"}, m.siege),
+        el("td", {class: "num"}, el("span", {class: "wr"},
+          el("span", {}, m.quote + "%"),
+          el("span", {class: "wr-bar " + (m.quote >= 55 ? "high" : m.quote <= 45 ? "low" : "")},
+            el("span", {style: "width:" + m.quote + "%"}))))))));
+
+    const nadel = ligaFilter.toLowerCase();
+    const meta = (LIGA.meta || []).filter((m) => !nadel
+      || m.champ.toLowerCase().includes(nadel));
+    const metaTabelle = document.getElementById("liga-meta");
+    metaTabelle.textContent = "";
+    metaTabelle.append(...tabelle(
+      [["Champion", null], ["Präsenz", "num"], ["Picks", "num"], ["Bans", "num"],
+       ["Siege", "num"], ["WR", "num"], ["KDA", "num"]],
+      meta.map((m) => el("tr", {title: m.champ + ": in " + m.praesenz
+          + "% der Partien gepickt oder gebannt"},
+        el("td", {}, champCell(m.champ)),
+        el("td", {class: "num"}, el("span", {class: "wr"},
+          el("span", {}, m.praesenz + "%"),
+          el("span", {class: "wr-bar"}, el("span", {style: "width:" + m.praesenz + "%"})))),
+        el("td", {class: "num"}, m.picks),
+        el("td", {class: "num"}, m.bans),
+        el("td", {class: "num dim"}, m.siege === null || m.siege === undefined ? "—" : m.siege),
+        el("td", {class: "num"}, m.quote === null || m.quote === undefined ? "—" : m.quote + "%"),
+        el("td", {class: "num dim"}, m.kda === null || m.kda === undefined ? "—" : m.kda)))));
+
+    renderLigaRollen(nadel);
+
+    const rekorde = document.getElementById("liga-rekorde");
+    rekorde.textContent = "";
+    rekorde.append(...tabelle(
+      [["Rekord", null], ["Wert", "num"], ["Wer", null], ["Champion", null]],
+      (LIGA.rekorde || []).map((r) => el("tr", {},
+        el("td", {}, r.name),
+        el("td", {class: "num"}, String(r.wert) + (r.einheit ? " " + r.einheit : "")),
+        el("td", {}, r.wer),
+        el("td", {}, r.champ ? champCell(r.champ) : "—")))));
+  }
+
+  // Wie viele Champions je Rolle ohne Aufklappen zu sehen sind.
+  const ROLLEN_ZEILEN = 12;
+  const rollenOffen = new Set();
+  const ROLLEN_TITEL = {TOP: "Top", JUNGLE: "Jungle", MIDDLE: "Mid",
+                        BOTTOM: "Bot", UTILITY: "Support"};
+
+  // Picks und Bans je Position. Die Rollen der Picks stehen in den Partien;
+  // ein Ban hat keine Rolle und wird der Position zugeschlagen, auf der der
+  // Champion in dieser Liga am haeufigsten gespielt wurde.
+  function renderLigaRollen(nadel) {
+    const daten = (LIGA || {}).nachRollen;
+    const panel = document.getElementById("liga-rollen-panel");
+    if (!daten || !daten.rollen || !daten.rollen.length) return;
+    panel.hidden = false;
+
+    document.getElementById("liga-rollen-hinweis").textContent =
+      "Aus den " + daten.partien + " Partien, zu denen die Liga Spieldaten hat. "
+      + "Bans tragen keine Position; sie stehen bei der Rolle, auf der der "
+      + "Champion in dieser Liga am häufigsten gespielt wurde"
+      + (daten.ohneRolle
+          ? " — " + daten.ohneRolle + " Bans betrafen Champions, die hier nie "
+            + "gepickt wurden, und fehlen darum."
+          : ".");
+
+    const host = document.getElementById("liga-rollen");
+    host.textContent = "";
+    for (const block of daten.rollen) {
+      const gefiltert = block.champs.filter((c) => !nadel
+        || c.champ.toLowerCase().includes(nadel));
+      // Beim Filtern nur die Rollen zeigen, in denen der Champion vorkommt -
+      // sonst stehen vier Kaesten mit "Keine Daten." daneben.
+      if (nadel && !gefiltert.length) continue;
+      const offen = rollenOffen.has(block.role) || !!nadel;
+      const sichtbar = offen ? gefiltert : gefiltert.slice(0, ROLLEN_ZEILEN);
+      const karte = el("div", {class: "panel"},
+        el("h2", {}, ROLLEN_TITEL[block.role] || block.role,
+           " ", el("span", {class: "sub"},
+                   block.picks + " Picks · " + block.bans + " Bans")),
+        el("div", {class: "scroll"}, el("table", {}, tabelle(
+          [["Champion", null], ["Picks", "num"], ["WR", "num"],
+           ["KDA", "num"], ["Bans", "num"]],
+          sichtbar.map((c) => el("tr", {title: c.champ + ": " + c.picks
+              + (c.picks === 1 ? " Pick" : " Picks") + ", " + c.siege + " Siege, "
+              + c.bans + " Bans"},
+            el("td", {}, champCell(c.champ)),
+            el("td", {class: "num"}, c.picks || "—"),
+            el("td", {class: "num"}, c.quote === null || c.quote === undefined
+               ? "—" : c.quote + "%"),
+            el("td", {class: "num dim"}, c.kda === null || c.kda === undefined
+               ? "—" : c.kda),
+            el("td", {class: "num dim"}, c.bans || "—")))))));
+      if (gefiltert.length > ROLLEN_ZEILEN && !nadel) {
+        const knopf = el("button", {class: "more", type: "button"},
+          offen ? "Weniger zeigen"
+                : "Alle " + gefiltert.length + " Champions zeigen");
+        knopf.addEventListener("click", () => {
+          if (offen) rollenOffen.delete(block.role);
+          else rollenOffen.add(block.role);
+          renderLigaRollen(nadel);
+        });
+        karte.append(knopf);
+      }
+      host.append(karte);
+    }
+    if (!host.children.length) {
+      host.append(el("p", {class: "hint"},
+        "Kein Champion passt zum Filter."));
+    }
+  }
+
+  const ligaFeld = document.getElementById("liga-filter");
+  if (ligaFeld) {
+    ligaFeld.addEventListener("input", (e) => {
+      ligaFilter = e.target.value.trim();
+      renderLiga();
+    });
+  }
+
+
   // --------------------------------------------------------------- Setup
+
+  if (!DATA.ligaGesamt) document.getElementById("tab-liga").hidden = true;
 
   const tabs = [
     [document.getElementById("tab-players"), document.getElementById("panel-players")],
     [document.getElementById("tab-plan"), document.getElementById("panel-plan")],
+    [document.getElementById("tab-liga"), document.getElementById("panel-liga")],
     [document.getElementById("tab-games"), document.getElementById("panel-games")],
   ];
   // Der Draftplan zeigt Zahlen aus derselben Auswahl - dort bleibt die Leiste da.
@@ -2340,6 +2643,37 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
         + (info.page ? "  ·  Fürs Netz aktualisiert: " + info.page + " ("
                        + kb(info.pageSize) + ") — zum Online-Stellen noch "
                        + "git add -A, git commit, git push." : ""));
+    } catch (e) { toolsNote("Fehlgeschlagen: " + e.message); }
+  });
+
+  document.getElementById("do-liga").addEventListener("click", async () => {
+    toolsNote("Hole die Ligazahlen ...");
+    try {
+      const antwort = await fetch("api/liga", {method: "POST"});
+      if (antwort.status === 404) {
+        toolsNote("Das laufende Programm kennt diesen Knopf noch nicht — "
+                + "schwarzes Fenster schließen und neu starten.");
+        return;
+      }
+      const info = await antwort.json().catch(() => ({}));
+      const log = document.getElementById("scrape-log");
+      log.hidden = false;
+      log.textContent = (info.log || []).join("\n");
+      log.scrollTop = log.scrollHeight;
+      if (!info.ok) { toolsNote(info.error || "Fehlgeschlagen."); return; }
+      // Laeuft das Token ab, holt liga.py brav den gesicherten Stand - die
+      // Zahlen stimmen dann, die einzelnen Partien aber nicht mehr. Ohne
+      // Hinweis faellt das erst Wochen spaeter auf.
+      if ((info.log || []).some((z) => z.includes("Token wird abgelehnt"))) {
+        toolsNote("Die Zahlen sind aktuell, die einzelnen Partien nicht: der "
+                + "Zugang zu leagueofregions.com ist abgelaufen. Neu anmelden, "
+                + "Cookie-Zeile nach liga-token.txt kopieren, dann noch einmal "
+                + "auf diesen Knopf.");
+        pruefeLigaZugang();
+        return;
+      }
+      toolsNote("Fertig — lade neu ...");
+      setTimeout(() => location.reload(), 1200);
     } catch (e) { toolsNote("Fehlgeschlagen: " + e.message); }
   });
 
@@ -2768,6 +3102,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   buildPickRows();
   renderPlayers();
   renderGames();
+  renderLiga();
   detectServer();          // laeuft die Seite unter serve.py?
   if (!STORAGE_OK) {
     setNote("Achtung: Dieser Browser erlaubt hier kein localStorage – eingetragene Spiele "

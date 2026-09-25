@@ -2,14 +2,15 @@
   {
     "team": "AFC1",
     "players": {
-      "bandit":   {"blind":[],"likes":[]},
-      "HartzFor": {"blind":[],"likes":[]},
-      "Køstja":   {"blind":["Ahri","Syndra","Viktor","Hwei"],"likes":[]},
-      "smiling":  {"blind":["Jhin","Kai'Sa","Seraphine","Syndra","Jinx"],"likes":["Ashe","Zeri","Xayah","Yunara","Miss Fortune","Nilah","Senna","Varus","Karthus"]},
-      "Aaghn":    {"blind":["Thresh","Nautilus"],"likes":["Milio","Blitzcrank"]},
-      "jasxnbrg": {"blind":["Gangplank"],"likes":[]},
-      "Route65":  {"blind":["Vladimir","Galio"],"likes":["Sylas","Anivia","Cassiopeia"]},
-      "Oloro":    {"blind":[],"likes":[]}
+      "bandit":    {"blind":[],"likes":[]},
+      "HartzFor":  {"blind":[],"likes":[]},
+      "Køstja":    {"blind":["Ahri","Syndra","Viktor","Hwei","Orianna"],"likes":["Xerath","Sylas","Taliyah","Azir","Diana","Annie","Aurora","Lissandra","Twisted Fate","Galio","Cassiopeia","Ryze","Akali","Jayce","Tristana","Vex"]},
+      "smiling":   {"blind":["Jhin","Kai'Sa","Seraphine","Syndra","Jinx","Yunara","Sivir","Xayah","Caitlyn","Zeri"],"likes":["Ashe","Miss Fortune","Nilah","Senna","Varus","Karthus","Aphelios","Ziggs","Ezreal","Samira"],"note":"Kann jeden ap mage spielen."},
+      "Aaghn":     {"blind":["Thresh","Nautilus"],"likes":["Milio","Blitzcrank"]},
+      "jasxnbrg":  {"blind":["Gangplank"],"likes":[]},
+      "Route65":   {"blind":["Vladimir","Galio"],"likes":["Sylas","Anivia","Cassiopeia"]},
+      "Oloro":     {"blind":[],"likes":[]},
+      "Sir Johny": {"blind":[],"likes":[]}
     }
   },
   {
@@ -18,8 +19,7 @@
       "AFC AFC":         {"blind":[],"likes":[]},
       "AFC X4nder":      {"blind":[],"likes":[]},
       "Zeryn":           {"blind":[],"likes":[]},
-      "AFC Bernard Bär": {"blind":[],"likes":[]},
-      "Töner Deller":    {"blind":[],"likes":[]}
+      "AFC Bernard Bär": {"blind":[],"likes":[]}
     }
   },
   {
@@ -29,7 +29,10 @@
       "zPiro":           {"blind":[],"likes":[]},
       "TWM Nirwana":     {"blind":[],"likes":[]},
       "Summer Vibes":    {"blind":[],"likes":[]},
-      "God Razor":       {"blind":[],"likes":[]}
+      "God Razor":       {"blind":[],"likes":[]},
+      "Legktar":         {"blind":[],"likes":[]},
+      "Durotano":        {"blind":[],"likes":[]},
+      "Eleone":          {"blind":[],"likes":[]}
     }
   },
   {
@@ -39,7 +42,8 @@
       "snekvin":      {"blind":[],"likes":[]},
       "Schnallo":     {"blind":[],"likes":[]},
       "Weltwunder24": {"blind":[],"likes":[]},
-      "NebelFlasche": {"blind":[],"likes":[]}
+      "NebelFlasche": {"blind":[],"likes":[]},
+      "Leonard":      {"blind":[],"likes":[]}
     }
   },
   {
@@ -57,12 +61,60 @@
   {
     "team": "TSV Salzgitter",
     "players": {
-      "snakegerman": {"blind":[],"likes":[]},
-      "mazl":        {"blind":[],"likes":[]},
-      "MurphyyLOL":  {"blind":[],"likes":[]},
-      "xHydralisk":  {"blind":[],"likes":[]},
-      "Triplos":     {"blind":[],"likes":[]},
-      "Gumagod":     {"blind":[],"likes":[]}
+      "snakegerman":     {"blind":[],"likes":[]},
+      "mazl":            {"blind":[],"likes":[]},
+      "MurphyyLOL":      {"blind":[],"likes":[]},
+      "xHydralisk":      {"blind":[],"likes":[]},
+      "Triplos":         {"blind":[],"likes":[]},
+      "Gumagod":         {"blind":[],"likes":[]},
+      "Would love Some": {"blind":[],"likes":[]},
+      "Clown Angel":     {"blind":[],"likes":[]}
+    }
+  },
+  {
+    "team": "SC Victoria Braunschweig",
+    "players": {
+      "Salzu":          {"blind":[],"likes":[]},
+      "Kneu":           {"blind":[],"likes":[]},
+      "Hyro":           {"blind":[],"likes":[]},
+      "no need âdc":    {"blind":[],"likes":[]},
+      "ShendNoods":     {"blind":[],"likes":[]},
+      "LegendOctavian": {"blind":[],"likes":[]}
+    }
+  },
+  {
+    "team": "Braunschweig eSports e.V. B",
+    "players": {
+      "BSeS Angel":  {"blind":[],"likes":[]},
+      "TGameRex23":  {"blind":[],"likes":[]},
+      "Frixxum":     {"blind":[],"likes":[]},
+      "BSeS Dezzad": {"blind":[],"likes":[]},
+      "Glaceon":     {"blind":[],"likes":[]},
+      "N0k0ri":      {"blind":[],"likes":[]}
+    }
+  },
+  {
+    "team": "MTV Hattorf",
+    "players": {
+      "GeneralKnabe":   {"blind":[],"likes":[]},
+      "Daddy JosCo":    {"blind":[],"likes":[]},
+      "JackSh3ppard":   {"blind":[],"likes":[]},
+      "Xîmon":          {"blind":[],"likes":[]},
+      "BigMeeks":       {"blind":[],"likes":[]},
+      "Akuma":          {"blind":[],"likes":[]},
+      "LethalRaptorJD": {"blind":[],"likes":[]}
+    }
+  },
+  {
+    "team": "SSV Remlingen 2",
+    "players": {
+      "Meister FiTTi": {"blind":[],"likes":[]},
+      "Der Bup":       {"blind":[],"likes":[]},
+      "Eleonee":       {"blind":[],"likes":[]},
+      "KOOOOAHLLLL":   {"blind":[],"likes":[]},
+      "Discalon":      {"blind":[],"likes":[]},
+      "FGG Lewer":     {"blind":[],"likes":[]},
+      "ziggler10":     {"blind":[],"likes":[]}
     }
   }
 ]

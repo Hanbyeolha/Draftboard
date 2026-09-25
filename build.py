@@ -168,6 +168,324 @@ def league_opponents(teams):
     return names
 
 
+def load_liga():
+    """data/liga/*.json -> {Teamname: Block}. Die Turnierzahlen der Liga
+    (leagueofregions.com) - echte Partien statt Soloqueue. Fehlt der Ordner,
+    baut das Board wie bisher."""
+    ordner = ROOT / "data" / "liga"
+    if not ordner.exists():
+        return {}
+    out = {}
+    for path in sorted(ordner.glob("*.json")):
+        blob = json.loads(path.read_text(encoding="utf-8"))
+        # Im selben Ordner liegen auch Rohdaten und die Championnummern -
+        # eine Teamdatei erkennt man am Feld "team".
+        if isinstance(blob, dict) and blob.get("team") and blob.get("spieler"):
+            out[blob["team"]] = blob
+    return out
+
+
+def meta_nach_rollen(icons):
+    """Picks und Bans der Liga, aufgeteilt nach Position.
+
+    Die Statistikseite kennt keine Rollen - erst die einzelnen Partien sagen,
+    wer auf welcher Position welchen Champion gespielt hat. Bans haben von
+    Haus aus gar keine Rolle; sie werden der Position zugeschlagen, auf der
+    der Champion in dieser Liga am haeufigsten gespielt wurde. Wer nie gepickt
+    wurde, laesst sich nicht zuordnen und wird gesondert ausgewiesen."""
+    pfad = ROOT / "data" / "liga" / "partien-roh.json"
+    if not pfad.exists():
+        return None
+    nummern_datei = ROOT / "data" / "liga" / "champion-ids.json"
+    nummern = (json.loads(nummern_datei.read_text(encoding="utf-8"))
+               if nummern_datei.exists() else {})
+    nach_anzeige = {schluessel: name for name, schluessel in (icons or {}).items()}
+
+    picks, rolle_von, bans = {}, {}, {}
+    partien = json.loads(pfad.read_text(encoding="utf-8"))
+    for eintrag in partien:
+        stats = eintrag.get("stats") or {}
+        for m in stats.get("game_match_participant") or []:
+            rolle, champ = m.get("team_position"), m.get("champion_name")
+            if not (rolle and champ):
+                continue
+            zahl = picks.setdefault(rolle, {}).setdefault(champ, [0, 0, 0, 0, 0])
+            zahl[0] += 1
+            zahl[1] += 1 if m.get("win") else 0
+            zahl[2] += m.get("kills") or 0
+            zahl[3] += m.get("deaths") or 0
+            zahl[4] += m.get("assists") or 0
+            rolle_von.setdefault(champ, {})
+            rolle_von[champ][rolle] = rolle_von[champ].get(rolle, 0) + 1
+        for t in stats.get("game_match_team") or []:
+            for b in t.get("bans") or []:
+                if b and b > 0:
+                    champ = nummern.get(str(b))
+                    if champ:
+                        bans[champ] = bans.get(champ, 0) + 1
+
+    # Jeder Ban landet dort, wo der Champion am oeftesten gespielt wurde.
+    ban_je_rolle, ohne_rolle = {}, 0
+    for champ, anzahl in bans.items():
+        wo = rolle_von.get(champ)
+        if not wo:
+            ohne_rolle += anzahl
+            continue
+        beste = max(wo.items(), key=lambda x: x[1])[0]
+        ban_je_rolle.setdefault(beste, {})[champ] = anzahl
+
+    rollen = []
+    for rolle in ROLE_ORDER:
+        champs = picks.get(rolle) or {}
+        gebannt = ban_je_rolle.get(rolle) or {}
+        if not champs and not gebannt:
+            continue
+        zeilen = []
+        for champ in set(champs) | set(gebannt):
+            z = champs.get(champ) or [0, 0, 0, 0, 0]
+            tode = z[3]
+            zeilen.append({
+                "champ": nach_anzeige.get(champ, champ),
+                "picks": z[0], "siege": z[1],
+                "quote": round(z[1] / z[0] * 100) if z[0] else None,
+                "kda": round((z[2] + z[4]) / tode, 2) if tode else
+                       (float(z[2] + z[4]) if z[0] else None),
+                "bans": gebannt.get(champ, 0),
+            })
+        zeilen.sort(key=lambda r: (-r["picks"], -r["bans"], r["champ"]))
+        rollen.append({"role": rolle,
+                       "picks": sum(r["picks"] for r in zeilen),
+                       "bans": sum(r["bans"] for r in zeilen),
+                       "champs": zeilen})
+    if not rollen:
+        return None
+    return {"rollen": rollen, "ohneRolle": ohne_rolle, "partien": len(partien)}
+
+
+def liga_gesamt(icons):
+    """Die ligaweiten Zahlen fuer den Reiter Liga: Meta, Seiten, Rekorde.
+
+    Nur das Noetige - die Rohdatei ist 33 KB gross, davon braucht die Seite
+    einen Bruchteil."""
+    pfad = ROOT / "data" / "liga" / "gesamt.json"
+    if not pfad.exists():
+        return None
+    d = json.loads(pfad.read_text(encoding="utf-8"))
+    nach_anzeige = {schluessel: name for name, schluessel in (icons or {}).items()}
+    zeige = lambda n: nach_anzeige.get(n, n)
+
+    # Praesenz (Picks/Bans) und Bilanz stehen in zwei Listen - zusammenfuehren.
+    bilanz = {c["name"]: c for c in (d.get("champions", {}).get("liste") or [])}
+    meta = []
+    for e in d.get("praesenz", {}).get("liste") or []:
+        b = bilanz.get(e["name"], {})
+        meta.append({"champ": zeige(e["name"]), "picks": e.get("picks", 0),
+                     "bans": e.get("bans", 0), "praesenz": e.get("praesenz", 0),
+                     "siege": b.get("siege"), "quote": b.get("quote"),
+                     "kda": b.get("kda")})
+    meta.sort(key=lambda m: (-m["praesenz"], -m["picks"], m["champ"]))
+
+    rekorde = []
+    for r in d.get("rekorde") or []:
+        erster = (r.get("plaetze") or [{}])[0]
+        wer = (erster.get("spieler") or {}).get("name") or (erster.get("mannschaft") or {}).get("name")
+        if not wer:
+            continue
+        rekorde.append({"name": r.get("name"), "wer": wer,
+                        "wert": erster.get("anzeige") or erster.get("wert"),
+                        "einheit": r.get("einheit"),
+                        "champ": zeige(erster["champion"]) if erster.get("champion") else None})
+
+    return {
+        "geholtAm": d.get("geholtAm"),
+        "uebersicht": d.get("uebersicht"),
+        "partienLiga": d.get("partienLiga"),
+        "seiten": d.get("seiten"),
+        "meta": meta,
+        "mannschaften": [{"name": m["name"], "verein": m.get("verein"),
+                          "partien": m["partien"], "siege": m["siege"],
+                          "quote": m["quote"]}
+                         for m in (d.get("mannschaften", {}).get("liste") or [])],
+        "rekorde": rekorde,
+        "rollen": d.get("rollenschnitt"),
+        "nachRollen": meta_nach_rollen(icons),
+    }
+
+
+def rollen_aus_partien(icons):
+    """Wer auf welcher Rolle was gespielt hat - aus den geholten Partien.
+
+    Die Statistik-Endpunkte liefern nur Rollenanteile ohne Champions; erst die
+    einzelnen Partien sagen, welcher Champion auf welcher Position lief."""
+    pfad = ROOT / "data" / "liga" / "partien-roh.json"
+    if not pfad.exists():
+        return {}
+    nach_anzeige = {schluessel: name for name, schluessel in (icons or {}).items()}
+    gesammelt = {}
+    for eintrag in json.loads(pfad.read_text(encoding="utf-8")):
+        for m in (eintrag.get("stats") or {}).get("game_match_participant") or []:
+            name = m.get("anzeige_name") or m.get("username")
+            rolle = m.get("team_position") or m.get("individual_position")
+            champ = m.get("champion_name")
+            if not (name and rolle and champ):
+                continue
+            eintraege = gesammelt.setdefault(name.lower(), {}).setdefault(rolle, {})
+            zahl = eintraege.setdefault(nach_anzeige.get(champ, champ), [0, 0])
+            zahl[0] += 1
+            zahl[1] += 1 if m.get("win") else 0
+
+    fertig = {}
+    for name, rollen in gesammelt.items():
+        if len(rollen) < 2:            # nur wer wirklich gewechselt hat
+            continue
+        fertig[name] = sorted(
+            ({"role": rolle,
+              "partien": sum(z[0] for z in champs.values()),
+              "champs": sorted(({"champ": c, "partien": z[0], "siege": z[1]}
+                                for c, z in champs.items()),
+                               key=lambda c: (-c["partien"], c["champ"]))}
+             for rolle, champs in rollen.items()),
+            key=lambda r: -r["partien"])
+    return fertig
+
+
+def load_riot_ids():
+    """Die Riot-IDs, die die Liga zu ihren Spielern fuehrt.
+
+    Nur damit lassen sich Ligaspieler und Rostereintraege sicher zusammen-
+    bringen: Anzeigenamen aehneln sich gern, gehoeren aber zu verschiedenen
+    Accounts."""
+    pfad = ROOT / "data" / "liga" / "riot-ids.json"
+    if not pfad.exists():
+        return {}
+    try:
+        return json.loads(pfad.read_text(encoding="utf-8"))
+    except ValueError:
+        return {}
+
+
+def attach_liga(teams, liga, icons, roster=None):
+    """Die Ligazahlen als eigene Queue an die Spieler haengen.
+
+    Bewusst nicht in "Alle" eingerechnet: dieselben Spiele stehen oft auch in
+    games.json und wuerden sonst doppelt zaehlen."""
+    # Die Liga nennt Champions wie Riot intern: DrMundo, JarvanIV, Kaisa.
+    # icons bildet Anzeigename -> Riot-Schluessel ab; umgedreht wird daraus
+    # die Uebersetzung, sonst findet die Seite kein Bild dazu.
+    nach_anzeige = {schluessel: name for name, schluessel in (icons or {}).items()}
+
+    def zeilen_zu_champions(zeilen):
+        # Vier Werte seit der Umstellung auf den Spielerendpunkt: der liefert
+        # auch die KDA. Aeltere Dateien haben nur drei.
+        return [{"champ": nach_anzeige.get(z[0], z[0]),
+                 "win": z[2], "lose": z[1] - z[2],
+                 "winRate": round(z[2] / z[1] * 100) if z[1] else 0,
+                 "kda": z[3] if len(z) > 3 else None,
+                 "kp": None, "csPerMin": None}
+                for z in zeilen]
+
+    # Wer in teams.json steht, aber nie gescrapt wurde, taucht hier trotzdem
+    # als Roster-Eintrag auf - damit er seine Riot-ID und Rolle behaelt.
+    aus_roster = {}
+    for eintrag in roster or []:
+        for spieler in eintrag.get("players") or []:
+            for name in (spieler["label"], (spieler.get("riotId") or "").partition("#")[0]):
+                if name.strip():
+                    aus_roster.setdefault((eintrag["team"], name.strip().lower()), spieler)
+
+    wechsler = rollen_aus_partien(icons)
+    riot_ids = load_riot_ids()
+    regionen = {e["team"]: e.get("region", "euw") for e in roster or []}
+
+    zusammen = {}
+    for team in teams:
+        block = liga.get(team["team"])
+        if not block:
+            continue
+        rollen = block.get("rollen") or {}
+        nummern = block.get("nummern") or {}
+
+        # Die Liga kennt Spieler unter ihrem Riot-Namen, das Board oft unter
+        # einem eigenen Anzeigenamen (Verveigar = TWM Nirwana). Deshalb auch
+        # gegen den Namensteil der Riot-ID abgleichen.
+        # Die Liga nennt ihre Mannschaften anders als wir ("... I").
+        liga_ids = riot_ids.get(block.get("ligaName")) or {}
+
+        nach_name, nach_riot = {}, {}
+        for member in team["players"]:
+            nach_name[member["label"].lower()] = member
+            voll = (member.get("riotId") or "").strip().lower()
+            if voll:
+                nach_riot.setdefault(voll, member)
+            # Von Hand gesetzt, wenn sich der Ligenname gar nicht ableiten
+            # laesst - etwa nach einer Umbenennung. Steht in teams.json, nicht
+            # in den Scrape-Daten, darum ueber den Rostereintrag.
+            eintrag = aus_roster.get((team["team"], member["label"].lower())) or {}
+            liganame = (eintrag.get("ligaName") or member.get("ligaName") or "").strip()
+            member["ligaName"] = liganame or None
+            if liganame:
+                nach_name.setdefault(liganame.lower(), member)
+            riot = (member.get("riotId") or "").partition("#")[0].strip().lower()
+            if riot:
+                nach_name.setdefault(riot, member)
+
+        getroffen, zusaetzlich = 0, []
+        for name, zeilen in (block.get("spieler") or {}).items():
+            champions = zeilen_zu_champions(zeilen)
+            # Zuerst ueber die Riot-ID, die die Liga zu diesem Spieler fuehrt -
+            # die ist eindeutig. Erst danach ueber den Namen.
+            liga_riot = (liga_ids.get(name) or {}).get("riotId")
+            member = (nach_riot.get((liga_riot or "").strip().lower())
+                      or nach_name.get(name.lower()))
+            if member is not None:
+                member["queues"]["LIGA"] = [{"id": None, "champions": champions}]
+                rollen_wechsel = wechsler.get(name.lower())
+                if rollen_wechsel:
+                    member["ligaRollen"] = rollen_wechsel
+                getroffen += 1
+                continue
+            # Nur der Liga bekannt: als eigene Karte aufnehmen, damit wirklich
+            # alle Spieler eines Teams sichtbar sind. Ohne Riot-ID gibt es
+            # dafuer keine Soloqueue-Zahlen.
+            nummer = nummern.get(name)
+            bekannt = aus_roster.get((team["team"], name.lower())) or {}
+            # Die Liga kennt seine Riot-ID, auch wenn er in keinem Roster steht.
+            riot_id = bekannt.get("riotId") or liga_riot or ""
+            zusaetzlich.append({
+                "label": bekannt.get("label") or name,
+                "riotId": riot_id,
+                "role": bekannt.get("role") or rollen.get(name) or "UNKNOWN",
+                "bench": bool(bekannt.get("bench")),
+                "team": team["team"],
+                "opggUrl": (opgg_url(regionen.get(team["team"], "euw"), riot_id)
+                            or (f"https://leagueofregions.com/stats/spieler/{nummer}"
+                                if nummer else None)),
+                "imRoster": bool(bekannt),
+                "note": ("Noch nicht von op.gg geholt - Zahlen nur aus der Liga."
+                         if riot_id else
+                         "Nur aus der Liga bekannt, ohne hinterlegten Riot-Account."),
+                "lastUpdated": None,
+                "solo": None, "flex": None, "mastery": [], "style": {},
+                "queues": {"LIGA": [{"id": None, "champions": champions}]},
+                "ligaRollen": wechsler.get(name.lower()),
+                "nurLiga": True,
+            })
+
+        if zusaetzlich:
+            team["players"].extend(zusaetzlich)
+            team["players"].sort(key=lambda p: (p["bench"], ROLE_ORDER.index(p["role"])
+                                 if p["role"] in ROLE_ORDER else len(ROLE_ORDER)))
+
+        zusammen[team["team"]] = {
+            "name": block.get("ligaName"), "partien": block.get("partien"),
+            "siege": block.get("siege"), "geholtAm": block.get("geholtAm"),
+            "spieler": getroffen + len(zusaetzlich),
+            "nurLiga": [p["label"] for p in zusaetzlich if not p.get("imRoster")],
+            "ohneScrape": [p["label"] for p in zusaetzlich if p.get("imRoster")],
+        }
+    return zusammen
+
+
 def load_plan():
     """draftplan.json -> {Team: {Spieler: {blind, likes, note}}}.
 
@@ -179,6 +497,58 @@ def load_plan():
         return {}
     return {entry["team"]: entry.get("players") or {}
             for entry in json.loads(path.read_text(encoding="utf-8"))}
+
+
+def opgg_url(region, riot_id):
+    """Wie auto_scrape.py die Profiladresse baut - hier fuer Spieler, die
+    mangels Daten nie durch den Scrape gelaufen sind."""
+    if not riot_id:
+        return None
+    name, _, tag = riot_id.partition("#")
+    return (f"https://op.gg/lol/summoners/{region}/"
+            f"{urllib.parse.quote(name)}-{urllib.parse.quote(tag)}")
+
+
+def nachtragen(teams, roster):
+    """Wer in teams.json steht, bekommt eine Karte - auch ohne jede Zahl.
+
+    Ohne das verschwindet ein Spieler spurlos, sobald op.gg sein Profil nicht
+    findet (Umbenennung) und die Liga ihn noch nicht kennt. Gerade dann will
+    man ihn aber sehen, denn nur so faellt auf, dass die Riot-ID nicht mehr
+    stimmt."""
+    nach_team = {t["team"]: t for t in teams}
+    for eintrag in roster:
+        ziel = nach_team.get(eintrag["team"])
+        if ziel is None:
+            continue
+        da = {p["label"].lower() for p in ziel["players"]}
+        da |= {(p.get("riotId") or "").partition("#")[0].strip().lower()
+               for p in ziel["players"]}
+        neu = []
+        for spieler in eintrag.get("players") or []:
+            if spieler["label"].lower() in da:
+                continue
+            neu.append({
+                "label": spieler["label"],
+                "riotId": spieler.get("riotId") or "",
+                "role": spieler.get("role") or "UNKNOWN",
+                "bench": bool(spieler.get("bench")),
+                "team": eintrag["team"],
+                "opggUrl": opgg_url(eintrag.get("region", "euw"),
+                                    spieler.get("riotId") or ""),
+                "note": spieler.get("note") or "Kein op.gg-Profil unter dieser "
+                        "Riot-ID und noch keine Ligapartie - vermutlich "
+                        "umbenannt.",
+                "ohneDaten": True,
+                "lastUpdated": None,
+                "solo": None, "flex": None, "mastery": [], "style": {},
+                "queues": {},
+            })
+        if neu:
+            ziel["players"].extend(neu)
+            ziel["players"].sort(key=lambda p: (p["bench"],
+                                 ROLE_ORDER.index(p["role"])
+                                 if p["role"] in ROLE_ORDER else len(ROLE_ORDER)))
 
 
 def attach_plan(teams, plan, known_champions):
@@ -370,6 +740,10 @@ def build(embed=False, pages=False):
         if not any(t["team"] == name for t in teams):
             teams.append({"team": name, "players": [p for p in players if p["team"] == name]})
 
+    # Erst die Liga: sie kann Spieler ergaenzen, die nur dort bekannt sind.
+    # Der Draftplan laeuft danach, damit auch die einen Eintrag bekommen.
+    liga = attach_liga(teams, load_liga(), icons, roster)
+    nachtragen(teams, roster)
     plan_warn = attach_plan(teams, plan, set(champion_list))
 
     seasons = sorted({s["id"] for p in players for q in p["queues"].values()
@@ -391,6 +765,8 @@ def build(embed=False, pages=False):
         # Vereine der Liga: Gegner, zu denen (noch) keine Spielerdaten
         # vorliegen - stehen nur als Auswahl im Turnierformular.
         "opponents": league_opponents(teams),
+        "liga": liga,
+        "ligaGesamt": liga_gesamt(icons),
         "ownTeams": own_teams(teams),
     }
     if embed:
@@ -426,6 +802,9 @@ def build(embed=False, pages=False):
         planned = sum(1 for p in team["players"]
                       if p["plan"]["blind"] or p["plan"]["likes"])
         extra = f" | Draftplan {planned}/{len(team['players'])}" if planned else ""
+        l = liga.get(team["team"])
+        extra += (f" | Liga {l['partien']} Partien, {l['spieler']} Spieler"
+                  if l else "")
         print(f"  {team['team']}: {len(team['players'])} Spieler | "
               f"Zeilen: {detail}{extra}")
     if data["games"]:

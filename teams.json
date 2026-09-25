@@ -52,7 +52,8 @@
         "role": "UNKNOWN",
         "bench": true
       }
-    ]
+    ],
+    "ligaTeamId": 3
   },
   {
     "team": "AFC2",
@@ -113,8 +114,21 @@
         "riotId": "DeLouis#EUW",
         "role": "TOP",
         "bench": true
+      },
+      {
+        "label": "Captain Hook",
+        "riotId": "Captain Hook#AFC",
+        "role": "UTILITY",
+        "bench": false
+      },
+      {
+        "label": "AFC Xander",
+        "riotId": "AFC Xander#AFC",
+        "role": "UTILITY",
+        "bench": true
       }
-    ]
+    ],
+    "ligaTeamId": 5
   },
   {
     "team": "SV Innerstetal",
@@ -164,7 +178,8 @@
         "role": "UNKNOWN",
         "bench": true
       }
-    ]
+    ],
+    "ligaTeamId": 4
   },
   {
     "team": "SSV Remlingen",
@@ -201,7 +216,8 @@
         "role": "BOTTOM",
         "bench": true
       }
-    ]
+    ],
+    "ligaTeamId": 22
   },
   {
     "team": "MTV Lichtenberg",
@@ -245,8 +261,27 @@
         "role": "JUNGLE",
         "bench": true,
         "note": "Ersatz für Jungle und ADC"
+      },
+      {
+        "label": "JonazzanoJ",
+        "riotId": "JonazzanoJ#S04",
+        "role": "UTILITY",
+        "bench": true
+      },
+      {
+        "label": "Dazorax361",
+        "riotId": "Dazorax361#EUW",
+        "role": "MIDDLE",
+        "bench": true
+      },
+      {
+        "label": "hnes",
+        "riotId": "hnes#xdd",
+        "role": "BOTTOM",
+        "bench": true
       }
-    ]
+    ],
+    "ligaTeamId": 1
   },
   {
     "team": "TSV Salzgitter",
@@ -295,7 +330,8 @@
         "role": "UNKNOWN",
         "bench": true
       }
-    ]
+    ],
+    "ligaTeamId": 23
   },
   {
     "team": "SC Victoria Braunschweig",
@@ -309,11 +345,6 @@
       {
         "label": "Kneu",
         "riotId": "Kneu#Duke",
-        "role": "UNKNOWN"
-      },
-      {
-        "label": "Naoya was right",
-        "riotId": "Naoya was right#men",
         "role": "UNKNOWN"
       },
       {
@@ -335,8 +366,15 @@
         "label": "LegendOctavian",
         "riotId": "LegendOctavian#monke",
         "role": "UNKNOWN"
+      },
+      {
+        "label": "Xen",
+        "riotId": "Xen#NGE67",
+        "role": "MIDDLE",
+        "bench": false
       }
-    ]
+    ],
+    "ligaTeamId": 25
   },
   {
     "team": "Braunschweig eSports e.V. B",
@@ -415,7 +453,8 @@
         "role": "UNKNOWN",
         "bench": true
       }
-    ]
+    ],
+    "ligaTeamId": 26
   },
   {
     "team": "SSV Remlingen 2",
@@ -457,7 +496,14 @@
         "label": "Discalon",
         "riotId": "Discalon#6774",
         "role": "UTILITY"
+      },
+      {
+        "label": "Edelknecht",
+        "riotId": "Edelknecht#8854",
+        "role": "UTILITY",
+        "bench": true
       }
-    ]
+    ],
+    "ligaTeamId": 24
   }
 ]

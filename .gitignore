@@ -1,8 +1,13 @@
 README.md
 Draftboard starten.cmd
 
+# Zugangsdaten - das Repo ist oeffentlich!
+liga-token.txt
+
 # Zwischenstaende und Muell, der nicht ins Repo gehoert
 __pycache__/
 *.pyc
 *.bak
+# Zwischenstand der geholten Partien - jederzeit neu holbar
+data/liga/*-roh.json
 out/

@@ -44,6 +44,63 @@ QUEUE_SEASONS = "33,31,29"
 MAX_BODY = 4 * 1024 * 1024
 NL = chr(10)
 
+def liga_status():
+    """Kommen wir an neue Partien - und fehlen welche?
+
+    Zwei Fragen, zwei Quellen: die oeffentliche Uebersicht sagt ohne Anmeldung,
+    wie viele Partien die Liga fuehrt; der gesicherte Stand sagt, wie viele
+    davon mit Picks und Bans hier liegen. Die Anmeldung selbst wird mit einem
+    einzelnen Aufruf geprueft - abgelaufene Zugaenge fallen sonst erst auf,
+    wenn Spiele fehlen."""
+    import urllib.error
+    import urllib.request
+
+    import liga as ligamodul
+
+    stand = {"erreichbar": False, "token": False, "tokenGueltig": None,
+             "ligaPartien": None, "gesichert": 0, "geholtAm": None}
+
+    cache = ROOT / "data" / "liga" / "partien-roh.json"
+    if cache.exists():
+        try:
+            stand["gesichert"] = len(json.loads(cache.read_text(encoding="utf-8")))
+        except ValueError:
+            pass
+    uebersicht = ROOT / "data" / "liga" / "gesamt.json"
+    if uebersicht.exists():
+        try:
+            stand["geholtAm"] = json.loads(
+                uebersicht.read_text(encoding="utf-8")).get("geholtAm")
+        except ValueError:
+            pass
+
+    try:
+        zahlen = ligamodul.hole("/").get("uebersicht") or {}
+        stand["ligaPartien"] = zahlen.get("partien")
+        stand["erreichbar"] = True
+    except Exception:
+        return stand
+
+    kopf = ligamodul.zugang()
+    stand["token"] = bool(kopf)
+    # Der access_token lebt nur Minuten - erst erneuern, sonst meldet die
+    # Anzeige einen abgelaufenen Zugang, der in Wahrheit noch traegt.
+    kopf = ligamodul.erneuern(kopf)
+    if not kopf:
+        return stand
+    try:
+        anfrage = urllib.request.Request(
+            ligamodul.API + ligamodul.SPIELE_PFAD + "?seite=1",
+            headers={"User-Agent": "Draftboard/1.0", **kopf})
+        with urllib.request.urlopen(anfrage, timeout=20):
+            stand["tokenGueltig"] = True
+    except urllib.error.HTTPError as fehler:
+        stand["tokenGueltig"] = fehler.code not in (401, 403)
+    except (urllib.error.URLError, OSError, ValueError):
+        stand["tokenGueltig"] = None
+    return stand
+
+
 # Ausgabe des laufenden Scrapes, damit die Seite den Fortschritt zeigen kann.
 scrape_lock = threading.Lock()
 scrape_state = {"running": False, "lines": collections.deque(maxlen=400), "done": None}
@@ -421,7 +478,10 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json({"server": True, "project": str(ROOT),
                             "file": target.name if target else None,
                             "features": ["save", "share", "reveal", "scrape",
-                                         "player", "players", "team", "edit"]})
+                                         "player", "players", "team", "edit",
+                                         "liga", "ligastatus"]})
+        elif path == "/api/liga/status":
+            self.send_json(liga_status())
         elif path == "/api/teams":
             # Auch Teams ohne Spieler - die stehen noch in keinem Board.
             self.send_json({"teams": [
@@ -458,6 +518,27 @@ class Handler(BaseHTTPRequestHandler):
                 # Explorer oeffnen und die Datei markieren - nur Windows.
                 subprocess.Popen(["explorer", "/select,", str(target)])
             self.send_json({"ok": bool(target)})
+        elif path == "/api/liga":
+            # Dauert Sekunden, kein Browser noetig - daher direkt statt als Lauf.
+            laeufe = [[sys.executable, str(ROOT / "liga.py")]]
+            # Liegt eine Anmeldung bereit, gleich die einzelnen Partien mit
+            # Picks und Bans nach games.json uebernehmen.
+            if (ROOT / "liga-token.txt").exists():
+                laeufe.append([sys.executable, str(ROOT / "liga.py"), "--spiele"])
+            log, fehlgeschlagen = [], False
+            for befehl in laeufe:
+                proc = subprocess.run(befehl, cwd=ROOT, capture_output=True,
+                                      text=True, encoding="utf-8",
+                                      errors="replace", timeout=600)
+                log += (proc.stdout or "").splitlines()
+                log += (proc.stderr or "").splitlines()
+                fehlgeschlagen = fehlgeschlagen or proc.returncode != 0
+            proc = type("X", (), {"returncode": 1 if fehlgeschlagen else 0})()
+            if not fehlgeschlagen:
+                log += rebuild()
+            self.send_json({"ok": proc.returncode == 0, "log": log,
+                            "error": None if proc.returncode == 0
+                                     else "liga.py meldete einen Fehler"})
         elif path == "/api/team":
             try:
                 name = add_team(json.loads(self.read_body() or "{}"))
