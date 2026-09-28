@@ -44,6 +44,18 @@ QUEUE_SEASONS = "33,31,29"
 MAX_BODY = 4 * 1024 * 1024
 NL = chr(10)
 
+def spiele_zahl():
+    """Wie viele Partien gerade in games.json stehen - fuer das Vorher/Nachher
+    nach einem Lauf, damit die Seite nicht raten muss."""
+    pfad = ROOT / "games.json"
+    if not pfad.exists():
+        return 0
+    try:
+        return len(json.loads(pfad.read_text(encoding="utf-8")))
+    except ValueError:
+        return 0
+
+
 def liga_status():
     """Kommen wir an neue Partien - und fehlen welche?
 
@@ -479,7 +491,7 @@ class Handler(BaseHTTPRequestHandler):
                             "file": target.name if target else None,
                             "features": ["save", "share", "reveal", "scrape",
                                          "player", "players", "team", "edit",
-                                         "liga", "ligastatus"]})
+                                         "liga", "ligastatus", "ligaspiele"]})
         elif path == "/api/liga/status":
             self.send_json(liga_status())
         elif path == "/api/teams":
@@ -537,6 +549,21 @@ class Handler(BaseHTTPRequestHandler):
             if not fehlgeschlagen:
                 log += rebuild()
             self.send_json({"ok": proc.returncode == 0, "log": log,
+                            "error": None if proc.returncode == 0
+                                     else "liga.py meldete einen Fehler"})
+        elif path == "/api/liga/spiele":
+            # Nur die Partien - ohne den langen Durchlauf durch alle Teams.
+            vorher = spiele_zahl()
+            proc = subprocess.run(
+                [sys.executable, str(ROOT / "liga.py"), "--spiele"], cwd=ROOT,
+                capture_output=True, text=True, encoding="utf-8",
+                errors="replace", timeout=900)
+            log = (proc.stdout or "").splitlines() + (proc.stderr or "").splitlines()
+            nachher = spiele_zahl()
+            if proc.returncode == 0:
+                log += rebuild()
+            self.send_json({"ok": proc.returncode == 0, "log": log,
+                            "vorher": vorher, "nachher": nachher,
                             "error": None if proc.returncode == 0
                                      else "liga.py meldete einen Fehler"})
         elif path == "/api/team":

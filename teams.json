@@ -51,6 +51,12 @@
         "riotId": "Sir Johny#EUW",
         "role": "UNKNOWN",
         "bench": true
+      },
+      {
+        "label": "Dasizz",
+        "riotId": "Dasizz#4121",
+        "role": "UTILITY",
+        "bench": true
       }
     ],
     "ligaTeamId": 3
@@ -176,6 +182,12 @@
         "label": "Eleone",
         "riotId": "Eleone#1008",
         "role": "UNKNOWN",
+        "bench": true
+      },
+      {
+        "label": "Rät",
+        "riotId": "Rät#invis",
+        "role": "BOTTOM",
         "bench": true
       }
     ],
@@ -452,6 +464,12 @@
         "riotId": "LethalRaptorJD#EUW",
         "role": "UNKNOWN",
         "bench": true
+      },
+      {
+        "label": "RIZIX",
+        "riotId": "RIZIX#EUW",
+        "role": "UNKNOWN",
+        "bench": false
       }
     ],
     "ligaTeamId": 26
@@ -502,6 +520,12 @@
         "riotId": "Edelknecht#8854",
         "role": "UTILITY",
         "bench": true
+      },
+      {
+        "label": "ChaosIVIaster",
+        "riotId": "ChaosIVIaster#Chaos",
+        "role": "BOTTOM",
+        "bench": false
       }
     ],
     "ligaTeamId": 24

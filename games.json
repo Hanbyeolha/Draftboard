@@ -3117,5 +3117,409 @@
         "Malphite"
       ]
     }
+  },
+  {
+    "series": "AFC1 vs MTV Hattorf - Best-of-3 (28.09.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-09-28",
+    "matchId": "EUW1_7997963495",
+    "blue": "MTV Hattorf",
+    "red": "AFC1",
+    "winner": "MTV Hattorf",
+    "picks": {
+      "MTV Hattorf": [
+        {
+          "role": "TOP",
+          "champ": "Cho'Gath",
+          "player": "GeneralKnabe"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "Daddy JosCo"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Mel",
+          "player": "JackSh3ppard"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Tristana",
+          "player": "Xîmon"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Maokai",
+          "player": "BigMeeks"
+        }
+      ],
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Dr. Mundo",
+          "player": "bandit"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "HartzFor"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Syndra",
+          "player": "Køstja"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Kai'Sa",
+          "player": "smiling"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Seraphine",
+          "player": "Dasizz"
+        }
+      ]
+    },
+    "bans": {
+      "MTV Hattorf": [
+        "Thresh",
+        "Garen",
+        "Ahri",
+        "Ashe",
+        "Mordekaiser"
+      ],
+      "AFC1": [
+        "Xayah",
+        "Braum",
+        "Ornn",
+        "Shen",
+        "Malphite"
+      ]
+    }
+  },
+  {
+    "series": "AFC1 vs MTV Hattorf - Best-of-3 (28.09.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-09-28",
+    "matchId": "EUW1_7998045649",
+    "blue": "MTV Hattorf",
+    "red": "AFC1",
+    "winner": "AFC1",
+    "picks": {
+      "MTV Hattorf": [
+        {
+          "role": "TOP",
+          "champ": "Shen",
+          "player": "GeneralKnabe"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Sejuani",
+          "player": "Daddy JosCo"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Viktor",
+          "player": "JackSh3ppard"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Yunara",
+          "player": "Xîmon"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Shaco",
+          "player": "BigMeeks"
+        }
+      ],
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Kayle",
+          "player": "bandit"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Gragas",
+          "player": "HartzFor"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Akali",
+          "player": "Køstja"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Sivir",
+          "player": "smiling"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Leona",
+          "player": "Dasizz"
+        }
+      ]
+    },
+    "bans": {
+      "MTV Hattorf": [
+        "Thresh",
+        "Garen",
+        "Ahri",
+        "Mordekaiser",
+        "Yone"
+      ],
+      "AFC1": [
+        "Xayah",
+        "Ornn",
+        "Braum",
+        "Lulu",
+        "Milio"
+      ]
+    }
+  },
+  {
+    "series": "AFC1 vs MTV Hattorf - Best-of-3 (28.09.2026)",
+    "game": 3,
+    "format": "fearless",
+    "date": "2026-09-28",
+    "matchId": "EUW1_7998117384",
+    "blue": "AFC1",
+    "red": "MTV Hattorf",
+    "winner": "AFC1",
+    "picks": {
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Volibear",
+          "player": "bandit"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Amumu",
+          "player": "HartzFor"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Xerath",
+          "player": "Køstja"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Ashe",
+          "player": "smiling"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "Dasizz"
+        }
+      ],
+      "MTV Hattorf": [
+        {
+          "role": "TOP",
+          "champ": "Malphite",
+          "player": "GeneralKnabe"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Kayn",
+          "player": "Daddy JosCo"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Vladimir",
+          "player": "JackSh3ppard"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Caitlyn",
+          "player": "Xîmon"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Hwei",
+          "player": "BigMeeks"
+        }
+      ]
+    },
+    "bans": {
+      "AFC1": [
+        "Xayah",
+        "Jinx",
+        "Ornn",
+        "Vex",
+        "Lux"
+      ],
+      "MTV Hattorf": [
+        "Thresh",
+        "Garen",
+        "Ahri",
+        "Sylas",
+        "Mordekaiser"
+      ]
+    }
+  },
+  {
+    "series": "SSV Remlingen vs SSV Remlingen 2 - Best-of-3 (28.09.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-09-28",
+    "matchId": "EUW1_7997906848",
+    "blue": "SSV Remlingen 2",
+    "red": "SSV Remlingen",
+    "winner": "SSV Remlingen",
+    "picks": {
+      "SSV Remlingen 2": [
+        {
+          "role": "TOP",
+          "champ": "Shen",
+          "player": "Meister FiTTi"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "KOOOOAHLLLL"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Ziggs",
+          "player": "Discalon"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jhin",
+          "player": "ChaosIVIaster"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Karma",
+          "player": "ziggler10"
+        }
+      ],
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Ambessa",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Viktor",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jinx",
+          "player": "Weltwunder24"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "NebelFlasche"
+        }
+      ]
+    },
+    "bans": {
+      "SSV Remlingen 2": [
+        "Caitlyn",
+        "Lee Sin",
+        "Vladimir",
+        "Mordekaiser",
+        "Sylas"
+      ],
+      "SSV Remlingen": [
+        "Xayah",
+        "Syndra",
+        "Kai'Sa",
+        "Malphite",
+        "Jax"
+      ]
+    }
+  },
+  {
+    "series": "SSV Remlingen vs SSV Remlingen 2 - Best-of-3 (28.09.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-09-28",
+    "matchId": "EUW1_7997971534",
+    "blue": "SSV Remlingen",
+    "red": "SSV Remlingen 2",
+    "winner": "SSV Remlingen",
+    "picks": {
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Tryndamere",
+          "player": "JaybLm"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Rengar",
+          "player": "snekvin"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Aurora",
+          "player": "Schnallo"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Mel",
+          "player": "Weltwunder24"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Zilean",
+          "player": "NebelFlasche"
+        }
+      ],
+      "SSV Remlingen 2": [
+        {
+          "role": "TOP",
+          "champ": "Urgot",
+          "player": "Meister FiTTi"
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "KOOOOAHLLLL"
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Lux",
+          "player": "Discalon"
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Twitch",
+          "player": "ChaosIVIaster"
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lulu",
+          "player": "ziggler10"
+        }
+      ]
+    },
+    "bans": {
+      "SSV Remlingen": [
+        "Xayah",
+        "Syndra",
+        "Kai'Sa",
+        "Malphite",
+        "Jax"
+      ],
+      "SSV Remlingen 2": []
+    }
   }
 ]

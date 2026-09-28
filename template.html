@@ -622,8 +622,11 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
               >Dateien erzeugen (Mitspieler + Netz)</button>
       <button class="more" type="button" id="reveal">Ordner öffnen</button>
       <button class="more" type="button" id="do-liga"
-              title="Turnierzahlen, Spieler und alle Partien von leagueofregions.com holen - dauert ein paar Minuten"
+              title="Mannschaften, Spieler und Championzahlen von leagueofregions.com - dauert ein paar Minuten"
               >Liga-Daten holen</button>
+      <button class="more" type="button" id="do-liga-spiele"
+              title="Nur die Partien: alle Spiele mit Picks, Bans und Aufstellung nach games.json"
+              >Spiele holen</button>
       <button class="more" type="button" id="do-scrape"
               title="Holt nur das oben gewählte Team">op.gg neu laden</button>
       <button class="more" type="button" id="do-scrape-all"
@@ -2674,6 +2677,44 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       }
       toolsNote("Fertig — lade neu ...");
       setTimeout(() => location.reload(), 1200);
+    } catch (e) { toolsNote("Fehlgeschlagen: " + e.message); }
+  });
+
+  // Eigener Knopf nur fuer die Partien. Der grosse Lauf holt sie zwar mit,
+  // aber wenn der Zugang abgelaufen ist, nimmt liga.py klaglos den gesicherten
+  // Stand - dann werden die Zahlen aktuell und die Spiele nicht.
+  document.getElementById("do-liga-spiele").addEventListener("click", async () => {
+    toolsNote("Hole die Partien ...");
+    try {
+      const antwort = await fetch("api/liga/spiele", {method: "POST"});
+      if (antwort.status === 404) {
+        toolsNote("Das laufende Programm kennt diesen Knopf noch nicht — "
+                + "schwarzes Fenster schließen und neu starten.");
+        return;
+      }
+      const info = await antwort.json().catch(() => ({}));
+      const log = document.getElementById("scrape-log");
+      log.hidden = false;
+      log.textContent = (info.log || []).join("\n");
+      log.scrollTop = log.scrollHeight;
+      if (!info.ok) { toolsNote(info.error || "Fehlgeschlagen."); return; }
+      if ((info.log || []).some((z) => z.includes("Token wird abgelehnt"))) {
+        toolsNote("Der Zugang zu leagueofregions.com ist abgelaufen — es kamen "
+                + "keine neuen Partien an. Neu anmelden, Cookie-Zeile nach "
+                + "liga-token.txt kopieren, dann noch einmal hier klicken.");
+        pruefeLigaZugang();
+        return;
+      }
+      const neu = (info.nachher || 0) - (info.vorher || 0);
+      if (!neu) {
+        toolsNote("Fertig — es gab nichts Neues, " + (info.nachher || 0)
+                + " Spiele sind schon da.");
+        pruefeLigaZugang();
+        return;
+      }
+      toolsNote(neu + (neu === 1 ? " neues Spiel" : " neue Spiele")
+              + " übernommen — lade neu ...");
+      setTimeout(() => location.reload(), 1500);
     } catch (e) { toolsNote("Fehlgeschlagen: " + e.message); }
   });
 
