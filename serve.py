@@ -491,7 +491,7 @@ class Handler(BaseHTTPRequestHandler):
                             "file": target.name if target else None,
                             "features": ["save", "share", "reveal", "scrape",
                                          "player", "players", "team", "edit",
-                                         "liga", "ligastatus", "ligaspiele"]})
+                                         "liga", "ligastatus"]})
         elif path == "/api/liga/status":
             self.send_json(liga_status())
         elif path == "/api/teams":
@@ -537,6 +537,7 @@ class Handler(BaseHTTPRequestHandler):
             # Picks und Bans nach games.json uebernehmen.
             if (ROOT / "liga-token.txt").exists():
                 laeufe.append([sys.executable, str(ROOT / "liga.py"), "--spiele"])
+            vorher = spiele_zahl()
             log, fehlgeschlagen = [], False
             for befehl in laeufe:
                 proc = subprocess.run(befehl, cwd=ROOT, capture_output=True,
@@ -549,21 +550,7 @@ class Handler(BaseHTTPRequestHandler):
             if not fehlgeschlagen:
                 log += rebuild()
             self.send_json({"ok": proc.returncode == 0, "log": log,
-                            "error": None if proc.returncode == 0
-                                     else "liga.py meldete einen Fehler"})
-        elif path == "/api/liga/spiele":
-            # Nur die Partien - ohne den langen Durchlauf durch alle Teams.
-            vorher = spiele_zahl()
-            proc = subprocess.run(
-                [sys.executable, str(ROOT / "liga.py"), "--spiele"], cwd=ROOT,
-                capture_output=True, text=True, encoding="utf-8",
-                errors="replace", timeout=900)
-            log = (proc.stdout or "").splitlines() + (proc.stderr or "").splitlines()
-            nachher = spiele_zahl()
-            if proc.returncode == 0:
-                log += rebuild()
-            self.send_json({"ok": proc.returncode == 0, "log": log,
-                            "vorher": vorher, "nachher": nachher,
+                            "vorher": vorher, "nachher": spiele_zahl(),
                             "error": None if proc.returncode == 0
                                      else "liga.py meldete einen Fehler"})
         elif path == "/api/team":
@@ -633,10 +620,14 @@ class Handler(BaseHTTPRequestHandler):
                 try:
                     wunsch = json.loads(body)
                     teams = [str(t) for t in (wunsch.get("teams") or [])]
-                    # only = einen einzelnen Spieler nachziehen, etwa nach
-                    # einer Umbenennung; der Rest der Datei bleibt stehen.
-                    if wunsch.get("only"):
-                        extra = ["--only", str(wunsch["only"])]
+                    # only = einzelne Spieler nachziehen, etwa nach einer
+                    # Umbenennung oder weil sie gerade erst angelegt wurden;
+                    # der Rest der Datei bleibt stehen. Einer oder mehrere.
+                    nur = wunsch.get("only")
+                    if isinstance(nur, str):
+                        nur = [nur]
+                    for name in (nur or []):
+                        extra += ["--only", str(name)]
                 except ValueError:
                     teams, extra = [], []
             run_scrape(teams, extra)

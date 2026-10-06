@@ -179,6 +179,26 @@ def riot_ids_holen(kopf):
     return gesammelt
 
 
+def stats_pfad(eintrag):
+    """Wo die Spieldaten einer Partie liegen.
+
+    Liga- und Freundschaftsspiele stehen unter /matches/<id>/stats/. Turniere
+    laufen ueber einen eigenen Zweig: dort zeigt ziel_stats auf die Frontend-
+    Adresse /tournaments/<nr>/matches/<schedule>/stats?partie=N, die API dazu
+    heisst /tournaments/schedules/<schedule>/stats/. Eine Serie teilt sich
+    dabei eine schedule-Nummer, die einzelnen Spiele unterscheidet partie."""
+    ziel = eintrag.get("ziel_stats") or ""
+    if "/tournaments/" in ziel:
+        pfad, _, abfrage = ziel.partition("?")
+        teile = [t for t in pfad.split("/") if t]
+        # .../matches/<schedule>/stats -> der Teil vor "stats"
+        if "stats" in teile:
+            schedule = teile[teile.index("stats") - 1]
+            return (f"/tournaments/schedules/{schedule}/stats/"
+                    + (f"?{abfrage}" if abfrage else ""))
+    return f"/matches/{eintrag['id']}/stats/"
+
+
 def spiele_liste(kopf):
     """Die Partienliste holen - alle Seiten, nur die eigene Liga.
 
@@ -240,7 +260,7 @@ def hole_spiele(nur_uebernehmen=False):
         for i, e in enumerate(liste, 1):
             try:
                 anfrage = urllib.request.Request(
-                    f"{API}/matches/{e['id']}/stats/",
+                    API + stats_pfad(e),
                     headers={"User-Agent": "Draftboard/1.0", **kopf})
                 time.sleep(PAUSE)
                 with urllib.request.urlopen(anfrage, timeout=45) as antwort:
@@ -345,7 +365,12 @@ def partie_umbauen(eintrag, nummern, icons, teams):
 
     def name_von(seite):
         t = seiten[seite]
-        return teams.get(t.get("lor_team_id")) or t.get("lor_team_name") or "?"
+        # Turnierpartien haengen die Mannschaft als eigenes Objekt an, Liga-
+        # und Freundschaftsspiele nennen sie flach als lor_team_*.
+        verschachtelt = t.get("team") or {}
+        nummer = t.get("lor_team_id") or verschachtelt.get("id")
+        return (teams.get(nummer) or t.get("lor_team_name")
+                or verschachtelt.get("name") or "?")
 
     blau, rot = name_von(100), name_von(200)
     sieger = next((name_von(s) for s, t in seiten.items() if t.get("win")), None)
@@ -387,7 +412,7 @@ def partie_umbauen(eintrag, nummern, icons, teams):
         "bans": bans,
         "modus": liste.get("modus"),
         "draftArt": (liste.get("serie") or {}).get("draft_art"),
-        "zeit": liste.get("zeitpunkt") or "",
+        "time": liste.get("zeitpunkt") or "",
     }
 
 
@@ -435,7 +460,7 @@ def nummern_entwirren(neue):
     for spiele in nach_serie.values():
         if len(spiele) == len({s["game"] for s in spiele}):
             continue
-        for nr, s in enumerate(sorted(spiele, key=lambda x: x.get("zeit") or ""), 1):
+        for nr, s in enumerate(sorted(spiele, key=lambda x: x.get("time") or ""), 1):
             s["game"] = nr
 
 
@@ -454,7 +479,6 @@ def in_games_schreiben(partien, nummern, icons, trocken=False):
     neu, uebersprungen = [], []
     for spiel in umgebaut:
         modus = spiel.pop("modus", None)
-        spiel.pop("zeit", None)
         if schluessel(spiel) in bekannt:
             uebersprungen.append(spiel)
             continue
@@ -470,7 +494,8 @@ def in_games_schreiben(partien, nummern, icons, trocken=False):
     if trocken or not neu:
         return 0
     zusammen = vorhanden + neu
-    zusammen.sort(key=lambda s: (s.get("date") or "", s.get("series") or "", s.get("game") or 0))
+    zusammen.sort(key=lambda s: (s.get("date") or "", s.get("time") or "",
+                                 s.get("series") or "", s.get("game") or 0))
     text = json.dumps(zusammen, ensure_ascii=False, indent=2).replace(chr(13), "")
     pfad.write_text(text + chr(10), encoding="utf-8")
     print(f"  games.json: {len(vorhanden)} -> {len(zusammen)} Spiele")

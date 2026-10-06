@@ -617,26 +617,35 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     <summary>Programm</summary>
     <p class="hint" id="tools-hint"></p>
     <div class="row">
-      <button class="more" type="button" id="make-share"
-              title="Baut die Datei zum Verschicken und aktualisiert index.html für GitHub Pages"
-              >Dateien erzeugen (Mitspieler + Netz)</button>
-      <button class="more" type="button" id="reveal">Ordner öffnen</button>
-      <button class="more" type="button" id="do-liga"
-              title="Mannschaften, Spieler und Championzahlen von leagueofregions.com - dauert ein paar Minuten"
-              >Liga-Daten holen</button>
-      <button class="more" type="button" id="do-liga-spiele"
-              title="Nur die Partien: alle Spiele mit Picks, Bans und Aufstellung nach games.json"
-              >Spiele holen</button>
-      <button class="more" type="button" id="do-scrape"
-              title="Holt nur das oben gewählte Team">op.gg neu laden</button>
-      <button class="more" type="button" id="do-scrape-all"
-              title="Holt die Profile aller Teams - dauert entsprechend lange"
-              >Alle Teams neu laden</button>
+      <button class="action" type="button" id="do-update"
+              title="Mannschaften, Spieler, Championzahlen und alle Partien von leagueofregions.com"
+              >Alles aktualisieren</button>
+      <span class="hint">Ligadaten und Spiele in einem Rutsch. Kein Browser nötig,
+        dauert ein paar Minuten.</span>
+    </div>
+    <div class="row">
+      <span class="label">op.gg</span>
+      <select id="scrape-scope" title="Welche Profile geholt werden"></select>
+      <button class="more" type="button" id="do-scrape">Profile holen</button>
+      <span class="hint">Öffnet ein Browserfenster, rund eine Minute je Spieler.</span>
     </div>
     <span class="hint" id="tools-note"></span>
-
     <div class="row" style="margin-top:0.4rem">
-      <span class="label">Neues Team</span>
+      <button class="more" type="button" id="make-share"
+              title="Baut die Datei zum Verschicken und aktualisiert index.html für GitHub Pages"
+              >Dateien erzeugen</button>
+      <button class="more" type="button" id="reveal">Ordner öffnen</button>
+    </div>
+
+    <div class="row" style="margin-top:0.8rem">
+      <span class="label">Kader</span>
+      <select id="kader-team" title="Welches Team"></select>
+      <button class="more" type="button" id="kader-neu">Neues Team</button>
+      <span class="hint">Zeile ändern zum Umbenennen oder Rollenwechsel, ✕ entfernt
+        einen Spieler, unten anfügen legt neue an. Mehrere aus dem Chat lassen sich
+        ins Riot-ID-Feld einfügen.</span>
+    </div>
+    <div class="row" id="kader-neu-form" hidden>
       <input type="text" id="nt-name" placeholder="Teamname" style="min-width:12rem">
       <select id="nt-region">
         <option value="euw">EUW</option>
@@ -646,44 +655,14 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
         <option value="tr">TR</option>
         <option value="br">BR</option>
       </select>
-      <button class="more" type="button" id="nt-add">Team anlegen</button>
+      <button class="action" type="button" id="nt-add">Anlegen</button>
       <span class="hint" id="nt-note"></span>
     </div>
-
-    <div class="row" style="margin-top:0.4rem">
-      <span class="label">Neue Spieler</span>
-      <select id="np-team" title="In welches Team die Spieler kommen"></select>
-      <span class="hint">Eine Zeile je Spieler, die nächste erscheint von selbst.
-        Mehrere Spieler aus dem Chat lassen sich auch ins Riot-ID-Feld einfügen.</span>
-    </div>
-    <div id="np-rows"></div>
+    <div id="kader-rows"></div>
     <div class="row">
-      <button class="action" type="button" id="np-add" disabled>Anlegen und scrapen</button>
-      <span class="hint" id="np-note"></span>
+      <button class="action" type="button" id="kader-save" disabled>Kader speichern</button>
+      <span class="hint" id="kader-note"></span>
     </div>
-
-    <div class="row" style="margin-top:0.4rem">
-      <span class="label">Spieler bearbeiten</span>
-      <span class="hint">Umbenannt, Rolle gewechselt, Bank rein oder raus, oder weg</span>
-    </div>
-    <div class="row">
-      <select id="ed-team" title="Team"></select>
-      <select id="ed-player" title="Spieler"></select>
-      <input type="text" id="ed-label" placeholder="Anzeigename" style="min-width:9rem">
-      <input type="text" id="ed-riot" placeholder="Name#TAG" style="min-width:11rem">
-      <select id="ed-role">
-        <option value="TOP">Top</option>
-        <option value="JUNGLE">Jungle</option>
-        <option value="MIDDLE">Mid</option>
-        <option value="BOTTOM">Bot</option>
-        <option value="UTILITY">Support</option>
-        <option value="UNKNOWN">Rolle offen</option>
-      </select>
-      <label class="field"><input type="checkbox" id="ed-bench"> Bank</label>
-      <button class="action" type="button" id="ed-save">Speichern</button>
-      <button class="del" type="button" id="ed-delete">Spieler löschen</button>
-    </div>
-    <span class="hint" id="ed-note"></span>
 
     <pre id="scrape-log" hidden></pre>
   </details>
@@ -1550,13 +1529,14 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       : "Das Board läuft als Programm aus " + (location.host || "diesem Rechner")
         + ": Speichern schreibt direkt in die Dateien und baut neu.";
     document.getElementById("tools-hint").style.color = veraltet ? "var(--warn)" : "";
-    if (veraltet) document.getElementById("np-add").disabled = true;
+    if (veraltet) document.getElementById("kader-save").disabled = true;
     else pruefeNpZeilen();
     // Die Abfrage laeuft asynchron - beim ersten Zeichnen war noch Dateibetrieb.
     // Ohne das hiessen die Knoepfe weiter "ausblenden" statt "löschen".
     renderPlayers();
     renderGames();
     ladeTeamAuswahl(team.team);
+    fuelleScrapeAuswahl();
     pruefeLigaZugang();
     // Laeuft gerade ein Scrape? Dann Protokoll weiter mitschreiben.
     try {
@@ -1734,6 +1714,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       renderPlayers();
       buildPickRows();
       renderGames();
+      fuelleScrapeAuswahl();
     };
   }
 
@@ -2018,8 +1999,13 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       if (!bySeries.has(game.series)) bySeries.set(game.series, []);
       bySeries.get(game.series).push(game);
     }
-    for (const [name, list] of bySeries) {
-      list.sort((a, b) => (a.game || 0) - (b.game || 0));
+    // Nach Anstosszeit, neueste zuerst - sonst stuende an einem Turniertag das
+    // Finale vor dem Halbfinale, nur weil der Name frueher im Alphabet steht.
+    const serien = [...bySeries.entries()].sort((a, b) =>
+      spielZeit(b[1][b[1].length - 1]).localeCompare(spielZeit(a[1][a[1].length - 1])));
+    for (const [name, list] of serien) {
+      list.sort((a, b) => spielZeit(a).localeCompare(spielZeit(b))
+                       || (a.game || 0) - (b.game || 0));
       const wins = list.filter((g) => g.result === "win").length;
       const losses = list.filter((g) => g.result === "loss").length;
       const open = list.length - wins - losses;
@@ -2064,11 +2050,12 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     for (const g of rows) {
       const key = keyOf(g);
       const seen = latest.get(key);
-      if (!seen || String(g.date) > seen) latest.set(key, String(g.date));
+      if (!seen || spielZeit(g) > seen) latest.set(key, spielZeit(g));
     }
     const sorted = rows.slice().sort((a, b) =>
       latest.get(keyOf(b)).localeCompare(latest.get(keyOf(a)))
       || keyOf(a).localeCompare(keyOf(b))
+      || spielZeit(a).localeCompare(spielZeit(b))
       || (a.game || 0) - (b.game || 0));
 
     const blocks = [];
@@ -2084,6 +2071,11 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   const blockScore = (block) => [
     block.games.filter((g) => g.result === "win").length,
     block.games.filter((g) => g.result === "loss").length];
+
+  // Wann ein Spiel stattfand. Die Liga liefert einen vollen Zeitstempel; von
+  // Hand eingetragene Spiele haben nur das Datum - dann wird es als Tagesbeginn
+  // gelesen, damit sich beides vergleichen laesst.
+  const spielZeit = (g) => String((g && (g.time || g.date)) || "");
 
   function renderGames() {
     const host = document.getElementById("game-list");
@@ -2135,13 +2127,23 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
         el("span", {class: "team"}, entry.team || "—"),
         el("span", {class: "badge " + entry.side}, entry.side === "red" ? "Red" : "Blue")),
       entry.picks && entry.picks.length
-        ? el("div", {class: "picks"}, entry.picks.map(pickTile))
+        ? el("div", {class: "picks"}, nachRollen(entry.picks).map(pickTile))
         : el("span", {class: "hint"}, "keine Picks erfasst"),
       el("div", {class: "bans"},
         el("span", {class: "label"}, "Bans"),
         (entry.bans && entry.bans.length)
           ? entry.bans.map(banTile)
           : el("span", {class: "hint"}, "—")));
+  }
+
+  // Picks stehen in der Reihenfolge, in der Riot sie liefert - fuers Auge
+  // gehoeren sie in Lanereihenfolge: Top, Jungle, Mid, Bot, Support.
+  function nachRollen(picks) {
+    const platz = (rolle) => {
+      const i = ROLES.findIndex(([wert]) => wert === rolle);
+      return i < 0 ? ROLES.length : i;
+    };
+    return picks.slice().sort((a, b) => platz(a.role) - platz(b.role));
   }
 
   function pickTile(pick) {
@@ -2649,8 +2651,14 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     } catch (e) { toolsNote("Fehlgeschlagen: " + e.message); }
   });
 
-  document.getElementById("do-liga").addEventListener("click", async () => {
-    toolsNote("Hole die Ligazahlen ...");
+  // Ein Knopf fuer alles von leagueofregions.com: Mannschaften, Spieler,
+  // Championzahlen und die Partien. Der Bericht sagt hinterher, wie viele
+  // Spiele dazugekommen sind - frueher konnte das still danebengehen, wenn
+  // der Zugang abgelaufen war.
+  document.getElementById("do-update").addEventListener("click", async () => {
+    const knopf = document.getElementById("do-update");
+    knopf.disabled = true;
+    toolsNote("Hole Ligadaten und Spiele ... das dauert ein paar Minuten.");
     try {
       const antwort = await fetch("api/liga", {method: "POST"});
       if (antwort.status === 404) {
@@ -2664,59 +2672,28 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       log.textContent = (info.log || []).join("\n");
       log.scrollTop = log.scrollHeight;
       if (!info.ok) { toolsNote(info.error || "Fehlgeschlagen."); return; }
-      // Laeuft das Token ab, holt liga.py brav den gesicherten Stand - die
-      // Zahlen stimmen dann, die einzelnen Partien aber nicht mehr. Ohne
-      // Hinweis faellt das erst Wochen spaeter auf.
       if ((info.log || []).some((z) => z.includes("Token wird abgelehnt"))) {
-        toolsNote("Die Zahlen sind aktuell, die einzelnen Partien nicht: der "
-                + "Zugang zu leagueofregions.com ist abgelaufen. Neu anmelden, "
-                + "Cookie-Zeile nach liga-token.txt kopieren, dann noch einmal "
-                + "auf diesen Knopf.");
+        toolsNote("Die Zahlen sind aktuell, die Spiele nicht: der Zugang zu "
+                + "leagueofregions.com ist abgelaufen. Neu anmelden, Cookie-Zeile "
+                + "nach liga-token.txt kopieren, dann noch einmal hier klicken.");
         pruefeLigaZugang();
         return;
       }
-      toolsNote("Fertig — lade neu ...");
-      setTimeout(() => location.reload(), 1200);
-    } catch (e) { toolsNote("Fehlgeschlagen: " + e.message); }
+      // Ein aelteres laufendes Programm zaehlt die Spiele nicht mit - dann
+      // wird nichts behauptet, was nicht gemessen wurde.
+      const zahlen = typeof info.nachher === "number"
+                  && typeof info.vorher === "number";
+      const dazu = zahlen ? info.nachher - info.vorher : null;
+      toolsNote((!zahlen ? "Fertig"
+          : dazu ? dazu + (dazu === 1 ? " neues Spiel" : " neue Spiele") + " dazu"
+          : "Nichts Neues, " + info.nachher + " Spiele sind schon da")
+        + " — lade neu ...");
+      setTimeout(() => location.reload(), 1500);
+    } catch (e) {
+      toolsNote("Fehlgeschlagen: " + e.message);
+    } finally { knopf.disabled = false; }
   });
 
-  // Eigener Knopf nur fuer die Partien. Der grosse Lauf holt sie zwar mit,
-  // aber wenn der Zugang abgelaufen ist, nimmt liga.py klaglos den gesicherten
-  // Stand - dann werden die Zahlen aktuell und die Spiele nicht.
-  document.getElementById("do-liga-spiele").addEventListener("click", async () => {
-    toolsNote("Hole die Partien ...");
-    try {
-      const antwort = await fetch("api/liga/spiele", {method: "POST"});
-      if (antwort.status === 404) {
-        toolsNote("Das laufende Programm kennt diesen Knopf noch nicht — "
-                + "schwarzes Fenster schließen und neu starten.");
-        return;
-      }
-      const info = await antwort.json().catch(() => ({}));
-      const log = document.getElementById("scrape-log");
-      log.hidden = false;
-      log.textContent = (info.log || []).join("\n");
-      log.scrollTop = log.scrollHeight;
-      if (!info.ok) { toolsNote(info.error || "Fehlgeschlagen."); return; }
-      if ((info.log || []).some((z) => z.includes("Token wird abgelehnt"))) {
-        toolsNote("Der Zugang zu leagueofregions.com ist abgelaufen — es kamen "
-                + "keine neuen Partien an. Neu anmelden, Cookie-Zeile nach "
-                + "liga-token.txt kopieren, dann noch einmal hier klicken.");
-        pruefeLigaZugang();
-        return;
-      }
-      const neu = (info.nachher || 0) - (info.vorher || 0);
-      if (!neu) {
-        toolsNote("Fertig — es gab nichts Neues, " + (info.nachher || 0)
-                + " Spiele sind schon da.");
-        pruefeLigaZugang();
-        return;
-      }
-      toolsNote(neu + (neu === 1 ? " neues Spiel" : " neue Spiele")
-              + " übernommen — lade neu ...");
-      setTimeout(() => location.reload(), 1500);
-    } catch (e) { toolsNote("Fehlgeschlagen: " + e.message); }
-  });
 
   document.getElementById("reveal").addEventListener("click", () => {
     fetch("api/reveal", {method: "POST"}).catch(() => {});
@@ -2730,9 +2707,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       + "Browserfenster, das offen bleiben muss — hier kannst du solange "
       + "weiterarbeiten.");
     if (!ok) return;
-    for (const id of ["do-scrape", "do-scrape-all"]) {
-      document.getElementById(id).disabled = true;
-    }
+    document.getElementById("do-scrape").disabled = true;
     try {
       const info = await (await fetch("api/scrape", {method: "POST",
         body: JSON.stringify({teams})})).json();
@@ -2750,18 +2725,38 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   }
 
   function scrapeButtons(an) {
-    for (const id of ["do-scrape", "do-scrape-all"]) {
-      const knopf = document.getElementById(id);
-      if (knopf) knopf.disabled = !an;
-    }
+    const knopf = document.getElementById("do-scrape");
+    if (knopf) knopf.disabled = !an;
   }
 
-  document.getElementById("do-scrape").addEventListener("click", () =>
-    startScrape([team.team], "op.gg für " + team.team, team.players.length));
+  // Ein Knopf, daneben die Auswahl: dieses Team oder alle.
+  function fuelleScrapeAuswahl() {
+    const auswahl = document.getElementById("scrape-scope");
+    if (!auswahl) return;
+    const bisher = auswahl.value;
+    const quelle = ROSTER.length ? ROSTER : TEAMS;
+    auswahl.textContent = "";
+    for (const t of quelle) {
+      auswahl.append(el("option", {value: t.team},
+        t.team + " (" + (t.players || []).length + ")"));
+    }
+    const gesamt = quelle.reduce((n, t) => n + (t.players || []).length, 0);
+    auswahl.append(el("option", {value: ""}, "alle Teams (" + gesamt + ")"));
+    auswahl.value = [...auswahl.options].some((o) => o.value === bisher)
+      ? bisher : team.team;
+  }
 
-  document.getElementById("do-scrape-all").addEventListener("click", () =>
-    startScrape([], "op.gg für alle " + TEAMS.length + " Teams",
-                TEAMS.reduce((n, t) => n + t.players.length, 0)));
+  document.getElementById("do-scrape").addEventListener("click", () => {
+    const quelle = ROSTER.length ? ROSTER : TEAMS;
+    const wahl = document.getElementById("scrape-scope").value;
+    if (!wahl) {
+      startScrape([], "op.gg für alle " + quelle.length + " Teams",
+                  quelle.reduce((n, t) => n + (t.players || []).length, 0));
+      return;
+    }
+    const t = quelle.find((x) => x.team === wahl) || team;
+    startScrape([t.team], "op.gg für " + t.team, (t.players || []).length);
+  });
 
   function pollScrape() {
     const log = document.getElementById("scrape-log");
@@ -2797,52 +2792,35 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       ROSTER = info.teams || [];
     } catch (e) { return; }            // aeltere Fassung ohne diesen Weg
 
-    for (const [id, wahl] of [["np-team", vorwahl], ["ed-team", null]]) {
-      const auswahl = document.getElementById(id);
-      if (!auswahl) continue;
-      const bisher = wahl || auswahl.value || team.team;
-      auswahl.textContent = "";
-      for (const t of ROSTER) {
-        const zahl = (t.players || []).length;
-        auswahl.append(el("option", {value: t.team},
-          t.team + (zahl ? "" : "  (noch leer)")));
-      }
-      if ([...auswahl.options].some((o) => o.value === bisher)) auswahl.value = bisher;
-    }
-    ladeSpielerAuswahl();
-  }
-
-  // Spielerliste zum gewaehlten Team, danach die Felder fuellen.
-  function ladeSpielerAuswahl(vorwahl) {
-    const auswahl = document.getElementById("ed-player");
+    const auswahl = document.getElementById("kader-team");
     if (!auswahl) return;
-    const gewaehlt = document.getElementById("ed-team").value;
-    const t = ROSTER.find((x) => x.team === gewaehlt);
-    const bisher = vorwahl || auswahl.value;
+    const bisher = vorwahl || auswahl.value || team.team;
     auswahl.textContent = "";
-    for (const p of (t && t.players) || []) {
-      auswahl.append(el("option", {value: p.label},
-        p.label + (p.bench ? "  (Bank)" : "")));
+    for (const t of ROSTER) {
+      const zahl = (t.players || []).length;
+      auswahl.append(el("option", {value: t.team},
+        t.team + (zahl ? "  (" + zahl + ")" : "  (noch leer)")));
     }
     if ([...auswahl.options].some((o) => o.value === bisher)) auswahl.value = bisher;
-    fuelleSpielerFelder();
+    ladeKader();
+    // Erst jetzt steht ROSTER - die Scrapeauswahl rechnet damit.
+    fuelleScrapeAuswahl();
   }
 
-  function fuelleSpielerFelder() {
-    const t = ROSTER.find((x) => x.team === document.getElementById("ed-team").value);
-    const p = ((t && t.players) || [])
-      .find((x) => x.label === document.getElementById("ed-player").value);
-    document.getElementById("ed-label").value = p ? p.label : "";
-    document.getElementById("ed-riot").value = p ? p.riotId : "";
-    document.getElementById("ed-role").value = p ? p.role : "UNKNOWN";
-    document.getElementById("ed-bench").checked = !!(p && p.bench);
-    for (const id of ["ed-save", "ed-delete"]) {
-      document.getElementById(id).disabled = !p;
-    }
+  // Den Kader des gewaehlten Teams als Zeilen zeigen: eine je Spieler, am Ende
+  // eine leere. Aendern, entfernen und anlegen passiert damit an einer Stelle.
+  function ladeKader() {
+    const gewaehlt = document.getElementById("kader-team").value;
+    const t = ROSTER.find((x) => x.team === gewaehlt);
+    npZeilen = ((t && t.players) || []).map((spieler) => {
+      const zeile = neueSpielerZeile(spieler);
+      zeile.original = {label: spieler.label, riotId: spieler.riotId,
+                        role: spieler.role, bench: !!spieler.bench};
+      return zeile;
+    });
+    document.getElementById("kader-note").textContent = "";
+    npGeaendert();
   }
-
-  document.getElementById("ed-team").addEventListener("change", () => ladeSpielerAuswahl());
-  document.getElementById("ed-player").addEventListener("change", fuelleSpielerFelder);
 
   document.getElementById("nt-add").addEventListener("click", async () => {
     const note = document.getElementById("nt-note");
@@ -2879,60 +2857,6 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     if (!info.ok) { note.textContent = info.error || "Fehlgeschlagen."; return null; }
     return info;
   }
-
-  document.getElementById("ed-save").addEventListener("click", async () => {
-    const note = document.getElementById("ed-note");
-    const team_ = document.getElementById("ed-team").value;
-    const alt = document.getElementById("ed-player").value;
-    note.textContent = "Speichere ...";
-    try {
-      const info = await spielerSchicken("api/player/edit", {
-        team: team_, label: alt,
-        newLabel: document.getElementById("ed-label").value.trim(),
-        riotId: document.getElementById("ed-riot").value.trim(),
-        role: document.getElementById("ed-role").value,
-        bench: document.getElementById("ed-bench").checked,
-      }, note);
-      if (!info) return;
-      await ladeTeamAuswahl();
-      document.getElementById("ed-team").value = info.team;
-      ladeSpielerAuswahl(info.label);
-      // Neue Riot-ID heisst: die alten Zahlen gehoeren zu einem anderen Konto.
-      if (info.riotChanged
-          && confirm("Die Riot-ID hat sich geändert.\n\n"
-                   + "Jetzt " + info.label + " neu von op.gg holen? "
-                   + "Dauert gut eine Minute.")) {
-        const start = await fetch("api/scrape", {method: "POST",
-          body: JSON.stringify({teams: [info.team], only: info.label})});
-        const lauf = await start.json().catch(() => ({}));
-        if (lauf.ok) { note.textContent = "Gespeichert, hole op.gg ..."; scrapeButtons(false); pollScrape(); return; }
-        note.textContent = "Gespeichert. Der Scrape ließ sich nicht starten: "
-          + (lauf.error || "unbekannt");
-        return;
-      }
-      note.textContent = "Gespeichert. Seite neu laden, um es im Board zu sehen.";
-    } catch (e) { note.textContent = "Fehlgeschlagen: " + e.message; }
-  });
-
-  document.getElementById("ed-delete").addEventListener("click", async () => {
-    const note = document.getElementById("ed-note");
-    const team_ = document.getElementById("ed-team").value;
-    const label = document.getElementById("ed-player").value;
-    if (!confirm(label + " aus " + team_ + " entfernen?\n\n"
-               + "Roster, Scrape-Daten und Draftplan-Eintrag werden gelöscht. "
-               + "Eingetragene Turnierspiele bleiben erhalten.")) return;
-    note.textContent = "Lösche ...";
-    try {
-      const info = await spielerSchicken("api/player/delete",
-        {team: team_, label}, note);
-      if (!info) return;
-      await ladeTeamAuswahl();
-      document.getElementById("ed-team").value = info.team;
-      ladeSpielerAuswahl();
-      note.textContent = info.label + " ist entfernt. Seite neu laden, um es im "
-        + "Board zu sehen.";
-    } catch (e) { note.textContent = "Fehlgeschlagen: " + e.message; }
-  });
 
   // ------------------------------------------- Mehrere Spieler anlegen
   // Nimmt dasselbe Format, in dem Roster sonst im Chat verschickt werden:
@@ -3041,16 +2965,33 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   function npGeaendert() {
     const letzte = npZeilen[npZeilen.length - 1];
     if (!letzte || npGefuellt(letzte)) npZeilen.push(neueSpielerZeile());
-    const host = document.getElementById("np-rows");
+    const host = document.getElementById("kader-rows");
     host.textContent = "";
     for (const z of npZeilen) host.append(z.node);
     pruefeNpZeilen();
+    kaderKnopf();
+  }
+
+  // Der Knopf spricht aus, was passieren wird - und bleibt aus, solange sich
+  // nichts geaendert hat oder eine Zeile fehlerhaft ist.
+  function kaderKnopf() {
+    const knopf = document.getElementById("kader-save");
+    if (!knopf) return;
+    const veraltet = SERVER && !((SERVER_INFO.features || []).includes("players"));
+    const {weg, geaendert, neue, fehler, anzahl} = kaderAenderungen();
+    knopf.disabled = veraltet || fehler > 0 || !anzahl;
+    const teile = [];
+    if (neue.length) teile.push(neue.length + " neu");
+    if (geaendert.length) teile.push(geaendert.length + " geändert");
+    if (weg.length) teile.push(weg.length + " entfernt");
+    knopf.textContent = teile.length ? "Kader speichern (" + teile.join(", ") + ")"
+                                     : "Kader speichern";
   }
 
   // Liefert die ausgefuellten Zeilen und markiert die fehlerhaften.
   function pruefeNpZeilen() {
-    const knopf = document.getElementById("np-add");
-    const note = document.getElementById("np-note");
+    const knopf = document.getElementById("kader-save");
+    const note = document.getElementById("kader-note");
     const gesehen = new Map();
     let fehler = 0;
     const gut = [];
@@ -3079,12 +3020,6 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       gut.push({riotId, label: z.label.value.trim() || name,
                 role: z.role.value, bench: z.bench.checked});
     }
-    if (knopf) {
-      const veraltet = SERVER && !((SERVER_INFO.features || []).includes("players"));
-      knopf.disabled = veraltet || !gut.length || fehler > 0;
-      knopf.textContent = gut.length > 1 ? gut.length + " Spieler anlegen und scrapen"
-                                         : "Anlegen und scrapen";
-    }
     if (note && !note.dataset.laeuft) {
       note.textContent = fehler
         ? fehler + (fehler === 1 ? " Zeile ist" : " Zeilen sind")
@@ -3096,38 +3031,106 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
 
   npGeaendert();
 
-  document.getElementById("np-add").addEventListener("click", async () => {
-    const note = document.getElementById("np-note");
-    const {gut: liste, fehler} = pruefeNpZeilen();
-    const ziel = document.getElementById("np-team").value || team.team;
-    if (!liste.length || fehler) return;
-    if (!confirm(liste.length + " Spieler in " + ziel + " anlegen und von op.gg holen?\n\n"
-        + "Dauert gut " + Math.max(1, Math.round(liste.length * 1.2)) + " Minuten; "
-        + "das Browserfenster muss dabei offen bleiben.")) return;
+  // Kader speichern: vergleicht die Zeilen mit dem Stand aus teams.json und
+  // schickt nur, was sich geaendert hat - entfernt, geaendert, neu. Das ersetzt
+  // die frueheren drei Formulare.
+  function kaderAenderungen() {
+    const {gut, fehler} = pruefeNpZeilen();
+    const ziel = document.getElementById("kader-team").value;
+    const t = ROSTER.find((x) => x.team === ziel);
+    const vorher = ((t && t.players) || []);
+    const bleiben = new Set();
+    const geaendert = [], neue = [];
+
+    for (const z of npZeilen) {
+      const riotId = z.riot.value.trim();
+      const label = z.label.value.trim() || riotId.split("#")[0].trim();
+      if (!riotId) continue;
+      if (z.original) {
+        bleiben.add(z.original.label);
+        const gleich = z.original.label === label
+          && z.original.riotId === riotId
+          && z.original.role === z.role.value
+          && z.original.bench === z.bench.checked;
+        if (!gleich) {
+          geaendert.push({team: ziel, label: z.original.label, newLabel: label,
+                          riotId, role: z.role.value, bench: z.bench.checked});
+        }
+      } else {
+        neue.push({riotId, label, role: z.role.value, bench: z.bench.checked});
+      }
+    }
+    const weg = vorher.filter((x) => !bleiben.has(x.label));
+    return {ziel, weg, geaendert, neue, fehler, anzahl: weg.length + geaendert.length + neue.length};
+  }
+
+  document.getElementById("kader-save").addEventListener("click", async () => {
+    const note = document.getElementById("kader-note");
+    const {ziel, weg, geaendert, neue, fehler, anzahl} = kaderAenderungen();
+    if (fehler || !anzahl) return;
+
+    const teile = [];
+    if (neue.length) teile.push(neue.length + (neue.length === 1 ? " neuer Spieler" : " neue Spieler"));
+    if (geaendert.length) teile.push(geaendert.length + (geaendert.length === 1 ? " Änderung" : " Änderungen"));
+    if (weg.length) teile.push(weg.map((x) => x.label).join(", ") + " entfernen");
+    if (!confirm(ziel + ": " + teile.join(", ") + "?"
+        + (weg.length ? "\n" + "\n" + "Roster, Scrape-Daten und Draftplan-Eintrag "
+           + "der Entfernten werden gelöscht. Eingetragene Turnierspiele bleiben." : ""))) return;
+
     note.dataset.laeuft = "1";
-    note.textContent = "Trage ein ...";
+    note.textContent = "Speichere ...";
+    const holen = [];
     try {
-      const answer = await fetch("api/players", {method: "POST",
-        body: JSON.stringify({team: ziel, players: liste})});
-      if (answer.status === 404) {
-        note.textContent = "Das laufende Programm kennt diesen Knopf noch nicht. "
-          + "Schwarzes Fenster schließen und „Draftboard starten.cmd“ neu starten.";
+      for (const x of weg) {
+        const info = await spielerSchicken("api/player/delete",
+          {team: ziel, label: x.label}, note);
+        if (!info) return;
+      }
+      for (const x of geaendert) {
+        const info = await spielerSchicken("api/player/edit", x, note);
+        if (!info) return;
+        if (info.riotChanged) holen.push(info.label);
+      }
+      if (neue.length) {
+        const antwort = await fetch("api/players", {method: "POST",
+          body: JSON.stringify({team: ziel, players: neue})});
+        const info = await antwort.json().catch(() => ({}));
+        if (!info.ok) { note.textContent = info.error || "Fehlgeschlagen."; return; }
+        holen.push(...(info.labels || []));
+      }
+      await ladeTeamAuswahl(ziel);
+
+      if (holen.length && confirm(holen.length === 1
+          ? holen[0] + " jetzt von op.gg holen? Dauert gut eine Minute."
+          : holen.length + " Profile jetzt von op.gg holen? Dauert gut "
+            + Math.max(1, Math.round(holen.length * 1.2)) + " Minuten.")) {
+        const start = await fetch("api/scrape", {method: "POST",
+          body: JSON.stringify({teams: [ziel], only: holen})});
+        const lauf = await start.json().catch(() => ({}));
+        if (lauf.ok) {
+          note.textContent = "Gespeichert, hole op.gg ...";
+          scrapeButtons(false);
+          pollScrape();
+          return;
+        }
+        note.textContent = "Gespeichert. Der Scrape ließ sich nicht starten: "
+          + (lauf.error || "unbekannt");
         return;
       }
-      const info = await answer.json().catch(() => ({}));
-      if (!info.ok) { note.textContent = info.error || "Fehlgeschlagen."; return; }
-      note.textContent = info.labels.join(", ") + " stehen jetzt in " + info.team
-        + ". op.gg wird geholt ...";
-      npZeilen = [];
-      npGeaendert();
-      ladeTeamAuswahl(info.team);
-      scrapeButtons(false);
-      pollScrape();
+      note.textContent = "Gespeichert. Seite neu laden, um es im Board zu sehen.";
     } catch (e) {
       note.textContent = "Fehlgeschlagen: " + e.message;
     } finally {
       delete note.dataset.laeuft;
     }
+  });
+
+  document.getElementById("kader-team").addEventListener("change", ladeKader);
+
+  document.getElementById("kader-neu").addEventListener("click", () => {
+    const form = document.getElementById("kader-neu-form");
+    form.hidden = !form.hidden;
+    if (!form.hidden) document.getElementById("nt-name").focus();
   });
 
   // Championliste einmal fuellen - Spielformular und Draftplan haengen dran.

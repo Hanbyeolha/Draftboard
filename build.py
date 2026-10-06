@@ -616,6 +616,9 @@ def load_games():
                 "team": team,
                 "opponent": other,
                 "date": entry.get("date", ""),
+                # Genaue Anstosszeit, wenn die Liga sie geliefert hat - nur
+                # damit laesst sich Play-in vor Halbfinale vor Finale sortieren.
+                "time": entry.get("time") or "",
                 "side": "blue" if team == entry["blue"] else "red",
                 # winner darf fehlen (Ergebnis noch nicht nachgetragen).
                 "result": ("win" if entry.get("winner") == team
