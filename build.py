@@ -35,8 +35,23 @@ ICON_URL = ("https://opgg-static.akamaized.net/meta/images/lol/{version}"
 # als JPEG mit rund 160 KB - das waere bei 67 Champions eine 13-MB-Datei.
 # Auf 800 px verkleinert und als WebP neu kodiert sind es 28 KB, und hinter
 # den dunklen Verlaeufen des Heros sieht man den Unterschied nicht.
+# DraftGap (MIT, github.com/vigovlugt/draftgap) stellt seine aufbereiteten
+# lolalytics-Daten oeffentlich bereit. Zwei Datensaetze: current-patch traegt
+# die Staerke je Champion und Rolle, 30-days die Matchups und Synergien.
+DRAFT_CACHE = ROOT / "data" / "draftgap"
+DRAFT_URL = "https://bucket.draftgap.com/datasets/v5/{name}.json"
+# Unter 50 Partien ist eine Matchup-Quote Rauschen - und sie kostet Platz:
+# mit 20 als Grenze waere der Auszug 2,1 MB gzip statt 1,6.
+DRAFT_MIN = 50
+# DraftGap zaehlt die Rollen 0-4 in derselben Reihenfolge wie das Board
+# (Top, Jungle, Mid, Bot, Support) - nachgeprueft an Thresh, Lee Sin, Ornn,
+# Caitlyn und Ahri.
+
 SPLASH_CACHE = ROOT / "data" / "splash"
-SPLASH_PX = 800
+# 560 statt 800: das Bild liegt hinter einem Verlauf von 45-86 % und wird im
+# Raster rund 190 px breit gezeigt. Bei 800 px kosteten 126 Champions 4,3 MB
+# eingebettet, bei 560 sind es 2,6 - sichtbar ist der Unterschied nicht.
+SPLASH_PX = 560
 SPLASH_Q = 72
 SPLASH_URL = ("https://ddragon.leagueoflegends.com/cdn/img/champion/splash/"
               "{key}_0.jpg")
@@ -151,6 +166,102 @@ def embed_icons(icons, version):
     return out
 
 
+def draft_holen(name):
+    """Einen DraftGap-Datensatz laden, mit Ablage auf der Platte.
+
+    30-days wiegt rund 52 MB - das holt man nicht bei jedem Bau neu."""
+    DRAFT_CACHE.mkdir(parents=True, exist_ok=True)
+    pfad = DRAFT_CACHE / f"{name}.json"
+    if not pfad.exists():
+        url = DRAFT_URL.format(name=name)
+        anfrage = urllib.request.Request(
+            url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(anfrage, timeout=600) as antwort:
+            pfad.write_bytes(antwort.read())
+    return json.loads(pfad.read_text(encoding="utf-8"))
+
+
+def draft_daten():
+    """Patch-Staerke, Matchups und Synergien, auf das Noetige eingedampft.
+
+    Die Schluessel sind Nummern, keine Namen: "Dr. Mundo" stuende sonst
+    hunderttausendfach in der Datei und kostete ein Drittel mehr Platz."""
+    try:
+        aktuell = draft_holen("current-patch")
+        tage30 = draft_holen("30-days")
+    except (urllib.error.HTTPError, urllib.error.URLError, OSError,
+            ValueError) as exc:
+        print(f"  Draft: nicht geholt ({exc}) - Berater bleibt leer")
+        return None
+
+    namen = sorted({c["name"] for c in tage30["championData"].values()})
+    nr = {n: i for i, n in enumerate(namen)}
+
+    # Staerke je Champion und Rolle aus dem laufenden Patch.
+    basis = {}
+    for c in aktuell["championData"].values():
+        rollen = {}
+        for r, st in (c.get("statsByRole") or {}).items():
+            if st.get("games"):
+                rollen[r] = [st["games"], round(1000 * st["wins"] / st["games"])]
+        if rollen and c["name"] in nr:
+            basis[str(nr[c["name"]])] = rollen
+
+    # Schadensprofil je Champion und Rolle: Anteil magischer Schaden in
+    # Prozent. Damit laesst sich sagen, ob eine Aufstellung einseitig wird,
+    # ohne irgendetwas zu behaupten.
+    schaden = {}
+    for c in aktuell["championData"].values():
+        if c["name"] not in nr:
+            continue
+        rollen = {}
+        for r, st in (c.get("statsByRole") or {}).items():
+            d = st.get("damageProfile") or {}
+            summe = (d.get("physical") or 0) + (d.get("magic") or 0) + (d.get("true") or 0)
+            if st.get("games") and summe > 0:
+                rollen[r] = round(100 * (d.get("magic") or 0) / summe)
+        if rollen:
+            schaden[str(nr[c["name"]])] = rollen
+
+    # Matchups und Synergien aus den letzten 30 Tagen.
+    nach_id = tage30["championData"]
+    paare = {}
+    for c in nach_id.values():
+        rollen = {}
+        for r, st in (c.get("statsByRole") or {}).items():
+            if not st.get("games"):
+                continue
+            eintrag = {}
+            for kurz, feld in (("m", "matchup"), ("s", "synergy")):
+                tabelle = {}
+                for rolle2, karte in (st.get(feld) or {}).items():
+                    innen = {}
+                    for fremd_id, w in karte.items():
+                        if w.get("games", 0) < DRAFT_MIN:
+                            continue
+                        fremd = nach_id.get(fremd_id)
+                        if not fremd or fremd["name"] not in nr:
+                            continue
+                        innen[str(nr[fremd["name"]])] = [
+                            w["games"], round(1000 * w["wins"] / w["games"])]
+                    if innen:
+                        tabelle[rolle2] = innen
+                if tabelle:
+                    eintrag[kurz] = tabelle
+            if eintrag:
+                rollen[r] = eintrag
+        if rollen and c["name"] in nr:
+            paare[str(nr[c["name"]])] = rollen
+
+    gesamt = len(json.dumps({"basis": basis, "paare": paare},
+                            separators=(",", ":"))) // 1024
+    print(f"  Draft: Patch {aktuell.get('version')}, {len(basis)} Champions, "
+          f"{len(paare)} mit Matchups ({gesamt} KB)")
+    return {"version": aktuell.get("version"),
+            "stand": (aktuell.get("date") or "")[:10],
+            "namen": namen, "basis": basis, "paare": paare, "schaden": schaden}
+
+
 def embed_splashes(champs, icons):
     """Splash-Art der uebergebenen Champions einbetten.
 
@@ -198,20 +309,45 @@ def embed_splashes(champs, icons):
     return out
 
 
+# Die Queues, zwischen denen die Karte umschalten kann. LIGA kommt aus den
+# Turnierpartien und hat keine Championbloecke.
+SPLASH_QUEUES = ("RANKED", "SOLO", "FLEX")
+
+
 def top_champions(teams):
-    """Der meistgespielte Champion je Spieler - mehr Splash braucht niemand."""
+    """Der meistgespielte Champion je Spieler - fuer JEDE Auswahl, die die
+    Karte zulaesst.
+
+    Frueher wurden hier alle Seasonbloecke aneinandergehaengt und daraus ein
+    einziger Champion bestimmt. Die Karte rechnet aber je gewaehlter Queue
+    und Season neu zusammen (siehe championRows/seasonEntries im Template) -
+    fuer zehn Spieler war das ein anderer Champion, und deren Banner blieb
+    leer. Darum hier dieselbe Rechnung wie dort, ueber alle Kombinationen."""
+    seasons = {None}
+    for team in teams:
+        for spieler in team.get("players") or []:
+            for queue in SPLASH_QUEUES:
+                for block in (spieler.get("queues") or {}).get(queue) or []:
+                    if block.get("id") is not None:
+                        seasons.add(block["id"])
+
     raus = set()
     for team in teams:
         for spieler in team.get("players") or []:
-            bloecke = (spieler.get("queues") or {}).get("RANKED") or []
-            champs = []
-            for block in bloecke:
-                champs += block.get("champions") or []
-            if not champs:
-                continue
-            beste = max(champs, key=lambda c: c["win"] + c["lose"])
-            if beste.get("champ"):
-                raus.add(beste["champ"])
+            for queue in SPLASH_QUEUES:
+                for season in seasons:
+                    summe = {}
+                    for block in (spieler.get("queues") or {}).get(queue) or []:
+                        if (block.get("id") is not None and season is not None
+                                and block["id"] != season):
+                            continue
+                        for c in block.get("champions") or []:
+                            summe[c["champ"]] = (summe.get(c["champ"], 0)
+                                                 + c["win"] + c["lose"])
+                    if summe:
+                        raus.add(max(summe, key=summe.get))
+    raus.discard(None)
+    raus.discard("")
     return raus
 
 
@@ -900,6 +1036,10 @@ def build(embed=False, pages=False):
         # Splash nur fuer die Champions, die als Kopfbild gebraucht werden -
         # der meistgespielte je Spieler.
         data["splashData"] = embed_splashes(top_champions(teams), icons)
+        # Matchups und Synergien fuer den Draft-Berater.
+        draft = draft_daten()
+        if draft:
+            data["draft"] = draft
 
     # Seitenname = eigenes Team (erster Eintrag in teams.json) + Draftboard.
     title = (teams[0]["team"] + " Draftboard") if teams else "Draftboard"

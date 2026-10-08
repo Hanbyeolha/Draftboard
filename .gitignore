@@ -10,6 +10,9 @@ __pycache__/
 *.bak
 # Zwischenstand der geholten Partien - jederzeit neu holbar
 data/liga/*-roh.json
+# DraftGap-Rohdatensaetze - 30-days.json allein wiegt 52 MB, jederzeit
+# wieder von bucket.draftgap.com holbar
+data/draftgap/
 out/
 
 # Design-Lauf: die Aufzeichnung gehoert ins Repo, die Bildbelege nicht -

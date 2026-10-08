@@ -24,6 +24,12 @@ __FONTS__
   --radius-sm: 4px;
   --accent: #1a56c4;
   --accent-ink: #ffffff;
+  /* Eigene und gegnerische Mannschaft auf der Matchkarte. --accent ist in
+     diesem Board blau, taugt also nicht als "AFC1-Orange". Hier muss das
+     Orange dunkler sein als im Dunkelmodus, sonst steht es nicht auf Weiss. */
+  --eigen: #a8500c;
+  --eigen-ink: #ffffff;
+  --gegner: #1a56c4;
   --shadow: 0 1px 2px rgba(14, 18, 24, 0.10), 0 6px 14px -8px rgba(14, 18, 24, 0.30);
   --licht: inset 0 1px 0 rgba(255, 255, 255, 0.55);
   /* Die Rollenfarben sind Flaechen, keine Striche - darauf steht dunkle
@@ -53,6 +59,9 @@ __FONTS__
     --blue-soft: #141f33; --red-soft: #2b1715;
     --accent: #5aa2ff;
     --accent-ink: #0b0d12;
+    --eigen: #ff8a4c;
+    --eigen-ink: #10131a;
+    --gegner: #5ac8ff;
     --shadow: 0 2px 4px rgba(0, 0, 0, 0.5), 0 8px 16px -8px rgba(0, 0, 0, 0.9);
   --licht: inset 0 1px 0 rgba(255, 255, 255, 0.07);
   }
@@ -72,6 +81,9 @@ __FONTS__
     --blue-soft: #141f33; --red-soft: #2b1715;
     --accent: #5aa2ff;
     --accent-ink: #0b0d12;
+    --eigen: #ff8a4c;
+    --eigen-ink: #10131a;
+    --gegner: #5ac8ff;
     --shadow: 0 2px 4px rgba(0, 0, 0, 0.5), 0 8px 16px -8px rgba(0, 0, 0, 0.9);
   --licht: inset 0 1px 0 rgba(255, 255, 255, 0.07);
 }
@@ -221,7 +233,7 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
 @media (min-width: 1240px) {
   .cards.columns { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
-.cards.columns .panel { padding: 0.9rem 1rem 1rem; gap: 0.6rem; }
+.cards.columns .panel { padding: 0.9rem 1rem 1rem; gap: 0.4rem; }
 .cards.columns .card-head { gap: 0.5rem; }
 .cards.columns .name { font-size: 1.25rem; letter-spacing: -0.01em; }
 .cards.columns .rank { padding: 0.22rem 0.45rem 0.22rem 0.25rem; gap: 0.35rem; }
@@ -230,11 +242,12 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
 .cards.columns .rank-sub { font-size: 0.72rem; }
 .cards.columns .chip { font-size: 0.78rem; padding: 0.15rem 0.45rem; }
 .cards.columns table { font-size: 0.95rem; }
-.cards.columns th { padding: 0.35rem 0.45rem; font-size: 0.72rem; letter-spacing: 0.06em; }
-.cards.columns td { padding: 0.3rem 0.45rem; }
+.cards.columns th { padding: 0.24rem 0.45rem; font-size: 0.72rem; letter-spacing: 0.06em; }
+.cards.columns td { padding: 0.26rem 0.45rem; }
 .cards.columns .champ-cell { gap: 0.3rem; min-width: 0; }
-.cards.columns .champ-cell > span { overflow: hidden; text-overflow: ellipsis;
-                                    white-space: nowrap; }
+.cards.columns .champ-cell > span:not(.plan-tag) {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.champ-cell .plan-tag { flex: none; }
 .cards.columns td:first-child { max-width: 0; width: 46%; }
 .cards.columns .wr > span:first-child { min-width: 2.1rem; }
 .cards.columns .champ-cell img { width: 26px; height: 26px; }
@@ -253,53 +266,464 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
 .section > h2 { margin-top: 0.6rem; }
 /* Farbige Oberkante je Rolle: in der Fuenferreihe sieht man ohne Lesen,
    welche Spalte Top, Jungle, Mid, Bot, Support ist. */
-/* Das Rollenfeld traegt den Kartenkopf - Teamfarbe als Flaeche, wie im
-   Draft-Overlay, statt als Haarstrich obendrueber. */
+/* Der Kartenkopf ist dunkel, die Rollenfarbe traegt nur die Unterkante und
+   die Pille - dieselbe Sprache wie der Hero der Spielerkarte. Die fruehere
+   Vollflaeche setzte dunkle Schrift auf Orange und kam bei .sub auf 4,32:1.
+   background-color, nicht die Kurzform: background: wuerde background-size
+   und -position zuruecksetzen, und der Hero verloere sein cover. */
 .panel[data-role] > .card-head {
-  background: var(--role, var(--border-strong));
-  color: var(--role-ink);
+  background-color: var(--surface-sunk);
+  color: var(--ink);
   margin: -0.9rem -1rem 0;
-  padding: 0.6rem 1rem 0.55rem;
+  padding: 0.5rem 1rem 0.45rem;
   border-radius: var(--radius) var(--radius) 0 0;
-  border-bottom: 0;
+  border-bottom: 2px solid var(--role, var(--border-strong));
 }
-/* Im Farbfeld traegt die Flaeche schon, was ein Rahmen sonst leistet -
-   beides zusammen ist ein Kasten im Kasten. */
+/* Die Pille traegt jetzt die Flaeche, die vorher der ganze Kopf hatte. */
 .panel[data-role] > .card-head .role-pill {
   border-color: transparent; color: var(--role-ink);
-  background: rgba(255, 255, 255, 0.28);
+  background: var(--role, var(--accent));
 }
 .panel[data-role] > .card-head .name,
-.panel[data-role] > .card-head h2 { color: var(--role-ink); }
-.panel[data-role] > .card-head h2 { text-transform: uppercase; letter-spacing: 0.01em;
-                                    font-size: 1.25rem; margin: 0; }
-.panel[data-role] > .card-head .sub { color: rgba(16, 19, 26, 0.72); }
-.panel[data-role] > .card-head .opgg { color: rgba(16, 19, 26, 0.72); }
-/* Das Farbfeld traegt zwei Objekte: links wer, rechts wie stark. Vorher
-   waren 56 % der Flaeche leer, und der Rang stand als duenne Zeile darunter.
-   Das Schild hebt sich mit einer eigenen Flaeche ab - auf jeder Rollenfarbe
-   dieselbe Abdunklung, damit es ueberall gleich sitzt. */
-.card-head .rang-schild {
-  margin-left: auto; display: inline-flex; align-items: center;
-  gap: 0.5rem; min-width: 0; padding: 0.22rem 0.6rem 0.22rem 0.3rem;
-  border-radius: var(--radius-sm); background: rgba(0, 0, 0, 0.16);
+.panel[data-role] > .card-head h2 { color: var(--ink); }
+.panel[data-role] > .card-head h2 {
+  font-family: Rajdhani, Archivo, ui-sans-serif, system-ui, sans-serif;
+  text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;
+  font-size: 1.3rem; margin: 0; }
+.panel[data-role] > .card-head .sub { color: var(--ink-faint); }
+.panel[data-role] > .card-head .opgg { color: var(--accent); }
+/* ----------------------------------------- Spielerkarte: Kopf als Hero */
+/* Flacher Hero mit der Splash-Art des meistgespielten Champions. Bewusst
+   rund 105 px: die Karte steht im Dreierraster neben zwei anderen, und der
+   Inhalt ist die Championtabelle darunter. Das Bild liegt rechts und wird
+   nach links weggeblendet, damit die Schrift traegt. */
+/* Spezifisch genug, um .panel[data-role] > .card-head zu schlagen - dort
+   traegt das Rollenfarbfeld die Flaeche, was fuer Draftplan und Liga
+   richtig bleibt, fuer den Hero aber nicht. */
+.panel[data-role] > .card-head.spieler-hero,
+.panel[data-bench] > .card-head.spieler-hero {
+  background-color: #0a0e16; color: #f4f7fd;
+  border-bottom: 2px solid var(--role, var(--border-strong));
 }
-.panel[data-bench] .card-head .rang-schild { background: var(--surface);
-                                             border: 1px solid var(--border); }
-.rang-emblem { width: 40px; height: 40px; flex: none; }
-.card-head .rang-text { display: flex; flex-direction: column; min-width: 0;
-                        line-height: 1.1; }
-.card-head .rang-text b { font-family: Archivo, ui-sans-serif, system-ui, sans-serif;
-                          font-size: 1.25rem; font-weight: 700;
-                          letter-spacing: -0.01em; white-space: nowrap; }
-.rang-teil { font-size: 0.95rem; margin-left: 0.22rem; }
-.rang-lp { font-size: 0.72rem; letter-spacing: 0.04em; white-space: nowrap; }
-.card-head .rang-schild.leer .rang-text b { font-size: 1.05rem; }
-/* Darunter nur noch die Feinheiten: LP und Bilanz links, Flex rechts. */
-.solo-zeile { font-size: 0.78rem; color: var(--ink-muted); min-width: 0;
-              overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.solo-zeile.leer { color: var(--ink-faint); }
-.rang-reihe .opgg { margin-left: auto; }
+.panel[data-role] > .card-head.spieler-hero .name,
+.panel[data-bench] > .card-head.spieler-hero .name { color: #fff; }
+/* .card-head setzt display:flex und steht spaeter im Stylesheet - der Hero
+   braucht daher dieselbe Spezifitaet, sonst laufen seine drei Zeilen in
+   eine einzige Flexzeile. */
+.card-head.spieler-hero {
+  display: block; position: relative; overflow: hidden;
+  margin: -0.9rem -1rem 0; padding: 0.38rem 0.9rem 0.28rem;
+  border-radius: var(--radius) var(--radius) 0 0;
+  border-bottom: 2px solid var(--role, var(--border-strong));
+  background-color: #0a0e16;
+  color: #f4f7fd;
+}
+/* Das Bild als eigene Lage, auf Kartenhoehe skaliert und rechts angesetzt:
+   so ist jeder Champion ganz zu sehen, statt dass ein fester Ausschnitt bei
+   dem einen den Kopf trifft und beim naechsten die Knie. Die Maske blendet
+   die linke Bildkante aus - sonst stuende dort eine senkrechte Naht. */
+/* Eine eigene Lage im DOM, kein ::after: dort liegt schon der Lichtstreifen
+   der Einlauf-Animation, und der gewinnt mit hoeherer Spezifitaet. */
+.spieler-hero > .kk-bild {
+  position: absolute; top: 0; right: 0; bottom: 0; left: auto;
+  aspect-ratio: 1215 / 717; z-index: 0; pointer-events: none;
+  background: var(--splash) center center / cover no-repeat;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 58%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 58%);
+}
+.spieler-hero::before { content: ""; position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(90deg, rgba(7, 10, 16, 0.96) 0%,
+              rgba(7, 10, 16, 0.9) 44%, rgba(7, 10, 16, 0.3) 70%,
+              rgba(7, 10, 16, 0.16) 100%); }
+.spieler-hero:not(.mit-bild)::before {
+  background: linear-gradient(120deg,
+    color-mix(in srgb, var(--role, var(--accent)) 22%, #0a0e16), #0a0e16); }
+.spieler-hero > * { position: relative; z-index: 2; }
+.spieler-hero.klickbar { cursor: pointer; }
+.spieler-hero.klickbar:hover .name { text-decoration: underline;
+                                     text-underline-offset: 3px; }
+.spieler-hero.klickbar:focus-visible { outline: 2px solid var(--accent);
+                                       outline-offset: -2px; }
+.kk-oben { display: flex; align-items: center; gap: 0.5rem; min-width: 0;
+  min-height: 1.7rem; }
+.spieler-hero .name { font-family: Rajdhani, Archivo, sans-serif;
+  font-size: 1.4rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; line-height: 1; color: #fff;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.panel[data-role] > .card-head.spieler-hero .role-pill,
+.panel[data-bench] > .card-head.spieler-hero .role-pill,
+.spieler-hero .role-pill { flex: none; color: #0d1118;
+  background: var(--role, var(--accent)); border-color: transparent; }
+.panel[data-bench] > .card-head.spieler-hero .role-pill,
+.panel[data-bench] .spieler-hero .role-pill { color: #f4f7fd;
+  background: rgba(255, 255, 255, 0.22); border-color: transparent; }
+/* Der Rang steht unten rechts vor dem Pool, nicht mehr in der Kopfzeile.
+   Oben traegt die Zeile damit allein den Namen - und der bekommt die volle
+   Breite zurueck, die ihm die Rangplatte auf schmalen Karten genommen
+   hatte. */
+.kk-rang { margin-left: auto; flex: none; display: flex;
+  align-items: center; align-self: flex-end; gap: 0.3rem; line-height: 1.1;
+  padding: 0.1rem 0.4rem 0.12rem; border-radius: var(--radius-sm);
+  background: rgba(6, 8, 13, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.09); }
+.kk-medaille { width: 22px; height: 22px; flex: none; object-fit: contain;
+  align-self: center; margin-right: 0.05rem;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8)); }
+.kk-rang, .kk-pool, .spieler-hero .name, .kk-wer, .kk-champ-zahlen {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85), 0 0 10px rgba(0, 0, 0, 0.6); }
+.kk-rang b { font-family: Rajdhani, Archivo, sans-serif;
+  font-size: 1.15rem; font-weight: 700; letter-spacing: 0.02em;
+  white-space: nowrap; }
+.kk-lp { font-size: 0.66rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #c2cad8; white-space: nowrap; }
+.kk-wer { margin-top: 0.05rem; font-size: 0.66rem; letter-spacing: 0.07em;
+  text-transform: uppercase; color: #bcc5d4;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kk-unten { display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 0.6rem; margin-top: 0.08rem; min-width: 0; }
+.kk-kicker { display: block; font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; color: #aeb7c6; }
+.kk-top-champ { min-width: 0; }
+.kk-champ { display: block; font-family: Rajdhani, Archivo, sans-serif;
+  font-size: 1.3rem; font-weight: 700; letter-spacing: 0.03em;
+  text-transform: uppercase; line-height: 1; color: #fff;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.8); }
+.kk-champ-zahlen { display: block; font-size: 0.72rem; color: #cbd3e0;
+  white-space: nowrap; }
+.kk-champ-zahlen b { color: #fff; font-variant-numeric: tabular-nums; }
+.kk-pool { flex: none; text-align: right;
+  border-left: 2px solid var(--role, var(--accent)); padding-left: 0.5rem; }
+.kk-pool b { display: block; font-family: Rajdhani, Archivo, sans-serif;
+  font-size: 1.3rem; font-weight: 700; line-height: 1; color: #fff; }
+
+/* -------------------------------------------- Live-Draft-Assistent */
+/* Eigene Sprache: die Spielerkarte darf ihren Splash-Hero haben, hier
+   zaehlt Dichte. Kleine Icons, klare Statusfarben, keine Animation. */
+#live-draft { display: flex; flex-direction: column; gap: 0.7rem; }
+.ld-kopf { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.ld-titel { font-family: Rajdhani, Archivo, ui-sans-serif, system-ui, sans-serif;
+            font-size: 1.35rem; font-weight: 700; letter-spacing: 0.08em;
+            text-transform: uppercase; }
+.ld-paarung { font-family: Rajdhani, Archivo, ui-sans-serif, system-ui, sans-serif;
+              font-size: 1rem; color: var(--ink-muted); letter-spacing: 0.04em; }
+.ld-paarung b.eigen { color: var(--eigen); text-transform: uppercase; }
+.ld-paarung b.gegner { color: var(--gegner); text-transform: uppercase; }
+.ld-schalter { display: inline-flex; align-items: center; gap: 0.3rem;
+               font-size: 0.78rem; font-weight: 600; cursor: pointer; }
+.ld-schalter input { accent-color: var(--eigen); cursor: pointer; }
+.ld-serie, .ld-suche { font: inherit; font-size: 0.78rem;
+          padding: 0.2rem 0.45rem; border-radius: var(--radius-sm);
+          border: 1px solid var(--border-strong);
+          background: var(--surface-sunk); color: var(--ink); }
+.ld-serie { max-width: 20rem; }
+.ld-serie:disabled { color: var(--ink-faint); }
+.ld-reset { font: inherit; font-size: 0.78rem; cursor: pointer;
+            padding: 0.2rem 0.55rem; border-radius: var(--radius-sm);
+            border: 1px solid var(--border-strong);
+            background: var(--surface-sunk); color: var(--ink-muted); }
+.ld-reset:hover { color: var(--ink); border-color: var(--ink-faint); }
+.ld-quelle { margin-left: auto; }
+
+/* ------------------------------------------------------ Das Draftboard */
+.ld-board { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 0.6rem; }
+@media (max-width: 860px) { .ld-board { grid-template-columns: minmax(0, 1fr); } }
+.ld-seite { display: flex; flex-direction: column; gap: 0.4rem; min-width: 0;
+            padding: 0.5rem 0.55rem 0.6rem;
+            border: 1px solid var(--border); border-left: 3px solid var(--mf);
+            border-radius: var(--radius-sm); background: var(--surface-sunk); }
+.ld-seite.eigen { --mf: var(--eigen); }
+.ld-seite.gegner { --mf: var(--gegner); }
+.ld-seite-kopf { display: flex; align-items: baseline; gap: 0.5rem; min-width: 0; }
+.ld-seite-name { font-family: Rajdhani, Archivo, ui-sans-serif, system-ui, sans-serif;
+                 font-size: 1.05rem; font-weight: 700; letter-spacing: 0.06em;
+                 text-transform: uppercase; color: var(--mf); min-width: 0;
+                 overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ld-seite-wort { margin-left: auto; font-size: 0.6rem; font-weight: 700;
+                 letter-spacing: 0.12em; text-transform: uppercase;
+                 color: var(--ink-faint); }
+.ld-bans { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;
+           padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+.ld-bans-wort { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.14em;
+                text-transform: uppercase; color: var(--red); flex: none; }
+.ld-bans-felder { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+                  gap: 0.25rem; flex: 1 1 auto; min-width: 0; }
+.ld-picks { display: flex; flex-direction: column; gap: 0.25rem; }
+.ld-pickzeile { display: grid; align-items: center; gap: 0.4rem;
+                grid-template-columns: 3.4rem minmax(0, 1fr) 5.5rem; }
+.ld-rolle { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--ink-faint); }
+.ld-wer { font-family: "IBM Plex Mono", monospace; font-size: 0.68rem;
+          color: var(--ink-faint); overflow: hidden; text-overflow: ellipsis;
+          white-space: nowrap; }
+.ld-feld { min-width: 0; border-radius: var(--radius-sm); }
+/* Das aktive Feld ist das Ziel des Picken-Knopfs - das muss man sehen. */
+.ld-feld.aktiv { outline: 2px solid var(--eigen); outline-offset: 1px; }
+.ld-feld .champ-field { display: flex; align-items: center; gap: 0.25rem;
+                        width: 100%; min-width: 0; }
+.ld-feld input { width: 100%; min-width: 0; flex: 1 1 auto; }
+/* Fuenf Banfelder nebeneinander sind am Handy unbedienbar schmal. */
+@media (max-width: 560px) {
+  .ld-bans-felder { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ld-pickzeile { grid-template-columns: 3rem minmax(0, 1fr); }
+  .ld-wer { grid-column: 2; font-size: 0.62rem; }
+}
+.ld-feld.bans input { font-size: 0.72rem; padding: 0.12rem 0.3rem; }
+
+/* ------------------------------------------- Beide Aufstellungen */
+.ld-comp { display: flex; flex-direction: column; gap: 0.25rem;
+           padding: 0.45rem 0.55rem; border: 1px solid var(--border);
+           border-radius: var(--radius-sm); background: var(--surface-sunk); }
+.ld-comp[hidden] { display: none; }
+.ld-comp-kopf { display: flex; align-items: baseline; gap: 0.5rem;
+                flex-wrap: wrap; }
+.ld-comp-wort { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.14em;
+                text-transform: uppercase; color: var(--ink-faint); }
+.ld-comp-quote { font-size: 0.78rem; color: var(--ink-muted); }
+.ld-comp-quote b { font-family: Rajdhani, Archivo, sans-serif;
+                   font-size: 1.15rem; font-weight: 700;
+                   font-variant-numeric: tabular-nums; color: var(--ink); }
+.ld-comp-quote.gut b { color: var(--good); }
+.ld-comp-quote.schwach b { color: var(--red); }
+.ld-comp-zeile { display: grid; align-items: center; gap: 0.5rem;
+                 grid-template-columns: minmax(0, 9rem) 2.4rem minmax(0, 1fr); }
+@media (max-width: 560px) {
+  .ld-comp-zeile { grid-template-columns: minmax(0, 1fr) 2.4rem; }
+  .ld-mix { grid-column: 1 / -1; }
+}
+.ld-comp-name { font-family: Rajdhani, Archivo, sans-serif; font-size: 0.9rem;
+                font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+                min-width: 0; overflow: hidden; text-overflow: ellipsis;
+                white-space: nowrap; }
+.ld-comp-zeile.eigen .ld-comp-name { color: var(--eigen); }
+.ld-comp-zeile.gegner .ld-comp-name { color: var(--gegner); }
+.ld-comp-zahl { font-size: 0.72rem; color: var(--ink-faint);
+                font-variant-numeric: tabular-nums; }
+/* Zwei Schadensarten, eine Leiste. Keine erfundene Farbsprache: der
+   gefuellte Teil ist magisch, der Rest physisch, und daneben steht es
+   als Text. */
+.ld-mix { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
+.ld-mix-balken { position: relative; height: 8px; flex: 1 1 auto; min-width: 48px;
+                 max-width: 14rem; border-radius: 4px; overflow: hidden;
+                 background: var(--brass); }
+.ld-mix-balken i { display: block; height: 100%; background: var(--blue); }
+.ld-mix-wort { font-size: 0.68rem; color: var(--ink-muted); white-space: nowrap; }
+.ld-comp-leer { font-size: 0.68rem; color: var(--ink-faint); }
+.ld-gegner { font: inherit; font-size: 0.95rem; font-weight: 700;
+             font-family: Rajdhani, Archivo, sans-serif; letter-spacing: 0.04em;
+             text-transform: uppercase; width: 11rem; color: var(--gegner);
+             padding: 0.1rem 0.4rem; border-radius: var(--radius-sm);
+             border: 1px solid var(--border-strong); background: var(--surface-sunk); }
+
+/* ------------------------------------------------- Was gesperrt ist */
+.ld-sperren { display: flex; flex-direction: column; gap: 0.35rem; }
+.ld-sperren[hidden] { display: none; }
+.ld-sperr-gruppe { display: grid; align-items: start; gap: 0.3rem 0.6rem;
+                   grid-template-columns: 10.5rem minmax(0, 1fr); }
+@media (max-width: 560px) {
+  .ld-sperr-gruppe { grid-template-columns: minmax(0, 1fr); }
+}
+.ld-sperr-wort { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em;
+                 text-transform: uppercase; padding-top: 0.2rem; }
+.ld-sperr-gruppe.ld-fearless .ld-sperr-wort { color: var(--ink-faint); }
+.ld-sperr-gruppe.ld-ban .ld-sperr-wort { color: var(--red); }
+.ld-sperr-gruppe.ld-pick .ld-sperr-wort { color: var(--ink-muted); }
+.ld-sperr-liste { display: flex; flex-wrap: wrap; gap: 0.25rem; min-width: 0; }
+.ld-sperr { display: inline-flex; align-items: center; gap: 0.25rem;
+            font-size: 0.68rem; padding: 0.1rem 0.35rem 0.1rem 0.1rem;
+            border: 1px solid var(--border); border-radius: var(--radius-sm);
+            background: var(--surface); color: var(--ink-muted); }
+.ld-sperr > span { white-space: nowrap; }
+.ld-sperr img { width: 18px; height: 18px; border-radius: 3px; flex: none;
+                filter: grayscale(0.8); opacity: 0.7; }
+.ld-sperr.ld-ban { border-color: color-mix(in srgb, var(--red) 45%, transparent); }
+.ld-sperr.ld-fearless img { filter: grayscale(1); opacity: 0.5; }
+
+/* ------------------------------------------------------------ Filter */
+.ld-filter { display: flex; align-items: center; gap: 0.4rem 0.6rem;
+             flex-wrap: wrap; padding: 0.4rem 0;
+             border-top: 1px solid var(--border);
+             border-bottom: 1px solid var(--border); }
+.ld-rollen, .ld-kategorien { display: flex; gap: 0.2rem; flex-wrap: wrap; }
+.ld-rolle-knopf, .ld-kat { font: inherit; font-size: 0.72rem; font-weight: 600;
+             cursor: pointer; padding: 0.22rem 0.6rem;
+             border-radius: var(--radius-sm);
+             border: 1px solid var(--border-strong);
+             background: var(--surface-sunk); color: var(--ink-muted);
+             letter-spacing: 0.04em; }
+.ld-rolle-knopf:hover, .ld-kat:hover { color: var(--ink); border-color: var(--ink-faint); }
+.ld-rolle-knopf.an { background: var(--eigen); border-color: transparent;
+                     color: var(--eigen-ink); }
+.ld-kat.an { background: var(--ink); border-color: transparent;
+             color: var(--ground); }
+.ld-rolle-knopf:focus-visible, .ld-kat:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px; }
+.ld-suche { margin-left: auto; min-width: 11rem; }
+
+/* ----------------------------------------------- Die Championkarten */
+.ld-abschnitt { display: flex; flex-direction: column; gap: 0.35rem;
+                margin-top: 0.5rem; }
+.ld-abschnitt-wort { margin: 0; font-family: Rajdhani, Archivo, sans-serif;
+                     font-size: 0.95rem; font-weight: 700; letter-spacing: 0.12em;
+                     text-transform: uppercase; border: 0; padding: 0; }
+.ld-karten { display: grid; gap: 0.4rem;
+             grid-template-columns: repeat(auto-fill, minmax(216px, 1fr)); }
+.ld-karte { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0;
+            padding: 0.4rem 0.45rem 0.45rem;
+            border: 1px solid var(--border); border-radius: var(--radius-sm);
+            background: var(--surface-sunk); }
+.ld-karte.gut { border-color: color-mix(in srgb, var(--eigen) 45%, transparent); }
+.ld-karte.sehrgut { border-color: color-mix(in srgb, var(--good) 55%, transparent);
+                    background: color-mix(in srgb, var(--good) 7%, var(--surface-sunk)); }
+.ld-karte.hervor { box-shadow: inset 3px 0 var(--eigen); }
+.ld-karte-kopf { display: flex; align-items: center; gap: 0.4rem; min-width: 0; }
+.ld-bild { width: 30px; height: 30px; border-radius: 5px; flex: none;
+           border: 1px solid var(--border); background: var(--surface); }
+.ld-karte-name { font-family: Rajdhani, Archivo, ui-sans-serif, system-ui, sans-serif;
+                 font-size: 0.95rem; font-weight: 700; letter-spacing: 0.03em;
+                 text-transform: uppercase; min-width: 0;
+                 overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ld-punkte { margin-left: auto; flex: none; font-family: Rajdhani, Archivo, sans-serif;
+             font-size: 1.2rem; font-weight: 700; font-variant-numeric: tabular-nums;
+             color: var(--ink-muted); }
+.ld-punkte.gut { color: var(--eigen); }
+.ld-punkte.sehrgut { color: var(--good); }
+.ld-karte-zeile { display: flex; align-items: baseline; gap: 0.4rem;
+                  min-width: 0; }
+.ld-sterne { font-size: 0.72rem; letter-spacing: 0.04em; color: var(--brass);
+             flex: none; }
+.ld-karte-zahlen { font-size: 0.68rem; color: var(--ink-muted);
+                   font-variant-numeric: tabular-nums; min-width: 0;
+                   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Die einzelnen Paarungen. Sie sollen auffallen - darum Bild und Zahl
+   nebeneinander statt einer Zeile Text, und die Farbe traegt die Aussage. */
+.ld-paarungen { display: flex; flex-direction: column; gap: 2px;
+                padding: 0.25rem 0; margin: 0.1rem 0;
+                border-top: 1px solid var(--border);
+                border-bottom: 1px solid var(--border); }
+.ld-paare { display: grid; align-items: center; gap: 0.3rem;
+            grid-template-columns: 2.4rem minmax(0, 1fr); }
+.ld-paare-wort { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em;
+                 text-transform: uppercase; color: var(--ink-faint); }
+.ld-paare.gegen .ld-paare-wort { color: var(--gegner); }
+.ld-paare.mit .ld-paare-wort { color: var(--eigen); }
+.ld-paare-liste { display: flex; flex-wrap: wrap; gap: 0.2rem; min-width: 0; }
+.ld-paar { display: inline-flex; align-items: center; gap: 0.15rem;
+           padding: 0.05rem 0.25rem 0.05rem 0.05rem; border-radius: 3px;
+           border: 1px solid var(--border); background: var(--surface); }
+.ld-paar img { width: 16px; height: 16px; border-radius: 2px; }
+.ld-paar b { font-family: Rajdhani, Archivo, sans-serif; font-size: 0.72rem;
+             font-weight: 700; font-variant-numeric: tabular-nums;
+             color: var(--ink-muted); }
+.ld-paar.gut { border-color: color-mix(in srgb, var(--good) 55%, transparent); }
+.ld-paar.gut b { color: var(--good); }
+.ld-paar.schwach { border-color: color-mix(in srgb, var(--red) 50%, transparent); }
+.ld-paar.schwach b { color: var(--red); }
+
+/* Warum dieser Champion vorgeschlagen wird - keine Blackbox. */
+.ld-gruende { list-style: none; margin: 0; padding: 0;
+              display: flex; flex-direction: column; gap: 1px; }
+.ld-grund { font-size: 0.66rem; color: var(--ink-muted); min-width: 0;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ld-grund b { font-weight: 700; color: var(--ink-faint); }
+.ld-grund.plus b { color: var(--good); }
+.ld-grund.minus b { color: var(--red); }
+.ld-picken { margin-top: 0.15rem; font: inherit; font-size: 0.72rem;
+           font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+           cursor: pointer; padding: 0.22rem 0.5rem;
+           border-radius: var(--radius-sm); border: 1px solid var(--border-strong);
+           background: var(--surface); color: var(--ink-muted); }
+.ld-picken:hover { background: var(--eigen); border-color: transparent;
+                   color: var(--eigen-ink); }
+.ld-picken:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.ld-karte.gesperrt { opacity: 0.72; background: var(--surface); }
+.ld-karte.gesperrt .ld-bild { filter: grayscale(1); opacity: 0.6; }
+.ld-karte.gesperrt.ld-ban { border-color: color-mix(in srgb, var(--red) 45%, transparent); }
+.ld-marke { margin-left: auto; flex: none; font-size: 0.58rem; font-weight: 700;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            padding: 0.1rem 0.35rem; border-radius: 2px;
+            border: 1px solid currentColor; }
+.ld-marke.ld-fearless { color: var(--ink-faint); }
+.ld-marke.ld-ban { color: var(--red); }
+.ld-marke.ld-pick { color: var(--ink-muted); }
+/* Der gebannte Champion traegt denselben roten Diagonalstrich wie in der
+   Matchkarte - eine Marke, zwei Orte. */
+.ld-karte.gesperrt.ld-ban .ld-bild, .ld-sperr.ld-ban img {
+  filter: grayscale(1) contrast(0.9); opacity: 0.55; }
+.ld-sperr-grund { margin: 0; font-size: 0.68rem; color: var(--ink-muted); }
+
+/* ------------------------------------- Mannschaftswerte ueber den Karten */
+/* Dieselben Felder wie auf der Spielerkarte, nur in einer Reihe - eine
+   zweite Formensprache fuer dieselbe Art Zahl waere eine zu viel. */
+#team-stats { margin-bottom: 0.4rem; }
+#team-stats[hidden] { display: none; }
+.ts-zeile { gap: 0.3rem 0.4rem; }
+.ts-titel { font-family: Rajdhani, Archivo, ui-sans-serif, system-ui, sans-serif;
+            font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em;
+            text-transform: uppercase; color: var(--ink-faint);
+            margin-right: 0.15rem; }
+
+/* Rangzeile: Solo und Flex nebeneinander, die Quote traegt die Farbe. */
+.rang-zeile { display: flex; align-items: flex-start; gap: 0.4rem 0.9rem;
+  flex-wrap: wrap; line-height: 1.25; }
+/* Beschriftung oben, darunter Wert und Quote nebeneinander - die Quote
+   rechtsbuendig, damit Solo und Flex vergleichbar untereinander stehen. */
+.rz-seite { display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "label label" "wert quote"; align-items: baseline;
+  column-gap: 0.4rem; min-width: 0; flex: 1 1 0; }
+.rz-label { grid-area: label; }
+.rz-wert { grid-area: wert; }
+.rz-quote { grid-area: quote; }
+.rz-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ink-faint); }
+.rz-wert { font-size: 0.84rem; color: var(--ink-muted); min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rz-wert b { font-family: Archivo, ui-sans-serif, system-ui, sans-serif;
+  color: var(--ink); }
+.rz-wert.leer { color: var(--ink-faint); }
+.rz-bilanz { font-variant-numeric: tabular-nums; }
+.rz-quote { font-family: Rajdhani, Archivo, sans-serif; font-size: 1.05rem;
+  font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.rz-quote.gut { color: var(--good); }
+.rz-quote.schwach { color: var(--red); }
+.rz-link { flex: none; align-self: center; }
+
+/* Drei kleine Statistikfelder statt zweier Chips. */
+.kennzahlen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem; }
+.kz { display: flex; flex-direction: column; gap: 0.02rem; min-width: 0;
+  padding: 0.16rem 0.5rem; border: 1px solid var(--border);
+  border-left: 3px solid var(--role, var(--accent));
+  border-radius: var(--radius-sm); background: var(--surface-sunk);
+  text-align: left; font: inherit; color: var(--ink); }
+.kz-klick { cursor: pointer; }
+.kz-klick:hover { border-color: var(--ink-faint);
+                  border-left-color: var(--role, var(--accent)); }
+.kz-klick:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.kz-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ink-faint); }
+.kz-wert { font-family: Rajdhani, Archivo, sans-serif; font-size: 1.25rem;
+  font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.kz-wert small { font-family: inherit; font-size: 0.66rem;
+  font-weight: 600; color: var(--ink-muted); }
+.kz-fuss { font-size: 0.66rem; color: var(--ink-muted); min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+@container (max-width: 359px) {
+  .kennzahlen { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kz:last-child { grid-column: 1 / -1; }
+  .spieler-hero { padding-left: 0.7rem; padding-right: 0.7rem; }
+  /* Unten teilen sich Championname, Rang und Pool eine Zeile - dort ist das
+     Emblem der entbehrlichste Teil, die Stufe steht daneben im Text. */
+  .kk-medaille { display: none; }
+  .kk-rang { padding-left: 0.3rem; padding-right: 0.3rem; }
+  .cards.columns td:first-child { width: 53%; }
+  .cards.columns td, .cards.columns th { padding-left: 0.3rem;
+                                         padding-right: 0.3rem; }
+  .cards.columns .wr-bar { min-width: 34px; }
+}
 /* Die Bank bekommt kein Farbfeld - sie spielt ja nicht. Gedaempfte Flaeche
    mit Kante, damit der Kopf trotzdem ein Kopf bleibt. */
 .panel[data-bench] > .card-head { background: var(--surface-sunk); color: var(--ink);
@@ -382,14 +806,28 @@ tbody tr:hover .pool-bar { opacity: 0.85; }
 .cards.columns tbody tr:first-child .champ-cell img { width: 36px; height: 36px; }
 .cards.columns tbody tr:first-child .champ-cell > span { font-size: 1.05rem;
                                                          font-weight: 700; }
-.cards.columns tbody tr:first-child td { padding-top: 0.42rem;
-                                         padding-bottom: 0.42rem; }
+.cards.columns tbody tr:first-child td { padding-top: 0.28rem;
+                                         padding-bottom: 0.28rem; }
 .cards.columns tbody tr:first-child .num { font-size: 1.05rem; font-weight: 700; }
 .cards.columns tbody tr:first-child .pool-bar { height: 4px; opacity: 0.75; }
+/* Flaeche und Kante in der Rollenfarbe - im Raster bisher nur Bild und
+   Satzgewicht, in der Grossansicht schon laenger. Neun Prozent reichen:
+   die Zeile hebt sich ab, ohne dass die Tabelle bunt wird. */
+.cards.columns tbody tr:first-child td {
+  background: color-mix(in srgb, var(--role, var(--accent)) 9%, transparent); }
+.cards.columns tbody tr:first-child td:first-child {
+  box-shadow: inset 3px 0 var(--role, var(--accent)); }
+.panel[data-bench] .cards.columns tbody tr:first-child td,
+.cards.columns .panel[data-bench] tbody tr:first-child td {
+  background: color-mix(in srgb, var(--ink-faint) 9%, transparent); }
 
 /* ------------------------------------ Grossansicht einer Spielerkarte */
 /* Der Kartenkopf im Raster fuehrt hierher. Die Championzeilen darunter
    fuehren zu den Partien - zwei Ziele, zwei Hinweise. */
+.panel[data-role] > .card-head > .name {
+  font-family: Rajdhani, Archivo, ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.3rem; font-weight: 700; letter-spacing: 0.05em;
+  text-transform: uppercase; }
 .card-head.klickbar { cursor: pointer; }
 .card-head.klickbar:hover .name { text-decoration: underline;
                                   text-underline-offset: 3px; }
@@ -443,6 +881,7 @@ dialog#spieler-dialog::backdrop { background: rgba(0, 0, 0, 0.66); }
 .gk-unterzeile { margin-top: 0.35rem; font-size: 0.72rem; color: #c3cad8;
   letter-spacing: 0.08em; text-transform: uppercase; }
 .gk-rang { display: flex; align-items: center; gap: 0.7rem;
+  margin-right: 2.4rem;
   padding: 0.5rem 0.9rem; border-radius: var(--radius);
   border: 1px solid color-mix(in srgb, var(--gk-akzent) 50%, transparent);
   background: rgba(6, 8, 13, 0.72); }
@@ -571,6 +1010,10 @@ dialog#spieler-dialog::backdrop { background: rgba(0, 0, 0, 0.66); }
   .gk-kopf, .gk-zeile { grid-template-columns: minmax(0, 1fr) 42px minmax(90px, .9fr) 40px;
                         gap: 0.4rem; }
   .gk-pool { display: none; }
+  /* Die Rangplakette kann nicht schrumpfen; neben dem Namen lief sie aus
+     dem Hero heraus und unter den Schliessknopf. Am Handy eigene Zeile. */
+  .gk-oben { flex-wrap: wrap; gap: 0.7rem; }
+  .gk-rang { margin-right: 0; flex: 0 0 100%; justify-content: flex-start; }
 }
 
 .t-marke { display: inline-grid; place-items: center; min-width: 1.5rem;
@@ -811,60 +1254,215 @@ button.del.edit { color: var(--blue); }
                border-bottom: 1px solid var(--border-strong); }
 .series-head .name { font-family: Archivo, sans-serif; font-size: 1.25rem; font-weight: 700;
                      letter-spacing: -0.01em; }
-.game-card { border: 1px solid var(--border-strong); border-radius: var(--radius);
-             background: var(--surface); padding: 0.7rem 0.8rem;
-             display: flex; flex-direction: column; gap: 0.65rem; }
-.game-head { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
-.game-no { font-family: Archivo, sans-serif; font-size: 1.25rem; font-weight: 700; }
-.badge { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
-         padding: 0.12rem 0.4rem; border-radius: 2px; border: 1px solid transparent; }
+.badge { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.07em;
+         text-transform: uppercase; padding: 0.12rem 0.4rem; border-radius: 2px;
+         border: 1px solid transparent; white-space: nowrap; }
 .badge.win { background: var(--good); color: var(--surface); }
 .badge.loss { background: var(--red); color: var(--surface); }
 .badge.open { background: var(--warn-soft); color: var(--warn); border-color: var(--warn); }
 
-.sides { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0.6rem; }
-@media (max-width: 760px) { .sides { grid-template-columns: minmax(0, 1fr); } }
-.side { display: flex; flex-direction: column; gap: 0.5rem; min-width: 0;
-        padding: 0 0 0.7rem; border: 1px solid var(--border-strong);
-        border-radius: var(--radius); background: var(--surface-sunk);
-        overflow: hidden; }
-/* Die Seite traegt ihre Farbe als Feld, wie die Rolle auf der Spielerkarte -
-   damit braucht es kein Etikett mehr, das dasselbe noch einmal sagt. */
-.side.blue { --seite: var(--blue); }
-.side.red { --seite: var(--red); }
-.side-head { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap;
-             background: var(--seite); color: var(--seiten-ink);
-             padding: 0.42rem 0.7rem 0.38rem; }
-.side-head .team { font-family: Archivo, sans-serif; font-weight: 700; font-size: 1.05rem;
-                   text-transform: uppercase; letter-spacing: 0.01em; color: inherit; }
-.side-head .seite-wort { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
-                         text-transform: uppercase; opacity: 0.85; margin-left: auto; }
+.game-card { border: 1px solid var(--border-strong); border-radius: var(--radius);
+             background: var(--surface); padding: 0.45rem 0.6rem;
+             display: flex; flex-direction: column; gap: 0.3rem; }
 
-/* Fuenf Rollen, fuenf Spalten - auf beiden Seiten dieselben. So steht Top
-   ueber Top und der Draft laesst sich spaltenweise vergleichen, statt dass
-   die Bilder links zusammenlaufen und rechts Platz frei bleibt. */
-.picks, .bans { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
-                gap: 0.3rem; padding: 0 0.7rem; }
-.tile { width: auto; min-width: 0; display: flex; flex-direction: column;
-        align-items: center; gap: 0.1rem; }
-.tile img { width: 100%; max-width: 72px; height: auto; aspect-ratio: 1;
-            border-radius: 6px; background: var(--surface);
-            border: 1px solid var(--border); }
-.tile .role { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
-              text-transform: uppercase; color: var(--ink-faint); }
-.tile .champ, .tile .who { max-width: 100%; overflow: hidden; text-overflow: ellipsis;
-                           white-space: nowrap; text-align: center; }
-.tile .champ { font-size: 0.72rem; font-weight: 600; }
-.tile .who { font-size: 0.72rem; color: var(--ink-faint); font-family: "IBM Plex Mono", monospace; }
+/* ---------------------------------------------- Kopf: Nummer, Tag, Serie */
+.gc-kopf { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.gc-no { font-family: Rajdhani, Archivo, sans-serif; font-size: 1.15rem;
+         font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.gc-meta { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
+           text-transform: uppercase; color: var(--ink-faint); }
+.gc-meta.betont { color: var(--ink-muted); }
+.gc-werkzeug { margin-left: auto; display: flex; gap: 0.4rem; }
 
-/* Die Bans stehen in denselben fuenf Spalten unter den Picks - dadurch
-   bekommt jeder Ban die volle Spaltenbreite und sein Name passt hinein. */
-.bans { align-items: start; }
-.bans-zeile { display: flex; flex-direction: column; gap: 0.3rem; }
-.bans-zeile > .label { padding: 0 0.7rem; }
-/* Hinweise stehen innerhalb der Seite und brauchen denselben Rand wie die
-   Raster darueber. */
-.hint-innen { padding: 0 0.7rem; }
+/* ------------------------------------------------------- Die Ergebniszeile */
+/* Die wichtigste Zeile: beide Namen und der Stand dazwischen, mittig. */
+.gc-ergebnis { display: flex; flex-direction: column; align-items: center;
+               gap: 0.05rem; padding: 0.26rem 0.4rem 0.3rem;
+               border-radius: var(--radius-sm);
+               background: var(--surface-sunk);
+               border: 1px solid var(--border); }
+.gc-paarung { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+              align-items: center; gap: 0.6rem; width: 100%; }
+.gc-name { font-family: Rajdhani, Archivo, sans-serif; font-size: 1.15rem;
+           font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+           color: var(--ink-muted); min-width: 0;
+           overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gc-name.eigen { text-align: right; }
+.gc-name.gegner { text-align: left; }
+.gc-name.eigen.gewinner { color: var(--eigen); }
+.gc-name.gegner.gewinner { color: var(--gegner); }
+/* Der Stand ist die groesste Zahl der Karte - alles andere ordnet sich ihm
+   unter, sonst sucht man das Ergebnis zwischen Namen und Dauer. */
+.gc-punkte { font-family: Rajdhani, Archivo, sans-serif; font-size: 1.4rem;
+             font-weight: 700; line-height: 1; letter-spacing: 0.02em;
+             color: var(--ink); font-variant-numeric: tabular-nums;
+             white-space: nowrap; }
+.gc-punkte.sieg { color: var(--eigen); }
+.gc-punkte.pleite { color: var(--gegner); }
+/* Schmal reicht die halbe Breite nicht fuer "SC Victoria Braunschweig" -
+   dann stehen Name, Stand und Name untereinander statt nebeneinander. */
+@media (max-width: 560px) {
+  .gc-paarung { grid-template-columns: minmax(0, 1fr); gap: 0.1rem; }
+  .gc-name.eigen, .gc-name.gegner { text-align: center; }
+}
+.gc-unten { display: flex; align-items: center; justify-content: center;
+            gap: 0.4rem; flex-wrap: wrap; }
+.gc-dauer { font-family: "IBM Plex Mono", monospace; font-size: 0.78rem;
+            color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+/* First Blood und First Tower sagen, WER sie hatte - der Punkt traegt die
+   Farbe der Mannschaft, der Text bleibt ruhig. */
+.gc-marke { display: inline-flex; align-items: center; gap: 0.3rem;
+            font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--ink-muted); }
+.gc-marke::before { content: ""; width: 6px; height: 6px; border-radius: 50%;
+                    flex: none; background: var(--ink-faint); }
+.gc-marke.eigen::before { background: var(--eigen); }
+.gc-marke.gegner::before { background: var(--gegner); }
+
+/* ------------------------------------------------------- Die beiden Teams */
+.gc-teams { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 0.5rem; }
+/* Unter 760px passen zehn Spielerzeilen nicht mehr nebeneinander, ohne dass
+   Championnamen abreissen - dann untereinander. */
+@media (max-width: 760px) { .gc-teams { grid-template-columns: minmax(0, 1fr); } }
+.gc-team { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0;
+           padding: 0.3rem 0.45rem 0.35rem;
+           border: 1px solid var(--border); border-left: 3px solid var(--mf);
+           border-radius: var(--radius-sm); background: var(--surface-sunk);
+           box-shadow: inset 0 0 22px color-mix(in srgb, var(--mf) 7%, transparent); }
+.gc-team.eigen { --mf: var(--eigen); }
+.gc-team.gegner { --mf: var(--gegner); }
+.gc-team-kopf { display: flex; align-items: baseline; gap: 0.5rem; min-width: 0; }
+.gc-team-name { font-family: Rajdhani, Archivo, sans-serif; font-size: 1rem;
+                font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+                color: var(--mf); min-width: 0;
+                overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Welche Draftseite jemand hatte, ist eine andere Aussage als welche
+   Mannschaft es ist - darum eigenes Etikett in der Seitenfarbe. */
+.gc-seite { margin-left: auto; flex: none; display: inline-flex; align-items: center;
+            gap: 0.28rem; font-size: 0.62rem; font-weight: 700;
+            letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); }
+.gc-seite::before { content: ""; width: 7px; height: 7px; border-radius: 2px;
+                    flex: none; border: 1px solid var(--border-strong); }
+.gc-seite.blue::before { background: var(--blue); }
+.gc-seite.red::before { background: var(--red); }
+
+/* ------------------------------------------------------- Spielerzeilen */
+.gc-reihen { display: flex; flex-direction: column; gap: 1px; }
+.gc-zeile { display: grid; align-items: center; gap: 0.5rem;
+            grid-template-columns: 3.1rem 32px minmax(0, 1fr) auto;
+            padding: 0 0.25rem; border-radius: 3px; min-width: 0; }
+.gc-zeile:hover { background: color-mix(in srgb, var(--mf) 8%, transparent); }
+.gc-rolle { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--ink-faint); }
+.gc-bild { width: 32px; height: 32px; border-radius: 5px; display: block;
+           background: var(--surface); border: 1px solid var(--border); }
+.gc-bild.leer { display: block; }
+.gc-wer { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
+.gc-wer b { font-size: 0.86rem; font-weight: 600; color: var(--ink);
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gc-spieler { font-family: "IBM Plex Mono", monospace; font-size: 0.7rem;
+              color: var(--ink-faint);
+              overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gc-kda { font-family: Rajdhani, Archivo, sans-serif; font-size: 0.95rem;
+          font-weight: 700; white-space: nowrap; color: var(--ink);
+          font-variant-numeric: tabular-nums; }
+.gc-kda i { font-style: normal; color: var(--ink-faint); font-weight: 400;
+            padding: 0 0.12rem; }
+.gc-kda .tode { color: var(--red); }
+.gc-kda .hilfen { color: var(--ink-muted); }
+.gc-kda.leer { color: var(--ink-faint); font-weight: 400; }
+
+/* ------------------------------------------------------------------ Bans */
+/* Eine Zeile statt fuenf Bloecke: der Ban ist eine Randnotiz zum Draft,
+   keine zweite Pickreihe. */
+.gc-bans { display: flex; align-items: center; gap: 0.3rem 0.5rem;
+           flex-wrap: wrap; padding-top: 0.25rem;
+           border-top: 1px solid var(--border); }
+.gc-bans-wort { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.14em;
+                text-transform: uppercase; color: var(--ink-faint); flex: none; }
+.gc-bans-liste { display: flex; flex-wrap: wrap; gap: 0.3rem; min-width: 0; }
+.ban-tile { display: inline-flex; align-items: center; gap: 0.3rem;
+            min-width: 0; padding: 0.1rem 0.4rem 0.1rem 0.1rem;
+            border: 1px solid var(--border); border-radius: var(--radius-sm);
+            background: var(--surface); }
+.ban-tile .champ { font-size: 0.7rem; color: var(--ink-muted); max-width: 8rem;
+                   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ban { position: relative; width: 24px; height: 24px; flex: none; }
+/* Genug Entsaettigung, dass Bans nicht wie Picks aussehen - aber hell genug,
+   dass man den Champion noch erkennt. */
+.ban img { width: 100%; height: 100%; border-radius: 4px; background: var(--surface);
+           border: 1px solid var(--border); filter: grayscale(0.7) contrast(0.95); opacity: 0.82; }
+/* Schraffur statt blosser Farbe: ein Ban bleibt auch in Graustufen und auf
+   dem gedruckten Blatt als Ban erkennbar. */
+.ban::after { content: ""; position: absolute; inset: 0; border-radius: 4px;
+              background: repeating-linear-gradient(135deg,
+                          transparent 0 5px, var(--ink) 5px 6px);
+              opacity: 0.22; }
+.ban::before { content: ""; position: absolute; inset: 0; border-radius: 4px;
+               z-index: 1;
+               background: linear-gradient(to top right, transparent 45%, var(--red) 45%,
+                           var(--red) 55%, transparent 55%); opacity: 0.8; }
+.ban.text { width: auto; height: auto; padding: 0.05rem 0.3rem; font-size: 0.72rem;
+            color: var(--ink-faint); }
+.ban.text::after, .ban.text::before { display: none; }
+
+/* -------------------------------------------------- Werte im Vergleich */
+/* Beide Mannschaften in einer Leiste: interessant ist der Abstand, nicht
+   die Zahl allein. Wer vorn liegt, bekommt die Farbe. */
+.gc-stats { display: grid; gap: 1px;
+            grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+            border: 1px solid var(--border); border-radius: var(--radius-sm);
+            background: var(--border); overflow: hidden; }
+.gc-stat { display: flex; flex-direction: column; align-items: center; gap: 0;
+           padding: 0.18rem 0.35rem; background: var(--surface-sunk); min-width: 0;
+           line-height: 1.25; }
+.gc-stat-wort { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.12em;
+                text-transform: uppercase; color: var(--ink-faint); }
+.gc-stat-paar { font-family: Rajdhani, Archivo, sans-serif; font-size: 1rem;
+                font-weight: 700; white-space: nowrap;
+                font-variant-numeric: tabular-nums; color: var(--ink-muted); }
+.gc-stat-paar i { font-style: normal; color: var(--ink-faint);
+                  font-weight: 400; padding: 0 0.15rem; }
+.gc-stat-paar .vorn.eigen { color: var(--eigen); }
+.gc-stat-paar .vorn.gegner { color: var(--gegner); }
+
+/* ------------------------------------------- Die uebrigen Spiele als Zeile */
+.spiel-zeile { display: grid; align-items: center; gap: 0.5rem;
+               grid-template-columns: 4.6rem 6rem 6.2rem minmax(0, 1fr) 3.2rem;
+               width: 100%; text-align: left; font: inherit; cursor: pointer;
+               padding: 0.4rem 0.6rem; border-radius: var(--radius-sm);
+               border: 1px solid var(--border); background: var(--surface-sunk);
+               color: var(--ink); }
+.spiel-zeile:hover { border-color: var(--ink-faint); background: var(--surface); }
+.spiel-zeile:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sz-no { font-family: Rajdhani, Archivo, sans-serif; font-size: 0.95rem;
+         font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+.sz-datum { font-size: 0.72rem; color: var(--ink-faint);
+            font-variant-numeric: tabular-nums; }
+.spiel-zeile > .badge { justify-self: start; }
+.sz-paarung { display: flex; align-items: baseline; gap: 0.4rem; min-width: 0;
+              font-size: 0.8rem; color: var(--ink-muted); }
+.sz-name { min-width: 0; overflow: hidden; text-overflow: ellipsis;
+           white-space: nowrap; }
+.sz-paarung b { font-family: Rajdhani, Archivo, sans-serif; font-size: 0.95rem;
+                flex: none; font-variant-numeric: tabular-nums; }
+.sz-paarung b.sieg { color: var(--eigen); }
+.sz-paarung b.pleite { color: var(--gegner); }
+.sz-dauer { justify-self: end; font-family: "IBM Plex Mono", monospace;
+            font-size: 0.72rem; color: var(--ink-faint);
+            font-variant-numeric: tabular-nums; }
+/* Schmal: Paarung und Dauer rutschen unter die erste Zeile, statt dass der
+   Gegnername auf drei Zeichen schrumpft. */
+@media (max-width: 760px) {
+  .spiel-zeile { grid-template-columns: auto auto minmax(0, 1fr);
+                 gap: 0.25rem 0.5rem; }
+  .sz-paarung { grid-column: 1 / -1; }
+  .sz-dauer { justify-self: start; }
+}
+
+/* Hinweise stehen innerhalb der Mannschaft und brauchen denselben Rand. */
+.hint-innen { padding: 0 0.1rem; }
 
 /* ------------------------------------------------ Steckbrief je Mannschaft */
 .steck-raster { display: grid; gap: 0.1rem 1rem; margin-top: 0.6rem; }
@@ -973,44 +1571,6 @@ dialog#champ-dialog > * { padding-left: 1rem; padding-right: 1rem; }
 @media (prefers-reduced-motion: no-preference) {
   .game-card.hervor { transition: outline-color 200ms; }
 }
-/* KDA unter der Kachel: die Tode tragen die Farbe, weil das die Zahl ist,
-   auf die jeder zuerst schaut. */
-.tile .kda { font-family: "IBM Plex Mono", monospace; font-size: 0.72rem;
-             color: var(--ink-faint); letter-spacing: -0.02em; }
-.tile .kda b { font-weight: 600; color: var(--ink-muted); }
-.tile .kda b.tode { color: var(--red); }
-/* Die Objektzeile schliesst die Seite ab. */
-.teamwerte { display: flex; flex-wrap: wrap; gap: 0.2rem 0.7rem;
-             padding: 0.45rem 0.7rem 0; margin-top: 0.1rem;
-             border-top: 1px solid var(--border); font-size: 0.78rem;
-             color: var(--ink-faint); }
-.teamwerte .wert b { font-family: Archivo, ui-sans-serif, system-ui, sans-serif;
-                     font-size: 0.95rem; font-weight: 700; color: var(--ink);
-                     font-variant-numeric: tabular-nums; }
-.teamwerte .zuerst { font-weight: 600; color: var(--ink-muted); }
-.ban-tile { width: auto; min-width: 0; display: flex; flex-direction: column;
-            align-items: center; gap: 0.1rem; }
-.ban-tile .champ { font-size: 0.72rem; color: var(--ink-faint); max-width: 100%;
-                   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ban { position: relative; width: 100%; max-width: 50px; aspect-ratio: 1; flex: none; }
-/* Genug Entsättigung, dass Bans nicht wie Picks aussehen - aber hell genug,
-   dass man den Champion noch erkennt. */
-.ban img { width: 100%; height: 100%; border-radius: 4px; background: var(--surface);
-           border: 1px solid var(--border); filter: grayscale(0.7) contrast(0.95); opacity: 0.82; }
-/* Schraffur statt blosser Farbe: ein Ban bleibt auch in Graustufen und auf
-   dem gedruckten Blatt als Ban erkennbar. */
-.ban::after { content: ""; position: absolute; inset: 0; border-radius: 4px;
-              background: repeating-linear-gradient(135deg,
-                          transparent 0 5px, var(--ink) 5px 6px);
-              opacity: 0.22; }
-.ban::before { content: ""; position: absolute; inset: 0; border-radius: 4px;
-               z-index: 1;
-               background: linear-gradient(to top right, transparent 45%, var(--red) 45%,
-                           var(--red) 55%, transparent 55%); opacity: 0.8; }
-.ban.text { width: auto; height: auto; padding: 0.05rem 0.3rem; font-size: 0.72rem;
-            color: var(--ink-faint); }
-.ban.text::after { display: none; }
-
 /* Notiz am Spiel - im Formular und auf der Karte. Neutral umrandet: eine
    Notiz ist kein Alarm, und --brass ist im dunklen Theme derselbe Wert wie
    --warn - der Rand liess jede Notiz nach Warnung aussehen. */
@@ -1196,6 +1756,8 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
                 aria-controls="panel-players">Spieler</button>
         <button class="tab" id="tab-plan" role="tab" aria-selected="false"
                 aria-controls="panel-plan">Draftplan</button>
+        <button class="tab" id="tab-draft" role="tab" aria-selected="false"
+                aria-controls="panel-draft">Live Draft</button>
         <button class="tab" id="tab-liga" role="tab" aria-selected="false"
                 aria-controls="panel-liga">Liga</button>
         <button class="tab" id="tab-games" role="tab" aria-selected="false"
@@ -1227,6 +1789,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       <a id="team-opgg" class="opgg-team opgg-all" target="_blank" rel="noopener" hidden>
         Alle Profile auf op.gg öffnen</a>
     </div>
+    <div id="team-stats"></div>
     <div class="cards" id="player-cards"></div>
   </section>
 
@@ -1249,6 +1812,10 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       </form>
       <textarea id="plan-out" rows="16" readonly hidden aria-label="Draftplan als Text"></textarea>
     </details>
+  </section>
+
+  <section id="panel-draft" role="tabpanel" aria-labelledby="tab-draft" hidden>
+    <div id="live-draft"></div>
   </section>
 
   <section id="panel-liga" role="tabpanel" aria-labelledby="tab-liga" hidden>
@@ -1827,6 +2394,10 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     }
     document.getElementById("tab-games").click();
     const marke = partieMarke(spiel);
+    // Das Ziel koennte eine zugeklappte Zeile sein - erst aufklappen,
+    // sonst springt der Sprung ins Leere.
+    offeneSpiele.set(blockKeyOf(spiel), marke);
+    renderGames();
     window.setTimeout(() => {
       const ziel = [...document.querySelectorAll(".game-card")]
         .find((k) => k.dataset.partie === marke);
@@ -2072,15 +2643,51 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   // Der Kopf ist der Einstieg in die Grossansicht. Die Championzeilen
   // darunter fuehren zu den Partien - zwei verschiedene Ziele, deshalb
   // traegt der Kopf seinen eigenen Hinweis.
-  function kartenKopf(player) {
-    const kopf = el("div", {class: "card-head klickbar", role: "button",
-        tabindex: "0",
+  // Der Kartenkopf: ein flacher Hero mit der Splash-Art des meistgespielten
+  // Champions als Grund. Bewusst niedrig gehalten - die Karte steht im
+  // Raster neben zwei anderen, und die Championtabelle darunter ist der
+  // eigentliche Inhalt. Der Kopf fuehrt in die Grossansicht.
+  function kartenKopf(player, rows) {
+    const top = (rows && rows.length) ? rows[0] : null;
+    const splash = top ? (SPLASH[top.champ] || null) : null;
+    const rang = player.solo
+      ? player.solo.tier + (player.solo.division ? " " + player.solo.division : "")
+      : "Unranked";
+
+    // Eigene Klasse: .card-head tragen auch die Draftplan- und Liga-Karten,
+    // die hier nichts von einem Hero wissen wollen.
+    const kopf = el("div", {class: "card-head spieler-hero klickbar"
+          + (splash ? " mit-bild" : ""),
+        role: "button", tabindex: "0",
         title: player.label + " groß anzeigen"
                + (player.riotId ? " · " + player.riotId : "")},
-      el("span", {class: "role-pill" + (player.bench ? " bench" : "")},
-         rolePillText(player)),
-      el("span", {class: "name"}, player.label),
-      kopfRang(player.solo));
+      splash ? el("div", {class: "kk-bild"}) : null,
+      el("div", {class: "kk-oben"},
+        el("span", {class: "role-pill" + (player.bench ? " bench" : "")},
+           rolePillText(player)),
+        el("span", {class: "name"}, player.label)),
+      el("div", {class: "kk-wer"},
+         player.team + (player.riotId ? " · " + player.riotId : "")),
+      // Die untere Zeile steht immer: der Rang haengt darin, und es gibt
+      // Spieler ganz ohne Championdaten (TSV Salzgitter). Championblock und
+      // Pool fallen einzeln weg, nicht die ganze Zeile.
+      el("div", {class: "kk-unten"},
+        top ? el("div", {class: "kk-top-champ"},
+          el("span", {class: "kk-kicker"}, "Meistgespielt"),
+          el("span", {class: "kk-champ"}, top.champ),
+          el("span", {class: "kk-champ-zahlen"},
+            el("b", {}, top.play), " Spiele · ",
+            el("b", {}, pct(top.win, top.decided)), " WR")) : null,
+        el("span", {class: "kk-rang"},
+          kopfMedaille(player.solo),
+          el("b", {}, rang),
+          player.solo ? el("span", {class: "kk-lp"}, player.solo.lp + " LP")
+                      : null),
+        top ? el("div", {class: "kk-pool"},
+          el("span", {class: "kk-kicker"}, "Pool"),
+          el("b", {}, rows.length)) : null));
+
+    if (splash) kopf.style.setProperty("--splash", "url(" + splash + ")");
     const auf = () => zeigeSpielerKarte(player);
     kopf.addEventListener("click", auf);
     kopf.addEventListener("keydown", (e) => {
@@ -2089,27 +2696,80 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     return kopf;
   }
 
-  // Der Rang im Kartenkopf: Emblem und Stufe, rechtsbuendig im Farbfeld.
-  // Die Feinheiten (LP, Bilanz) stehen eine Zeile tiefer - im Feld zaehlt
-  // nur, wie stark jemand ist, nicht auf welchem LP-Stand.
-  function kopfRang(rank) {
-    if (!rank) {
-      return el("span", {class: "rang-schild leer",
-                         title: "Solo: keine Platzierung"},
-        el("span", {class: "rang-text"},
-          el("b", {}, "Unranked"),
-          el("span", {class: "rang-lp"}, "keine Platzierung")));
-    }
-    const medal = MEDALS[String(rank.tier || "").toLowerCase()];
-    const stufe = rank.tier;
-    const teil = rank.division || "";
-    return el("span", {class: "rang-schild",
-        title: "Solo " + stufe + (teil ? " " + teil : "") + " · " + rank.lp + " LP"},
-      medal ? el("img", {class: "rang-emblem", src: medal, alt: "", loading: "lazy"}) : null,
-      el("span", {class: "rang-text"},
-        el("b", {}, stufe, teil ? el("span", {class: "rang-teil"}, teil) : null),
-        el("span", {class: "rang-lp"}, rank.lp + " LP")));
+  // Das Emblem der Solo-Stufe. Ohne Platzierung gibt es keins - dann traegt
+  // allein das Wort "Unranked" die Aussage.
+  function kopfMedaille(rank) {
+    const quelle = rank && MEDALS[String(rank.tier || "").toLowerCase()];
+    return quelle ? el("img", {class: "kk-medaille", src: quelle, alt: "",
+                               loading: "lazy"}) : null;
   }
+
+  // Solo und Flex als eine kompakte Zeile. Die Winrate traegt die Farbe:
+  // gruen ab 52 %, rot unter 48 %, sonst neutral - sonst waere jede Zahl
+  // gleich laut.
+  function rangZeile(player) {
+    const seite = (label, r) => {
+      if (!r) {
+        return el("div", {class: "rz-seite"},
+          el("span", {class: "rz-label"}, label),
+          el("span", {class: "rz-wert leer"}, "keine Platzierung"));
+      }
+      const gespielt = r.wins + r.losses;
+      const quote = gespielt ? Math.round(100 * r.wins / gespielt) : null;
+      const ton = quote === null ? "" : (quote >= 52 ? " gut" : (quote < 48 ? " schwach" : ""));
+      return el("div", {class: "rz-seite"},
+        el("span", {class: "rz-label"}, label),
+        el("span", {class: "rz-wert"},
+          el("b", {}, r.tier + (r.division ? " " + r.division : "")),
+          el("span", {class: "rz-bilanz"}, " · " + r.wins + "S/" + r.losses + "N")),
+        quote === null ? null
+          : el("span", {class: "rz-quote" + ton}, quote + "%"));
+    };
+    return el("div", {class: "rang-zeile"},
+      seite("Solo / Duo", player.solo),
+      seite("Flex", player.flex),
+      el("a", {class: "opgg sub rz-link", href: player.opggUrl, target: "_blank",
+               rel: "noopener", title: player.riotId || "op.gg"}, "op.gg"));
+  }
+
+  // Drei kleine Statistikfelder. Das Turnierfeld faellt weg, wenn es keine
+  // Turnierpartien gibt - eine 0 waere eine Behauptung.
+  function kennzahlen(player, played, won, decided, rows) {
+    const form = turnierForm(player.label, player.team);
+    const schnitt = form ? rollenSchnitt(form.rolle) : null;
+    const ligaKda = schnitt && schnitt.tode
+      ? (schnitt.kills + schnitt.assists) / schnitt.tode : null;
+    const feld = (label, wert, einheit, fuss, extra) =>
+      el("div", {class: "kz" + (extra || "")},
+        el("span", {class: "kz-label"}, label),
+        el("span", {class: "kz-wert"}, String(wert),
+           einheit ? el("small", {}, " " + einheit) : null),
+        el("span", {class: "kz-fuss"}, fuss));
+    const turnierfeld = form
+      ? (() => {
+          const knopf = el("button", {class: "kz kz-klick", type: "button",
+              title: "Turnier: " + form.n + " Partien, "
+                     + pct(form.siege, form.n) + " gewonnen, KDA "
+                     + form.kda.toFixed(2)
+                     + (ligaKda ? " (Ligaschnitt " + ligaKda.toFixed(2) + ")" : "")
+                     + " — anklicken für die Partien"},
+            el("span", {class: "kz-label"}, "Turnier"),
+            el("span", {class: "kz-wert"}, pct(form.siege, form.n),
+               el("small", {}, " WR")),
+            el("span", {class: "kz-fuss"}, "KDA " + form.kda.toFixed(2)
+               + (ligaKda ? " · Liga " + ligaKda.toFixed(2) : "")));
+          knopf.addEventListener("click", () => zeigeSpielerPartien(player));
+          return knopf;
+        })()
+      : feld("Turnier", "—", null, "keine Partien");
+    return el("div", {class: "kennzahlen"},
+      feld("Spiele", played || "—", played ? "Ranked" : null,
+           rows.length ? "Top: " + rows[0].champ : "keine Daten", " hervor"),
+      feld("Winrate", pct(won, decided), null,
+           "über " + rows.length + " Champions"),
+      turnierfeld);
+  }
+
 
   // ----------------------------------------- Grossansicht einer Spielerkarte
   // Das Raster bleibt der schnelle Vergleich; hier steht ein Spieler allein,
@@ -2263,53 +2923,8 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     else dlg.removeAttribute("open");
   }
 
-  // Die Feinheiten zum Solo-Rang. Die Stufe steht schon im Kopf.
-  function soloZeile(rank) {
-    if (!rank) return el("span", {class: "solo-zeile leer"}, "keine Platzierung");
-    const gespielt = rank.wins + rank.losses;
-    return el("span", {class: "solo-zeile",
-        title: rank.lp + " LP, " + rank.wins + " Siege / " + rank.losses
-               + " Niederlagen"},
-      rank.lp + " LP · " + rank.wins + "S/" + rank.losses + "N"
-      + (gespielt ? " · " + pct(rank.wins, gespielt) : ""));
-  }
 
-  // Flex als eine Zeile statt als zweiter Block in voller Groesse.
-  function flexZeile(rank) {
-    if (!rank) {
-      return el("span", {class: "flex-zeile leer", title: "Flex: keine Platzierung"},
-        el("b", {}, "Flex"), " unranked");
-    }
-    const tier = rank.tier + (rank.division ? " " + rank.division : "");
-    const gespielt = rank.wins + rank.losses;
-    return el("span", {class: "flex-zeile",
-        title: "Flex " + tier + ", " + rank.lp + " LP, "
-               + rank.wins + " Siege / " + rank.losses + " Niederlagen"},
-      el("b", {}, "Flex"), " " + tier
-      + (gespielt ? " · " + pct(rank.wins, gespielt) : ""));
-  }
 
-  // Die Turnierzahlen gehoeren auf die Karte, nicht unter "Details": sie sind
-  // das Einzige, was kein anderes Werkzeug hat. Ohne Turnierpartien faellt
-  // der Chip weg - eine 0 waere eine Behauptung.
-  function turnierChip(player) {
-    const form = turnierForm(player.label, player.team);
-    if (!form) return null;
-    const schnitt = rollenSchnitt(form.rolle);
-    const ligaKda = schnitt && schnitt.tode
-      ? (schnitt.kills + schnitt.assists) / schnitt.tode : null;
-    const knopf = el("button", {class: "chip turnier", type: "button",
-        title: "Turnier: " + form.n + " Partien, " + pct(form.siege, form.n)
-               + " gewonnen, KDA " + form.kda.toFixed(2)
-               + (ligaKda ? " (Ligaschnitt " + ligaKda.toFixed(2) + ")" : "")
-               + " — anklicken für die Partien"},
-      el("b", {}, "Turnier"), " " + form.n + " · " + pct(form.siege, form.n),
-      el("span", {class: "sub"}, " KDA " + form.kda.toFixed(2)),
-      ligaKda ? el("span", {class: "sub leise"},
-                   " (Liga " + ligaKda.toFixed(2) + ")") : null);
-    knopf.addEventListener("click", () => zeigeSpielerPartien(player));
-    return knopf;
-  }
 
   // Alle Turnierpartien eines Spielers - derselbe Dialog wie bei einem
   // Champion, nur ohne Championfilter.
@@ -2453,19 +3068,9 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
 
     return el("div", {class: "panel", "data-role": player.role,
                       "data-bench": player.bench || null},
-      kartenKopf(player),
-      // Solo traegt die Karte, Flex steht daneben als Nebenzeile: beim
-      // Scouting zaehlt fast immer Solo, und zwei gleich grosse Bloecke
-      // kosteten eine Championzeile.
-      el("div", {class: "rang-reihe"},
-        soloZeile(player.solo),
-        flexZeile(player.flex),
-        el("a", {class: "opgg sub", href: player.opggUrl, target: "_blank",
-                 rel: "noopener", title: player.riotId || "op.gg"}, "op.gg")),
-      el("div", {class: "chips zahlenreihe"},
-        el("span", {class: "chip main"},
-           played + " Spiele · " + pct(won, decided)),
-        turnierChip(player)),
+      kartenKopf(player, rows),
+      rangZeile(player),
+      kennzahlen(player, played, won, decided, rows),
       el("div", {class: "scroll"}, el("table", {},
         el("thead", {}, el("tr", {},
           columns.map(([label, cls, titel]) => el("th",
@@ -2570,8 +3175,82 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     link.textContent = "Alle " + team.players.length + " Profile auf op.gg öffnen";
   }
 
+  // Was die Mannschaft im Turnier getan hat - aus denselben Partien, die
+  // der Spiele-Reiter zeigt. Je Partie zaehlen nur die eigenen Picks.
+  function mannschaftsStatistik(mannschaft) {
+    const w = {n: 0, siege: 0, dauer: 0, mitDauer: 0,
+               blau: 0, blauSiege: 0, rot: 0, rotSiege: 0,
+               firstBlood: 0, firstTower: 0, mitStats: 0,
+               kills: 0, tode: 0, gold: 0, tuerme: 0, drachen: 0, barone: 0};
+    for (const spiel of games) {
+      if (spiel.team !== mannschaft) continue;
+      w.n += 1;
+      const gewonnen = spiel.result === "win";
+      if (gewonnen) w.siege += 1;
+      if (typeof spiel.dauer === "number" && spiel.dauer > 0) {
+        w.dauer += spiel.dauer; w.mitDauer += 1;
+      }
+      if (spiel.side === "blue") { w.blau += 1; if (gewonnen) w.blauSiege += 1; }
+      else if (spiel.side === "red") { w.rot += 1; if (gewonnen) w.rotSiege += 1; }
+      for (const pick of spiel.picks || []) {
+        if (typeof pick.k === "number") w.kills += pick.k;
+        if (typeof pick.d === "number") w.tode += pick.d;
+        if (typeof pick.gold === "number") w.gold += pick.gold;
+      }
+      const t = spiel.teamStats;
+      if (t) {
+        w.mitStats += 1;
+        if (t.firstBlood) w.firstBlood += 1;
+        if (t.firstTower) w.firstTower += 1;
+        for (const f of ["tuerme", "drachen", "barone"])
+          if (typeof t[f] === "number") w[f] += t[f];
+      }
+    }
+    return w.n ? w : null;
+  }
+
+  // Die Leiste benutzt dieselben Felder wie die Spielerkarte - eine zweite
+  // Formensprache fuer dieselbe Art Zahl waere eine zu viel.
+  function renderTeamStats() {
+    const ziel = document.getElementById("team-stats");
+    if (!ziel) return;
+    ziel.textContent = "";
+    const w = mannschaftsStatistik(team.team);
+    if (!w) { ziel.hidden = true; return; }
+    ziel.hidden = false;
+    const quote = (a, b) => b ? Math.round(100 * a / b) + "%" : "\u2014";
+    const schnitt = (summe, n, stellen) => n
+      ? (Math.round(summe / n * Math.pow(10, stellen || 0)) / Math.pow(10, stellen || 0))
+        .toLocaleString("de-DE") : "\u2014";
+    const felder = [
+      ["Partien", String(w.n), w.siege + "S \u00b7 " + (w.n - w.siege) + "N"],
+      ["Winrate", quote(w.siege, w.n), w.siege + " von " + w.n],
+      ["\u00d8 Dauer", w.mitDauer ? dauerText(Math.round(w.dauer / w.mitDauer)) : "\u2014",
+       w.mitDauer ? "aus " + w.mitDauer + " Partien mit Zeit" : "keine Zeiten erfasst"],
+      ["Blue", quote(w.blauSiege, w.blau), w.blau + " Partien auf Blue Side"],
+      ["Red", quote(w.rotSiege, w.rot), w.rot + " Partien auf Red Side"],
+      ["First Blood", quote(w.firstBlood, w.mitStats),
+       w.mitStats ? w.firstBlood + " von " + w.mitStats : "keine Daten"],
+      ["\u00d8 Kills", schnitt(w.kills, w.n, 1), w.kills + " gesamt"],
+      ["\u00d8 Gold", w.gold ? tausend(Math.round(w.gold / w.n)) : "\u2014",
+       w.gold ? (w.gold >= 1e6
+         ? (Math.round(w.gold / 1e5) / 10).toLocaleString("de-DE") + " Mio"
+         : tausend(w.gold)) + " gesamt" : "keine Daten"],
+      ["\u00d8 T\u00fcrme", schnitt(w.tuerme, w.mitStats, 1), w.tuerme + " gesamt"],
+      ["\u00d8 Drachen", schnitt(w.drachen, w.mitStats, 1), w.drachen + " gesamt"],
+      ["\u00d8 Barone", schnitt(w.barone, w.mitStats, 1), w.barone + " gesamt"],
+    ];
+    ziel.append(el("div", {class: "chips ts-zeile"},
+      el("span", {class: "ts-titel"}, "Mannschaft"),
+      felder.map(([wort, wert, fuss]) =>
+        el("span", {class: "chip", title: wort + ": " + wert
+                    + (fuss ? " (" + fuss + ")" : "")},
+          el("b", {}, wert), " " + wort))));
+  }
+
   function renderPlayers() {
     renderTeamLink();
+    renderTeamStats();
     const host = document.getElementById("player-cards");
     host.className = mitEinlauf("cards columns");
     host.textContent = "";
@@ -2580,6 +3259,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     document.getElementById("page-title").textContent = team.team;
     renderPlayersScope();
     renderPlan();          // haengt an derselben Queue- und Season-Auswahl
+    renderLiveDraft();     // Pool und Draftplan des Teams stecken darin
   }
 
   // Der Spieler-Reiter sagt selbst, worueber er spricht: wie viele Spieler,
@@ -2658,6 +3338,649 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       hasPlan(plan) ? null : el("p", {class: "hint"}, "Noch kein Plan eingetragen."),
       PLAN_LISTS.map(([key, label]) => planBlock(label, plan[key], rows)),
       plan.note ? el("p", {class: "note ruhig"}, plan.note) : null);
+  }
+
+  // =================================================== Live Draft
+  // Zwei Ebenen, bewusst getrennt: der Spieler-Reiter beantwortet "was hat
+  // dieser Spieler frueher gespielt", dieser hier "was kann und soll er
+  // JETZT picken". Die Historie bleibt die Datengrundlage, ist aber nur
+  // noch ein Faktor von mehreren.
+  //
+  // Daten von DraftGap (MIT, github.com/vigovlugt/draftgap), aufbereitet aus
+  // lolalytics. Die Schluessel sind Nummern - siehe draft_daten() in build.py.
+  const DRAFT = DATA.draft || null;
+  const DRAFT_NR = new Map();
+  if (DRAFT) DRAFT.namen.forEach((n, i) => DRAFT_NR.set(n, String(i)));
+
+  const SEITEN = [["eigen", "wir"], ["gegner", "gegner"]];
+  const leer5 = () => [null, null, null, null, null];
+  const liveStand = {
+    bans: {eigen: leer5(), gegner: leer5()},
+    picks: {eigen: leer5(), gegner: leer5()},
+  };
+  let liveAktiv = {seite: "eigen", rolle: 0};
+  let liveFearless = false;
+  let liveSerie = null;
+  let liveFilter = "alle";
+  let liveSuche = "";
+  let liveGegner = "";
+
+  function draftBasis(champ, rolle) {
+    if (!DRAFT) return null;
+    const i = DRAFT_NR.get(champ);
+    if (i === undefined) return null;
+    const alle = DRAFT.basis[i] || {};
+    const e = alle[rolle];
+    if (!e) return null;
+    const gesamt = Object.values(alle).reduce((n, x) => n + x[0], 0);
+    // Nebenrollen aussortieren: Ahri hat 7.691 Partien auf Top, gemessen an
+    // ihren 236.000 auf Mid ist das Rauschen - und sie stand beim Toplaner
+    // einmal als bester Vorschlag.
+    if (e[0] < 1000 || e[0] < gesamt / 20) return null;
+    return {spiele: e[0], quote: e[1] / 1000};
+  }
+
+  // art: "m" Matchup gegen die gegnerische Rolle, "s" Synergie mit der eigenen.
+  function draftPaar(champ, rolle, art, fremd, rolle2) {
+    if (!DRAFT) return null;
+    const i = DRAFT_NR.get(champ), j = DRAFT_NR.get(fremd);
+    if (i === undefined || j === undefined) return null;
+    const stufe = (((DRAFT.paare[i] || {})[rolle] || {})[art] || {})[rolle2];
+    const e = stufe && stufe[j];
+    return e ? {spiele: e[0], quote: e[1] / 1000} : null;
+  }
+
+  // Anteil magischen Schadens in Prozent - gemessen, nicht geschaetzt.
+  function liveSchaden(champ, rolle) {
+    if (!DRAFT || !DRAFT.schaden) return null;
+    const i = DRAFT_NR.get(champ);
+    if (i === undefined) return null;
+    const e = (DRAFT.schaden[i] || {})[String(rolle)];
+    return e === undefined ? null : e;
+  }
+
+  // Wie einseitig unsere bisherigen Picks sind. Ohne Picks gibt es nichts
+  // zu sagen - dann faellt der Faktor weg, statt eine Zahl zu erfinden.
+  function liveMischung() {
+    const werte = [];
+    for (let r = 0; r < 5; r++) {
+      const c = liveStand.picks.eigen[r];
+      if (!c) continue;
+      const m = liveSchaden(c, r);
+      if (m !== null) werte.push(m);
+    }
+    if (!werte.length) return null;
+    return {magisch: Math.round(werte.reduce((a, b) => a + b, 0) / werte.length),
+            n: werte.length};
+  }
+
+  // ------------------------------------------------ Was ist weg
+  // Ein Champion ist aus drei Gruenden nicht mehr waehlbar, und der Grund
+  // gehoert dazu: gebannt, schon gepickt, oder in dieser Fearless-Serie
+  // verbraucht. Alle drei verschwinden aus den Empfehlungen.
+  function liveGesperrt() {
+    const raus = new Map();
+    const setz = (champ, art, text) => {
+      if (champ && !raus.has(champ)) raus.set(champ, {art, text});
+    };
+    for (const [seite] of SEITEN) {
+      const wer = seite === "eigen" ? team.team : (liveGegnerName() || "Gegner");
+      for (const c of liveStand.bans[seite]) setz(c, "ban", "gebannt von " + wer);
+      for (const c of liveStand.picks[seite]) setz(c, "pick", "gepickt von " + wer);
+    }
+    if (liveFearless && liveSerie) {
+      for (const g of games) {
+        if (g.series !== liveSerie) continue;
+        for (const p of g.picks || []) {
+          setz(p.champ, "fearless",
+               "Fearless \u00b7 Spiel " + (g.game || "?") + " der Serie");
+        }
+      }
+    }
+    return raus;
+  }
+
+  const liveGegnerName = () => liveGegner.trim() || null;
+
+  // Gegner der gewaehlten Serie - nur als Vorschlag fuer das leere Feld.
+  function liveSerienGegner() {
+    for (const block of gameBlocks()) {
+      if (block.series === liveSerie) return block.games[0].opponent;
+    }
+    return null;
+  }
+
+  function liveSerien() {
+    return gameBlocks().map((b) => b.series).filter(Boolean);
+  }
+
+  const liveSpieler = (rolle) =>
+    team.players.find((p) => !p.bench && p.role === ROLES[rolle][0]) || null;
+
+  // ------------------------------------------------ Die Bewertung
+  // Vier bis fuenf benannte Teile, jeder aus vorhandenen Daten. Fehlt ein
+  // Teil, faellt er aus Summe UND Hoechstwert - er wird nicht geschaetzt.
+  // Darum steht unter jeder Karte, woraus sich die Zahl ergeben hat.
+  const klemm = (x, a, c) => Math.max(a, Math.min(c, x));
+
+  function liveBewerten(champ, rolle, pool, plan) {
+    const basis = draftBasis(champ, String(rolle));
+    if (!basis) return null;              // auf dieser Rolle nicht gespielt
+    const zeile = pool.get(champ) || null;
+    const spiele = zeile ? zeile.play : 0;
+    const entschieden = zeile ? zeile.decided : 0;
+    const teile = [];
+    let summe = 0, hoechst = 0;
+
+    const nimm = (wort, punkte, max, art, text) => {
+      summe += punkte; hoechst += max;
+      teile.push({wort, art, text, anteil: max ? punkte / max : 0});
+    };
+
+    // 1. Patch-Staerke der Rolle (46 % -> 0, 54 % -> voll)
+    nimm("Patch", 20 * klemm((basis.quote - 0.46) / 0.08, 0, 1), 20,
+         basis.quote >= 0.51 ? "plus" : basis.quote <= 0.49 ? "minus" : "info",
+         dbQuote(basis.quote) + " auf " + ROLES[rolle][1]);
+
+    // 2. Gegen den gegnerischen Draft, und 3. mit den eigenen Picks. Zwei
+    //    getrennte Teile: ein Champion kann gegen den Gegner gut stehen und
+    //    trotzdem nicht zu den eigenen Picks passen. In einer gemeinsamen
+    //    Zahl war das nicht zu sehen.
+    const fit = liveFit(champ, rolle);
+    if (fit.gegen) {
+      const d = fit.gegen.quote - basis.quote;
+      nimm("Gegen", 20 * klemm((d + 0.02) / 0.04, 0, 1), 20,
+           d >= 0.005 ? "plus" : d <= -0.005 ? "minus" : "info",
+           dbQuote(fit.gegen.quote) + " gegen deren Picks");
+    }
+    if (fit.mit) {
+      const d = fit.mit.quote - basis.quote;
+      nimm("Synergie", 20 * klemm((d + 0.02) / 0.04, 0, 1), 20,
+           d >= 0.005 ? "plus" : d <= -0.005 ? "minus" : "info",
+           dbQuote(fit.mit.quote) + " mit unseren Picks");
+    }
+
+    // 4. Erfahrung des Spielers - 100 Partien schoepfen aus
+    nimm("Erfahrung", 35 * klemm(Math.log10(1 + spiele) / Math.log10(101), 0, 1), 35,
+         spiele >= 20 ? "plus" : spiele ? "info" : "minus",
+         spiele ? spiele + " eigene Partien" : "noch nie gespielt");
+
+    // 5. Eigene Winrate - erst ab zehn entschiedenen Partien, darunter sagt
+    //    sie nichts.
+    if (entschieden >= 10) {
+      const q = zeile.win / entschieden;
+      nimm("Eigene WR", 10 * klemm((q - 0.42) / 0.16, 0, 1), 10,
+           q >= 0.52 ? "plus" : q <= 0.45 ? "minus" : "info",
+           pct(zeile.win, entschieden) + " aus " + entschieden);
+    }
+
+    // 6. Zusammensetzung - nur wenn schon etwas von uns steht. Ein
+    //    Champion, der die Einseitigkeit ausgleicht, bekommt Punkte; einer,
+    //    der sie verstaerkt, nicht. Ohne eigene Picks faellt der Teil weg.
+    const mischung = liveMischung();
+    const magisch = liveSchaden(champ, rolle);
+    if (mischung && magisch !== null && mischung.n < 5) {
+      // Abstand zur Mitte vorher und nachher - kleiner ist besser.
+      const vorher = Math.abs(mischung.magisch - 50);
+      const nachher = Math.abs(
+        (mischung.magisch * mischung.n + magisch) / (mischung.n + 1) - 50);
+      nimm("Mischung", 10 * klemm((vorher - nachher) / 10 + 0.5, 0, 1), 10,
+           nachher < vorher - 1 ? "plus" : nachher > vorher + 1 ? "minus" : "info",
+           magisch + " % magisch, Team bisher " + mischung.magisch + " %");
+    }
+
+    // 7. Draftplan - eine ausdrueckliche Ansage des Spielers wiegt schwerer
+    //    als eine Handvoll Ranked-Partien.
+    const imPlan = plan.blind.includes(champ) ? "blind"
+                 : plan.likes.includes(champ) ? "likes" : null;
+    nimm("Plan", imPlan === "blind" ? 15 : imPlan === "likes" ? 10 : 0, 15,
+         imPlan ? "plus" : "info",
+         imPlan === "blind" ? "blind pickbar laut Plan"
+         : imPlan === "likes" ? "spielt er gerne" : "nicht im Draftplan");
+
+    const punkte = hoechst ? Math.round(100 * summe / hoechst) : 0;
+    const kategorie = spiele >= 20 ? "pool"
+                    : (spiele >= 3 || imPlan) ? "alternativen" : "selten";
+    return {punkte, sterne: klemm(Math.round(punkte / 20), 1, 5),
+            teile, basis, fit, spiele, entschieden, zeile, kategorie, imPlan};
+  }
+
+  // Gemessene Quoten, getrennt nach "gegen wen" und "mit wem". Kein Modell:
+  // ein erster Versuch addierte die Abweichungen der fuenf Matchups auf die
+  // Grundquote und landete bei JEDEM Champion unter 50 %, weil in jeder
+  // Matchup-Quote die Staerke des Gegners schon steckt.
+  function liveFit(champ, rolle) {
+    const sammeln = (art) => {
+      let summe = 0, gewicht = 0;
+      const teile = [];
+      for (let r2 = 0; r2 < 5; r2++) {
+        const seite = art === "m" ? "gegner" : "eigen";
+        const wer = liveStand.picks[seite][r2];
+        if (!wer || (art === "s" && r2 === rolle)) continue;
+        const e = draftPaar(champ, String(rolle), art, wer, String(r2));
+        if (!e) continue;
+        teile.push({art, wer, rolle: r2, quote: e.quote, spiele: e.spiele});
+        summe += e.quote * e.spiele; gewicht += e.spiele;
+      }
+      return gewicht ? {quote: summe / gewicht, spiele: gewicht, teile} : null;
+    };
+    return {gegen: sammeln("m"), mit: sammeln("s")};
+  }
+
+  const dbQuote = (q) =>
+    (Math.round(q * 1000) / 10).toLocaleString("de-DE", {minimumFractionDigits: 1})
+    + " %";
+
+  // Beide Aufstellungen im Ueberblick. Die Quote ist der nach Partien
+  // gewichtete Schnitt ueber ALLE gemessenen Paarungen zwischen unseren und
+  // ihren Picks - keine Hochrechnung auf eine Teamstaerke, sondern das, was
+  // diese Champions gegeneinander tatsaechlich geholt haben.
+  function liveComp() {
+    const seite = (s) => {
+      const raus = [];
+      for (let r = 0; r < 5; r++) {
+        if (liveStand.picks[s][r]) raus.push({champ: liveStand.picks[s][r], rolle: r});
+      }
+      return raus;
+    };
+    const mischung = (liste) => {
+      const w = liste.map((p) => liveSchaden(p.champ, p.rolle))
+                     .filter((x) => x !== null);
+      if (!w.length) return null;
+      return {magisch: Math.round(w.reduce((a, b) => a + b, 0) / w.length),
+              n: w.length};
+    };
+    const wir = seite("eigen"), sie = seite("gegner");
+    let summe = 0, gewicht = 0, paare = 0;
+    for (const a of wir) {
+      for (const b of sie) {
+        const e = draftPaar(a.champ, String(a.rolle), "m", b.champ, String(b.rolle));
+        if (!e) continue;
+        summe += e.quote * e.spiele; gewicht += e.spiele; paare += 1;
+      }
+    }
+    return {wir, sie, mischWir: mischung(wir), mischSie: mischung(sie),
+            quote: gewicht ? summe / gewicht : null, paare, spiele: gewicht};
+  }
+
+  // ------------------------------------------------ Darstellung
+  // Das Geruest steht einmal; bei jeder Aenderung werden nur Sperrleiste
+  // und Championliste neu gezeichnet - sonst entstehen die Eingabefelder
+  // unter dem Tippenden neu und der Fokus ist weg.
+  function renderLiveDraft() {
+    const ziel = document.getElementById("live-draft");
+    if (!ziel) return;
+    ziel.textContent = "";
+    if (!DRAFT) {
+      ziel.append(el("p", {class: "hint"},
+        "Keine Draftdaten eingebettet \u2014 build.py konnte die Datens\u00e4tze "
+        + "nicht laden."));
+      return;
+    }
+    const serien = liveSerien();
+    if (liveSerie === null && serien.length) liveSerie = serien[0];
+
+    ziel.append(liveKopf(serien), liveBoard(),
+                el("div", {class: "ld-comp"}),
+                el("div", {class: "ld-sperren"}),
+                liveFilterLeiste(),
+                el("div", {class: "ld-liste"}));
+    liveAktualisieren();
+  }
+
+  function liveKopf(serien) {
+    const haken = el("input", {type: "checkbox"});
+    haken.checked = liveFearless;
+    const wahl = el("select", {class: "ld-serie",
+        "aria-label": "Serie, deren Picks gesperrt sind"},
+      serien.length ? serien.map((n) => el("option", {value: n}, n))
+                    : el("option", {value: ""}, "keine Serie erfasst"));
+    wahl.value = liveSerie || "";
+    wahl.disabled = !liveFearless;
+    // Der Gegner ist frei waehlbar - er haengt nicht an der Serie. Vorher
+    // stand dort dauerhaft der Gegner der zuletzt gespielten Serie.
+    const gegnerFeld = el("input", {type: "text", class: "ld-gegner",
+      list: "opponent-list", placeholder: "Gegner", autocomplete: "off",
+      "aria-label": "Gegnerische Mannschaft"});
+    gegnerFeld.value = liveGegner;
+    gegnerFeld.addEventListener("change", () => {
+      liveGegner = gegnerFeld.value;
+      renderLiveDraft();
+    });
+    const vorschlagen = () => {
+      if (liveGegner.trim()) return;
+      const g = liveSerienGegner();
+      if (g) { liveGegner = g; gegnerFeld.value = g; }
+    };
+    haken.addEventListener("change", () => {
+      liveFearless = haken.checked;
+      wahl.disabled = !liveFearless;
+      if (liveFearless) vorschlagen();
+      renderLiveDraft();
+    });
+    wahl.addEventListener("change", () => {
+      liveSerie = wahl.value || null;
+      vorschlagen();
+      renderLiveDraft();
+    });
+    const zurueck = el("button", {class: "ld-reset", type: "button"}, "Draft leeren");
+    zurueck.addEventListener("click", () => {
+      liveStand.bans.eigen = leer5(); liveStand.bans.gegner = leer5();
+      liveStand.picks.eigen = leer5(); liveStand.picks.gegner = leer5();
+      renderLiveDraft();
+    });
+    return el("div", {class: "ld-kopf"},
+      el("span", {class: "ld-titel"}, "Live Draft"),
+      el("span", {class: "ld-paarung"},
+        el("b", {class: "eigen"}, team.team), " vs "),
+      gegnerFeld,
+      el("label", {class: "ld-schalter"}, haken, " Fearless"),
+      wahl, zurueck,
+      el("span", {class: "sub ld-quelle"}, "Patch " + (DRAFT.version || "?")
+         + (DRAFT.stand ? " \u00b7 " + deDate(DRAFT.stand) : "")));
+  }
+
+  // Ein Feld im Draftboard. Tippen traegt ein, Klick macht es zum Ziel des
+  // Pick-Knopfs in der Championliste.
+  function liveFeld(seite, art, i, beschriftung) {
+    const speicher = liveStand[art][seite];
+    const feld = champField("ld-" + seite + "-" + art + "-" + i, beschriftung, () => {});
+    const eingabe = feld.querySelector("input");
+    eingabe.value = speicher[i] || "";
+    // champField zeichnet seine Vorschau nur auf input/change. Wer den Wert
+    // setzt - etwa der Picken-Knopf - muss das selbst anstossen, sonst
+    // bleibt das Feld ohne Icon.
+    eingabe.dispatchEvent(new Event("input"));
+    eingabe.addEventListener("change", () => {
+      speicher[i] = normaliseChamp(eingabe.value) || null;
+      liveAktualisieren();
+    });
+    const aktiv = art === "picks" && liveAktiv.seite === seite && liveAktiv.rolle === i;
+    const huelle = el("div", {class: "ld-feld " + art + (aktiv ? " aktiv" : "")},
+      beschriftung ? el("span", {class: "ld-feld-wort"}, beschriftung) : null, feld);
+    if (art === "picks") {
+      eingabe.addEventListener("focus", () => {
+        liveAktiv = {seite, rolle: i};
+        for (const k of document.querySelectorAll(".ld-feld.picks")) {
+          k.classList.remove("aktiv");
+        }
+        huelle.classList.add("aktiv");
+        liveAktualisieren();
+      });
+    }
+    return huelle;
+  }
+
+  function liveBoard() {
+    const spalte = (seite) => {
+      const name = seite === "eigen" ? team.team : (liveGegnerName() || "Gegner");
+      return el("div", {class: "ld-seite " + seite},
+        el("div", {class: "ld-seite-kopf"},
+          el("span", {class: "ld-seite-name"}, name),
+          el("span", {class: "ld-seite-wort"}, seite === "eigen" ? "wir" : "Gegner")),
+        el("div", {class: "ld-bans"},
+          el("span", {class: "ld-bans-wort"}, "Bans"),
+          el("div", {class: "ld-bans-felder"},
+            [0, 1, 2, 3, 4].map((i) => liveFeld(seite, "bans", i, null)))),
+        el("div", {class: "ld-picks"}, ROLES.map(([wert, wort], i) => {
+          const spieler = seite === "eigen" ? liveSpieler(i) : null;
+          return el("div", {class: "ld-pickzeile"},
+            el("span", {class: "ld-rolle"}, wort),
+            liveFeld(seite, "picks", i, null),
+            el("span", {class: "ld-wer"}, spieler ? spieler.label : ""));
+        })));
+    };
+    return el("div", {class: "ld-board"}, spalte("eigen"), spalte("gegner"));
+  }
+
+  function liveFilterLeiste() {
+    const rollen = el("div", {class: "ld-rollen", role: "tablist"},
+      ROLES.map(([, wort], i) => {
+        const k = el("button", {class: "ld-rolle-knopf" + (liveAktiv.rolle === i ? " an" : ""),
+                                type: "button"}, wort);
+        k.addEventListener("click", () => {
+          liveAktiv = {seite: "eigen", rolle: i};
+          renderLiveDraft();
+        });
+        return k;
+      }));
+    const arten = [["alle", "Alle"], ["pool", "Dein Pool"],
+                   ["alternativen", "Alternativen"], ["selten", "Selten gespielt"],
+                   ["gesperrt", "Gesperrt"]];
+    const kategorien = el("div", {class: "ld-kategorien"}, arten.map(([wert, wort]) => {
+      const k = el("button", {class: "ld-kat" + (liveFilter === wert ? " an" : ""),
+                              type: "button"}, wort);
+      k.addEventListener("click", () => { liveFilter = wert; renderLiveDraft(); });
+      return k;
+    }));
+    const suche = el("input", {type: "search", class: "ld-suche",
+      placeholder: "Champion suchen \u2026", "aria-label": "Champion suchen"});
+    suche.value = liveSuche;
+    suche.addEventListener("input", () => {
+      liveSuche = suche.value.trim().toLowerCase();
+      liveListeZeichnen();
+    });
+    return el("div", {class: "ld-filter"}, rollen, kategorien, suche);
+  }
+
+  // Nur Sperrleiste und Liste - das Board bleibt stehen.
+  function liveAktualisieren() {
+    const knoepfe = document.querySelectorAll("#live-draft .ld-rolle-knopf");
+    knoepfe.forEach((k, i) => k.classList.toggle("an", i === liveAktiv.rolle));
+    liveCompZeichnen();
+    liveSperrleiste();
+    liveListeZeichnen();
+  }
+
+  function liveCompZeichnen() {
+    const host = document.querySelector("#live-draft .ld-comp");
+    if (!host) return;
+    host.textContent = "";
+    const c = liveComp();
+    if (!c.wir.length && !c.sie.length) { host.hidden = true; return; }
+    host.hidden = false;
+
+    const balken = (m, seite) => {
+      if (!m) {
+        return el("span", {class: "ld-comp-leer"}, "kein Schadensprofil");
+      }
+      return el("span", {class: "ld-mix"},
+        el("span", {class: "ld-mix-balken",
+                    title: m.magisch + " % magisch aus " + m.n
+                           + (m.n === 1 ? " Pick" : " Picks")},
+          el("i", {class: "magisch", style: "width:" + m.magisch + "%"})),
+        el("span", {class: "ld-mix-wort"},
+           m.magisch + " % magisch \u00b7 " + (100 - m.magisch) + " % physisch"));
+    };
+
+    const zeile = (seite, wort, liste, m) =>
+      el("div", {class: "ld-comp-zeile " + seite},
+        el("span", {class: "ld-comp-name"}, wort),
+        el("span", {class: "ld-comp-zahl"}, liste.length + "/5"),
+        balken(m, seite));
+
+    host.append(
+      el("div", {class: "ld-comp-kopf"},
+        el("span", {class: "ld-comp-wort"}, "Aufstellungen"),
+        c.quote !== null
+          ? el("span", {class: "ld-comp-quote " + (c.quote >= 0.515 ? "gut"
+                : c.quote <= 0.485 ? "schwach" : ""),
+               title: "Nach Partien gewichteter Schnitt \u00fcber " + c.paare
+                      + " Paarungen, zusammen " + tausend(c.spiele) + " Partien"},
+              el("b", {}, dbQuote(c.quote)), " f\u00fcr " + team.team)
+          : el("span", {class: "sub"},
+              "Quote erst, wenn auf beiden Seiten etwas steht"),
+        c.quote !== null
+          ? el("span", {class: "sub"}, "aus " + c.paare + " gemessenen Paarungen")
+          : null),
+      zeile("eigen", team.team, c.wir, c.mischWir),
+      zeile("gegner", liveGegnerName() || "Gegner", c.sie, c.mischSie));
+  }
+
+  function liveSperrleiste() {
+    const host = document.querySelector("#live-draft .ld-sperren");
+    if (!host) return;
+    host.textContent = "";
+    const gesperrt = liveGesperrt();
+    if (!gesperrt.size) { host.hidden = true; return; }
+    host.hidden = false;
+    // Keine Emoji: sie sehen auf jedem System anders aus und passen nicht zu
+    // den uebrigen Marken des Boards, die gezeichnet sind.
+    const gruppen = [["fearless", "Fearless gesperrt"],
+                     ["ban", "Gebannt"], ["pick", "Schon gepickt"]];
+    for (const [art, wort] of gruppen) {
+      const liste = [...gesperrt.entries()].filter(([, v]) => v.art === art);
+      if (!liste.length) continue;
+      host.append(el("div", {class: "ld-sperr-gruppe ld-" + art},
+        el("span", {class: "ld-sperr-wort"}, wort + " (" + liste.length + ")"),
+        el("div", {class: "ld-sperr-liste"}, liste.map(([champ, v]) => {
+          const src = iconUrl(champ);
+          return el("span", {class: "ld-sperr ld-" + art, title: champ + " \u2014 " + v.text},
+            src ? el("img", {src, alt: "", loading: "lazy"}) : null,
+            el("span", {}, champ));
+        }))));
+    }
+  }
+
+  function liveListeZeichnen() {
+    const host = document.querySelector("#live-draft .ld-liste");
+    if (!host) return;
+    host.textContent = "";
+    const rolle = liveAktiv.rolle;
+    const spieler = liveSpieler(rolle);
+    const gesperrt = liveGesperrt();
+
+    if (liveFilter === "gesperrt") {
+      host.append(el("p", {class: "hint"}, gesperrt.size
+        ? "Alle " + gesperrt.size + " Champions, die in diesem Draft nicht "
+          + "mehr gehen \u2014 mit Grund."
+        : "Noch nichts gebannt, gepickt oder durch Fearless gesperrt."));
+      host.append(el("div", {class: "ld-karten"},
+        [...gesperrt.entries()].map(([champ, v]) => liveKarteGesperrt(champ, v))));
+      return;
+    }
+
+    const turnier = tournamentIndex();
+    const pool = new Map();
+    const plan = spieler ? planOf(spieler) : {blind: [], likes: [], note: ""};
+    if (spieler) {
+      for (const r of championRows(spieler, turnier, false)) pool.set(r.champ, r);
+    }
+
+    const alle = [];
+    for (const champ of DRAFT.namen) {
+      if (gesperrt.has(champ)) continue;
+      if (liveSuche && !champ.toLowerCase().includes(liveSuche)) continue;
+      const w = liveBewerten(champ, rolle, pool, plan);
+      if (w) alle.push({champ, w});
+    }
+    alle.sort((x, y) => y.w.punkte - x.w.punkte
+                     || (y.w.spiele - x.w.spiele));
+
+    const gefiltert = liveFilter === "alle" ? alle
+      : alle.filter((x) => x.w.kategorie === liveFilter);
+
+    host.append(el("p", {class: "hint"},
+      (spieler ? spieler.label + " \u00b7 " : "")
+      + gefiltert.length + " w\u00e4hlbar auf " + ROLES[rolle][1]
+      + (gesperrt.size ? " \u00b7 " + gesperrt.size + " gesperrt" : "")
+      + (liveStand.picks.gegner.some(Boolean)
+         ? " \u00b7 Reihenfolge ber\u00fccksichtigt den eingetragenen Draft"
+         : " \u00b7 noch kein Gegnerpick eingetragen, darum z\u00e4hlt der Draft "
+           + "noch nicht mit")));
+
+    if (liveFilter === "alle" && gefiltert.length) {
+      // Die Kategorien lassen die besten Treffer bewusst stehen: ein
+      // Champion darf oben als bester Treffer UND unten im eigenen Pool
+      // auftauchen - das sind zwei verschiedene Fragen.
+      host.append(liveAbschnitt("Beste Treffer", gefiltert.slice(0, 6), rolle, true));
+      for (const [art, wort, deckel] of [["pool", "Dein Pool", 0],
+                                         ["alternativen", "Alternativen", 0],
+                                         ["selten", "Selten gespielt", 24]]) {
+        const teil = gefiltert.filter((x) => x.w.kategorie === art);
+        if (!teil.length) continue;
+        // Selten gespielte gibt es dutzendweise. In der Alle-Ansicht die
+        // besten, vollstaendig steht die Liste unter ihrem eigenen Filter.
+        host.append(liveAbschnitt(wort, deckel ? teil.slice(0, deckel) : teil,
+                                  rolle, false, teil.length));
+      }
+    } else {
+      host.append(liveAbschnitt(null, gefiltert, rolle, false));
+    }
+  }
+
+  function liveAbschnitt(titel, eintraege, rolle, hervor, gesamt) {
+    const zahl = gesamt && gesamt > eintraege.length
+      ? eintraege.length + " von " + gesamt : String(eintraege.length);
+    return el("div", {class: "ld-abschnitt"},
+      titel ? el("h3", {class: "ld-abschnitt-wort"}, titel,
+                 el("span", {class: "sub"}, " " + zahl)) : null,
+      el("div", {class: "ld-karten"},
+         eintraege.map((x) => liveKarte(x.champ, x.w, rolle, hervor))));
+  }
+
+  function liveKarte(champ, w, rolle, hervor) {
+    const src = iconUrl(champ);
+    const stufe = w.punkte >= 70 ? "sehrgut" : w.punkte >= 55 ? "gut" : "normal";
+    const knopf = el("button", {class: "ld-picken", type: "button"},
+      "Picken");
+    knopf.addEventListener("click", () => {
+      liveStand.picks[liveAktiv.seite][liveAktiv.rolle] = champ;
+      renderLiveDraft();
+    });
+    return el("div", {class: "ld-karte " + stufe + (hervor ? " hervor" : ""),
+                      "data-kat": w.kategorie},
+      el("div", {class: "ld-karte-kopf"},
+        src ? el("img", {class: "ld-bild", src, alt: "", loading: "lazy"}) : null,
+        el("span", {class: "ld-karte-name"}, champ),
+        el("span", {class: "ld-punkte " + stufe, title: "Match-Score"}, w.punkte)),
+      el("div", {class: "ld-karte-zeile"},
+        el("span", {class: "ld-sterne", "aria-label": w.sterne + " von 5"},
+           "\u2605".repeat(w.sterne) + "\u2606".repeat(5 - w.sterne)),
+        el("span", {class: "ld-karte-zahlen"}, w.spiele
+           ? w.spiele + " Sp \u00b7 " + (w.entschieden
+               ? pct(w.zeile.win, w.entschieden) : "\u2014")
+           : "keine eigenen Partien")),
+      livePaarungen(w),
+      el("ul", {class: "ld-gruende"}, w.teile.map((t) =>
+        el("li", {class: "ld-grund " + t.art},
+          el("b", {}, t.wort), " ", t.text))),
+      knopf);
+  }
+
+  // Jede einzelne Paarung als Chip - das war die Bitte: Synergien sollen
+  // auffallen, nicht in einem Schnitt verschwinden. Gruen ab 52 %, rot
+  // unter 48 %, sonst ruhig.
+  function livePaarungen(w) {
+    const reihe = (wort, fit, klasse) => {
+      if (!fit) return null;
+      return el("div", {class: "ld-paare " + klasse},
+        el("span", {class: "ld-paare-wort"}, wort),
+        el("span", {class: "ld-paare-liste"}, fit.teile.map((t) =>
+          el("span", {class: "ld-paar " + dbPfeil(t.quote),
+              title: t.wer + " · " + dbQuote(t.quote) + " aus "
+                     + tausend(t.spiele) + " Partien"},
+            iconUrl(t.wer)
+              ? el("img", {src: iconUrl(t.wer), alt: "", loading: "lazy"}) : null,
+            el("b", {}, dbQuote(t.quote).replace(" %", ""))))));
+    };
+    const gegen = reihe("gegen", w.fit && w.fit.gegen, "gegen");
+    const mit = reihe("mit", w.fit && w.fit.mit, "mit");
+    if (!gegen && !mit) return null;
+    return el("div", {class: "ld-paarungen"}, gegen, mit);
+  }
+
+  const dbPfeil = (q) => q >= 0.52 ? "gut" : q <= 0.48 ? "schwach" : "neutral";
+
+  function liveKarteGesperrt(champ, v) {
+    const src = iconUrl(champ);
+    return el("div", {class: "ld-karte gesperrt ld-" + v.art},
+      el("div", {class: "ld-karte-kopf"},
+        src ? el("img", {class: "ld-bild", src, alt: "", loading: "lazy"}) : null,
+        el("span", {class: "ld-karte-name"}, champ),
+        el("span", {class: "ld-marke ld-" + v.art},
+           v.art === "fearless" ? "Fearless" : v.art === "ban" ? "Ban" : "Pick")),
+      el("p", {class: "ld-sperr-grund"}, v.text));
   }
 
   function renderPlan() {
@@ -3504,9 +4827,14 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   // Neueste Serie oben, innerhalb der Serie aber in Spielreihenfolge: Spiel 1
   // zuerst, Spiel 3 zuletzt. Nach Serie gruppiert, damit zwei Serien gegen
   // denselben Gegner auseinanderzuhalten sind.
+  const blockKeyOf = (g) => g.series || ("einzeln:" + g.date + "|" + g.opponent);
+
+  // Welches Spiel eines Blocks ausgeklappt ist. Leer = das erste.
+  const offeneSpiele = new Map();
+
   function gameBlocks() {
     const rows = teamGames();
-    const keyOf = (g) => g.series || ("einzeln:" + g.date + "|" + g.opponent);
+    const keyOf = blockKeyOf;
     const latest = new Map();
     for (const g of rows) {
       const key = keyOf(g);
@@ -3528,6 +4856,31 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     }
     return blocks;
   }
+
+  // Stand der Serie bis einschliesslich dieses Spiels. Ohne Serie gibt es
+  // nichts mitzuzaehlen - dann ist es schlicht das Ergebnis der Partie.
+  function serienStand(game) {
+    if (!game.series) {
+      return game.result === "win" ? [1, 0]
+           : game.result === "loss" ? [0, 1] : [0, 0];
+    }
+    const reihe = teamGames()
+      .filter((g) => g.series === game.series)
+      .sort((a, b) => spielZeit(a).localeCompare(spielZeit(b))
+                   || (a.game || 0) - (b.game || 0));
+    let siege = 0, pleiten = 0;
+    for (const g of reihe) {
+      if (g.result === "win") siege += 1;
+      else if (g.result === "loss") pleiten += 1;
+      if (partieMarke(g) === partieMarke(game)) break;
+    }
+    return [siege, pleiten];
+  }
+
+  const standText = (game) => {
+    const [a, b] = serienStand(game);
+    return (a || b) ? a + " : " + b : "\u2013 : \u2013";
+  };
 
   const blockScore = (block) => [
     block.games.filter((g) => g.result === "win").length,
@@ -3560,12 +4913,21 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
         el("span", {class: "chip main"}, wins + ":" + losses),
         el("span", {class: "sub"}, block.games.length + (block.games.length === 1 ? " Spiel" : " Spiele")
            + (foe ? " · gegen " + foe : ""))));
-      host.append(el("div", {class: "games"}, block.games.map(gameCard)));
+      // Nur ein Spiel je Block steht offen; die uebrigen sind Zeilen.
+      // Das war die Vorgabe: Ergebnis, Teams, Bans, Werte, dann der Rest
+      // als Liste - nicht fuenf volle Karten untereinander.
+      const offen = offeneSpiele.has(block.key)
+        ? offeneSpiele.get(block.key) : partieMarke(block.games[0]);
+      host.append(el("div", {class: "games"}, block.games.map((g) =>
+        partieMarke(g) === offen ? gameCard(g) : spielZeile(g, block.key))));
     }
   }
 
-  // Ein Spiel als Draft-Karte: beide Seiten nebeneinander, Picks als Portraits,
-  // Bans durchgestrichen darunter.
+  // Ein Spiel als kompakte Matchkarte: Ergebnis zuerst, darunter beide
+  // Mannschaften als Spielerzeilen, dann Bans und die Werte im Vergleich.
+  // Die Farbe trennt jetzt eigene von gegnerischer Mannschaft; welche Seite
+  // im Draft wer hatte, steht weiter als eigenes Etikett daneben - das ist
+  // eine andere Aussage und darf nicht in der Teamfarbe untergehen.
   function gameCard(game) {
     const other = counterpart(game);
     const mine = {team: game.team, side: game.side, picks: game.picks,
@@ -3573,20 +4935,148 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     const theirs = {team: game.opponent, side: game.side === "blue" ? "red" : "blue",
                     picks: other ? other.picks : null, bans: game.bansOpp,
                     teamStats: game.teamStatsOpp};
-    return el("div", {class: "game-card", "data-partie": partieMarke(game)},
-      el("div", {class: "game-head"},
-        el("span", {class: "game-no"}, game.game ? "Spiel " + game.game : "Spiel"),
-        el("span", {class: "badge " + (game.result === "win" ? "win"
-                                     : game.result === "loss" ? "loss" : "open")},
-           resultLabel(game.result)),
-        el("span", {class: "sub"}, game.date ? deDate(game.date) : ""),
+    return el("div", {class: "game-card offen", "data-partie": partieMarke(game)},
+      el("div", {class: "gc-kopf"},
+        el("span", {class: "gc-no"}, game.game ? "Spiel " + game.game : "Spiel"),
+        game.date ? el("span", {class: "gc-meta"}, deDate(game.date)) : null,
         game.format === "fearless" ? el("span", {class: "chip warn"}, "Fearless") : null,
-        dauerText(game.dauer) ? el("span", {class: "sub maschine",
-                                            title: "Spieldauer"}, dauerText(game.dauer)) : null,
-        el("span", {style: "margin-left:auto"}, gameActions(game))),
-      el("div", {class: "sides"}, sideBlock(mine), sideBlock(theirs)),
+        el("span", {class: "gc-werkzeug"}, gameActions(game))),
+      ergebnisZeile(game, mine, theirs),
+      el("div", {class: "gc-teams"}, teamBlock(mine, true), teamBlock(theirs, false)),
+      statLeiste(mine, theirs),
       auszeichnungsBlock(game),
       game.note ? el("p", {class: "game-note"}, game.note) : null);
+  }
+
+  // Die wichtigste Zeile der Karte: wer gegen wen, wie es ausging, wie lange
+  // es dauerte. Ein Spiel steht 1:0 oder 0:1 - der Serienstand steht oben
+  // ueber dem Block und wird hier nicht noch einmal behauptet.
+  function ergebnisZeile(game, mine, theirs) {
+    const sieg = game.result === "win", pleite = game.result === "loss";
+    const punkte = standText(game);
+    const marken = [];
+    const erste = (feld, wort) => {
+      if (mine.teamStats && mine.teamStats[feld]) marken.push([true, wort]);
+      else if (theirs.teamStats && theirs.teamStats[feld]) marken.push([false, wort]);
+    };
+    erste("firstBlood", "First Blood");
+    erste("firstTower", "First Tower");
+    return el("div", {class: "gc-ergebnis"},
+      el("div", {class: "gc-paarung"},
+        el("span", {class: "gc-name eigen"
+           + (standKlasse(game) === " sieg" ? " gewinner" : "")}, mine.team || "\u2014"),
+        el("span", {class: "gc-punkte" + standKlasse(game)}, punkte),
+        el("span", {class: "gc-name gegner"
+           + (standKlasse(game) === " pleite" ? " gewinner" : "")}, theirs.team || "\u2014")),
+      el("div", {class: "gc-unten"},
+        el("span", {class: "badge " + (sieg ? "win" : pleite ? "loss" : "open")},
+           resultLabel(game.result)),
+        dauerText(game.dauer)
+          ? el("span", {class: "gc-dauer", title: "Spieldauer"}, dauerText(game.dauer)) : null,
+        marken.map(([eigen, was]) => el("span",
+          {class: "gc-marke " + (eigen ? "eigen" : "gegner"),
+           title: was + " fuer " + ((eigen ? mine.team : theirs.team) || "")}, was))));
+  }
+
+  // Vorn in der Serie, hinten, oder gleichauf.
+  function standKlasse(game) {
+    const [a, b] = serienStand(game);
+    return a > b ? " sieg" : b > a ? " pleite" : "";
+  }
+
+  // Eine Mannschaft: Kopf mit Name und Draftseite, fuenf Spielerzeilen,
+  // darunter die Bans als eine Zeile.
+  function teamBlock(entry, eigen) {
+    return el("div", {class: "gc-team " + (eigen ? "eigen" : "gegner")},
+      el("div", {class: "gc-team-kopf"},
+        el("span", {class: "gc-team-name"}, entry.team || "\u2014"),
+        el("span", {class: "gc-seite " + entry.side},
+           entry.side === "red" ? "Red Side" : "Blue Side")),
+      entry.picks && entry.picks.length
+        ? el("div", {class: "gc-reihen"}, nachRollen(entry.picks).map(spielerZeile))
+        : el("span", {class: "hint hint-innen"}, "keine Picks erfasst"),
+      el("div", {class: "gc-bans"},
+        el("span", {class: "gc-bans-wort"}, "Bans"),
+        (entry.bans && entry.bans.length)
+          ? el("div", {class: "gc-bans-liste"}, entry.bans.map(banTile))
+          : el("span", {class: "hint hint-innen"}, "\u2014")));
+  }
+
+  // Eine Zeile je Spieler: Rolle links, Bild, Champion und Spieler, Zahlen
+  // rechts. Nur die Tode tragen Farbe - faerbte man alle drei, leuchtete die
+  // ganze Zeile und nichts stuende mehr heraus.
+  function spielerZeile(pick) {
+    const src = iconUrl(pick.champ);
+    const hatKda = pick.k !== null && pick.k !== undefined
+                && pick.d !== null && pick.d !== undefined
+                && pick.a !== null && pick.a !== undefined;
+    return el("div", {class: "gc-zeile", title: kachelTitel(pick)},
+      el("span", {class: "gc-rolle"}, roleLabel(pick.role)),
+      src ? el("img", {class: "gc-bild", src, alt: "", loading: "lazy"})
+          : el("span", {class: "gc-bild leer"}),
+      el("span", {class: "gc-wer"},
+        el("b", {}, pick.champ),
+        pick.player ? el("span", {class: "gc-spieler"}, pick.player) : null),
+      hatKda ? el("span", {class: "gc-kda"},
+        el("b", {}, pick.k), el("i", {}, "/"), el("b", {class: "tode"}, pick.d),
+        el("i", {}, "/"), el("b", {class: "hilfen"}, pick.a))
+             : el("span", {class: "gc-kda leer"}, "\u2014"));
+  }
+
+  // Die Werte beider Mannschaften nebeneinander statt zweimal untereinander:
+  // interessant ist der Abstand, nicht die Zahl allein. Fehlt eine Seite,
+  // bleibt die Spalte stehen und zeigt "\u2014" - weggelassen wird nichts.
+  function statLeiste(mine, theirs) {
+    const summe = (entry, feld) => (entry.picks || []).reduce(
+      (n, p) => n + (typeof p[feld] === "number" ? p[feld] : 0), 0);
+    const werte = (entry) => {
+      const t = entry.teamStats || {};
+      return {Kills: summe(entry, "k"), Gold: summe(entry, "gold"),
+              "T\u00fcrme": t.tuerme, Drachen: t.drachen,
+              Barone: t.barone, Herolde: t.herolde};
+    };
+    const a = werte(mine), b = werte(theirs);
+    const zeig = (name, wert) => (wert === null || wert === undefined)
+      ? "\u2014" : (name === "Gold" ? (wert ? tausend(wert) : "\u2014") : String(wert));
+    const felder = ["Kills", "Gold", "T\u00fcrme", "Drachen", "Barone", "Herolde"]
+      .filter((n) => zeig(n, a[n]) !== "\u2014" || zeig(n, b[n]) !== "\u2014");
+    if (!felder.length) return null;
+    const zahl = (v) => typeof v === "number" ? v : -1;
+    return el("div", {class: "gc-stats"}, felder.map((n) =>
+      el("div", {class: "gc-stat"},
+        el("span", {class: "gc-stat-wort"}, n),
+        el("span", {class: "gc-stat-paar"},
+          el("b", {class: "eigen" + (zahl(a[n]) > zahl(b[n]) ? " vorn" : "")}, zeig(n, a[n])),
+          el("i", {}, ":"),
+          el("b", {class: "gegner" + (zahl(b[n]) > zahl(a[n]) ? " vorn" : "")}, zeig(n, b[n]))))));
+  }
+
+  // Ein nicht aufgeklapptes Spiel: dieselbe Aussage in einer Zeile. Klick
+  // klappt es auf - und das vorher offene zu.
+  function spielZeile(game, blockKey) {
+    const sieg = game.result === "win", pleite = game.result === "loss";
+    const zeile = el("button", {class: "spiel-zeile", type: "button",
+        "data-partie": partieMarke(game)},
+      el("span", {class: "sz-no"}, game.game ? "Spiel " + game.game : "Spiel"),
+      el("span", {class: "sz-datum"}, game.date ? deDate(game.date) : "\u2014"),
+      el("span", {class: "badge " + (sieg ? "win" : pleite ? "loss" : "open")},
+         resultLabel(game.result)),
+      el("span", {class: "sz-paarung"},
+        el("span", {class: "sz-name eigen"}, game.team || "\u2014"),
+        el("b", {class: standKlasse(game).trim()}, standText(game)),
+        el("span", {class: "sz-name gegner"}, game.opponent || "\u2014")),
+      el("span", {class: "sz-dauer"}, dauerText(game.dauer) || ""));
+    zeile.addEventListener("click", () => {
+      offeneSpiele.set(blockKey, partieMarke(game));
+      renderGames();
+      const marke = partieMarke(game);
+      window.setTimeout(() => {
+        const ziel = [...document.querySelectorAll(".game-card")]
+          .find((k) => k.dataset.partie === marke);
+        if (ziel) ziel.scrollIntoView({block: "nearest", behavior: "smooth"});
+      }, 30);
+    });
+    return zeile;
   }
 
   // Die Liga vergibt je Partie Auszeichnungen (meiste Kills, bester
@@ -3608,44 +5098,6 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     return klappe;
   }
 
-  function sideBlock(entry) {
-    return el("div", {class: "side " + entry.side},
-      el("div", {class: "side-head"},
-        el("span", {class: "team"}, entry.team || "—"),
-        el("span", {class: "seite-wort"}, entry.side === "red" ? "Red Side" : "Blue Side")),
-      entry.picks && entry.picks.length
-        ? el("div", {class: "picks"}, nachRollen(entry.picks).map(pickTile))
-        : el("span", {class: "hint hint-innen"}, "keine Picks erfasst"),
-      el("div", {class: "bans-zeile"},
-        el("span", {class: "label"}, "Bans"),
-        (entry.bans && entry.bans.length)
-          ? el("div", {class: "bans"}, entry.bans.map(banTile))
-          : el("span", {class: "hint hint-innen"}, "—")),
-      mannschaftsWerte(entry));
-  }
-
-  function mannschaftsWerte(entry) {
-    const t = entry.teamStats;
-    if (!t) return null;
-    const kills = (entry.picks || []).reduce(
-      (summe, p) => summe + (typeof p.k === "number" ? p.k : 0), 0);
-    const gold = (entry.picks || []).reduce(
-      (summe, p) => summe + (typeof p.gold === "number" ? p.gold : 0), 0);
-    const felder = [
-      ["Kills", kills],
-      ["Gold", gold ? tausend(gold) : null],
-      ["Türme", t.tuerme],
-      ["Drachen", t.drachen],
-      ["Barone", t.barone],
-    ].filter(([, wert]) => wert !== null && wert !== undefined);
-    const ersten = [t.firstBlood ? "First Blood" : null,
-                    t.firstTower ? "First Tower" : null].filter(Boolean);
-    return el("div", {class: "teamwerte"},
-      felder.map(([name, wert]) =>
-        el("span", {class: "wert"}, el("b", {}, wert), " ", name)),
-      ersten.map((w) => el("span", {class: "wert zuerst"}, w)));
-  }
-
   // Picks stehen in der Reihenfolge, in der Riot sie liefert - fuers Auge
   // gehoeren sie in Lanereihenfolge: Top, Jungle, Mid, Bot, Support.
   function nachRollen(picks) {
@@ -3654,24 +5106,6 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       return i < 0 ? ROLES.length : i;
     };
     return picks.slice().sort((a, b) => platz(a.role) - platz(b.role));
-  }
-
-  function pickTile(pick) {
-    const src = iconUrl(pick.champ);
-    // Die Zahlen gibt es nur fuer Partien aus der Liga. Fehlen sie, bleibt
-    // die Kachel wie bisher - behauptet wird nichts.
-    const hatKda = pick.k !== null && pick.k !== undefined
-                && pick.d !== null && pick.d !== undefined
-                && pick.a !== null && pick.a !== undefined;
-    return el("div", {class: "tile", title: kachelTitel(pick)},
-      el("span", {class: "role"}, roleLabel(pick.role)),
-      src ? el("img", {src, alt: pick.champ, loading: "lazy"})
-          : el("span", {class: "champ"}, pick.champ),
-      el("span", {class: "champ"}, pick.champ),
-      pick.player ? el("span", {class: "who"}, pick.player) : null,
-      hatKda ? el("span", {class: "kda"},
-        el("b", {}, pick.k), "/", el("b", {class: "tode"}, pick.d), "/", el("b", {}, pick.a))
-             : null);
   }
 
   // Alles, was die Liga zu diesem Pick hergibt, steht im Tooltip - die
@@ -4178,6 +5612,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   const tabs = [
     [document.getElementById("tab-players"), document.getElementById("panel-players")],
     [document.getElementById("tab-plan"), document.getElementById("panel-plan")],
+    [document.getElementById("tab-draft"), document.getElementById("panel-draft")],
     [document.getElementById("tab-liga"), document.getElementById("panel-liga")],
     [document.getElementById("tab-games"), document.getElementById("panel-games")],
   ];

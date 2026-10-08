@@ -575,17 +575,116 @@ der Champion erkennbar bleibt.
   `4.5rem` unteren Rand.
 
 ### Spielerkarte (Signature)
-Die tragende Karte des Boards. Von oben: das **Rollenfarbfeld** über die volle
-Kartenbreite mit Rollen-Pille (Versalien, `0.08em`, halbtransparentes Weiß als
-Fläche, Rand in `rgba(16,19,26,0.45)`), dem Spielernamen in Versalien
-(Archivo 700, `1.25rem`) und der Riot-ID in `rgba(16,19,26,0.72)`. Darunter die
-beiden Ränge als `grid-template-columns: 1fr 1fr` — Emblem 44px, Rangstufe als
-Heldenzahl (`1.3rem`), darüber die Rang-Art als versale Beschriftung, darunter LP
-und Bilanz als Stützzeile (`0.72rem`). Ein fehlender Rang wird nicht versteckt,
-sondern mit `opacity: 0.55` und kursiver Unterzeile gezeigt. Dann der Bilanzchip,
-die Championtabelle, der Aufklapp-Knopf und zuletzt „Details". Bankkarten
-behalten den Aufbau, tauschen aber das Farbfeld gegen einen versenkten Kopf mit
-starker Unterkante.
+Die tragende Karte des Boards. Von oben:
+
+**Der Hero** (`.card-head.spieler-hero`, gemessen 110 px) zieht sich über
+negative Ränder in die Kartenecken. Das Riot-Splash des meistgespielten
+Champions liegt auf einer eigenen Lage `.kk-bild` (z-index 0), darüber der
+::before-Verlauf (z-index 1), darüber der Text (z-index 2).
+
+**Warum eine eigene Lage und nicht `background-size: cover`:** bei `cover`
+passt die *Breite* des 1215×717-Splash exakt in die flache Karte, die Höhe
+läuft um rund 150 px über. `background-position-x` hatte damit **gar keine
+Wirkung** — allein der Y-Wert schnitt, und ein fester Y-Wert kann nicht für
+Alistar und Ahri gleichzeitig stimmen; der eine zeigte Hufe, der andere das
+Gesicht. Ein Suchverfahren über die Kantenenergie traf im Test nur etwa die
+Hälfte. Stattdessen bekommt `.kk-bild` `aspect-ratio: 1215/717` und hängt
+rechts: sie ist damit genau so breit wie das Bild, der Champion ist immer
+vollständig zu sehen, und die Maske
+`linear-gradient(90deg, transparent 0%, #000 58%)` verläuft über die
+Bildkante statt irgendwo in der Karte — sonst stünde dort eine senkrechte
+Naht. `::after` war nicht frei: dort liegt der Lichtstreifen der
+Einlauf-Animation, mit höherer Spezifität.
+
+Die Unterkante ist 2 px in der Rollenfarbe.
+
+**Der Rang** steht rechts oben: 22-px-Emblem aus `DATA.medals`, Stufe und LP
+auf einer Grundlinie, zusammen auf einer Platte aus `rgba(6,8,13,.55)` mit
+1-px-Kante. Die Platte ist nicht Zierde - der Rang liegt auf dem Splash, und
+bei hellen Bildern (Smolder, Ashe) reicht ein Textschatten nicht. Drei Zeilen:
+`.kk-oben` mit Rollen-Pille, Name (Rajdhani 700, `1.4rem`, Versalien) und
+rechts `.kk-rang` — Stufe (`1.15rem`) und LP **auf einer Grundlinie**, nicht
+gestapelt; gestapelt war der Block höher als der Name daneben und blähte die
+ganze Kopfzeile auf. Dann `.kk-wer` mit Mannschaft · Riot-ID. Dann `.kk-unten`
+mit „MEISTGESPIELT", dem Championnamen (`1.3rem`) und Spielen · Winrate,
+rechts `.kk-pool` mit der Championzahl hinter einer 2-px-Kante in der
+Rollenfarbe. Der ganze Hero ist ein Knopf in die Großansicht.
+
+**Der Hero trägt seinen eigenen dunklen Grund** (`background-color: #0a0e16`)
+und nicht `--surface-sunk`. Der ::before-Verlauf allein hätte gereicht, hing
+aber an einer einzigen Lage — in Hell lag darunter Fast-Weiß.
+
+**Die Rangzeile** (`.rang-zeile`, 33 px): Solo und Flex als zwei gleich breite
+`.rz-seite`-Raster (`"label label" / "wert quote"`), die Winrate rechtsbündig,
+damit beide untereinander vergleichbar stehen. Sie trägt als Einzige Farbe:
+grün ab 52 %, rot unter 48 %, sonst neutral.
+
+**Die Kennzahlen** (`.kennzahlen`, 58 px): drei Felder mit 3-px-Kante links in
+der Rollenfarbe — Spiele, Winrate, Turnier. Das Turnierfeld ist ein `button`
+und öffnet die Turnierpartien; ohne Turnierpartien steht dort „—". Unter
+359 px Containerbreite bricht es auf zwei Spalten, das dritte Feld über die
+volle Breite.
+
+Dann die Championtabelle, der Aufklapp-Knopf, die Turnierrollen und zuletzt
+„Details". Bankkarten behalten den Aufbau; ihre Rollen-Pille wird weiß auf
+22 % Weiß statt dunkel auf der Rollenfarbe.
+
+### Live Draft (Signature)
+Eigener Reiter, bewusst eine andere Sprache als die Spielerkarte: dort darf
+der Splash-Hero stehen, hier zählt Dichte. Keine großen Bilder, 30-px-Icons,
+klare Statusfarben, keine Animation.
+
+**Board** (`.ld-board`): zwei Spalten, unter 860px untereinander. Jede Seite
+mit 3-px-Kante links in `--eigen` (orange) beziehungsweise `--gegner` (cyan),
+darin eine Banreihe (5 Felder, unter 560px 3) und fünf Pickzeilen
+`3.4rem minmax(0,1fr) 5.5rem` — Rolle, Feld, Spielername. Das fokussierte
+Pickfeld trägt `outline: 2px solid var(--eigen)`: es ist das Ziel des
+Picken-Knopfs, und das muss man sehen.
+
+**Sperrleiste** (`.ld-sperren`): je Grund eine Rasterzeile
+`10.5rem minmax(0,1fr)`. Flex mit Umbruch ließ Beschriftung und Chipliste
+übereinanderrutschen — die Liste brach auf eine zweite Flexzeile um, ohne
+dass die Gruppe mitwuchs.
+
+**Championkarte** (`.ld-karte`, `repeat(auto-fill, minmax(216px, 1fr))`):
+Icon, Name, Match-Score rechts; darunter Sterne und die eigene Bilanz;
+darunter die Begründung als Liste benannter Teile; zuletzt der Picken-Knopf.
+Ab 55 Punkten Rahmen in `--eigen`, ab 70 in `--good` mit 7 % Tönung.
+
+Die Klassen sind durchgängig `ld-` präfixiert, auch die Modifier
+(`ld-ban`, `ld-pick`, `ld-fearless`) — `ban` und `pick` waren im Board schon
+vergeben und schlugen sonst durch.
+
+### Matchkarte (Signature)
+Ein Turnierspiel, kompakt. Von oben: **Kopf** mit Spielnummer (Rajdhani,
+Versalien) und Datum. **Ergebnisband** (`.gc-ergebnis`, 62 px) auf
+`--surface-sunk`: beide Mannschaften als `minmax(0,1fr) auto minmax(0,1fr)`,
+der Stand mittig in `1.4rem` — die groesste Zahl der Karte. Darunter
+Ausgang, Dauer und die Marken First Blood / First Tower, deren Punkt die
+Farbe der Mannschaft traegt, die sie hatte.
+
+**Zwei Mannschaftsbloecke** nebeneinander (unter 760 px untereinander), je
+mit 3-px-Kante links und einem `inset`-Schein von 7 % in `--mf`:
+`--eigen` (Orange) fuer die eigene, `--gegner` (Cyan) fuer die gegnerische.
+`--accent` taugt dafuer nicht — er ist in diesem Board blau. Die **Draftseite**
+steht als eigenes Etikett mit einem Farbquadrat in `--blue`/`--red`; sie ist
+eine andere Aussage als die Mannschaft und darf nicht in deren Farbe
+untergehen.
+
+**Spielerzeile** (`.gc-zeile`, 32 px): `3.1rem 32px minmax(0,1fr) auto` —
+Rolle, Bild, Champion mit Spieler darunter, KDA rechts. Nur die Tode sind
+rot; faerbte man alle drei, leuchtete die Zeile und nichts stuende heraus.
+
+**Bans** als eine Zeile aus 24-px-Kacheln mit Namen, nicht als zweite
+Pickreihe. Der rote Diagonalstrich und die Schraffur bleiben — ein Ban muss
+auch in Graustufen und auf Papier als Ban lesbar sein.
+
+**Wertevergleich** (`.gc-stats`): bis zu sechs Spalten `own : opp`, wer vorn
+liegt bekommt die Teamfarbe. Fehlt eine Seite, bleibt die Spalte stehen und
+zeigt „—“.
+
+**Die uebrigen Spiele** der Serie als `.spiel-zeile`: Nummer, Datum, Ausgang,
+Paarung mit Stand, Dauer. Klick klappt auf und das vorher offene zu.
 
 ### Championtabelle (Signature)
 `border-collapse: collapse`, volle Breite, `0.95rem`. Spaltenkopf in Versalien
