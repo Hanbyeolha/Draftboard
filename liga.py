@@ -149,13 +149,19 @@ def riot_ids_holen(kopf):
     except (urllib.error.HTTPError, urllib.error.URLError, OSError, ValueError):
         return {}
 
-    gesammelt = {}
+    gesammelt, verzeichnis = {}, []
     for verein in vereine:
         try:
             mannschaften = hol(f"/clubs/{verein['id']}/teams/")
         except (urllib.error.HTTPError, urllib.error.URLError, OSError, ValueError):
             continue
         for mannschaft in mannschaften:
+            verzeichnis.append({
+                "name": mannschaft.get("name"),
+                "ligaTeamId": mannschaft.get("id"),
+                "verein": verein.get("name"),
+                "spieler": len(mannschaft.get("players") or []),
+            })
             eintraege = {}
             for spieler in mannschaft.get("players") or []:
                 name = spieler.get("riot_summoner_name")
@@ -176,6 +182,12 @@ def riot_ids_holen(kopf):
         anzahl = sum(len(v) for v in gesammelt.values())
         print(f"  Riot-IDs: {anzahl} Spieler in {len(gesammelt)} Mannschaften "
               f"-> data/liga/riot-ids.json")
+    if verzeichnis:
+        verzeichnis.sort(key=lambda m: (m.get("verein") or "", m.get("name") or ""))
+        (ZIEL / "mannschaften.json").write_text(
+            json.dumps(verzeichnis, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"  Mannschaften: {len(verzeichnis)} mit Nummer "
+              f"-> data/liga/mannschaften.json")
     return gesammelt
 
 
@@ -375,13 +387,30 @@ def partie_umbauen(eintrag, nummern, icons, teams):
     blau, rot = name_von(100), name_von(200)
     sieger = next((name_von(s) for s, t in seiten.items() if t.get("win")), None)
 
+    def zahl(wert):
+        """Fehlende Werte bleiben None - 0 waere eine Behauptung."""
+        return wert if isinstance(wert, (int, float)) else None
+
     picks, bans = {blau: [], rot: []}, {blau: [], rot: []}
     for m in stats.get("game_match_participant") or []:
         ziel = blau if m.get("team_id") == 100 else rot
+        nahkampf = zahl(m.get("total_minions_killed"))
+        neutral = zahl(m.get("neutral_minions_killed"))
         picks[ziel].append({
             "role": m.get("team_position") or m.get("individual_position") or "UNKNOWN",
             "champ": anzeige_name(m.get("champion_name") or "", icons),
             "player": m.get("anzeige_name") or m.get("username") or "",
+            # Die Zahlen der Partie. Sie stehen nur bei Partien aus der Liga -
+            # von Hand eingetragene Spiele haben sie nicht.
+            "k": zahl(m.get("kills")), "d": zahl(m.get("deaths")),
+            "a": zahl(m.get("assists")),
+            "cs": None if nahkampf is None and neutral is None
+                  else (nahkampf or 0) + (neutral or 0),
+            "gold": zahl(m.get("gold_earned")),
+            "dmg": zahl(m.get("total_damage_dealt_to_champions")),
+            "taken": zahl(m.get("total_damage_taken")),
+            "vs": zahl(m.get("vision_score")),
+            "lvl": zahl(m.get("champ_level")),
         })
     for seite, t in seiten.items():
         ziel = blau if seite == 100 else rot
@@ -389,6 +418,36 @@ def partie_umbauen(eintrag, nummern, icons, teams):
         # dort DrMundo statt Dr. Mundo und das Bild fehlte.
         bans[ziel] = [anzeige_name(nummern.get(b, str(b)), icons)
                       for b in (t.get("bans") or []) if b and b > 0]
+
+    # Mannschaftswerte je Seite: Objekte und die beiden ersten Ereignisse.
+    teamwerte = {}
+    for seite, t in seiten.items():
+        ziel = blau if seite == 100 else rot
+        teamwerte[ziel] = {
+            "tuerme": zahl(t.get("tower_kills")),
+            "drachen": zahl(t.get("dragon_kills")),
+            "barone": zahl(t.get("baron_kills")),
+            "herolde": zahl(t.get("rift_herald_kills")),
+            "inhibitoren": zahl(t.get("inhibitor_kills")),
+            "firstBlood": bool(t.get("first_blood")),
+            "firstTower": bool(t.get("first_tower")),
+        }
+
+    # Auszeichnungen haengen an der Teilnehmernummer - auf den Spielernamen
+    # aufloesen, sonst steht dort nur eine Zahl.
+    nach_nummer = {m.get("participant_id"): m
+                   for m in stats.get("game_match_participant") or []}
+    auszeichnungen = []
+    for a in stats.get("auszeichnungen") or []:
+        m = nach_nummer.get(a.get("participant_id"))
+        if not m:
+            continue
+        auszeichnungen.append({
+            "name": a.get("name") or a.get("schluessel") or "",
+            "was": a.get("beschreibung") or "",
+            "wer": m.get("anzeige_name") or m.get("username") or "",
+            "champ": anzeige_name(m.get("champion_name") or "", icons),
+        })
 
     titel = (liste.get("titel") or "").replace("·", "-")
     teil, _, nummer = titel.rpartition("Spiel")
@@ -413,6 +472,9 @@ def partie_umbauen(eintrag, nummern, icons, teams):
         "modus": liste.get("modus"),
         "draftArt": (liste.get("serie") or {}).get("draft_art"),
         "time": liste.get("zeitpunkt") or "",
+        "dauer": zahl((stats.get("game_match") or {}).get("game_duration")),
+        "teamStats": teamwerte,
+        "auszeichnungen": auszeichnungen,
     }
 
 
@@ -464,6 +526,37 @@ def nummern_entwirren(neue):
             s["game"] = nr
 
 
+def ergaenze(alt, neu):
+    """Fehlende Felder von *neu* nach *alt* uebernehmen. Was in *alt* schon
+    steht, bleibt unberuehrt - auch ein von Hand korrigierter Wert."""
+    if not isinstance(alt, dict) or not isinstance(neu, dict):
+        return False
+    geaendert = False
+    for name, wert in neu.items():
+        if name not in ("picks", "bans") and name not in alt and wert is not None:
+            alt[name] = wert
+            geaendert = True
+    # Die Zahlen haengen am einzelnen Pick - und zwar an dem mit demselben
+    # Champion, denn die Reihenfolge der Liste muss nicht uebereinstimmen.
+    for mannschaft, liste in (neu.get("picks") or {}).items():
+        vorhanden = (alt.get("picks") or {}).get(mannschaft)
+        if not isinstance(vorhanden, list):
+            continue
+        nach_champ = {}
+        for eintrag in vorhanden:
+            if isinstance(eintrag, dict):
+                nach_champ.setdefault(eintrag.get("champ"), eintrag)
+        for eintrag in liste:
+            ziel = nach_champ.get(eintrag.get("champ"))
+            if ziel is None:
+                continue
+            for name, wert in eintrag.items():
+                if name not in ziel and wert is not None:
+                    ziel[name] = wert
+                    geaendert = True
+    return geaendert
+
+
 def in_games_schreiben(partien, nummern, icons, trocken=False):
     """Die geholten Partien nach games.json uebernehmen - ohne Vorhandenes
     anzufassen. Eigene Eintragungen bleiben also, wie sie sind."""
@@ -476,29 +569,41 @@ def in_games_schreiben(partien, nummern, icons, trocken=False):
     vorhanden = json.loads(pfad.read_text(encoding="utf-8")) if pfad.exists() else []
     bekannt = {schluessel(s) for s in vorhanden}
 
-    neu, uebersprungen = [], []
+    nach_schluessel = {schluessel(s): s for s in vorhanden}
+
+    neu, uebersprungen, ergaenzt = [], [], 0
     for spiel in umgebaut:
         modus = spiel.pop("modus", None)
         if schluessel(spiel) in bekannt:
             uebersprungen.append(spiel)
+            # Vorhandenes bleibt, wie es ist - aber was noch gar nicht
+            # drinsteht, darf nachgetragen werden. So kommen neue Felder auch
+            # an Partien, die schon laenger in games.json liegen, ohne dass
+            # eine Korrektur von Hand ueberschrieben wird.
+            if ergaenze(nach_schluessel.get(schluessel(spiel)), spiel):
+                ergaenzt += 1
             continue
         bekannt.add(schluessel(spiel))
         neu.append(spiel)
 
     print(f"  {len(umgebaut)} Partien umgebaut: {len(neu)} neu, "
-          f"{len(uebersprungen)} schon in games.json")
+          f"{len(uebersprungen)} schon in games.json"
+          + (f", davon {ergaenzt} um fehlende Felder ergaenzt" if ergaenzt else ""))
     for s in neu:
         gewinner = s["winner"] or "offen"
         print(f"    + {s['date']} {s['series'][:56]:56} Spiel {s['game']} "
               f"({s['format']}, Sieger {gewinner})")
-    if trocken or not neu:
+    # Auch ohne neue Partie schreiben, wenn an vorhandenen etwas nachgetragen
+    # wurde - sonst gingen die ergaenzten Felder beim Beenden verloren.
+    if trocken or (not neu and not ergaenzt):
         return 0
     zusammen = vorhanden + neu
     zusammen.sort(key=lambda s: (s.get("date") or "", s.get("time") or "",
                                  s.get("series") or "", s.get("game") or 0))
     text = json.dumps(zusammen, ensure_ascii=False, indent=2).replace(chr(13), "")
     pfad.write_text(text + chr(10), encoding="utf-8")
-    print(f"  games.json: {len(vorhanden)} -> {len(zusammen)} Spiele")
+    print(f"  games.json: {len(vorhanden)} -> {len(zusammen)} Spiele"
+          + (f", {ergaenzt} ergaenzt" if ergaenzt else ""))
     return 0
 
 
@@ -604,6 +709,376 @@ def holen_und_schreiben(team, mannschaft):
     return ziel, inhalt
 
 
+def namensschluessel(name):
+    """Name -> (Rumpf, Nummer). "SSV Remlingen II" und "SSV Remlingen 2"
+    ergeben beide ("ssv remlingen", 2); ohne Zusatz gilt die 1."""
+    rein = (name or "").strip()
+    roemisch_rueck = {w: z for z, w in ROEMISCH.items()}
+    treffer = re.search(r"\s+([IVX]+)\s*$", rein)
+    if treffer and treffer.group(1) in roemisch_rueck:
+        return rein[:treffer.start()].strip().lower(), roemisch_rueck[treffer.group(1)]
+    treffer = re.search(r"\s*(\d+)\s*$", rein)
+    if treffer:
+        return rein[:treffer.start()].strip().lower(), int(treffer.group(1))
+    return rein.lower(), 1
+
+
+def liga_mannschaften():
+    """Alle Mannschaften, die die Liga kennt - aus drei Quellen zusammen.
+
+    Die oeffentliche Statistik kennt nur Mannschaften, die schon gespielt
+    haben; die Vereinsansicht kennt auch die neuen. Beides zusammen ist die
+    vollstaendige Liste."""
+    nach_id, ohne_id = {}, []
+
+    # 1. Das Verzeichnis aus der Vereinsansicht (hat auch Mannschaften ohne
+    #    Partie, siehe riot_ids_holen).
+    pfad = ZIEL / "mannschaften.json"
+    if pfad.exists():
+        try:
+            for m in json.loads(pfad.read_text(encoding="utf-8")):
+                if m.get("ligaTeamId"):
+                    nach_id[m["ligaTeamId"]] = dict(m)
+                elif m.get("name"):
+                    ohne_id.append(dict(m))
+        except ValueError:
+            pass
+
+    # 2. Die oeffentliche Statistik - maßgeblich fuer die Partienzahl.
+    try:
+        liste = (hole("/").get("mannschaften") or {}).get("liste") or []
+    except (urllib.error.URLError, OSError, ValueError):
+        liste = []
+    for m in liste:
+        eintrag = nach_id.setdefault(m["team_id"],
+                                     {"name": m["name"], "ligaTeamId": m["team_id"]})
+        eintrag["name"] = m["name"]
+        eintrag["partien"] = m.get("partien")
+        eintrag["verein"] = eintrag.get("verein") or m.get("verein")
+
+    # 3. Die Kader aus riot-ids.json - dort steht, wie viele Spieler die
+    #    Mannschaft hat, auch wenn sie noch nie gespielt hat.
+    kader = {}
+    rid = ZIEL / "riot-ids.json"
+    if rid.exists():
+        try:
+            kader = json.loads(rid.read_text(encoding="utf-8"))
+        except ValueError:
+            kader = {}
+    bekannt = {m["name"] for m in nach_id.values()} | {m["name"] for m in ohne_id}
+    for name in kader:
+        if name not in bekannt:
+            ohne_id.append({"name": name, "ligaTeamId": None})
+
+    alle = list(nach_id.values()) + ohne_id
+    for m in alle:
+        m["kader"] = len(kader.get(m["name"]) or {})
+    return sorted(alle, key=lambda m: (m.get("name") or ""))
+
+
+def riot_ids_je_mannschaft():
+    """Mannschaftsname der Liga -> Menge ihrer Riot-IDs (kleingeschrieben)."""
+    pfad = ZIEL / "riot-ids.json"
+    if not pfad.exists():
+        return {}
+    try:
+        roh = json.loads(pfad.read_text(encoding="utf-8"))
+    except ValueError:
+        return {}
+    return {name: {(e.get("riotId") or "").lower()
+                   for e in eintraege.values() if e.get("riotId")}
+            for name, eintraege in roh.items()}
+
+
+def fehlende_mannschaften():
+    """Mannschaften der Liga, die teams.json noch nicht kennt.
+
+    Rueckgabe: (roster, neu, zuzuordnen). "neu" sind echte Neuzugaenge,
+    "zuzuordnen" sind die, die es schon gibt - nur unter anderem Namen. Die
+    Unterscheidung faellt ueber die Riot-IDs: Namen aehneln sich oder eben
+    nicht ("Braunschweig eSports e.V. I" gegen "... B"), die Accounts nicht."""
+    roster = json.loads((ROOT / "teams.json").read_text(encoding="utf-8"))
+    ids = {t["ligaTeamId"] for t in roster if t.get("ligaTeamId")}
+    namen = {(t.get("ligaName") or "").strip().lower() for t in roster}
+    schluessel = {namensschluessel(t["team"]) for t in roster}
+    schluessel |= {namensschluessel(t["ligaName"]) for t in roster if t.get("ligaName")}
+
+    kader = riot_ids_je_mannschaft()
+    roster_ids = []
+    for t in roster:
+        roster_ids.append((t, {(p.get("riotId") or "").lower()
+                               for p in (t.get("players") or []) if p.get("riotId")}))
+
+    neu, zuzuordnen = [], []
+    for m in liga_mannschaften():
+        if m.get("ligaTeamId") and m["ligaTeamId"] in ids:
+            continue
+        if (m.get("name") or "").strip().lower() in namen:
+            continue
+        if namensschluessel(m.get("name")) in schluessel:
+            continue
+        # Dieselben Accounts heisst: dieselbe Mannschaft, nur anders benannt.
+        meine = kader.get(m["name"]) or set()
+        treffer = None
+        if meine:
+            for eintrag, vorhanden in roster_ids:
+                gemeinsam = meine & vorhanden
+                if gemeinsam and len(gemeinsam) >= max(1, len(meine) // 2):
+                    treffer = (eintrag, len(gemeinsam), len(meine))
+                    break
+        if treffer:
+            zuzuordnen.append((m, treffer))
+        else:
+            neu.append(m)
+    return roster, neu, zuzuordnen
+
+
+def mannschaften_abgleichen(eintragen=False):
+    """Neue Mannschaften der Liga anzeigen und auf Wunsch uebernehmen.
+
+    Die Spieler kommen aus riot-ids.json - die Liga gibt die Riot-ID nur in
+    der Vereinsansicht heraus, und genau die hat riot_ids_holen gesichert."""
+    try:
+        roster, fehlend, zuzuordnen = fehlende_mannschaften()
+    except (OSError, ValueError) as exc:
+        print("teams.json nicht lesbar:", exc)
+        return 1
+
+    if zuzuordnen:
+        print(f"{len(zuzuordnen)} Mannschaft(en) gibt es schon, nur unter anderem Namen:")
+        for m, (eintrag, gemeinsam, gesamt) in zuzuordnen:
+            print(f"  {m['name']:32} = {eintrag['team']:28} "
+                  f"({gemeinsam} von {gesamt} Riot-IDs gleich)")
+        if eintragen:
+            for m, (eintrag, _, _) in zuzuordnen:
+                eintrag["ligaName"] = m["name"]
+                if m.get("ligaTeamId"):
+                    eintrag["ligaTeamId"] = m["ligaTeamId"]
+            print("  -> als ligaName eingetragen, kein Doppeleintrag.")
+        print()
+
+    if not fehlend:
+        if zuzuordnen and eintragen:
+            pfad = ROOT / "teams.json"
+            pfad.write_text(json.dumps(roster, ensure_ascii=False, indent=2).replace(chr(13), "")
+                            + chr(10), encoding="utf-8")
+            print("teams.json aktualisiert.")
+        print("Keine neue Mannschaft - teams.json kennt alle, die die Liga fuehrt.")
+        return 0
+
+    kader = {}
+    rid = ZIEL / "riot-ids.json"
+    if rid.exists():
+        try:
+            kader = json.loads(rid.read_text(encoding="utf-8"))
+        except ValueError:
+            kader = {}
+
+    print(f"{len(fehlend)} Mannschaft(en) stehen noch nicht in teams.json:")
+    for m in fehlend:
+        nummer = m.get("ligaTeamId")
+        print(f"  {m['name']:32} id {nummer if nummer else '?':>4}  "
+              f"{m.get('partien') or 0:2} Partien  {m.get('kader', 0):2} Spieler im Kader")
+
+    if not eintragen:
+        print()
+        print("Zum Uebernehmen:  python liga.py --mannschaften --eintragen")
+        return 0
+
+    ROLLEN = {"Top": "TOP", "Jungle": "JUNGLE", "Mid": "MIDDLE", "Middle": "MIDDLE",
+              "Bot": "BOTTOM", "Bottom": "BOTTOM", "Adc": "BOTTOM",
+              "Support": "UTILITY", "Sup": "UTILITY"}
+
+    def rolle_von(wert):
+        roh = (wert or "").strip()
+        # Die Liga haengt Ersatzspielern ein "_sub" an: "Mid_sub" -> MIDDLE.
+        rumpf = roh.split("_")[0]
+        return ROLLEN.get(rumpf, ROLLEN.get(rumpf.title(), "UNKNOWN"))
+
+    neu = 0
+    for m in fehlend:
+        spieler = []
+        for anzeige, eintrag in (kader.get(m["name"]) or {}).items():
+            spieler.append({
+                "label": anzeige,
+                "riotId": eintrag.get("riotId"),
+                "role": rolle_von(eintrag.get("rolle")),
+                # Ersatz steht auf der Bank, nicht in der Startaufstellung.
+                **({"bench": True} if "_sub" in (eintrag.get("rolle") or "") else {}),
+            })
+        roster.append({
+            "team": m["name"],
+            "region": "euw",
+            "ligaTeamId": m.get("ligaTeamId"),
+            "ligaName": m["name"],
+            "players": spieler,
+        })
+        neu += 1
+        print(f"  + {m['name']} mit {len(spieler)} Spieler(n)")
+
+    pfad = ROOT / "teams.json"
+    pfad.write_text(json.dumps(roster, ensure_ascii=False, indent=2).replace(chr(13), "")
+                    + chr(10), encoding="utf-8")
+    print(f"teams.json: {len(roster) - neu} -> {len(roster)} Mannschaften")
+    print("Naechster Schritt: op.gg-Daten holen (Knopf \"Daten holen\" oder "
+          "python scrape.py), dann neu bauen.")
+    return 0
+
+
+ROLLEN_LIGA = {"Top": "TOP", "Jungle": "JUNGLE", "Mid": "MIDDLE",
+               "Middle": "MIDDLE", "Bot": "BOTTOM", "Bottom": "BOTTOM",
+               "ADC": "BOTTOM", "Adc": "BOTTOM", "Support": "UTILITY",
+               "Sup": "UTILITY"}
+
+
+def rolle_der_liga(wert):
+    """Ligarolle -> Boardrolle. Leer heisst: die Liga sagt nichts."""
+    roh = (wert or "").strip()
+    if not roh:
+        return None, False
+    rumpf = roh.split("_")[0]
+    name = ROLLEN_LIGA.get(rumpf) or ROLLEN_LIGA.get(rumpf.title())
+    if not name:
+        return None, False
+    return name, "_sub" in roh
+
+
+def liganame_von(team, verzeichnis):
+    """Wie die Liga diese Mannschaft nennt."""
+    if team.get("ligaName"):
+        return team["ligaName"]
+    nummer = team.get("ligaTeamId")
+    return next((m["name"] for m in verzeichnis
+                 if m.get("ligaTeamId") == nummer and nummer), None)
+
+
+def kader_abgleichen(eintragen=False, nur=None):
+    """Die Kader gegen die Vereinsansicht der Liga pruefen.
+
+    Leitsatz: Eine ausdrueckliche Angabe der Liga gewinnt, eine fehlende
+    ueberschreibt nie. Die Liga fuehrt zu vielen Spielern gar keine Rolle -
+    ein blinder Abgleich wuerde gepflegte Rollen gegen UNKNOWN tauschen.
+    Geloescht wird nie: wer im Roster steht und der Liga unbekannt ist, wird
+    nur gemeldet."""
+    pfad = ROOT / "teams.json"
+    roster = json.loads(pfad.read_text(encoding="utf-8"))
+    kader = riot_ids_je_mannschaft_voll()
+    verzeichnis = []
+    vpfad = ZIEL / "mannschaften.json"
+    if vpfad.exists():
+        try:
+            verzeichnis = json.loads(vpfad.read_text(encoding="utf-8"))
+        except ValueError:
+            verzeichnis = []
+
+    gesamt = {"umbenannt": 0, "neu": 0, "rolle": 0, "bank": 0}
+    uebrig = []
+    geaendert = False
+
+    for team in roster:
+        if nur and team["team"].lower() not in nur:
+            continue
+        name = liganame_von(team, verzeichnis)
+        liga = kader.get(name or "") or {}
+        if not liga:
+            continue
+        nach_id = {}
+        for spieler in team.get("players") or []:
+            rid = (spieler.get("riotId") or "").strip().lower()
+            if rid:
+                nach_id[rid] = spieler
+        meldungen = []
+
+        for anzeige, eintrag in liga.items():
+            rid = (eintrag.get("riotId") or "").strip().lower()
+            ziel = nach_id.get(rid)
+            sollrolle, soll_bank = rolle_der_liga(eintrag.get("rolle"))
+            if ziel is None:
+                meldungen.append(f"    + {anzeige} ({eintrag.get('riotId')})"
+                                 + (f" als {sollrolle}" if sollrolle else ""))
+                gesamt["neu"] += 1
+                if eintragen:
+                    neuer = {"label": anzeige, "riotId": eintrag.get("riotId"),
+                             "role": sollrolle or "UNKNOWN"}
+                    if soll_bank:
+                        neuer["bench"] = True
+                    team.setdefault("players", []).append(neuer)
+                    geaendert = True
+                continue
+
+            if ziel.get("label") != anzeige:
+                meldungen.append(f"    ~ {ziel.get('label')} heisst in der Liga "
+                                 f"{anzeige}")
+                gesamt["umbenannt"] += 1
+                if eintragen:
+                    ziel["label"] = anzeige
+                    geaendert = True
+
+            # Nur eine ausdrueckliche Ligaangabe darf etwas aendern.
+            if sollrolle and ziel.get("role") != sollrolle:
+                meldungen.append(f"    > {anzeige}: Rolle {ziel.get('role')} "
+                                 f"-> {sollrolle}")
+                gesamt["rolle"] += 1
+                if eintragen:
+                    ziel["role"] = sollrolle
+                    geaendert = True
+            if sollrolle and bool(ziel.get("bench")) != soll_bank:
+                wohin = "Bank" if soll_bank else "Startaufstellung"
+                meldungen.append(f"    > {anzeige}: -> {wohin}")
+                gesamt["bank"] += 1
+                if eintragen:
+                    if soll_bank:
+                        ziel["bench"] = True
+                    else:
+                        ziel.pop("bench", None)
+                    geaendert = True
+
+        liga_ids = {(e.get("riotId") or "").strip().lower() for e in liga.values()}
+        for rid, spieler in nach_id.items():
+            if rid not in liga_ids:
+                uebrig.append((team["team"], spieler.get("label"),
+                               spieler.get("riotId")))
+
+        if meldungen:
+            print(f"  {team['team']}")
+            for m in meldungen:
+                print(m)
+
+    print()
+    print(f"{gesamt['neu']} fehlend, {gesamt['umbenannt']} umbenannt, "
+          f"{gesamt['rolle']} Rollen, {gesamt['bank']} Bank/Start")
+    if uebrig:
+        print(f"{len(uebrig)} Spieler stehen im Roster, aber nicht in der Liga "
+              f"(wird NIE automatisch geloescht):")
+        for team, label, rid in uebrig:
+            print(f"    ? {team}: {label} ({rid})")
+
+    if not eintragen:
+        if any(gesamt.values()):
+            print()
+            print("Zum Uebernehmen:  python liga.py --kader --eintragen")
+        return 0
+
+    if geaendert:
+        pfad.write_text(json.dumps(roster, ensure_ascii=False, indent=2)
+                        .replace(chr(13), "") + chr(10), encoding="utf-8")
+        print("teams.json aktualisiert.")
+    else:
+        print("Nichts zu aendern.")
+    return 0
+
+
+def riot_ids_je_mannschaft_voll():
+    """Mannschaftsname -> {Anzeigename: {riotId, rolle, verifiziert}}."""
+    pfad = ZIEL / "riot-ids.json"
+    if not pfad.exists():
+        return {}
+    try:
+        return json.loads(pfad.read_text(encoding="utf-8"))
+    except ValueError:
+        return {}
+
+
 def merken(team_name, liga_id):
     """Die gefundene Zuordnung in teams.json festhalten, damit sie stabil ist."""
     pfad = ROOT / "teams.json"
@@ -628,7 +1103,23 @@ def main():
                              "uebernehmen (braucht liga-token.txt)")
     parser.add_argument("--uebernehmen", action="store_true",
                         help="nur den gesicherten Stand nach games.json uebernehmen")
+    parser.add_argument("--mannschaften", action="store_true",
+                        help="zeigen, welche Mannschaften der Liga noch nicht "
+                             "in teams.json stehen")
+    parser.add_argument("--kader", action="store_true",
+                        help="die Kader gegen die Liga pruefen: fehlende "
+                             "Spieler, Umbenennungen, Rollen, Bank")
+    parser.add_argument("--eintragen", action="store_true",
+                        help="zusammen mit --mannschaften oder --kader: die "
+                             "Abweichungen in teams.json schreiben")
     args = parser.parse_args()
+
+    if args.mannschaften:
+        return mannschaften_abgleichen(eintragen=args.eintragen)
+
+    if args.kader:
+        nur = {t.lower() for t in args.teams} if args.teams else None
+        return kader_abgleichen(eintragen=args.eintragen, nur=nur)
 
     if args.spiele or args.uebernehmen:
         return hole_spiele(nur_uebernehmen=args.uebernehmen)

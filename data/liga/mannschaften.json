@@ -1,0 +1,86 @@
+[
+  {
+    "name": "AllianceForChampions I",
+    "ligaTeamId": 3,
+    "verein": "AllianceForChampions",
+    "spieler": 10
+  },
+  {
+    "name": "AllianceForChampions II",
+    "ligaTeamId": 5,
+    "verein": "AllianceForChampions",
+    "spieler": 10
+  },
+  {
+    "name": "Braunschweig eSports e.V. I",
+    "ligaTeamId": 2,
+    "verein": "Braunschweig eSports e.V.",
+    "spieler": 6
+  },
+  {
+    "name": "Hub Hannover I",
+    "ligaTeamId": 27,
+    "verein": "Hub Hannover",
+    "spieler": 6
+  },
+  {
+    "name": "Hub Hannover II",
+    "ligaTeamId": 28,
+    "verein": "Hub Hannover",
+    "spieler": 9
+  },
+  {
+    "name": "Hub Hannover III",
+    "ligaTeamId": 29,
+    "verein": "Hub Hannover",
+    "spieler": 2
+  },
+  {
+    "name": "Hub Hannover IV",
+    "ligaTeamId": 30,
+    "verein": "Hub Hannover",
+    "spieler": 1
+  },
+  {
+    "name": "MTV Hattorf I",
+    "ligaTeamId": 26,
+    "verein": "MTV Hattorf",
+    "spieler": 8
+  },
+  {
+    "name": "MTV Lichtenberg I",
+    "ligaTeamId": 1,
+    "verein": "MTV Lichtenberg",
+    "spieler": 10
+  },
+  {
+    "name": "SC Victoria Braunschweig I",
+    "ligaTeamId": 25,
+    "verein": "SC Victoria Braunschweig",
+    "spieler": 7
+  },
+  {
+    "name": "SSV Remlingen I",
+    "ligaTeamId": 22,
+    "verein": "SSV Remlingen",
+    "spieler": 6
+  },
+  {
+    "name": "SSV Remlingen II",
+    "ligaTeamId": 24,
+    "verein": "SSV Remlingen",
+    "spieler": 9
+  },
+  {
+    "name": "SV Innerstetal I",
+    "ligaTeamId": 4,
+    "verein": "SV Innerstetal",
+    "spieler": 8
+  },
+  {
+    "name": "TSV Salzgitter I",
+    "ligaTeamId": 23,
+    "verein": "TSV Salzgitter",
+    "spieler": 9
+  }
+]

@@ -71,14 +71,10 @@
         "role": "TOP"
       },
       {
-        "label": "AFC X4nder",
-        "riotId": "AFC X4nder#AFC",
-        "role": "JUNGLE"
-      },
-      {
         "label": "Zeryn",
         "riotId": "Zeryn#2307",
-        "role": "MIDDLE"
+        "role": "BOTTOM",
+        "bench": true
       },
       {
         "label": "AFC Bernard Bär",
@@ -87,27 +83,21 @@
         "note": "vom Nutzer als 'AFC Bernard Bär#AF' genannt - richtiger Tag ist #AFC"
       },
       {
-        "label": "Töner Deller",
-        "riotId": "Töner Deller#EUW",
-        "role": "UTILITY"
-      },
-      {
         "label": "Phung",
         "riotId": "Phung#2404",
-        "role": "MIDDLE",
+        "role": "JUNGLE",
         "bench": true
       },
       {
         "label": "Dominixnlp",
         "riotId": "Dominixnlp#EUW",
-        "role": "UTILITY",
+        "role": "TOP",
         "bench": true
       },
       {
         "label": "PlayboiiHieu",
         "riotId": "PlayboiiHieu#Hieu",
-        "role": "JUNGLE",
-        "bench": true
+        "role": "JUNGLE"
       },
       {
         "label": "Dadana Aürüm",
@@ -118,20 +108,24 @@
       {
         "label": "DeLouis",
         "riotId": "DeLouis#EUW",
-        "role": "TOP",
-        "bench": true
-      },
-      {
-        "label": "Captain Hook",
-        "riotId": "Captain Hook#AFC",
-        "role": "UTILITY",
-        "bench": false
+        "role": "MIDDLE"
       },
       {
         "label": "AFC Xander",
         "riotId": "AFC Xander#AFC",
         "role": "UTILITY",
         "bench": true
+      },
+      {
+        "label": "rageQ",
+        "riotId": "rageQ#1234",
+        "role": "MIDDLE",
+        "bench": true
+      },
+      {
+        "label": "AFC Captain Hook",
+        "riotId": "AFC Captain Hook#AFC",
+        "role": "UTILITY"
       }
     ],
     "ligaTeamId": 5
@@ -151,12 +145,12 @@
         "role": "JUNGLE"
       },
       {
-        "label": "TWM Nirwana",
+        "label": "Verveigar",
         "riotId": "Verveigar#SVI",
         "role": "MIDDLE"
       },
       {
-        "label": "Summer Vibes",
+        "label": "AutoAttackAndy",
         "riotId": "AutoAttackAndy#2077",
         "role": "BOTTOM",
         "note": "op.gg fuehrt den Account noch als AutoAttackAndy#2077 - Rename"
@@ -189,6 +183,11 @@
         "riotId": "Rät#invis",
         "role": "BOTTOM",
         "bench": true
+      },
+      {
+        "label": "Tamashi",
+        "riotId": "Tamashi#ghost",
+        "role": "UNKNOWN"
       }
     ],
     "ligaTeamId": 4
@@ -241,14 +240,15 @@
         "role": "TOP"
       },
       {
-        "label": "lightníngs",
+        "label": "Lightníngs",
         "riotId": "lightníngs#EUW",
-        "role": "JUNGLE"
+        "role": "BOTTOM"
       },
       {
         "label": "Zoom",
         "riotId": "Zoom#AZB",
-        "role": "MIDDLE"
+        "role": "MIDDLE",
+        "bench": true
       },
       {
         "label": "xSPEXx",
@@ -271,7 +271,6 @@
         "label": "Niklas Knueppel",
         "riotId": "Niklas Knueppel#4242",
         "role": "JUNGLE",
-        "bench": true,
         "note": "Ersatz für Jungle und ADC"
       },
       {
@@ -283,8 +282,7 @@
       {
         "label": "Dazorax361",
         "riotId": "Dazorax361#EUW",
-        "role": "MIDDLE",
-        "bench": true
+        "role": "MIDDLE"
       },
       {
         "label": "hnes",
@@ -307,12 +305,12 @@
       {
         "label": "mazl",
         "riotId": "mazl#1337",
-        "role": "JUNGLE"
+        "role": "MIDDLE"
       },
       {
         "label": "MurphyyLOL",
         "riotId": "MurphyyLOL#EUW",
-        "role": "MIDDLE"
+        "role": "JUNGLE"
       },
       {
         "label": "xHydralisk",
@@ -333,13 +331,19 @@
       {
         "label": "Would love Some",
         "riotId": "Would love Some#420",
-        "role": "UNKNOWN",
+        "role": "JUNGLE",
         "bench": true
       },
       {
         "label": "Clown Angel",
         "riotId": "Clown Angel#MtoL",
-        "role": "UNKNOWN",
+        "role": "MIDDLE",
+        "bench": true
+      },
+      {
+        "label": "Rias Gremory",
+        "riotId": "Rias Gremory#1337",
+        "role": "BOTTOM",
         "bench": true
       }
     ],
@@ -352,17 +356,17 @@
       {
         "label": "Salzu",
         "riotId": "Salzu#ooga",
-        "role": "JUNGLE"
+        "role": "BOTTOM"
       },
       {
         "label": "Kneu",
         "riotId": "Kneu#Duke",
-        "role": "UNKNOWN"
+        "role": "UTILITY"
       },
       {
         "label": "Hyro",
         "riotId": "Hyro#161",
-        "role": "UNKNOWN"
+        "role": "MIDDLE"
       },
       {
         "label": "no need âdc",
@@ -372,17 +376,18 @@
       {
         "label": "ShendNoods",
         "riotId": "ShendNoods#EINS",
-        "role": "UNKNOWN"
+        "role": "JUNGLE"
       },
       {
         "label": "LegendOctavian",
         "riotId": "LegendOctavian#monke",
-        "role": "UNKNOWN"
+        "role": "BOTTOM",
+        "bench": true
       },
       {
         "label": "Xen",
         "riotId": "Xen#NGE67",
-        "role": "MIDDLE",
+        "role": "TOP",
         "bench": false
       }
     ],
@@ -422,7 +427,9 @@
         "riotId": "N0k0ri#EUW",
         "role": "UNKNOWN"
       }
-    ]
+    ],
+    "ligaName": "Braunschweig eSports e.V. I",
+    "ligaTeamId": 2
   },
   {
     "team": "MTV Hattorf",
@@ -481,29 +488,30 @@
       {
         "label": "Eleonee",
         "riotId": "Eleonee#1008",
-        "role": "MIDDLE"
+        "role": "MIDDLE",
+        "bench": true
       },
       {
         "label": "FGG Lewer",
         "riotId": "FGG Lewer#EUW",
-        "role": "UNKNOWN",
+        "role": "TOP",
         "bench": true
       },
       {
         "label": "ziggler10",
         "riotId": "ziggler10#EUW",
-        "role": "UNKNOWN",
-        "bench": true
+        "role": "UTILITY"
       },
       {
         "label": "Der Bup",
         "riotId": "Der Bup#EUW",
-        "role": "JUNGLE"
+        "role": "JUNGLE",
+        "bench": true
       },
       {
         "label": "KOOOOAHLLLL",
         "riotId": "KOOOOAHLLLL#EUW",
-        "role": "BOTTOM"
+        "role": "JUNGLE"
       },
       {
         "label": "Meister FiTTi",
@@ -513,7 +521,7 @@
       {
         "label": "Discalon",
         "riotId": "Discalon#6774",
-        "role": "UTILITY"
+        "role": "MIDDLE"
       },
       {
         "label": "Edelknecht",
@@ -529,5 +537,127 @@
       }
     ],
     "ligaTeamId": 24
+  },
+  {
+    "team": "Hub Hannover I",
+    "region": "euw",
+    "ligaTeamId": 27,
+    "ligaName": "Hub Hannover I",
+    "players": [
+      {
+        "label": "TooLateForMercy",
+        "riotId": "TooLateForMercy#EUW",
+        "role": "BOTTOM"
+      },
+      {
+        "label": "ZEN Preacher",
+        "riotId": "ZEN Preacher#JGL",
+        "role": "JUNGLE"
+      },
+      {
+        "label": "midnight rain",
+        "riotId": "midnight rain#NIV",
+        "role": "UTILITY"
+      },
+      {
+        "label": "Arisé",
+        "riotId": "Arisé#EUW",
+        "role": "MIDDLE"
+      },
+      {
+        "label": "Facking Luigi",
+        "riotId": "Facking Luigi#EUW",
+        "role": "TOP"
+      },
+      {
+        "label": "GLaDOS",
+        "riotId": "GLaDOS#9119",
+        "role": "UNKNOWN"
+      }
+    ]
+  },
+  {
+    "team": "Hub Hannover II",
+    "region": "euw",
+    "ligaTeamId": 28,
+    "ligaName": "Hub Hannover II",
+    "players": [
+      {
+        "label": "Ghaast",
+        "riotId": "Ghaast#QEWQQ",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "chungi",
+        "riotId": "chungi#mybad",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "Salemx",
+        "riotId": "Salemx#EUW",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "Morigren",
+        "riotId": "Morigren#0001",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "AOM Shadowgream",
+        "riotId": "AOM Shadowgream#AOM",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "KEK Wowpurple",
+        "riotId": "KEK Wowpurple#EUW",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "Eurospike",
+        "riotId": "Eurospike#FNC",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "KillMyADC",
+        "riotId": "KillMyADC#EUW10",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "adri4N20",
+        "riotId": "adri4N20#EUW",
+        "role": "UNKNOWN"
+      }
+    ]
+  },
+  {
+    "team": "Hub Hannover III",
+    "region": "euw",
+    "ligaTeamId": 29,
+    "ligaName": "Hub Hannover III",
+    "players": [
+      {
+        "label": "H96Ghost",
+        "riotId": "H96Ghost#gh96",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "Matzebrate",
+        "riotId": "Matzebrate#EUW",
+        "role": "UNKNOWN"
+      }
+    ]
+  },
+  {
+    "team": "Hub Hannover IV",
+    "region": "euw",
+    "ligaTeamId": 30,
+    "ligaName": "Hub Hannover IV",
+    "players": [
+      {
+        "label": "Paulenzer",
+        "riotId": "Paulenzer#123",
+        "role": "UNKNOWN"
+      }
+    ]
   }
 ]

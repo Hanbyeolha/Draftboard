@@ -11,3 +11,8 @@ __pycache__/
 # Zwischenstand der geholten Partien - jederzeit neu holbar
 data/liga/*-roh.json
 out/
+
+# Design-Lauf: die Aufzeichnung gehoert ins Repo, die Bildbelege nicht -
+# 15 MB Bildschirmfotos, jederzeit neu aufnehmbar.
+.impeccable/review/
+.impeccable/questions/

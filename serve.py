@@ -56,6 +56,18 @@ def spiele_zahl():
         return 0
 
 
+def mannschaften_zahl():
+    """Wie viele Mannschaften in teams.json stehen - fuer das Vorher/Nachher,
+    wenn der Ligalauf neue uebernommen hat."""
+    pfad = ROOT / "teams.json"
+    if not pfad.exists():
+        return 0
+    try:
+        return len(json.loads(pfad.read_text(encoding="utf-8")))
+    except ValueError:
+        return 0
+
+
 def liga_status():
     """Kommen wir an neue Partien - und fehlen welche?
 
@@ -404,10 +416,18 @@ def add_player(data):
     return team_name, label
 
 
-def run_scrape(teams, extra=()):
-    """auto_scrape.py als eigenen Prozess starten und mitlesen."""
-    cmd = ([sys.executable, "-u", str(ROOT / "auto_scrape.py")]
-           + list(teams) + ["--queue-seasons", QUEUE_SEASONS] + list(extra))
+def run_scrape(teams, extra=(), schnell=False):
+    """Den Scrape als eigenen Prozess starten und mitlesen.
+
+    schnell=True nimmt schnell_scrape.py: reiner HTTP-Abruf, rund eine
+    Sekunde je Spieler statt sechzig, dafuer nur Ranked der laufenden
+    Season. --queue-seasons kennt das Skript nicht."""
+    if schnell:
+        cmd = ([sys.executable, "-u", str(ROOT / "schnell_scrape.py")]
+               + list(teams) + list(extra))
+    else:
+        cmd = ([sys.executable, "-u", str(ROOT / "auto_scrape.py")]
+               + list(teams) + ["--queue-seasons", QUEUE_SEASONS] + list(extra))
     with scrape_lock:
         scrape_state["running"] = True
         scrape_state["done"] = None
@@ -491,7 +511,7 @@ class Handler(BaseHTTPRequestHandler):
                             "file": target.name if target else None,
                             "features": ["save", "share", "reveal", "scrape",
                                          "player", "players", "team", "edit",
-                                         "liga", "ligastatus"]})
+                                         "liga", "ligastatus", "schnell"]})
         elif path == "/api/liga/status":
             self.send_json(liga_status())
         elif path == "/api/teams":
@@ -532,12 +552,18 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json({"ok": bool(target)})
         elif path == "/api/liga":
             # Dauert Sekunden, kein Browser noetig - daher direkt statt als Lauf.
-            laeufe = [[sys.executable, str(ROOT / "liga.py")]]
-            # Liegt eine Anmeldung bereit, gleich die einzelnen Partien mit
-            # Picks und Bans nach games.json uebernehmen.
+            # Reihenfolge: erst die Partien (das frischt auch die Riot-IDs und
+            # das Mannschaftsverzeichnis auf), dann neue Mannschaften
+            # uebernehmen, dann die Zahlen je Mannschaft - so bekommt eine
+            # neu dazugekommene Mannschaft ihre Ligadaten im selben Lauf.
+            laeufe = []
             if (ROOT / "liga-token.txt").exists():
                 laeufe.append([sys.executable, str(ROOT / "liga.py"), "--spiele"])
+            laeufe.append([sys.executable, str(ROOT / "liga.py"),
+                           "--mannschaften", "--eintragen"])
+            laeufe.append([sys.executable, str(ROOT / "liga.py")])
             vorher = spiele_zahl()
+            teams_vorher = mannschaften_zahl()
             log, fehlgeschlagen = [], False
             for befehl in laeufe:
                 proc = subprocess.run(befehl, cwd=ROOT, capture_output=True,
@@ -551,6 +577,8 @@ class Handler(BaseHTTPRequestHandler):
                 log += rebuild()
             self.send_json({"ok": proc.returncode == 0, "log": log,
                             "vorher": vorher, "nachher": spiele_zahl(),
+                            "teamsVorher": teams_vorher,
+                            "teamsNachher": mannschaften_zahl(),
                             "error": None if proc.returncode == 0
                                      else "liga.py meldete einen Fehler"})
         elif path == "/api/team":
@@ -615,7 +643,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json({"ok": False, "error": "Es läuft schon ein Scrape."}, 409)
                 return
             body = self.read_body() or ""
-            teams, extra = [], []
+            teams, extra, schnell = [], [], False
             if body.strip():
                 try:
                     wunsch = json.loads(body)
@@ -628,9 +656,14 @@ class Handler(BaseHTTPRequestHandler):
                         nur = [nur]
                     for name in (nur or []):
                         extra += ["--only", str(name)]
+                    schnell = bool(wunsch.get("schnell"))
+                    if schnell:
+                        # schnell_scrape.py kennt --only nicht; es holt
+                        # wahlweise alle oder nur die ohne Daten.
+                        extra = ["--fehlende"] if wunsch.get("fehlende") else []
                 except ValueError:
                     teams, extra = [], []
-            run_scrape(teams, extra)
+            run_scrape(teams, extra, schnell=schnell)
             self.send_json({"ok": True})
         else:
             self.send_json({"error": "unbekannt"}, 404)

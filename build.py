@@ -12,10 +12,12 @@ build.py macht daraus nur noch das Dokument.
 """
 
 import base64
+import io
 import json
 import pathlib
 import re
 import sys
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -23,15 +25,31 @@ ROOT = pathlib.Path(__file__).parent
 RAW = ROOT / "data" / "raw"
 ICON_CACHE = ROOT / "data" / "icons"
 OUT = ROOT / "out" / "scouting.html"
+# Die groesste Stelle, an der ein Championbild steht, ist die Draftkachel mit
+# 72 px; auf einem Retina-Schirm sind das 144 echte Pixel. Mit 48 px Quelle
+# sahen die Bilder dort ausgefranst aus.
+ICON_PX = 128
 ICON_URL = ("https://opgg-static.akamaized.net/meta/images/lol/{version}"
-            "/champion/{key}.png?image=q_auto:good,f_webp,w_48,h_48")
+            "/champion/{key}.png?image=q_auto:good,f_webp,w_{px},h_{px}")
+# Splash-Art fuer den Kopf der grossen Spielerkarte. Riot liefert 1215x717
+# als JPEG mit rund 160 KB - das waere bei 67 Champions eine 13-MB-Datei.
+# Auf 800 px verkleinert und als WebP neu kodiert sind es 28 KB, und hinter
+# den dunklen Verlaeufen des Heros sieht man den Unterschied nicht.
+SPLASH_CACHE = ROOT / "data" / "splash"
+SPLASH_PX = 800
+SPLASH_Q = 72
+SPLASH_URL = ("https://ddragon.leagueoflegends.com/cdn/img/champion/splash/"
+              "{key}_0.jpg")
 
 ROLE_ORDER = ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY", "UNKNOWN"]
 # Reihenfolge der Championtabellen-Spalten in den Rohdaten (siehe extract.js).
 CHAMP_FIELDS = ["champ", "win", "lose", "winRate", "kda", "kp", "csPerMin"]
 # op.gg-Queue -> Schluessel in der Seite. RANKED (Solo+Flex zusammen) steckt in
 # den Spielerdateien, die uebrigen Queues in den queues-*.json.
-QUEUE_KEYS = {"SOLORANKED": "SOLO", "FLEXRANKED": "FLEX", "NORMAL": "NORMAL"}
+# NORMAL wird bewusst NICHT eingebettet: Die Oberflaeche bietet die Queue in
+# keinem Umschalter an (QUEUES in template.html), weil Normal-Spiele die
+# Championpools verwaessern. Die Daten reisten bis Oktober 2026 umsonst mit.
+QUEUE_KEYS = {"SOLORANKED": "SOLO", "FLEXRANKED": "FLEX"}
 TIERS = ["iron", "bronze", "silver", "gold", "platinum", "emerald",
          "diamond", "master", "grandmaster", "challenger"]
 MEDAL_URL = ("https://opgg-static.akamaized.net/images/medals_new/{tier}.png"
@@ -48,6 +66,7 @@ SEASON_NAMES = {33: "Season 2026", 31: "Season 2025", 29: "Season 2024 S3",
 FONT_CACHE = ROOT / "data" / "fonts"
 FONT_CSS = ("https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700"
             "&family=IBM+Plex+Mono:wght@400;500"
+            "&family=Rajdhani:wght@600;700"
             "&family=Source+Sans+3:wght@400;600&display=swap")
 FONT_LINK = "\n".join([
     '<link rel="preconnect" href="https://fonts.googleapis.com">',
@@ -114,14 +133,15 @@ def to_player(raw, per_queue):
 
 
 def embed_icons(icons, version):
-    """Championbilder einmal herunterladen (48px webp, ~0.5 KB) und als
-    data:-URIs zurueckgeben. Der Cache unter data/icons/ bleibt liegen."""
+    """Championbilder einmal herunterladen (webp, ~2 KB) und als data:-URIs
+    zurueckgeben. Der Cache unter data/icons/ bleibt liegen; die Kantenlaenge
+    steht im Dateinamen, damit ein Wechsel nicht die alten Bilder weiterbenutzt."""
     ICON_CACHE.mkdir(parents=True, exist_ok=True)
     out, fetched = {}, 0
     for champ, key in sorted(icons.items()):
-        path = ICON_CACHE / f"{version}-{key}.webp"
+        path = ICON_CACHE / f"{version}-{ICON_PX}-{key}.webp"
         if not path.exists():
-            url = ICON_URL.format(version=version, key=key)
+            url = ICON_URL.format(version=version, key=key, px=ICON_PX)
             request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
             path.write_bytes(urllib.request.urlopen(request, timeout=30).read())
             fetched += 1
@@ -129,6 +149,70 @@ def embed_icons(icons, version):
         out[champ] = "data:image/webp;base64," + blob
     print(f"  Icons: {len(out)} eingebettet ({fetched} neu geladen)")
     return out
+
+
+def embed_splashes(champs, icons):
+    """Splash-Art der uebergebenen Champions einbetten.
+
+    Geholt wird nur, was wirklich gebraucht wird: der meistgespielte Champion
+    je Spieler. Ohne Pillow wird nicht verkleinert - dann lieber gar kein
+    Splash als eine 13-MB-Datei."""
+    if not champs:
+        return {}
+    try:
+        from PIL import Image
+    except ImportError:
+        print("  Splash: Pillow fehlt - uebersprungen "
+              "(pip install pillow, dann neu bauen)")
+        return {}
+    SPLASH_CACHE.mkdir(parents=True, exist_ok=True)
+    out, geholt, fehler = {}, 0, []
+    for champ in sorted(champs):
+        key = icons.get(champ)
+        if not key:
+            continue
+        pfad = SPLASH_CACHE / f"{key}-{SPLASH_PX}.webp"
+        if not pfad.exists():
+            url = SPLASH_URL.format(key=key)
+            try:
+                anfrage = urllib.request.Request(
+                    url, headers={"User-Agent": "Mozilla/5.0"})
+                roh = urllib.request.urlopen(anfrage, timeout=30).read()
+                bild = Image.open(io.BytesIO(roh)).convert("RGB")
+                hoehe = round(bild.height * SPLASH_PX / bild.width)
+                bild = bild.resize((SPLASH_PX, hoehe), Image.LANCZOS)
+                puffer = io.BytesIO()
+                bild.save(puffer, "WEBP", quality=SPLASH_Q, method=6)
+                pfad.write_bytes(puffer.getvalue())
+                geholt += 1
+            except (urllib.error.HTTPError, urllib.error.URLError, OSError,
+                    ValueError) as exc:
+                fehler.append(f"{champ} ({exc})")
+                continue
+        out[champ] = ("data:image/webp;base64,"
+                      + base64.b64encode(pfad.read_bytes()).decode("ascii"))
+    gesamt = sum(len(v) for v in out.values()) // 1024
+    print(f"  Splash: {len(out)} eingebettet ({geholt} neu geladen, {gesamt} KB)")
+    for f in fehler[:5]:
+        print(f"    ! kein Splash fuer {f}")
+    return out
+
+
+def top_champions(teams):
+    """Der meistgespielte Champion je Spieler - mehr Splash braucht niemand."""
+    raus = set()
+    for team in teams:
+        for spieler in team.get("players") or []:
+            bloecke = (spieler.get("queues") or {}).get("RANKED") or []
+            champs = []
+            for block in bloecke:
+                champs += block.get("champions") or []
+            if not champs:
+                continue
+            beste = max(champs, key=lambda c: c["win"] + c["lose"])
+            if beste.get("champ"):
+                raus.add(beste["champ"])
+    return raus
 
 
 def multisearch_url(region, members):
@@ -521,6 +605,10 @@ def nachtragen(teams, roster):
         ziel = nach_team.get(eintrag["team"])
         if ziel is None:
             continue
+        # Hat die ganze Mannschaft noch keine Scrape-Daten, ist sie neu und
+        # wurde schlicht noch nicht geholt - "vermutlich umbenannt" waere
+        # dort eine Behauptung ins Blaue.
+        nie_geholt = not ziel["players"]
         da = {p["label"].lower() for p in ziel["players"]}
         da |= {(p.get("riotId") or "").partition("#")[0].strip().lower()
                for p in ziel["players"]}
@@ -536,9 +624,12 @@ def nachtragen(teams, roster):
                 "team": eintrag["team"],
                 "opggUrl": opgg_url(eintrag.get("region", "euw"),
                                     spieler.get("riotId") or ""),
-                "note": spieler.get("note") or "Kein op.gg-Profil unter dieser "
-                        "Riot-ID und noch keine Ligapartie - vermutlich "
-                        "umbenannt.",
+                "note": spieler.get("note") or (
+                    "Für diese Mannschaft wurden noch keine op.gg-Daten "
+                    "geholt — Knopf „Daten holen“ oder python auto_scrape.py."
+                    if nie_geholt else
+                    "Kein op.gg-Profil unter dieser Riot-ID und noch keine "
+                    "Ligapartie - vermutlich umbenannt."),
                 "ohneDaten": True,
                 "lastUpdated": None,
                 "solo": None, "flex": None, "mastery": [], "style": {},
@@ -627,6 +718,13 @@ def load_games():
                 "bansOwn": entry.get("bans", {}).get(team, []),
                 "bansOpp": entry.get("bans", {}).get(other, []),
                 "note": entry.get("note") or "",
+                # Die Zahlen der Partie - nur bei Spielen aus der Liga. Von
+                # Hand eingetragene Spiele haben sie nicht, die Seite muss
+                # also ohne sie auskommen.
+                "dauer": entry.get("dauer"),
+                "teamStats": (entry.get("teamStats") or {}).get(team),
+                "teamStatsOpp": (entry.get("teamStats") or {}).get(other),
+                "auszeichnungen": entry.get("auszeichnungen") or [],
             })
     return out
 
@@ -726,8 +824,33 @@ def build(embed=False, pages=False):
     teams = []
     for entry in roster:
         members = [p for p in players if p["team"] == entry["team"]]
-        if not members:
+        # Eine neu aus der Liga uebernommene Mannschaft hat noch keine
+        # op.gg-Daten. Sie trotzdem zeigen: nachtragen() baut die Karten aus
+        # teams.json, und nur so sieht man ueberhaupt, dass sie da ist und
+        # dass ihr noch Daten fehlen. Nur wirklich leere Eintraege fallen raus.
+        if not members and not (entry.get("players") or []):
             continue
+        # teams.json ist der gepflegte Kader und schlaegt die Scrape-Metadaten:
+        # dort steht die Rolle nur so, wie sie beim Scrapen galt. Ohne das
+        # bleibt jede Rollen- oder Bankaenderung wirkungslos, bis der Spieler
+        # zufaellig neu gescrapt wird.
+        gepflegt = {}
+        for e in entry.get("players") or []:
+            for schluessel in ((e.get("riotId") or "").strip().lower(),
+                               (e.get("label") or "").strip().lower()):
+                if schluessel:
+                    gepflegt.setdefault(schluessel, e)
+        for member in members:
+            e = (gepflegt.get((member.get("riotId") or "").strip().lower())
+                 or gepflegt.get((member.get("label") or "").strip().lower()))
+            if not e:
+                continue
+            if e.get("role"):
+                member["role"] = e["role"]
+            member["bench"] = bool(e.get("bench"))
+            if e.get("label"):
+                member["label"] = e["label"]
+
         # Starter zuerst (in Rollenreihenfolge), danach die Bank.
         members.sort(key=lambda p: (p["bench"], ROLE_ORDER.index(p["role"])
                      if p["role"] in ROLE_ORDER else len(ROLE_ORDER)))
@@ -774,6 +897,9 @@ def build(embed=False, pages=False):
     }
     if embed:
         data["iconData"] = embed_icons(icons, version)
+        # Splash nur fuer die Champions, die als Kopfbild gebraucht werden -
+        # der meistgespielte je Spieler.
+        data["splashData"] = embed_splashes(top_champions(teams), icons)
 
     # Seitenname = eigenes Team (erster Eintrag in teams.json) + Draftboard.
     title = (teams[0]["team"] + " Draftboard") if teams else "Draftboard"
