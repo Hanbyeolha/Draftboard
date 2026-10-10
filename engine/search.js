@@ -354,22 +354,24 @@ export function sucheAnlegen({quelle, merkmale, bewerter}) {
                       {vorrat, spielerFuer, risikoprofil}),
     }));
 
-    /* Die Lookaheadwerte liegen als Siegquoten vor und unterscheiden sich
-       nur um Zehntelpunkte - ein Pick von fuenf soll die Aufstellung auch
-       nicht umwerfen. Absolut waere die Komponente damit wirkungslos.
-       Darum wird sie ueber die Vorauswahl normiert: sie ordnet DIESE
-       Kandidaten, statt eine absolute Siegchance zu behaupten.
+    /* Die Lookaheadwerte liegen als Siegquoten vor. Gemessen wird gegen
+       den Median DIESER Vorauswahl, auf fester Skala (SUCHE.lookaheadSpanne,
+       geeicht): 0,5 heisst "wie der Median" und laesst die Note
+       unveraendert (siehe score.js). Vorher wurde per Min-Max gestreckt -
+       eine Spanne von 0,1 Punkten Rauschen fuellte dann die volle Skala,
+       und der schlechteste der zwoelf rutschte unter Kandidaten, fuer die
+       gar nicht vorausgerechnet wurde (Audit P1.1/P1.2).
 
        Die Vorauswahl ist deterministisch (die besten SUCHE.beiteEigen
        nach Grundnote), also ist auch das Ergebnis es. */
-    const rohe = mitL.map((x) => x.l).filter(Boolean).map((l) => l.roh);
-    const spanne = rohe.length > 1
-      ? {min: Math.min(...rohe), max: Math.max(...rohe)} : null;
+    const rohe = mitL.map((x) => x.l).filter(Boolean).map((l) => l.roh)
+      .sort((a, b) => a - b);
+    const median = rohe.length ? rohe[Math.floor(rohe.length / 2)] : null;
 
     const fertig = mitL.map(({r, l}) => {
-      if (!l) return r;
-      const anteil = spanne && spanne.max > spanne.min
-        ? (l.roh - spanne.min) / (spanne.max - spanne.min) : 0.5;
+      if (!l || median === null) return r;
+      const anteil = klemm(0.5 + (l.roh - median) / (2 * SUCHE.lookaheadSpanne),
+                           0, 1);
       const neu = bewerter.bewerte(zustand, r.champion, rolle, {
         spielerTeam, spielerLabel, risikoprofil, gegnerFuer,
         lookahead: {...l, wert: anteil},
@@ -428,18 +430,31 @@ export function sucheAnlegen({quelle, merkmale, bewerter}) {
     };
     const teil = (r, name) => r.components[name] ? r.components[name].roh : null;
 
-    // Sicher: der schlechteste Ausgang zaehlt. Im Blindfall das
-    // schlechteste Fuenftel der Lanegegner, sonst der schlechteste Ast
-    // des Lookaheads, sonst die Konfidenz.
-    const sicherheit = (r) =>
-      r.blindDetail ? r.blindDetail.schlechtestes
-      : r.lookahead ? r.lookahead.schlechtester - 0.5
-      : (r.confidence ?? 0) - 1;
-    // Aggressiv: das beste Fuenftel, der beste Ast, oder der Matchupvorteil.
-    const aufwaerts = (r) =>
-      r.blindDetail ? r.blindDetail.bestes
-      : r.lookahead ? r.lookahead.bester - 0.5
-      : teil(r, "matchup");
+    /* Eine Kennzahl je LISTE, nicht je Kandidat (Audit P2.9). Vorher
+       nahm jeder Kandidat die erste, die er hatte - Blind-Fuenftel,
+       Lookahead-Ast, Konfidenz - 1 oder den gekappten Matchup-Rohwert -
+       und alle wurden in einem max() verglichen. Wer die gewaehlte
+       Kennzahl nicht hat, faellt aus der Kategorie. Alle drei sind
+       Abweichungen der Siegquote, also eine Skala:
+         blind      schlechtestes / bestes Fuenftel der Lanegegner
+         lookahead  schlechtester / bester Ast
+         lane       alles steht fest: nur aggressiv, der geschrumpfte
+                    Lane-Vorteil. "sicher" entfaellt - ohne Streuung gibt
+                    es keinen schlechtesten Ausgang, und Datenkonfidenz
+                    ist keine Sicherheit. */
+    const laneVorteil = (r) => r.components.lane ? r.components.lane.vorteil : null;
+    const mass = nahe.some((r) => r.blindDetail) ? "blind"
+      : nahe.some((r) => r.lookahead) ? "lookahead"
+      : nahe.some((r) => Number.isFinite(laneVorteil(r))) ? "lane" : null;
+    const sicherheit = {
+      blind: (r) => r.blindDetail ? r.blindDetail.schlechtestes : null,
+      lookahead: (r) => r.lookahead ? r.lookahead.schlechtester - 0.5 : null,
+    }[mass] || null;
+    const aufwaerts = {
+      blind: (r) => r.blindDetail ? r.blindDetail.bestes : null,
+      lookahead: (r) => r.lookahead ? r.lookahead.bester - 0.5 : null,
+      lane: laneVorteil,
+    }[mass] || null;
 
     const raus = [];
     const dazu = (art, wort, treffer, grund) => {
@@ -448,15 +463,18 @@ export function sucheAnlegen({quelle, merkmale, bewerter}) {
     dazu("gesamt", "Bester Pick", {r: bester, wert: bester.entscheidung},
          (r) => "h\u00f6chster Entscheidungswert ("
                 + String(r.entscheidung).replace(".", ",") + ")");
-    dazu("sicher", "Sicherster Pick", max(nahe, sicherheit),
-         (r) => r.blindDetail ? "schlechtestes F\u00fcnftel "
-                + punkteText(r.blindDetail.schlechtestes)
-              : r.lookahead ? "schlechtester Ast " + prozentText(r.lookahead.schlechtester)
-              : "Konfidenz " + Math.round((r.confidence ?? 0) * 100) + " %");
-    dazu("aggressiv", "Aggressivster Pick", max(nahe, aufwaerts),
-         (r) => r.blindDetail ? "bestes F\u00fcnftel " + punkteText(r.blindDetail.bestes)
-              : r.lookahead ? "bester Ast " + prozentText(r.lookahead.bester)
-              : "Matchupvorteil");
+    if (sicherheit) {
+      dazu("sicher", "Sicherster Pick", max(nahe, sicherheit),
+           (r) => mass === "blind" ? "schlechtestes F\u00fcnftel "
+                  + punkteText(r.blindDetail.schlechtestes)
+                : "schlechtester Ast " + prozentText(r.lookahead.schlechtester));
+    }
+    if (aufwaerts) {
+      dazu("aggressiv", "Aggressivster Pick", max(nahe, aufwaerts),
+           (r) => mass === "blind" ? "bestes F\u00fcnftel " + punkteText(r.blindDetail.bestes)
+                : mass === "lookahead" ? "bester Ast " + prozentText(r.lookahead.bester)
+                : "Lane-Vorteil " + punkteText(laneVorteil(r)));
+    }
     const flex = max(nahe.filter((r) => (teil(r, "flex") ?? 0) > 0.3),
                      (r) => teil(r, "flex"));
     dazu("flex", "Flexpick", flex, (r) => r.components.flex.text);

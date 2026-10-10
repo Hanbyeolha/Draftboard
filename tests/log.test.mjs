@@ -130,8 +130,10 @@ test("ein Eintrag haelt Modus, Kategorien und Gruppen - und spaeter das Ergebnis
   const p = protokollAnlegen({speicher: null});
   const r = {champion: "Ornn", score: 70, confidence: 0.8, entscheidung: 68,
              modus: "blind",
-             components: {meta: {gewicht: 14, beitrag: 10},
-                          blindSicherheit: {gewicht: 18, beitrag: 12}},
+             // roh wie in der echten Bewertung (= beitrag / gewicht): die
+             // Gruppen lesen seit Audit P1.2 roh, nicht beitrag.
+             components: {meta: {gewicht: 14, beitrag: 10, roh: 10 / 14},
+                          blindSicherheit: {gewicht: 18, beitrag: 12, roh: 12 / 18}},
              blindDetail: {ev: 0.012, schlechtestes: -0.02,
                            konter: [{champ: "Jax"}]}};
   const e = p.notiere(leererDraft({patch: "1.0"}), "TOP", [r], {

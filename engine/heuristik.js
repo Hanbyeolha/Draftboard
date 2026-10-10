@@ -104,12 +104,20 @@ export function heuristikAnlegen(roh) {
             anteil: liste.length ? gepflegt / liste.length : 0};
   }
 
-  return {stand, fassung, achse, profil, abdeckung,
+  const h = {stand, fassung, achse, profil, abdeckung,
           kennt: (champ) => !!eintrag(champ),
           art: (champ) => { const x = eintrag(champ); return x ? x.art : null; },
           anzahl: new Set([...Object.keys(team), ...Object.keys(vorschlag)]).size,
           anzahlTeam: Object.keys(team).length,
           anzahlVorschlag: Object.keys(vorschlag).length};
+  /* Sicht fuer Note und Score: nur vom Team gepruefte Eintraege
+     (Entscheidung A, Audit P1.3, 10.10.2026). Die ungepruefte
+     Ersteinschaetzung bleibt Kontext fuers Lagebild und bewegt keine
+     Zahl der Note. Gleiche Schnittstelle, damit die Aufrufer nur die
+     Sicht waehlen, nicht anders rechnen. */
+  h.geprueft = Object.keys(vorschlag).length
+    ? heuristikAnlegen({...(roh || {}), vorschlag: {}}) : h;
+  return h;
 }
 
 /** Summe einer Achse ueber eine Aufstellung. Gibt mit zurueck, auf wie

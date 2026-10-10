@@ -92,6 +92,54 @@ export function gesperrt(s) {
   return raus;
 }
 
+/** Wo stehen wir in der Pickfolge? Aus der Zahl der PICKS je Seite und
+ *  ZUGFOLGE - nicht aus der Summe aller Felder, denn Bans werden oft
+ *  nicht eingetragen (Audit P2.10). Angenommen ist, dass die Picks in der
+ *  Turnierfolge gefallen sind (B R R B B R | R B B R).
+ *    naechster                {nr, seite, wir} oder null, wenn fertig
+ *    gegnerVorUnseremNaechsten  gegnerische Picks, bevor wir wieder dran sind
+ *    gegnerVorUnseremLetzten    gegnerische Picks vor unserem letzten Pick -
+ *                               nur sie kann Warten noch zeigen */
+export function pickfolge(s) {
+  const uns = s.wirSind, sie = gegenseite(uns);
+  const getan = {blue: s.picks.blue.length, red: s.picks.red.length};
+  const zaehl = {blue: 0, red: 0};
+  const offen = ZUGFOLGE.filter((z) => z.art === "pick")
+    .filter((z) => zaehl[z.seite]++ >= getan[z.seite]);
+  const unsere = offen.filter((z) => z.seite === uns);
+  const vor = (grenze) => grenze === null ? 0
+    : offen.filter((z) => z.seite === sie && z.nr < grenze).length;
+  return {
+    naechster: offen.length ? {nr: offen[0].nr, seite: offen[0].seite,
+                               wir: offen[0].seite === uns} : null,
+    gegnerVorUnseremNaechsten: vor(unsere.length ? unsere[0].nr : null),
+    gegnerVorUnseremLetzten: vor(unsere.length ? unsere[unsere.length - 1].nr : null),
+    unsereOffen: unsere.length,
+  };
+}
+
+/** Warum ein Champion in DIESES Eingabefeld nicht passt - oder null.
+ *  Fuer Pick- und Ban-Felder gleich (Audit P2.6: vorher pruefte nur das
+ *  Ban-Feld). Das eigene Feld zaehlt nicht mit, sonst liesse sich ein
+ *  Eintrag nicht bestaetigen.
+ *  felder: {picks: {eigen, gegner}, bans: {eigen, gegner}} wie in der
+ *  Oberflaeche; fearless: die in der Serie verbrauchten Champions. */
+export function feldSperre(felder, champ, {art, seite, i, fearless = []} = {}) {
+  if (!champ) return null;
+  for (const a of ["picks", "bans"]) {
+    for (const s of ["eigen", "gegner"]) {
+      const liste = ((felder || {})[a] || {})[s] || [];
+      if (liste.some((c, j) => c === champ && !(a === art && s === seite && j === i))) {
+        return a === "picks" ? "schon gepickt" : "schon gebannt";
+      }
+    }
+  }
+  if ((fearless || []).includes(champ)) {
+    return "durch Fearless gesperrt (in dieser Serie schon gespielt)";
+  }
+  return null;
+}
+
 /** Noch offene Rollen einer Seite. Picks ohne zugeordnete Rolle zaehlen
  *  nicht als besetzt - Rollenunsicherheit wird nicht wegdefiniert. */
 export function offeneRollen(s, seite) {

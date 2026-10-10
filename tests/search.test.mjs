@@ -220,3 +220,84 @@ test("der Massstab kommt aus dem Patch, nicht aus der Liga", () => {
   const S2 = sucheAnlegen({quelle, merkmale, bewerter});
   assert.deepEqual(S2.compReferenzGlobal().quoten.slice(0, 20), ref.quoten.slice(0, 20));
 });
+
+/* -------------------------------------------- P1.2 Lookahead-Skala
+   Audit 10.10.2026: der Lookahead der Vorauswahl wurde per Min-Max auf
+   0..1 gestreckt und als gemittelter Teil eingemischt. Spannen von 0,1
+   Punkten wurden voll gestreckt, und der Teil senkte die Note schon,
+   wenn er nur unter dem eigenen Schnitt des Kandidaten lag. */
+const ZWEI = zustand({
+  unsere: [{champ: "Lee Sin", rolle: "JUNGLE"}, {champ: "Jinx", rolle: "BOTTOM"}],
+  ihre: [{champ: "Viego", rolle: "JUNGLE"}, {champ: "Thresh", rolle: "UTILITY"}],
+});
+const ohneLookahead = (s, r, champ) => bewerter.bewerte(s, champ, r);
+
+test("P1.2: ein Lookahead im Median der Vorauswahl laesst die Note unveraendert", () => {
+  for (const [s, r] of [[ZWEI, "TOP"], [SPAET, "MIDDLE"]]) {
+    const mitL = S.rangliste(s, r).filter((x) => x.lookahead);
+    const roh = mitL.map((x) => x.lookahead.roh).sort((a, b) => a - b);
+    const median = roh[Math.floor(roh.length / 2)];
+    const mitte = mitL.find((x) => x.lookahead.roh === median);
+    assert.equal(mitte.score, ohneLookahead(s, r, mitte.champion).score,
+                 r + ": " + mitte.champion + " im Median");
+  }
+});
+
+test("P1.2: Rauschen in der Vorauswahl bewegt die Note kaum", () => {
+  // 2 gegen 2 auf Top: die zwoelf Lookaheads liegen nur Zehntelpunkte
+  // auseinander. Vorher bewegte das die Note um bis zu 5 Punkte.
+  const L = S.rangliste(ZWEI, "TOP").filter((x) => x.lookahead);
+  const roh = L.map((x) => x.lookahead.roh);
+  assert.ok(Math.max(...roh) - Math.min(...roh) < 0.005, "Lage mit kleiner Spanne");
+  for (const x of L) {
+    const d = Math.abs(x.score - ohneLookahead(ZWEI, "TOP", x.champion).score);
+    assert.ok(d <= 1, x.champion + " bewegt sich um " + d);
+  }
+});
+
+test("P1.2: ein Lookahead ueber dem Median senkt die Note nie", () => {
+  for (const [s, r] of [[ZWEI, "TOP"], [SPAET, "MIDDLE"], [zustand(), "MIDDLE"]]) {
+    for (const x of S.rangliste(s, r).filter((y) => y.lookahead && y.lookahead.wert >= 0.5)) {
+      assert.ok(x.score >= ohneLookahead(s, r, x.champion).score,
+                r + ": " + x.champion + " " + x.score);
+    }
+  }
+});
+
+/* Audit P2.9: "sicher" und "aggressiv" nahmen die Kennzahl je Kandidat -
+   Blind-Fuenftel, Lookahead-Ast, Konfidenz - 1 oder Matchup-Rohwert
+   (0..1, bei 1,0 gekappt). Gemessen ueber 680 echte Zwischenstaende: in
+   allen 136 letzten Picks waehlte "sicher" nach Datenkonfidenz und
+   "aggressiv" nach dem Matchup OHNE Lanegegner, 21-mal im Gleichstand
+   am Deckel. Jetzt eine Kennzahl je Liste, alle in Siegquote-Punkten. */
+const kandidat = (champion, entscheidung, extra = {}) => ({
+  champion, entscheidung, score: entscheidung, confidence: 0.5,
+  components: {}, blindDetail: null, lookahead: null, ...extra});
+
+test("P2.9: eine Liste, eine Kennzahl - kein Kandidat auf fremder Skala", () => {
+  const liste = [
+    kandidat("A", 70, {blindDetail: {schlechtestes: -0.02, bestes: 0.03}}),
+    kandidat("B", 69, {confidence: 0.99, components: {matchup: {roh: 1, gewicht: 18}}}),
+  ];
+  const K = S.kategorien(liste);
+  assert.equal(K.find((k) => k.art === "sicher").r.champion, "A",
+               "B hat kein Blind-Fuenftel und wird nicht ueber die Konfidenz verglichen");
+  assert.equal(K.find((k) => k.art === "aggressiv").r.champion, "A",
+               "ein gekappter Matchup-Rohwert ist kein bestes Fuenftel");
+});
+
+test("P2.9: steht alles fest, zaehlt die Lane - und 'sicher' entfaellt", () => {
+  const liste = [
+    kandidat("X", 70, {components: {lane: {roh: 0.9, gewicht: 18, vorteil: 0.04},
+                                    matchup: {roh: 0.5, gewicht: 18}}}),
+    kandidat("Y", 69, {confidence: 0.99,
+                       components: {lane: {roh: 0.6, gewicht: 18, vorteil: 0.01},
+                                    matchup: {roh: 1, gewicht: 18}}}),
+  ];
+  const K = S.kategorien(liste);
+  const ag = K.find((k) => k.art === "aggressiv");
+  assert.equal(ag.r.champion, "X", "der groessere Lane-Vorteil");
+  assert.match(ag.grund, /Lane/);
+  assert.equal(K.find((k) => k.art === "sicher"), undefined,
+               "ohne Streuung kein schlechtester Ausgang - Datenkonfidenz ist keine Sicherheit");
+});

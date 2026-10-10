@@ -92,17 +92,34 @@ BROWSER_UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
               "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"}
 
 
+PATCH_LIVE = None
+
+
+def patch_zahl(p):
+    """ "16.20.1" -> (16, 20, 1); Unlesbares sortiert nach vorn."""
+    try:
+        return tuple(int(x) for x in str(p).split("."))
+    except ValueError:
+        return (-1,)
+
+
 def load_raw():
     """Alle Scrape-Dateien einlesen: Spielerdateien (players) und die
     Queue-Dateien (queues). Bei mehreren gewinnt die neueste je Spieler."""
     players, queues, icons, version, scraped = {}, {}, {}, None, None
     names = {}
+    global PATCH_LIVE
+    PATCH_LIVE = None
     for path in sorted(RAW.glob("*.json")):
         blob = json.loads(path.read_text(encoding="utf-8"))
         icons.update(blob.get("icons", {}))
         # Season-Namen so, wie op.gg sie beim Scrapen anzeigte.
         names.update({int(k): v for k, v in (blob.get("seasonNames") or {}).items()})
         version = blob.get("version") or version
+        # Bezug fuer die Patchwarnung: die NEUESTE Data-Dragon-Fassung,
+        # nicht die der zuletzt gelesenen Datei (Audit P2.5).
+        PATCH_LIVE = max(filter(None, [PATCH_LIVE, blob.get("version")]),
+                         key=patch_zahl, default=None)
         scraped = max(scraped or "", blob.get("scrapedAt") or "")
         for key, player in blob.get("players", {}).items():
             players[key] = player
@@ -342,8 +359,20 @@ def draft_daten():
                             separators=(",", ":"))) // 1024
     print(f"  Draft: Patch {aktuell.get('version')}, {len(basis)} Champions, "
           f"{len(paare)} mit Matchups ({gesamt} KB)")
+    # Zwei Datensaetze, zwei Fenster (Audit P2.5): Staerke, Schaden und
+    # Kurve aus dem laufenden Patch, Matchups und Synergien aus den
+    # letzten 30 Tagen - die koennen ueber mehrere Patches reichen und
+    # duerfen nicht das Etikett des Patches tragen.
+    tage = str(tage30.get("version") or "")
+    fenster = {
+        "staerke": {"patch": aktuell.get("version"),
+                    "stand": (aktuell.get("date") or "")[:10]},
+        "paare": {"tage": int(tage) if tage.isdigit() else None,
+                  "stand": (tage30.get("date") or "")[:10]},
+    }
     return {"version": aktuell.get("version"),
             "stand": (aktuell.get("date") or "")[:10],
+            "fenster": fenster,
             "namen": namen, "basis": basis, "paare": paare,
             "schaden": schaden, "zeit": zeit}
 
@@ -1102,6 +1131,9 @@ def build(embed=False, pages=False):
     named = {**SEASON_NAMES, **raw_names}
     data = {
         "version": version,
+        # Laufender Patch laut Data Dragon zum Zeitpunkt des Scrapes - der
+        # Bezug fuer die Patchwarnung im Live Draft (Audit P2.5).
+        "patchLive": PATCH_LIVE,
         "scrapedAt": scraped,
         "seasons": seasons,
         "seasonNames": {str(s): named[s] for s in seasons if s in named},

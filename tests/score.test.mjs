@@ -44,12 +44,19 @@ test("ein Champion auf einer Nebenrolle wird nicht bewertet", () => {
 });
 
 test("Matchups tauchen erst mit gegnerischen Picks auf, mit Text", () => {
-  const s = zustand({ihre: [{champ: "Ornn", rolle: "TOP"}]});
+  // Seit Audit P1.1 getrennt: der Lanegegner zaehlt unter "lane", alle
+  // uebrigen unter "matchup". Ornn auf Top ist fuer Jax der Lanegegner,
+  // Ahri auf Mid nicht.
+  const s = zustand({ihre: [{champ: "Ornn", rolle: "TOP"},
+                            {champ: "Ahri", rolle: "MIDDLE"}]});
   const r = B.bewerte(s, "Jax", "TOP");
   assert.ok(r.components.matchup, "Matchup vorhanden");
   assert.equal(r.components.matchup.quelle, "draftgap");
   assert.match(r.components.matchup.text, /gegen 1 ihrer Picks/);
   assert.ok(r.components.matchup.konfidenz > 0);
+  assert.ok(r.components.lane, "Lane vorhanden");
+  assert.equal(r.components.lane.quelle, "draftgap");
+  assert.match(r.components.lane.text, /gegen den Lanegegner/);
 });
 
 test("Synergien tauchen mit eigenen Picks auf", () => {
@@ -131,15 +138,18 @@ test("blind, Counter und teilweise sind verschiedene Lagen", () => {
   assert.equal(counter.modus, "counter");
   assert.equal(counter.blind, false);
   assert.equal(counter.components.blindSicherheit, undefined,
-               "mit bekanntem Lanegegner zaehlt die echte Paarung (matchup)");
-  assert.ok(counter.components.matchup);
-  // Botlane halb bekannt: der Blindteil zaehlt nur zur Haelfte.
+               "mit bekanntem Lanegegner zaehlt die echte Paarung (lane)");
+  assert.ok(counter.components.lane);
+  assert.equal(counter.components.lane.gewicht, GEWICHTE.blindSicherheit,
+               "die Lane zaehlt im Counterfall voll (Audit P1.1)");
+  // Botlane halb bekannt: Blindteil und Laneteil je zur Haelfte.
   const halb = B.bewerte(zustand({ihre: [{champ: "Thresh", rolle: "UTILITY"}]}),
                          "Jinx", "BOTTOM");
   assert.equal(halb.modus, "teilweise");
-  assert.ok(halb.components.blindSicherheit && halb.components.matchup);
+  assert.ok(halb.components.blindSicherheit && halb.components.lane);
   assert.equal(halb.components.blindSicherheit.gewicht,
                GEWICHTE.blindSicherheit / 2);
+  assert.equal(halb.components.lane.gewicht, GEWICHTE.blindSicherheit / 2);
 });
 
 test("der Blindwert rechnet ueber Szenarien und nennt die Counter", () => {
@@ -208,9 +218,79 @@ test("mit gepflegter Tabelle wirkt die Stoerung - als Heuristik erkennbar", () =
             "Heuristik traegt niedrige Konfidenz");
   assert.match(janna.components.gegnerStoerung.text, /engage/);
 
+  // Seit Audit P1.3: Sivir ist eingeschaetzt und setzt nichts dagegen -
+  // das ist eine 0, kein fehlender Wert (vorher fiel der Teil weg).
   const sivir = BH.bewerte(s, "Sivir", "BOTTOM");
-  assert.equal(sivir.components.gegnerStoerung, undefined,
-               "Sivir setzt nichts dagegen");
+  assert.equal(sivir.components.gegnerStoerung.roh, 0, "Sivir setzt nichts dagegen");
+  assert.match(sivir.components.gegnerStoerung.text, /nichts gegen ihren Plan/);
+});
+
+/* Audit P1.3: eine teilweise Antwort darf nie schlechter dastehen als gar
+   keine. Vorher fiel der Teil ohne jede Antwortachse weg (neutral), eine
+   schwache Antwort zog ab. Gegner Vi/Zed: Dive und Catch. */
+function stoerBewerter(tabelle) {
+  const h = heuristikAnlegen(tabelle);
+  const mm = merkmaleAnlegen(quelle, h);
+  return bewerterAnlegen({quelle, merkmale: mm, comp: compAnlegen(mm, h),
+                          team, heuristik: h});
+}
+const VI_ZED = {Vi: {engage: 1, dive: 2, catch: 2},
+                Zed: {dive: 2, splitpush: 1, catch: 1}};
+
+test("P1.3: ohne Antwort zaehlt die Stoerung als 0, nicht als fehlend", () => {
+  const BH = stoerBewerter({champions: {...VI_ZED,
+    Jayce: {poke: 2, siege: 2},                 // nichts gegen Dive/Catch
+    Darius: {frontline: 1, splitpush: 1},       // Peel nur ueber Frontline
+    Poppy: {disengage: 2, peel: 2, frontline: 2}}});
+  const s = zustand({ihre: [{champ: "Vi", rolle: "JUNGLE"},
+                            {champ: "Zed", rolle: "MIDDLE"}]});
+  const st = (c) => BH.bewerte(s, c, "TOP").components.gegnerStoerung;
+  assert.ok(st("Jayce"), "Jayce ist eingeschaetzt, ihr Plan steht - der Teil ist da");
+  assert.equal(st("Jayce").roh, 0);
+  assert.ok(st("Darius").roh > st("Jayce").roh, "teilweise > keine");
+  assert.ok(st("Poppy").roh > st("Darius").roh, "voll > teilweise");
+});
+
+test("P1.3: ungepruefte Ersteinschaetzung bewegt die Stoerung nicht (Entscheidung A)", () => {
+  const BH = stoerBewerter({champions: {},
+    vorschlag: {...VI_ZED, Poppy: {disengage: 2, peel: 2, frontline: 2}}});
+  const s = zustand({ihre: [{champ: "Vi", rolle: "JUNGLE"},
+                            {champ: "Zed", rolle: "MIDDLE"}]});
+  assert.equal(BH.bewerte(s, "Poppy", "TOP").components.gegnerStoerung, undefined,
+               "nur vom Team gepruefte Eintraege gehen in die Note");
+  // Gemischt: unser Kandidat geprueft, ihr Plan nur vorgeschlagen -> auch nichts.
+  const gemischt = stoerBewerter({champions: {Poppy: {peel: 2}}, vorschlag: VI_ZED});
+  assert.equal(gemischt.bewerte(s, "Poppy", "TOP").components.gegnerStoerung, undefined);
+});
+
+/* Audit P1.4, Entscheidung A: die ausgelieferte Tabelle ist komplett
+   ungeprueft (vorschlag). Sie darf weder Note noch Konfidenz noch einen
+   Teil bewegen - auch nicht ueber compFit. Vorher wich die Note bei 20
+   von 77 Mid-Kandidaten ab. */
+test("P1.4: die ungepruefte Ersteinschaetzung bewegt keine Zahl der Note", async () => {
+  const { readFileSync } = await import("node:fs");
+  const roh = JSON.parse(readFileSync("data/champion-heuristik.json", "utf8"));
+  assert.equal(Object.keys(roh.champions || {}).length, 0,
+               "Voraussetzung: noch nichts vom Team geprueft");
+  const BV = stoerBewerter(roh);
+  const s = zustand({unsere: [{champ: "Ornn", rolle: "TOP"}, {champ: "Lee Sin", rolle: "JUNGLE"},
+                              {champ: "Jinx", rolle: "BOTTOM"}],
+                     ihre: [{champ: "Jax", rolle: "TOP"}, {champ: "Syndra", rolle: "MIDDLE"},
+                            {champ: "Lulu", rolle: "UTILITY"}]});
+  let n = 0;
+  for (const k of merkmale.kandidaten("MIDDLE")) {
+    const a = BV.bewerte(s, k.champ, "MIDDLE"), b = B.bewerte(s, k.champ, "MIDDLE");
+    if (!a || !b) continue;
+    n++;
+    assert.equal(a.score, b.score, k.champ + ": Note");
+    assert.equal(a.confidence, b.confidence, k.champ + ": Konfidenz");
+    assert.deepEqual(Object.keys(a.components).sort(), Object.keys(b.components).sort());
+    if (a.components.compFit) {
+      assert.equal(a.components.compFit.roh, b.components.compFit.roh, k.champ + ": compFit");
+      assert.equal(a.components.compFit.quelle, b.components.compFit.quelle);
+    }
+  }
+  assert.ok(n > 40, "genug Kandidaten: " + n);
 });
 
 test("Gruende und Risiken kommen aus den Teilen, nicht aus der Luft", () => {
@@ -298,4 +378,24 @@ test("aus der Sicht des Gegners: mit SEINEN Picks, gegen UNSERE", () => {
   const namen = (t) => [...(t.paare || []).map((x) => x.wer), ...(t.ohneDaten || [])];
   assert.deepEqual(namen(mit), ["Gnar"], "Synergie mit ihrem Toplaner");
   assert.deepEqual(namen(gegen), ["Jarvan IV"], "Matchup gegen unseren Jungler");
+});
+
+/* Audit P2.8: "kaum Erfahrung" hing an k.value <= 0,1 - Komfort ohne
+   Beleg ist aber KOMFORT.ohneBeleg (0,15). Gemessen: 0 von 684
+   Bewertungen trugen den Text, 387 haetten ihn verdient. Jetzt haengt er
+   am Beleg selbst: 0 Partien und nicht im Draftplan. */
+test("P2.8: ohne Partien und ohne Plan steht 'kaum Erfahrung' im Risiko", () => {
+  const top = team.aufRolle("AFC1", "TOP");
+  const opt = {spielerTeam: "AFC1", spielerLabel: top.label};
+  let ohne = null, belegt = null;
+  for (const k of merkmale.kandidaten("TOP")) {
+    const ko = team.komfort("AFC1", top.label, k.champ);
+    if (!ohne && ko && ko.sampleSize === 0 && /nicht im Draftplan/.test(ko.note)) ohne = k.champ;
+    if (!belegt && ko && ko.sampleSize >= 20) belegt = k.champ;
+  }
+  assert.ok(ohne && belegt, "Testfaelle gefunden: " + ohne + ", " + belegt);
+  const a = B.bewerte(zustand(), ohne, "TOP", opt);
+  assert.ok(a.risks.some((r) => /^kaum Erfahrung/.test(r)), ohne + ": " + a.risks.join(" | "));
+  const b = B.bewerte(zustand(), belegt, "TOP", opt);
+  assert.ok(!b.risks.some((r) => /^kaum Erfahrung/.test(r)), belegt + " ist gespielt");
 });

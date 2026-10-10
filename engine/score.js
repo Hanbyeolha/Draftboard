@@ -17,8 +17,11 @@
    noch einmal einzeln. Ein frueher Entwurf hatte sie doppelt.
 
    Dieselbe Pruefung fuer die Lane (Stand 10.10.2026):
-     matchup          die BEKANNTEN Gegner
+     lane             die BEKANNTEN Lanegegner, nach bekanntem Anteil
      blindSicherheit  die noch UNBEKANNTEN Lanegegner, nach Anteil
+                      (lane + blindSicherheit = GEWICHTE.blindSicherheit
+                      in jedem Modus - Audit P1.1)
+     matchup          die uebrigen bekannten Gegner
      lookahead        ohne Kandidat/bekannte Gegner und ohne die
                       Lanepaarung - die stehen schon oben
      risiko           entfallen: Streuung und Konfidenz standen dort ein
@@ -35,13 +38,17 @@ import { normQuote, normVorteil, klemm } from "./features.js";
 import { GESCHAETZTE_ACHSEN, saettigen } from "./comp.js";
 import { ROLLEN_FOLGE, ROLLEN_WORT, gegenseite, offeneRollen } from "./state.js";
 import { moeglicheRollen } from "./data.js";
-import { blindAnlegen } from "./blind.js";
+import { blindAnlegen, LANE_GEGNER } from "./blind.js";
 
 export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik,
                                  blind = null}) {
   // Ein Blindmodell fuer alle Bewertungen - sein Feldcache gilt ueber
   // Kandidaten hinweg.
   const blindModell = blind || blindAnlegen({quelle, team});
+  // Die Note sieht nur gepruefte Einschaetzungen (Entscheidung A) - in
+  // der Stoerung (P1.3) und im Comp-Marginalwert (P1.4).
+  const hNote = heuristik ? (heuristik.geprueft || heuristik) : null;
+  const compNote = comp ? (comp.geprueft || comp) : comp;
 
   /** Einen Kandidaten bewerten. Gibt die volle Spur zurueck - die
    *  Oberflaeche nimmt sich daraus, was sie zeigen will. */
@@ -92,20 +99,44 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik,
     });
 
     /* 2 ---------------------------------- Gegen die gegnerischen Picks */
-    const gegen = paarSchnitt(champ, rolle, "m", ihre);
+    /* Getrennt nach Lane und Rest (Audit P1.1). Vorher mittelte ein
+       Teil ueber alle bekannten Gegner nach Partien - der Lanegegner
+       verschwand im Counterfall zwischen den Paarungen quer ueber die
+       Karte, waehrend blind die Lane mit vollem Gewicht zaehlte. Jetzt
+       traegt die Lane in jedem Modus GEWICHTE.blindSicherheit: der
+       bekannte Anteil hier, der unbekannte in blindSicherheit. */
+    const lage = blindModell.lage(zustand, rolle);
+    const laneRollen = new Set(LANE_GEGNER[rolle] || []);
+    const gegenLane = paarSchnitt(champ, rolle, "m",
+                                  ihre.filter((p) => laneRollen.has(p.rolle)));
+    const gegen = paarSchnitt(champ, rolle, "m",
+                              ihre.filter((p) => !laneRollen.has(p.rolle)));
+    if (gegenLane) {
+      nimm("lane", normVorteil(gegenLane.vorteil), {
+        quelle: "draftgap", konfidenz: gegenLane.konfidenz,
+        text: prozent(gegenLane.quote) + " gegen den Lanegegner",
+        paare: gegenLane.teile, ohneDaten: gegenLane.ohneDaten,
+        gewicht: GEWICHTE.blindSicherheit * (1 - lage.unbekannt),
+      });
+      // Der geschrumpfte Vorteil ungekappt - roh ist bei 1,0 gedeckelt.
+      // Die Kategorie "aggressiv" vergleicht im Counterfall darauf
+      // (search.js kategorien, Audit P2.9).
+      if (teile.lane) teile.lane.vorteil = gegenLane.vorteil;
+    }
     if (gegen) {
       nimm("matchup", normVorteil(gegen.vorteil), {
         quelle: "draftgap", konfidenz: gegen.konfidenz,
         text: prozent(gegen.quote) + " gegen " + gegen.n + " ihrer Picks",
         paare: gegen.teile, ohneDaten: gegen.ohneDaten,
       });
-      for (const t of gegen.teile) {
-        const d = t.quote - t.erwartet;
-        if (d >= 0.02) gruende.push("stark gegen " + t.wer
-          + " (" + prozent(t.quote) + ", sonst " + prozent(t.erwartet) + ")");
-        if (d <= -0.02) risiken.push("schwach gegen " + t.wer
-          + " (" + prozent(t.quote) + ", sonst " + prozent(t.erwartet) + ")");
-      }
+    }
+    for (const t of [...(gegenLane ? gegenLane.teile : []),
+                     ...(gegen ? gegen.teile : [])]) {
+      const d = t.quote - t.erwartet;
+      if (d >= 0.02) gruende.push("stark gegen " + t.wer
+        + " (" + prozent(t.quote) + ", sonst " + prozent(t.erwartet) + ")");
+      if (d <= -0.02) risiken.push("schwach gegen " + t.wer
+        + " (" + prozent(t.quote) + ", sonst " + prozent(t.erwartet) + ")");
     }
 
     /* 3 ------------------------------------- Mit den eigenen Picks */
@@ -126,9 +157,9 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik,
     }
 
     /* 4 ------------------------------------------------ Marginalwert */
-    const gegnerProfil = ihre.length ? comp.profil(ihre) : null;
-    const marg = comp.marginal(unsere, {champ, rolle},
-                               {gegner: gegnerProfil});
+    const gegnerProfil = ihre.length ? compNote.profil(ihre) : null;
+    const marg = compNote.marginal(unsere, {champ, rolle},
+                                   {gegner: gegnerProfil});
     if (marg.punkte !== null) {
       nimm("compFit", marg.punkte, {
         quelle: marg.anteilGemessen >= 0.99 ? "draftgap" : "gemischt",
@@ -144,8 +175,9 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik,
     }
 
     /* 5 ------------------------------- Stoert er ihren Plan? */
-    /* Nur mit gepflegter Heuristiktabelle. Ohne sie faellt der Teil
-       vollstaendig weg - dafuer gibt es keine gemessene Grundlage. */
+    /* Nur mit gepflegter, vom Team gepruefter Heuristiktabelle. Ohne sie
+       faellt der Teil vollstaendig weg - dafuer gibt es keine gemessene
+       Grundlage. */
     const stoerung = stoerwert(champ, ihre);
     if (stoerung) {
       nimm("gegnerStoerung", stoerung.wert, {
@@ -167,6 +199,7 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik,
     }
 
     /* 7 --------------------------------------------------- Komfort */
+    let erfahrungsRisiko = null;
     const k = (spielerTeam && spielerLabel)
       ? team.komfort(spielerTeam, spielerLabel, champ) : null;
     if (k) {
@@ -178,7 +211,11 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik,
         gewicht: Math.min(GEWICHTE.komfort, deckel),
       });
       if (k.value >= 0.7) gruende.push("Komfort: " + k.note);
-      if (k.value <= 0.1) risiken.push("kaum Erfahrung: " + k.note);
+      // Am Beleg festgemacht, nicht am Wert: vorher <= 0,1, aber Komfort
+      // ohne Beleg ist KOMFORT.ohneBeleg (0,15) - der Text erschien nie
+      // (Audit P2.8: 0 von 684 Bewertungen, 387 haetten ihn verdient).
+      // Angehaengt wird er erst ganz am Ende, siehe unten.
+      if (k.ohneBeleg) erfahrungsRisiko = "kaum Erfahrung: " + k.note;
     }
 
     /* 8 ------------------------------------- Blind, teilweise, Counter */
@@ -186,7 +223,6 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik,
        Anteil: ganz blind voll, Botlane halb bekannt halb, ein
        rollenunsicherer gegnerischer Flexpick nach seiner Unsicherheit.
        Der bekannte Teil steht unter "matchup" - zweimal zaehlt nichts. */
-    const lage = blindModell.lage(zustand, rolle);
     const blindWert = (!schnell && lage.modus !== "counter")
       ? blindModell.bewerte(zustand, champ, rolle, {gegnerFuer, risikoprofil})
       : null;
@@ -216,14 +252,28 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik,
     }
 
     /* 9 ------------------------------------------------- Lookahead */
-    /* Kommt in Phase 5. Bis dahin faellt der Teil weg, statt eine Zahl
-       zu erfinden. */
+    /* Eine Korrektur um den Median der Vorauswahl, kein gemittelter Teil
+       (Audit P1.2): w = 0,5 laesst die Note unveraendert, darueber hebt
+       sie, darunter senkt sie. Als gemittelter Teil zog der Lookahead die
+       Note schon, wenn er nur unter dem eigenen Schnitt des Kandidaten
+       lag - und Kandidaten ohne Vorausschau (ab Rang 13) hatten diesen
+       Zug nicht. Darum: Beitrag in die Summe, nicht in den Hoechstwert,
+       und nicht in die Konfidenz (die sonst nur fuer die Vorauswahl um
+       die feste 0,4 des Gegnermodells saenke). */
     if (lookahead && Number.isFinite(lookahead.wert)) {
-      nimm("lookahead", lookahead.wert, {
-        quelle: "draftgap", konfidenz: lookahead.konfidenz ?? null,
-        text: lookahead.text || null,
-      });
+      const g = GEWICHTE.lookahead;
+      const w = klemm(lookahead.wert, 0, 1);
+      teile.lookahead = {roh: w, gewicht: g, beitrag: g * (w - 0.5),
+                         quelle: "draftgap", konfidenz: lookahead.konfidenz ?? null,
+                         text: lookahead.text || null, korrektur: true};
+      summe += g * (w - 0.5);
     }
+
+    /* Die Risiken werden auf vier gekuerzt. Der Erfahrungshinweis kommt
+       zuletzt, damit er kein gemessenes Risiko (Konter aus den
+       Blindszenarien) verdraengt - gemessen hatte er das bei 103 von
+       1356 Bewertungen getan (Audit P2.8). */
+    if (erfahrungsRisiko) risiken.push(erfahrungsRisiko);
 
     /* 10 -------------------------------------------------- Konfidenz */
     /* Kein Abzug mehr fuer Unsicherheit an dieser Stelle - sie wirkt in
@@ -331,8 +381,9 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik,
   }
 
   /** Wirkt unser Kandidat dem entgegen, was sie vorhaben? Braucht die
-   *  Heuristiktabelle auf beiden Seiten - ohne sie kein Wert. */
+   *  gepruefte Heuristiktabelle auf beiden Seiten - ohne sie kein Wert. */
   function stoerwert(champ, ihre) {
+    const heuristik = hNote;
     if (!heuristik || !heuristik.kennt(champ)) return null;
     let summe = 0, n = 0;
     const genannt = [];
@@ -345,11 +396,14 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik,
       // ein weiterer Champion ihn nicht mittraegt.
       const staerke = saettigen(sie.map((w) => w.value));
       if (staerke < 0.2) continue;        // kein nennenswerter Plan
-      // Was setzen wir dagegen?
+      // Was setzen wir dagegen? Der Kandidat ist eingeschaetzt; eine
+      // Achse, die er nicht traegt, hat er nicht (Tabellenkonvention
+      // "nur ungleich 0", heuristik.js) - also 0, nicht "unbekannt".
+      // Vorher fiel der Teil ohne jede Antwort weg, und eine teilweise
+      // Antwort stand schlechter da als keine (Audit P1.3).
       const gegen = unsere.map((a) => heuristik.achse(champ, a))
                           .filter(Boolean);
-      if (!gegen.length) continue;
-      const antwort = Math.max(...gegen.map((w) => w.value));
+      const antwort = gegen.length ? Math.max(...gegen.map((w) => w.value)) : 0;
       summe += staerke * antwort;
       n += staerke;
       if (antwort >= 0.5) genannt.push(ihreAchse);
@@ -359,7 +413,8 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik,
       wert: klemm(summe / n, 0, 1),
       konfidenz: 0.45,
       text: genannt.length ? "wirkt gegen ihr " + genannt.join(" und ")
-                           : "wenig gegen ihren Plan",
+                           : summe > 0 ? "wenig gegen ihren Plan"
+                           : "nichts gegen ihren Plan",
     };
   }
 
@@ -423,7 +478,7 @@ const STUFE_WORT = {
    Schnitt ihrer vorhandenen Teile. So bleibt DraftGap als eigenes Signal
    sichtbar, getrennt von dem, was wir daraus fuer UNSER Team machen. */
 export const SCORE_GRUPPEN = {
-  draftgap: {wort: "DraftGap", teile: ["meta", "matchup", "synergie"]},
+  draftgap: {wort: "DraftGap", teile: ["meta", "lane", "matchup", "synergie"]},
   team: {wort: "Team-Fit", teile: ["compFit", "gegnerStoerung", "flex", "lookahead"]},
   spieler: {wort: "Spieler-Fit", teile: ["komfort"]},
   blind: {wort: "Blind-Sicherheit", teile: ["blindSicherheit"]},
@@ -438,7 +493,9 @@ export function teilGruppen(r) {
     for (const t of g.teile) {
       const x = r.components && r.components[t];
       if (!x || x.gewicht <= 0) continue;
-      b += x.beitrag; w += x.gewicht;
+      // roh * gewicht statt beitrag: beim Lookahead ist der Beitrag eine
+      // Korrektur um 0,5 (P1.2), sein Wert fuer die Anzeige bleibt roh.
+      b += x.roh * x.gewicht; w += x.gewicht;
     }
     out[name] = w ? Math.round(100 * b / w) : null;
   }

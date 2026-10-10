@@ -432,6 +432,9 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
             background: var(--surface-sunk); color: var(--ink-muted); }
 .ld-reset:hover { color: var(--ink); border-color: var(--ink-faint); }
 .ld-quelle { margin-left: auto; }
+.ld-seite-zug { display: inline-flex; align-items: center; gap: 0.4rem; }
+/* Patchwarnung (Audit P2.5): dieselbe Warnfarbe wie .ld-warnung. */
+.ld-quelle.veraltet { color: var(--warn); font-weight: 600; }
 
 /* ------------------------------------------------------ Das Draftboard */
 .ld-board { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -2587,6 +2590,28 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   function writePlan() {
     try { localStorage.setItem(PLAN_KEY, JSON.stringify(localPlan)); }
     catch (e) { setPlanNote("Speichern im Browser fehlgeschlagen."); }
+    // Auch wenn das Speichern scheitert: in dieser Sitzung gilt der neue
+    // Plan, also rechnet auch die Note mit ihm.
+    livePlanNeu();
+  }
+
+  /* Der Draftplan hat sich geaendert: alles, was am Komfort haengt, neu
+     anlegen (Audit P2.7). Quelle, Merkmale, Comp und Protokoll bleiben -
+     sie kennen keinen Plan. Die Caches haben den Plan nicht im
+     Schluessel, also leeren. Als Funktionsdeklaration, damit writePlan
+     sie kennt; aufgerufen wird sie erst nach dem Aufbau. */
+  function livePlanNeu() {
+    if (!liveTeile) return;
+    const t = liveTeile;
+    t.mannschaft = ENGINE.teamAnlegen(ENGINE.planEinsetzen(DATA.teams, localPlan));
+    t.bewerter = ENGINE.bewerterAnlegen({quelle: t.quelle, merkmale: t.merkmale,
+      comp: t.comp, team: t.mannschaft, heuristik: t.heuristik});
+    t.suche = ENGINE.sucheAnlegen({quelle: t.quelle, merkmale: t.merkmale,
+                                  bewerter: t.bewerter});
+    t.strategie = ENGINE.strategieAnlegen({quelle: t.quelle, merkmale: t.merkmale,
+      comp: t.comp, heuristik: t.heuristik, blind: t.bewerter.blindModell});
+    liveCache.clear();
+    liveLageCache.clear();
   }
 
   const setPlanNote = (text) => {
@@ -3718,7 +3743,10 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     const heuristik = ENGINE.heuristikAnlegen(DATA.heuristik || null);
     const merkmale = ENGINE.merkmaleAnlegen(quelle, heuristik);
     const comp = ENGINE.compAnlegen(merkmale, heuristik);
-    const mannschaft = ENGINE.teamAnlegen(DATA.teams);
+    // Mit dem Draftplan aus dem Browser - derselbe, den die BLIND-Marke
+    // zeigt (Audit P2.7). Nach einer Planaenderung legt livePlanNeu()
+    // Mannschaft, Bewerter, Suche und Lagebild neu an.
+    const mannschaft = ENGINE.teamAnlegen(ENGINE.planEinsetzen(DATA.teams, localPlan));
     const bewerter = ENGINE.bewerterAnlegen(
       {quelle, merkmale, comp, team: mannschaft, heuristik});
     const suche = ENGINE.sucheAnlegen({quelle, merkmale, bewerter});
@@ -3746,6 +3774,12 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   };
   let liveAktiv = {seite: "eigen", rolle: 0};
   let liveFearless = false;
+  // Welche Seite wir im Draft haben. Bestimmt die Pickfolge (wer wann
+  // pickt), nicht die Rechnung je Champion. Pro Browser gemerkt.
+  let liveSeite = (() => {
+    try { return window.localStorage.getItem("live-seite") === "red" ? "red" : "blue"; }
+    catch (e) { return "blue"; }
+  })();
   // Keine Vorauswahl: eine eingetragene Serie ist eine bewusste Wahl.
   // Vorher stand hier die zuletzt gespielte, und wer ein Spiel merkte,
   // sperrte sich ungewollt auch deren zehn Champions.
@@ -3820,7 +3854,8 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   function liveZustand() {
     const z = ENGINE.ausFeldern({
       picks: liveStand.picks, bans: liveStand.bans,
-      wirSind: "blue", patch: DRAFT.patch,
+      // Unsere Seite aus dem Kopf - vorher fest Blau (Audit P2.10).
+      wirSind: liveSeite, patch: DRAFT.patch,
       fearless: liveFearless ? fearlessVerbraucht() : null,
     });
     return z;
@@ -3998,6 +4033,12 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   /** Einen Champion auf den aktiven Slot setzen - und, wenn es unser
    *  Slot ist, im Protokoll nachtragen, was wirklich gepickt wurde. */
   function livePicken(champ) {
+    // Derselbe Riegel wie beim Eintippen (Audit P2.6).
+    const grund = liveSperre(champ, "picks", liveAktiv.seite, liveAktiv.rolle);
+    if (grund) {
+      liveBanHinweis(liveAktiv.seite, champ + " kann nicht gepickt werden: " + grund);
+      return;
+    }
     liveSucheLeeren();
     if (liveTeile && liveAktiv.seite === "eigen") {
       liveTeile.protokoll.nachtragen(
@@ -4204,11 +4245,59 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       el("span", {class: "ld-paarung"},
         el("b", {class: "eigen"}, team.team), " vs "),
       gegnerFeld,
+      liveSeitenWahl(),
       el("label", {class: "ld-schalter"}, haken, " Fearless"),
       wahl, merken, zurueck,
-      // Die Engine-Quelle nennt das Feld patch, nicht version.
-      el("span", {class: "sub ld-quelle"}, "Patch " + (DRAFT.patch || "?")
-         + (DRAFT.stand ? " \u00b7 " + deDate(DRAFT.stand) : "")));
+      liveDatenstand());
+  }
+
+  /* Seite und Zug im Kopf (Audit P2.10). Die Pickfolge kommt aus der
+     Zahl der Picks je Seite; "am Zug" nimmt an, dass in Turnierfolge
+     gepickt wurde. */
+  function liveSeitenWahl() {
+    const wahl = el("select", {class: "ld-serie ld-seitenwahl",
+        "aria-label": "Unsere Seite im Draft"},
+      el("option", {value: "blue"}, "wir: Blau"),
+      el("option", {value: "red"}, "wir: Rot"));
+    wahl.value = liveSeite;
+    wahl.addEventListener("change", () => {
+      liveSeite = wahl.value === "red" ? "red" : "blue";
+      try { window.localStorage.setItem("live-seite", liveSeite); } catch (e) { /* egal */ }
+      liveLageCache.clear();
+      renderLiveDraft();
+    });
+    const pf = ENGINE.pickfolge(liveZustand());
+    const zug = pf.naechster
+      ? el("span", {class: "sub ld-zug",
+                    title: "Aus der Zahl der Picks je Seite, Turnierfolge B R R B B R | R B B R"},
+           "am Zug: " + (pf.naechster.wir ? team.team : (liveGegnerName() || "Gegner")))
+      : null;
+    return el("span", {class: "ld-seite-zug"}, wahl, zug);
+  }
+
+  /* Datenstand im Kopf (Audit P2.5): Staerke aus dem Patch, Paarungen
+     aus einem Zeitfenster - beide genannt. Dazu der laufende Patch laut
+     Data Dragon, sobald er abweicht; ab der Schwelle der Engine
+     (KONFIDENZ.veraltetAbPatches) als Warnung. */
+  function liveDatenstand() {
+    const d = ENGINE.datenstand(DRAFT, DATA.patchLive || null);
+    const teile = ["St\u00e4rke Patch " + (d.patch || "?")];
+    if (d.paareTage) teile.push("Paarungen " + d.paareTage + " Tage");
+    if (d.stand) teile.push(deDate(d.stand));
+    if (d.abstand) teile.push("aktuell " + d.aktuell);
+    const titel = "St\u00e4rke, Schaden und Kurve aus Patch " + (d.patch || "?")
+      + (d.paareTage ? "; Matchups und Synergien aus den letzten "
+         + d.paareTage + " Tagen bis " + deDate(d.paareStand) : "")
+      + (d.abstand ? ". Laufender Patch laut Data Dragon: " + d.aktuell
+         + " (" + d.abstand + (d.abstand === 1 ? " Patch" : " Patches")
+         + " Abstand)" : "")
+      // build.py holt DraftGap nur, wenn data/draftgap/*.json fehlt - ein
+      // blosses Neubauen nimmt wieder den alten Stand.
+      + (d.warnung ? ". Die Daten sind veraltet: data/draftgap/*.json"
+         + " entfernen und neu bauen, sonst bleibt der alte Stand." : "");
+    return el("span", {class: "sub ld-quelle" + (d.warnung ? " veraltet" : ""),
+                       title: titel},
+      (d.warnung ? "Veraltet: " : "") + teile.join(" \u00b7 "));
   }
 
   // Ein Feld im Draftboard. Tippen traegt ein, Klick macht es zum Ziel des
@@ -4222,19 +4311,22 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     // setzt - etwa der Picken-Knopf - muss das selbst anstossen, sonst
     // bleibt das Feld ohne Icon.
     eingabe.dispatchEvent(new Event("input"));
-    if (art === "bans") eingabe.setAttribute("list", "ld-ban-liste");
+    // Pick- und Ban-Felder schlagen dieselben freien Champions vor.
+    eingabe.setAttribute("list", "ld-ban-liste");
     eingabe.addEventListener("change", () => {
       const champ = normaliseChamp(eingabe.value) || null;
       // Wer schon gepickt, gebannt oder durch Fearless gesperrt ist, kann
-      // nicht gebannt werden - das Feld nimmt ihn nicht an und sagt warum.
-      const grund = art === "bans" && champ ? liveBanSperre(champ, seite, i) : null;
+      // weder gepickt noch gebannt werden - das Feld nimmt ihn nicht an
+      // und sagt warum. Vorher galt das nur fuer Bans (Audit P2.6).
+      const grund = liveSperre(champ, art, seite, i);
       if (grund) {
         eingabe.value = speicher[i] || "";
         eingabe.dispatchEvent(new Event("input"));
-        liveBanHinweis(seite, champ + " ist nicht bannbar: " + grund);
+        liveBanHinweis(seite, champ + (art === "bans" ? " ist nicht bannbar: "
+                                       : " kann nicht gepickt werden: ") + grund);
         return;
       }
-      if (art === "bans") liveBanHinweis(seite, "");
+      liveBanHinweis(seite, "");
       speicher[i] = champ;
       liveAktualisieren();
     });
@@ -4272,20 +4364,12 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     return k;
   }
 
-  /** Warum ein Champion nicht gebannt werden kann - oder null. Das eigene
-   *  Feld zaehlt nicht mit, sonst liesse sich ein Ban nicht bestaetigen. */
-  function liveBanSperre(champ, seite, i) {
-    const p = liveStand.picks;
-    if ([...p.eigen, ...p.gegner].includes(champ)) return "schon gepickt";
-    for (const s of ["eigen", "gegner"]) {
-      if (liveStand.bans[s].some((c, j) => c === champ && !(s === seite && j === i))) {
-        return "schon gebannt";
-      }
-    }
-    if (liveFearless && fearlessVerbraucht().includes(champ)) {
-      return "durch Fearless gesperrt (in dieser Serie schon gespielt)";
-    }
-    return null;
+  /** Warum ein Champion in dieses Feld nicht passt - oder null. Die
+   *  Pruefung steht in der Engine (feldSperre) und gilt fuer Pick- und
+   *  Ban-Felder gleich; das eigene Feld zaehlt nicht mit. */
+  function liveSperre(champ, art, seite, i) {
+    return ENGINE.feldSperre(liveStand, champ, {
+      art, seite, i, fearless: liveFearless ? fearlessVerbraucht() : []});
   }
 
   /* Ein kurzer Hinweis unter den Bans der Seite, liest auch ein
@@ -4299,7 +4383,8 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     liveBanHinweisUhr = setTimeout(() => { ziel.textContent = ""; }, 4500);
   }
 
-  /* Die Vorschlagsliste der Ban-Felder: alle Champions ohne die gesperrten.
+  /* Die Vorschlagsliste der Pick- und Ban-Felder: alle Champions ohne die
+     gesperrten.
      Nach jeder Aenderung neu, damit ein gerade gepickter Champion sofort
      verschwindet. */
   function liveBanListeZeichnen() {
@@ -4498,8 +4583,8 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
           || best.reasons[0] || best.risks[0] || null;
       // Die gemessene Lane-Paarung steht immer da, auch wenn sie unauffaellig
       // ist - bei einem Counterpick ist sie die erste Frage.
-      const lanePaare = best && best.components.matchup
-        ? (best.components.matchup.paare || []).filter((x) => laneGegner.includes(x.wer)) : [];
+      const lanePaare = best && best.components.lane
+        ? (best.components.lane.paare || []).filter((x) => laneGegner.includes(x.wer)) : [];
       const laneZeile = lanePaare.length
         ? "Lane: " + lanePaare.map((x) => "gegen " + x.wer + " " + dbQuote(x.quote)
             + " (sonst " + dbQuote(x.erwartet) + ")").join(" · ")
@@ -4980,7 +5065,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
                   counter: "Counter Pick"}[lage.modus] || lage.modus;
     const d = r.blindDetail;
     const zusatz = lage.modus === "counter"
-      ? "Die gemessene Paarung z\u00e4hlt voll, Blindszenarien entfallen."
+      ? "Die gemessene Lane-Paarung tr\u00e4gt das volle Lane-Gewicht, Blindszenarien entfallen."
       : lage.modus === "blind"
         ? "Bewertet \u00fcber die wahrscheinlichen Lanegegner"
           + (d ? " (" + d.szenarien + " Szenarien"
@@ -4991,12 +5076,19 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     const L = liveAktiv.seite === "eigen" ? liveLage() : null;
     const warten = L && L.spaeterRolle && L.spaeterRolle.rolle === ROLES[liveAktiv.rolle][0]
       ? L.spaeterRolle : null;
+    // Pickt der Gegner vor unserem letzten Pick nicht mehr, zeigt Warten
+    // nichts - das sagen, statt still keine Empfehlung zu geben (P2.10).
+    const keinWarten = L && lage.modus !== "counter" && L.pickfolge
+      && L.pickfolge.unsereOffen > 1 && L.pickfolge.gegnerVorUnseremLetzten === 0;
     return el("div", {class: "ld-modus " + lage.modus},
       el("span", {class: "ld-modus-marke"}, wort),
       el("span", {class: "ld-modus-text"}, lage.text),
       el("span", {class: "sub"}, zusatz),
       warten ? el("span", {class: "ld-modus-warten"},
-        "Lagebild: " + warten.wort + " lieber sp\u00e4ter \u2013 " + warten.text) : null);
+        "Lagebild: " + warten.wort + " lieber sp\u00e4ter \u2013 " + warten.text) : null,
+      keinWarten ? el("span", {class: "ld-modus-warten"},
+        "Der Gegner pickt erst nach eurem letzten Pick \u2013 Warten bringt hier keinen Counterpick.")
+        : null);
   }
 
   /* --------------------------------------------- Jetzt picken */
@@ -5182,10 +5274,13 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
         el("span", {class: "ld-paare-wort"}, wort),
         el("span", {class: "ld-paare-liste"}, chips));
     };
+    // Seit Audit P1.1 steht der Lanegegner in "lane", die uebrigen in
+    // "matchup" - beide Reihen, sonst fehlte die Lane auf der Karte.
+    const lane = reihe("Lane", r.components.lane, "gegen");
     const gegen = reihe("gegen", r.components.matchup, "gegen");
     const mit = reihe("mit", r.components.synergie, "mit");
-    if (!gegen && !mit) return null;
-    return el("div", {class: "ld-paarungen"}, gegen, mit);
+    if (!lane && !gegen && !mit) return null;
+    return el("div", {class: "ld-paarungen"}, lane, gegen, mit);
   }
 
   /* Die Erklaerungsspur: jeder Teil mit seinem Beitrag. Ohne sie waere
@@ -5208,7 +5303,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   const SPUR_WORT = {
     meta: "Patch", matchup: "gegen", synergie: "mit", compFit: "Comp",
     gegnerStoerung: "st\u00f6rt", flex: "Flex", komfort: "Komfort",
-    blindSicherheit: "blind", lookahead: "Vorschau",
+    blindSicherheit: "blind", lane: "Lane", lookahead: "Vorschau",
   };
 
   const DB_QUOTE = new Intl.NumberFormat("de-DE", {minimumFractionDigits: 1});

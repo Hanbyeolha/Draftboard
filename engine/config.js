@@ -38,7 +38,10 @@ export const GEWICHTE = {
      Streuung der Matchups kannte. Gilt nur, solange der Lanegegner
      (ganz oder teilweise) unbekannt ist, und wiegt dann nach dem
      unbekannten Anteil - siehe blind.js. Gleich schwer wie "matchup":
-     es ist dieselbe Frage, nur ueber Gegner, die noch nicht feststehen. */
+     es ist dieselbe Frage, nur ueber Gegner, die noch nicht feststehen.
+     Seit Audit P1.1 das Gewicht der LANE als Ganzes: der bekannte Teil
+     zaehlt als "lane" (score.js), der unbekannte als blindSicherheit -
+     zusammen in jedem Modus 18. */
   blindSicherheit: 18,
   lookahead: 10,       // Erwartungswert ueber wahrscheinliche Antworten
   /* Ein eigener Risikoabzug steht hier nicht mehr. Er enthielt die
@@ -288,6 +291,14 @@ export const SUCHE = {
   // wahrscheinlich. Gesetzt, nicht gemessen - fuer eine Messung fehlen
   // uns beobachtete Draftreihenfolgen.
   temperatur: 8,
+  /* Skala des Lookaheads (Audit P1.2): Abweichung vom Median der
+     Vorauswahl, die auf den Rand 0 bzw. 1 faellt. Gemessen am 10.10.2026
+     ueber 680 echte Zwischenstaende der 68 Partien (8.160 Lookaheads):
+     |Rohwert - Median| p50 0,07, p75 0,39, p90 1,38, p95 2,53, p99 4,87
+     Punkte. 2,5 = p95, so wie BLIND.spanne geeicht ist. Vorher Min-Max
+     ueber die Vorauswahl - deren Spanne lag im Median bei 0,56 Punkten,
+     es wurde also meist Rauschen auf die volle Skala gezogen. */
+  lookaheadSpanne: 0.025,
 };
 
 /* ------------------------------------------------------------- Lagebild */

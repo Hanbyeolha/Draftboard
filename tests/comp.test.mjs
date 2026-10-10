@@ -170,3 +170,32 @@ test("ein unbekannter Champion faellt heraus, statt zu kippen", () => {
   assert.equal(p.n, 0, "Ornn ist kein Jungler, Gibtsnicht kein Champion");
   assert.equal(p.gesamt, 2);
 });
+
+/* Audit P1.4: "heuristisch, zusammen bewusst kleiner als die gemessenen"
+   (config.js COMP.achsen) - vorher wog die Einschaetzung im Counterfall
+   bei 49 von 77 Mid-Kandidaten schwerer als die Messung (anteilGemessen
+   bis 0,46). Gemessen wird gegen die Achsen, die in DIESEM Marginalwert
+   wirklich belegt sind. Die ausgelieferte Ersteinschaetzung wird dafuer
+   als gepruefte Tabelle eingesetzt - das ist der schwerste Fall. */
+test("P1.4: in compFit wiegt die Einschaetzung nie mehr als die Messung", async () => {
+  const { readFileSync } = await import("node:fs");
+  const roh = JSON.parse(readFileSync("data/champion-heuristik.json", "utf8"));
+  const h = heuristikAnlegen({...roh, champions: roh.vorschlag, vorschlag: {}});
+  const CH = compAnlegen(merkmaleAnlegen(quelle, h), h);
+  const unsere = [{champ: "Ornn", rolle: "TOP"}, {champ: "Lee Sin", rolle: "JUNGLE"},
+                  {champ: "Jinx", rolle: "BOTTOM"}];
+  const gegner = CH.profil([{champ: "Jax", rolle: "TOP"}, {champ: "Syndra", rolle: "MIDDLE"},
+                            {champ: "Lulu", rolle: "UTILITY"}]);
+  let geprueft = 0;
+  for (const k of M.kandidaten("MIDDLE")) {
+    const m = CH.marginal(unsere, {champ: k.champ, rolle: "MIDDLE"}, {gegner});
+    if (m.punkte === null) continue;
+    geprueft++;
+    const gew = (q) => Object.values(m.achsen).filter((a) => a.quelle === q)
+      .reduce((n, a) => n + a.gewicht, 0);
+    assert.ok(gew("heuristik") <= gew("draftgap") + 1e-9,
+              k.champ + ": Heuristik " + gew("heuristik") + " > gemessen " + gew("draftgap"));
+    assert.ok(m.anteilGemessen >= 0.5 - 1e-9, k.champ + ": " + m.anteilGemessen);
+  }
+  assert.ok(geprueft > 40, "genug Kandidaten: " + geprueft);
+});

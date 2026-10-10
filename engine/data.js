@@ -12,7 +12,7 @@
      heuristik  eigene Datei, siehe heuristik.js
 */
 
-import { wert } from "./provenance.js";
+import { wert, patchAbstand } from "./provenance.js";
 import { ROLLEN, KONFIDENZ } from "./config.js";
 import { ROLLEN_FOLGE } from "./state.js";
 
@@ -27,6 +27,15 @@ export function quelleAnlegen(roh) {
   const nr = new Map();
   roh.namen.forEach((n, i) => nr.set(n, String(i)));
   const patch = roh.version || null;
+  /* Matchups und Synergien kommen aus einem Zeitfenster (30 Tage), nicht
+     aus dem Patch - sie tragen darum kein Patchetikett, sondern das
+     Fenster als Hinweis (Audit P2.5). Alte Daten ohne Fenster bleiben,
+     wie sie waren: dort laesst sich nichts Besseres sagen. */
+  const fenster = roh.fenster || null;
+  const mitFenster = !!(fenster && fenster.paare && fenster.paare.tage);
+  const patchPaare = mitFenster ? null : patch;
+  const paareHinweis = mitFenster
+    ? "letzte " + fenster.paare.tage + " Tage bis " + fenster.paare.stand : null;
 
   /* --------------------------------------------------- Patchstaerke je Rolle */
   function staerke(champ, rolle) {
@@ -75,7 +84,8 @@ export function quelleAnlegen(roh) {
                    || {})[String(rollenNr(fremdRolle))];
     const e = stufe && stufe[j];
     if (!e) return null;
-    return wert(e[1] / 1000, {quelle: "draftgap", patch, stichprobe: e[0]});
+    return wert(e[1] / 1000, {quelle: "draftgap", patch: patchPaare,
+                              stichprobe: e[0], hinweis: paareHinweis});
   }
 
   /* ------------------------------------------------------ Schadensprofil */
@@ -151,9 +161,10 @@ export function quelleAnlegen(roh) {
       abw += n * Math.pow(q / 1000 - mittel, 2);
     }
     return {
-      mittel: wert(mittel, {quelle: "draftgap", patch, stichprobe: gewicht}),
+      mittel: wert(mittel, {quelle: "draftgap", patch: patchPaare,
+                            stichprobe: gewicht}),
       streuung: wert(Math.sqrt(abw / gewicht), {
-        quelle: "draftgap", patch, stichprobe: gewicht,
+        quelle: "draftgap", patch: patchPaare, stichprobe: gewicht,
         hinweis: "Standardabweichung ueber " + eintraege.length + " Lanegegner"}),
       gegner: eintraege.length,
     };
@@ -192,7 +203,7 @@ export function quelleAnlegen(roh) {
     }
     if (!gewicht) return null;
     return wert(summe / gewicht, {
-      quelle: "draftgap", patch, stichprobe: gewicht,
+      quelle: "draftgap", patch: patchPaare, stichprobe: gewicht,
       hinweis: "eigener Schnitt ueber " + n + (art === "m" ? " Gegner" : " Mitspieler"),
     });
   }
@@ -211,6 +222,7 @@ export function quelleAnlegen(roh) {
   return {
     patch,
     stand: roh.stand || null,
+    fenster,
     champions: roh.namen.slice(),
     kennt: (champ) => nr.has(champ),
     staerke, rollenVerteilung, matchup, synergie, schaden, kurve,
@@ -221,7 +233,7 @@ export function quelleAnlegen(roh) {
 function leereQuelle() {
   const nix = () => null;
   return {
-    patch: null, stand: null, champions: [], kennt: () => false,
+    patch: null, stand: null, fenster: null, champions: [], kennt: () => false,
     staerke: nix, rollenVerteilung: nix, matchup: nix, synergie: nix,
     schaden: nix, kurve: nix, skalierung: nix, prioritaet: nix,
     streuung: nix, paarMittel: nix,
@@ -244,6 +256,26 @@ export function moeglicheRollen(quelle, champ) {
 export function istFlex(quelle, champ) {
   return moeglicheRollen(quelle, champ)
     .filter((r) => r.anteil >= ROLLEN.flexAbAnteil).length >= 2;
+}
+
+/** Wie alt sind die Daten gegenueber dem laufenden Patch? Fuer den Kopf
+ *  des Live Drafts (Audit P2.5). Der Abstand wird ab einem Patch
+ *  genannt; gewarnt wird erst ab KONFIDENZ.veraltetAbPatches - dieselbe
+ *  Schwelle wie in patchWarnung, keine zweite. Ohne Bezugspatch: null,
+ *  nicht geraten. */
+export function datenstand(quelle, aktuellerPatch) {
+  const f = quelle.fenster || null;
+  const abstand = quelle.patch && aktuellerPatch
+    ? patchAbstand(quelle.patch, aktuellerPatch) : null;
+  return {
+    patch: quelle.patch || null,
+    stand: (f && f.staerke && f.staerke.stand) || quelle.stand || null,
+    paareTage: (f && f.paare && f.paare.tage) || null,
+    paareStand: (f && f.paare && f.paare.stand) || null,
+    aktuell: aktuellerPatch || null,
+    abstand,
+    warnung: patchWarnung(quelle, aktuellerPatch),
+  };
 }
 
 /** Warnung, wenn der Datenstand zu alt ist. Gibt null, wenn alles passt. */

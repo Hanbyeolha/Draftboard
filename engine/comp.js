@@ -277,9 +277,27 @@ export function compAnlegen(merkmale, heuristik) {
       nimm(achse, a ? a.value : 0, b ? b.value : 0, "heuristik");
     }
 
-    const gemessen = Object.entries(achsen)
-      .filter(([, a]) => a.quelle === "draftgap")
-      .reduce((n, [, a]) => n + a.gewicht, 0);
+    /* Die geschaetzten Achsen wiegen zusammen hoechstens so viel wie die
+       gemessenen, die in DIESEM Wert belegt sind (COMP.achsen: "zusammen
+       bewusst kleiner als die gemessenen"). Vorher galt das nur fuer die
+       Summen der Tabelle, nicht fuer den einzelnen Wert - im Counterfall
+       wog die Einschaetzung bis 47 gegen 44 (Audit P1.4). Kein neuer
+       Parameter: skaliert wird der ganze Block, das Verhaeltnis der
+       geschaetzten Achsen untereinander bleibt. */
+    const gewichtVon = (q) => Object.values(achsen)
+      .filter((a) => a.quelle === q).reduce((n, a) => n + a.gewicht, 0);
+    const gemessen = gewichtVon("draftgap"), geschaetzt = gewichtVon("heuristik");
+    if (geschaetzt > gemessen) {
+      const f = gemessen / geschaetzt;
+      for (const a of Object.values(achsen)) {
+        if (a.quelle !== "heuristik") continue;
+        const anteil = klemm((a.delta + 1) / 2, 0, 1);
+        summe -= a.gewicht * anteil * (1 - f);
+        hoechst -= a.gewicht * (1 - f);
+        a.gewichtTabelle = a.gewicht;
+        a.gewicht *= f;
+      }
+    }
 
     return {
       ohne, mit, achsen,
@@ -292,7 +310,13 @@ export function compAnlegen(merkmale, heuristik) {
     };
   }
 
-  return {profil, vergleich, phasenVorteil, marginal};
+  const c = {profil, vergleich, phasenVorteil, marginal};
+  /* Sicht fuer die Note: nur vom Team gepruefte Einschaetzungen
+     (Entscheidung A, Audit P1.4). Lagebild und Bedarf lesen weiter die
+     volle Tabelle - dort ist die Ersteinschaetzung Kontext, gekennzeichnet. */
+  c.geprueft = heuristik && heuristik.geprueft && heuristik.geprueft !== heuristik
+    ? compAnlegen(merkmale, heuristik.geprueft) : c;
+  return c;
 }
 
 /** Wie stark traegt eine Aufstellung eine Achse? 1 - Produkt(1 - x).

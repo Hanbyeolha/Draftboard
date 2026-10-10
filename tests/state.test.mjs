@@ -92,3 +92,35 @@ test("ausFeldern uebersetzt die Oberflaeche und markiert die Schaetzung", () => 
   assert.deepEqual(s.bans.blue, ["Zed"]);
   assert.equal(s.zugGeschaetzt, true);
 });
+
+/* Audit P2.6: vorher pruefte nur das Ban-Feld (in template.html). Ein
+   Pick-Feld nahm Gebanntes, schon Gepicktes und durch Fearless
+   Gesperrtes an. Jetzt eine Pruefung fuer beide Feldarten. */
+test("P2.6: Pick- und Ban-Felder sperren dasselbe, das eigene Feld nicht", async () => {
+  const { feldSperre } = await import("../engine/state.js");
+  const felder = {picks: {eigen: [null, null, "Syndra", null, null],
+                          gegner: ["Ornn", null, null, null, null]},
+                  bans: {eigen: ["Zed", null, null, null, null], gegner: []}};
+  const pick = (champ, seite, i, fearless = []) =>
+    feldSperre(felder, champ, {art: "picks", seite, i, fearless});
+  assert.equal(pick("Zed", "eigen", 2), "schon gebannt");
+  assert.equal(pick("Ornn", "eigen", 0), "schon gepickt");
+  assert.match(pick("Ahri", "eigen", 2, ["Ahri"]), /Fearless/);
+  assert.equal(pick("Syndra", "eigen", 2), null, "das eigene Feld bestaetigen geht");
+  assert.equal(pick("Syndra", "gegner", 2), "schon gepickt", "auf der anderen Seite nicht");
+  assert.equal(pick("Jax", "eigen", 0), null);
+  assert.equal(pick(null, "eigen", 0), null);
+  // Ban-Felder wie bisher (liveBanSperre)
+  const ban = (champ, seite, i) => feldSperre(felder, champ, {art: "bans", seite, i});
+  assert.equal(ban("Zed", "eigen", 0), null, "eigener Ban bestaetigt");
+  assert.equal(ban("Zed", "gegner", 0), "schon gebannt");
+  assert.equal(ban("Syndra", "eigen", 1), "schon gepickt");
+});
+
+test("P2.6: die Oberflaeche prueft Pick-Felder mit derselben Funktion", async () => {
+  const { readFileSync } = await import("node:fs");
+  const html = readFileSync("template.html", "utf8");
+  assert.ok(!/art === "bans" && champ \? liveBanSperre/.test(html),
+            "die Pruefung haengt nicht mehr nur am Ban-Feld");
+  assert.match(html, /ENGINE\.feldSperre\(/);
+});

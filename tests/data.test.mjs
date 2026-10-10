@@ -2,7 +2,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { ladeDaten } from "./daten.mjs";
-import { quelleAnlegen, moeglicheRollen, istFlex, patchWarnung } from "../engine/data.js";
+import { quelleAnlegen, moeglicheRollen, istFlex, patchWarnung, datenstand }
+  from "../engine/data.js";
+import { readFileSync } from "node:fs";
 import { konfidenzAusStichprobe, konfidenzWort, patchAbstand } from "../engine/provenance.js";
 
 const DATA = ladeDaten();
@@ -93,4 +95,45 @@ test("eine leere Quelle liefert ueberall null statt zu krachen", () => {
   assert.equal(leer.staerke("Ornn", "TOP"), null);
   assert.equal(leer.matchup("Ornn", "TOP", "Jax", "TOP"), null);
   assert.deepEqual(leer.champions, []);
+});
+
+/* Audit P2.5: Patchstaerke kommt aus "current-patch", Matchups und
+   Synergien aus "30-days". Vorher trugen alle Werte das Etikett des
+   Patches, und die Patchwarnung wurde nirgends aufgerufen. */
+test("P2.5: jeder Datensatz traegt sein eigenes Fenster", () => {
+  assert.ok(DATA.draft.fenster, "Fenster eingebettet");
+  assert.equal(DATA.draft.fenster.staerke.patch, DATA.draft.version);
+  assert.ok(DATA.draft.fenster.paare.tage > 0, "Paarungen: Tage");
+  assert.match(DATA.draft.fenster.paare.stand, /^\d{4}-\d{2}-\d{2}$/);
+  assert.match(DATA.patchLive || "", /^\d+\.\d+/, "Bezugspatch aus Data Dragon");
+});
+
+test("P2.5: Paarungen tragen das Zeitfenster, nicht den Patch", () => {
+  const st = q.staerke("Ahri", "MIDDLE");
+  const mu = q.matchup("Ahri", "MIDDLE", "Syndra", "MIDDLE");
+  assert.equal(st.patch, DATA.draft.version, "Staerke ist aus dem Patch");
+  assert.equal(mu.patch, null, "ein 30-Tage-Fenster ist kein Patch");
+  assert.match(mu.note, /Tage/);
+  // Alte Daten ohne Fenster: nichts erfinden, wie bisher.
+  const alt = quelleAnlegen({...DATA.draft, fenster: undefined});
+  assert.equal(alt.matchup("Ahri", "MIDDLE", "Syndra", "MIDDLE").patch, DATA.draft.version);
+});
+
+test("P2.5: der Datenstand nennt Abstand und warnt ab der Schwelle", () => {
+  const gleich = datenstand(q, q.patch);
+  assert.equal(gleich.abstand, 0);
+  assert.equal(gleich.warnung, null);
+  const einer = datenstand(q, "16.20.1");
+  assert.equal(einer.abstand, 1, "ein Patch: genannt");
+  assert.equal(einer.warnung, null, "unter KONFIDENZ.veraltetAbPatches keine Warnung");
+  const zwei = datenstand(q, "16.21.1");
+  assert.ok(zwei.warnung, "ab zwei Patches gewarnt");
+  assert.equal(datenstand(q, null).abstand, null, "ohne Bezug kein Abstand");
+  assert.equal(gleich.paareTage, DATA.draft.fenster.paare.tage);
+});
+
+test("P2.5: die Oberflaeche ruft den Datenstand wirklich auf", () => {
+  const html = readFileSync("template.html", "utf8");
+  assert.match(html, /ENGINE\.datenstand\(/, "Kopf des Live Drafts");
+  assert.match(html, /DATA\.patchLive/);
 });

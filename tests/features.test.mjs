@@ -158,3 +158,37 @@ test("eine leere Teamliste kracht nicht", () => {
   assert.equal(leer.aufRolle("AFC1", "TOP"), null);
   assert.equal(leer.komfort("AFC1", "x", "Ornn"), null);
 });
+
+/* Audit P2.7: Die BLIND-Marke las den Draftplan aus dem Browser
+   (planOf), der Komfort der Note nur den eingebetteten aus DATA.teams.
+   Ein im Browser eingetragener Blindpick zeigte "blind" - die Note
+   rechnete ohne. Jetzt setzt planEinsetzen den Browserplan ein, nach
+   derselben Regel wie planOf: ein lokaler Eintrag ersetzt den Spieler. */
+test("P2.7: ein im Browser eingetragener Blindpick zaehlt im Komfort", async () => {
+  const { planEinsetzen } = await import("../engine/team.js");
+  const D = ladeDaten();
+  const afc = D.teams.find((t) => t.team === "AFC1");
+  const mid = afc.players.find((p) => p.role === "MIDDLE" && !p.bench);
+  const champ = "Lux";
+  const vorher = teamAnlegen(D.teams).komfort("AFC1", mid.label, champ);
+  assert.ok(!/blind/.test(vorher ? vorher.note || "" : ""), "Voraussetzung: nicht im Dateiplan");
+  const lokal = {AFC1: {[mid.label]: {blind: [champ], likes: []}}};
+  const T = teamAnlegen(planEinsetzen(D.teams, lokal));
+  const nachher = T.komfort("AFC1", mid.label, champ);
+  assert.ok(nachher.value > (vorher ? vorher.value : 0),
+            "Komfort steigt: " + (vorher && vorher.value) + " -> " + nachher.value);
+  assert.match(nachher.note || "", /blind/);
+  // Andere Spieler und Mannschaften bleiben unberuehrt.
+  const top = afc.players.find((p) => p.role === "TOP" && !p.bench);
+  assert.deepEqual(T.komfort("AFC1", top.label, "Ornn"),
+                   teamAnlegen(D.teams).komfort("AFC1", top.label, "Ornn"));
+  assert.deepEqual(planEinsetzen(D.teams, {}), D.teams.map((t) => ({...t, players: t.players})));
+});
+
+test("P2.7: die Oberflaeche baut die Engine-Mannschaft aus dem Browserplan", async () => {
+  const { readFileSync } = await import("node:fs");
+  const html = readFileSync("template.html", "utf8");
+  assert.match(html, /ENGINE\.teamAnlegen\(ENGINE\.planEinsetzen\(DATA\.teams, localPlan\)\)/);
+  assert.match(html, /function writePlan\(\)[\s\S]{0,400}livePlanNeu\(\)/,
+               "nach jeder Planaenderung neu angelegt");
+});

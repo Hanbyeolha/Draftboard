@@ -106,12 +106,14 @@ export function teamAnlegen(teams, {queue = "RANKED", season = null} = {}) {
       //
       // Richtig ist dazwischen: moeglich, aber ungeuebt. Ein niedriger
       // belegter Wert mit niedriger Konfidenz.
-      return wert(KOMFORT.ohneBeleg, {
+      // ohneBeleg sagt es ausdruecklich: der Wert 0,15 allein laesst
+      // sich nicht von "ungeuebt, aber gespielt" trennen (Audit P2.8).
+      return {...wert(KOMFORT.ohneBeleg, {
         quelle: "team", stichprobe: 0,
         konfidenz: KOMFORT.ohneBelegKonfidenz,
         hinweis: "keine Rankedpartien, nicht im Draftplan ("
                  + queue + (gewaehlt !== null ? " S" + gewaehlt : "") + ")",
-      });
+      }), ohneBeleg: true};
     }
 
     const partien = e ? e.play : 0;
@@ -160,6 +162,19 @@ export function teamAnlegen(teams, {queue = "RANKED", season = null} = {}) {
   return {queue, season: gewaehlt, seasons: [...seasons].sort((a, b) => b - a),
           aufRolle, hole, komfort, pool,
           mannschaften: [...proTeam.keys()]};
+}
+
+/** Den im Browser eingetragenen Draftplan einsetzen (Audit P2.7).
+ *  lokal: {Mannschaft: {Spieler: {blind, likes, note}}} - dieselbe Regel
+ *  wie planOf() in der Oberflaeche: ein lokaler Eintrag ersetzt den Plan
+ *  des Spielers ganz, nicht Liste fuer Liste. Vorher rechnete die Note
+ *  nur mit dem eingebetteten Plan, waehrend die BLIND-Marke den lokalen
+ *  zeigte. Gibt neue Objekte zurueck, die Eingabe bleibt unberuehrt. */
+export function planEinsetzen(teams, lokal) {
+  return (teams || []).map((t) => ({...t, players: (t.players || []).map((p) => {
+    const l = ((lokal || {})[t.team] || {})[p.label];
+    return l ? {...p, plan: l} : p;
+  })}));
 }
 
 /* ------------------------------------------------------------------ intern */

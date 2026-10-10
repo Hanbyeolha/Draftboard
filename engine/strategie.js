@@ -32,7 +32,7 @@
 
 import { COMP, STOERUNG, STRATEGIE, ROLLEN } from "./config.js";
 import { GESCHAETZTE_ACHSEN, saettigen } from "./comp.js";
-import { ROLLEN_WORT, gegenseite, offeneRollen, gesperrt } from "./state.js";
+import { ROLLEN_WORT, gegenseite, offeneRollen, gesperrt, pickfolge } from "./state.js";
 
 /* Woerter fuer die Anzeige. */
 export const ACHSEN_WORT = {
@@ -402,7 +402,12 @@ export function strategieAnlegen({quelle, merkmale, comp, heuristik, blind,
       .sort((x, y) => x.wert - y.wert);
     const naechste = counter[0]
       || (blindR.length ? blindR[0] : null);
-    const spaeter = blindR.length > 1
+    // Aufheben lohnt nur, wenn der Gegner vor unserem letzten Pick noch
+    // pickt - sonst zeigt Warten nichts (Audit P2.10: 59 von 440
+    // Empfehlungen in 68 Partien waren so, alle als Blau).
+    const pf = pickfolge(zustand);
+    const spaeter = pf.gegnerVorUnseremLetzten > 0
+      && blindR.length > 1
       && blindR[blindR.length - 1].wert >= STRATEGIE.wartenLohntAb
       ? blindR[blindR.length - 1] : null;
 
@@ -433,6 +438,7 @@ export function strategieAnlegen({quelle, merkmale, comp, heuristik, blind,
       naechsteRolle: naechste ? {...naechste, wort: ROLLEN_WORT[naechste.rolle]} : null,
       spaeterRolle: spaeter ? {...spaeter, wort: ROLLEN_WORT[spaeter.rolle]} : null,
       warten: w,
+      pickfolge: pf,
       vermeiden: vermeiden.slice(0, 3),
       abdeckung: {
         unser: {belegt: b.abdeckung.belegt, gesamt: b.abdeckung.gesamt,

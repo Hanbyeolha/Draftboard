@@ -10,6 +10,7 @@ import { compAnlegen } from "../engine/comp.js";
 import { blindAnlegen } from "../engine/blind.js";
 import { strategieAnlegen } from "../engine/strategie.js";
 import { leererDraft } from "../engine/state.js";
+import { readFileSync } from "node:fs";
 
 function aufbau(roh, tabelle) {
   const quelle = quelleAnlegen(roh);
@@ -234,4 +235,61 @@ test("Profil, Siegbedingung und Gefahr tragen ihre Details", () => {
   assert.equal(dive.antworten.find((a) => a.achse === "peel").stufe, 0.5,
                "Peel nur ueber E1s Frontline");
   assert.equal(dive.antwortAchse, "disengage", "die duennste Antwort");
+});
+
+/* Audit P2.10: Die Pickfolge war nicht modelliert - die Oberflaeche war
+   immer Blau, und "Rolle aufheben" galt auch dann, wenn der Gegner vor
+   unserem letzten Pick gar nicht mehr pickt. Gemessen an 68 Partien in
+   Turnier-Pickfolge: 59 von 440 Empfehlungen (alle als Blau) waren so. */
+test("P2.10: die Pickfolge kommt aus der Zahl der Picks je Seite", async () => {
+  const { pickfolge } = await import("../engine/state.js");
+  const mit = (wirSind, nb, nr) => {
+    const s = leererDraft({wirSind});
+    for (let i = 0; i < nb; i++) s.picks.blue.push({champ: "B" + i, rolle: null});
+    for (let i = 0; i < nr; i++) s.picks.red.push({champ: "R" + i, rolle: null});
+    return s;
+  };
+  // B R R B B R | R B B R
+  assert.equal(pickfolge(mit("blue", 0, 0)).naechster.seite, "blue");
+  assert.equal(pickfolge(mit("blue", 1, 1)).naechster.seite, "red");
+  assert.equal(pickfolge(mit("blue", 3, 3)).naechster.seite, "red", "Pick 16 ist rot");
+  // Blau, 3 gegen 4: uebrig B17 B18 R19 - Rot pickt erst nach unserem letzten.
+  assert.equal(pickfolge(mit("blue", 3, 4)).gegnerVorUnseremLetzten, 0);
+  // Rot, 3 gegen 3: uebrig R16 B17 B18 R19 - zwei blaue Picks vor unserem letzten.
+  assert.equal(pickfolge(mit("red", 3, 3)).gegnerVorUnseremLetzten, 2);
+  assert.equal(pickfolge(mit("blue", 5, 5)).naechster, null, "fertig");
+  // Bans zaehlen nicht mit: sie werden oft nicht eingetragen.
+  const ohneBans = mit("blue", 1, 1);
+  ohneBans.bans.blue.push("X");
+  assert.deepEqual(pickfolge(ohneBans), pickfolge(mit("blue", 1, 1)));
+});
+
+test("P2.10: ohne gegnerischen Pick vor unserem letzten wird keine Rolle aufgehoben", () => {
+  const D = ladeDaten();
+  const quelle = quelleAnlegen(D.draft);
+  const h = heuristikAnlegen(JSON.parse(readFileSync("data/champion-heuristik.json", "utf8")));
+  const merkmale = merkmaleAnlegen(quelle, h);
+  const comp = compAnlegen(merkmale, h);
+  const S = strategieAnlegen({quelle, merkmale, comp, heuristik: h, blind: blindAnlegen({quelle})});
+  // Echter Stand aus den Turnierpartien (Messung P2.10): Blau, 3 gegen 4.
+  const z = leererDraft({patch: quelle.patch, wirSind: "blue"});
+  for (const [c, r] of [["Dr. Mundo", "TOP"], ["Wukong", "JUNGLE"], ["Xerath", "MIDDLE"]]) {
+    z.picks.blue.push({champ: c, rolle: r});
+  }
+  for (const [c, r] of [["Mordekaiser", "TOP"], ["Jarvan IV", "JUNGLE"],
+                        ["Orianna", "MIDDLE"], ["Xayah", "BOTTOM"]]) {
+    z.picks.red.push({champ: c, rolle: r});
+  }
+  const L = S.lagebild(z);
+  assert.equal(L.spaeterRolle, null, "Rot pickt erst nach unserem letzten - Warten zeigt nichts");
+  assert.equal(L.pickfolge.gegnerVorUnseremLetzten, 0);
+  // Dieselben Picks als Rot: Blau hat dann noch Picks vor unserem letzten.
+  const rot = {...z, wirSind: "red", picks: {blue: z.picks.red, red: z.picks.blue}};
+  assert.ok(S.lagebild(rot).pickfolge.gegnerVorUnseremLetzten > 0);
+});
+
+test("P2.10: die Oberflaeche waehlt die Seite und rechnet mit ihr", () => {
+  const html = readFileSync("template.html", "utf8");
+  assert.ok(!/wirSind: "blue", patch: DRAFT\.patch/.test(html), "nicht mehr fest Blau");
+  assert.match(html, /wirSind: liveSeite/);
 });

@@ -206,10 +206,10 @@ test("5: ein blinder ADC rechnet gegen ganze Botlanes, nicht gegen einen", () =>
   assert.equal(halb.bedingtAuf, "Thresh");
   assert.ok(halb.liste.every((x) => x.gegner.length === 1
                                   && x.gegner[0].rolle === "BOTTOM"));
-  // Und die Bewertung traegt es: ein Teil Matchup, ein Teil Szenario.
+  // Und die Bewertung traegt es: ein Teil bekannte Lane, ein Teil Szenario.
   const r = E.bewerter.bewerte(lage({patch, ihre: [["Thresh", "UTILITY"]]}),
                                "Jinx", "BOTTOM");
-  assert.ok(r.components.matchup && r.components.blindSicherheit);
+  assert.ok(r.components.lane && r.components.blindSicherheit);
 });
 
 test("6: ein echter Flexpick hat Informationswert - abhaengig von der Lage", () => {
@@ -315,4 +315,57 @@ test("die Rauschkorrektur schrumpft duenne Paarungen staerker", () => {
   const a = E.blind.abweichung("Ornn", "TOP", "Jax", "TOP");
   assert.ok(a && Math.abs(a.d) <= Math.abs(a.roh));
   assert.ok(Math.abs(a.d / a.roh - a.n / (a.n + BLIND.schrumpfK)) < 1e-9);
+});
+
+/* ------------------------------------------- P1.1 Lane im Counterfall
+   Audit 10.10.2026: steht der Lanegegner fest, ging die Lane nur noch
+   als Teil des Matchups ein - nach Partien gemittelt mit allen bekannten
+   Gegnern (Ahri gegen Syndra: 32 % des Gewichts, gegen Lulu 48 %).
+   Blind trug die Lane 18, im Counterfall effektiv rund 6. */
+
+test("P1.1: die Lane traegt in jedem Modus dasselbe Gewicht", () => {
+  const faelle = [
+    ["blind", lage({patch, ihre: [["Viego", "JUNGLE"]]}), "Ornn", "TOP"],
+    ["teilweise", lage({patch, ihre: [["Thresh", "UTILITY"]]}), "Jinx", "BOTTOM"],
+    ["counter", lage({patch, ihre: [["Jax", "TOP"]]}), "Ornn", "TOP"],
+  ];
+  for (const [modus, s, champ, rolle] of faelle) {
+    const r = E.bewerter.bewerte(s, champ, rolle);
+    assert.equal(r.modus, modus);
+    const lane = (r.components.lane ? r.components.lane.gewicht : 0)
+               + (r.components.blindSicherheit ? r.components.blindSicherheit.gewicht : 0);
+    assert.ok(Math.abs(lane - GEWICHTE.blindSicherheit) < 1e-9,
+              modus + ": Lane-Gewicht " + lane);
+  }
+});
+
+test("P1.1: Lane und uebrige Gegner werden getrennt gewertet", () => {
+  const s = lage({patch, unsere: [["Ornn", "TOP"]],
+                  ihre: [["Jax", "TOP"], ["Syndra", "MIDDLE"], ["Lulu", "UTILITY"]]});
+  const r = E.bewerter.bewerte(s, "Ahri", "MIDDLE");
+  const namen = (t) => t.paare.map((x) => x.wer).sort();
+  assert.deepEqual(namen(r.components.lane), ["Syndra"]);
+  assert.deepEqual(namen(r.components.matchup), ["Jax", "Lulu"]);
+});
+
+test("P1.1: die Partienzahl eines Quergegners verdraengt die Lane nicht mehr", () => {
+  // L ist +5 gegen den Midlaner O, Q +5 gegen den Support X - sonst
+  // gleich. Vorher lag Q vorn (65 gegen 56), nur weil die Paarung mit X
+  // dreimal so viele Partien hat und den Lanegegner im Schnitt
+  // verdraengte. Dass die Lane MEHR zaehlen sollte als ein einzelner
+  // Quergegner, waere eine neue Gewichtsannahme - geprueft wird nur,
+  // dass die Verwaesserung weg ist.
+  const w = welt({champions: {
+      L: {MIDDLE: [3000, 0.5]}, Q: {MIDDLE: [3000, 0.5]},
+      O: {MIDDLE: [100000, 0.5]}, X: {UTILITY: [100000, 0.5]}},
+    matchups: [["L", "MIDDLE", "O", "MIDDLE", 3000, 0.55],
+               ["L", "MIDDLE", "X", "UTILITY", 9000, 0.50],
+               ["Q", "MIDDLE", "O", "MIDDLE", 3000, 0.50],
+               ["Q", "MIDDLE", "X", "UTILITY", 9000, 0.55]]});
+  const {bewerter} = aufbau(w);
+  const s = lage({ihre: [["O", "MIDDLE"], ["X", "UTILITY"]]});
+  const l = bewerter.bewerte(s, "L", "MIDDLE"), q2 = bewerter.bewerte(s, "Q", "MIDDLE");
+  assert.ok(l.score >= q2.score, "Lane-Counter " + l.score + " gegen Quer-Counter " + q2.score);
+  assert.equal(l.components.lane.paare.length, 1, "die Lane rechnet nur mit O");
+  assert.equal(l.components.lane.roh, 1, "+5 gegen den Lanegegner, unverduennt");
 });
