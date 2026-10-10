@@ -249,29 +249,46 @@ def engine_buendeln():
     return block
 
 
-def draft_holen(name):
+def draft_holen(name, neu=False):
     """Einen DraftGap-Datensatz laden, mit Ablage auf der Platte.
 
-    30-days wiegt rund 52 MB - das holt man nicht bei jedem Bau neu."""
+    30-days wiegt rund 52 MB - das holt man nicht bei jedem Bau neu. Mit
+    neu=True (build.py --draftgap, Knopf im Programm) wird trotzdem frisch
+    geholt: erst in eine Zwischendatei, und erst wenn die sich als
+    DraftGap-Datensatz lesen laesst, ersetzt sie den alten Stand. Ein
+    abgebrochener Abruf laesst so nichts Kaputtes zurueck; liegt schon ein
+    Stand da, wird mit ihm weitergebaut und das gesagt."""
     DRAFT_CACHE.mkdir(parents=True, exist_ok=True)
     pfad = DRAFT_CACHE / f"{name}.json"
-    if not pfad.exists():
-        url = DRAFT_URL.format(name=name)
-        anfrage = urllib.request.Request(
-            url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(anfrage, timeout=600) as antwort:
-            pfad.write_bytes(antwort.read())
+    if neu or not pfad.exists():
+        teil = pfad.with_name(pfad.name + ".part")
+        try:
+            anfrage = urllib.request.Request(
+                DRAFT_URL.format(name=name), headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(anfrage, timeout=600) as antwort:
+                teil.write_bytes(antwort.read())
+            daten = json.loads(teil.read_text(encoding="utf-8"))
+            if not isinstance(daten, dict) or "championData" not in daten:
+                raise ValueError("kein DraftGap-Datensatz")
+            teil.replace(pfad)
+            return daten
+        except (urllib.error.URLError, OSError, ValueError) as exc:
+            if teil.exists():
+                teil.unlink()
+            if not pfad.exists():
+                raise
+            print(f"  Draft: {name} nicht neu geholt ({exc}) - der alte Stand bleibt")
     return json.loads(pfad.read_text(encoding="utf-8"))
 
 
-def draft_daten():
+def draft_daten(neu=False):
     """Patch-Staerke, Matchups und Synergien, auf das Noetige eingedampft.
 
     Die Schluessel sind Nummern, keine Namen: "Dr. Mundo" stuende sonst
     hunderttausendfach in der Datei und kostete ein Drittel mehr Platz."""
     try:
-        aktuell = draft_holen("current-patch")
-        tage30 = draft_holen("30-days")
+        aktuell = draft_holen("current-patch", neu)
+        tage30 = draft_holen("30-days", neu)
     except (urllib.error.HTTPError, urllib.error.URLError, OSError,
             ValueError) as exc:
         print(f"  Draft: nicht geholt ({exc}) - Berater bleibt leer")
@@ -357,7 +374,8 @@ def draft_daten():
 
     gesamt = len(json.dumps({"basis": basis, "paare": paare},
                             separators=(",", ":"))) // 1024
-    print(f"  Draft: Patch {aktuell.get('version')}, {len(basis)} Champions, "
+    print(f"  Draft: Patch {aktuell.get('version')} vom "
+          f"{(aktuell.get('date') or '?')[:10]}, {len(basis)} Champions, "
           f"{len(paare)} mit Matchups ({gesamt} KB)")
     # Zwei Datensaetze, zwei Fenster (Audit P2.5): Staerke, Schaden und
     # Kurve aus dem laufenden Patch, Matchups und Synergien aus den
@@ -1061,7 +1079,7 @@ def embed_fonts():
     return "<style>\n" + "\n".join(faces) + "\n</style>"
 
 
-def build(embed=False, pages=False):
+def build(embed=False, pages=False, draftgap_neu=False):
     raw_players, raw_queues, icons, version, scraped, raw_names = load_raw()
     plan = load_plan()
     roster = json.loads((ROOT / "teams.json").read_text(encoding="utf-8"))
@@ -1155,7 +1173,7 @@ def build(embed=False, pages=False):
         # der meistgespielte je Spieler.
         data["splashData"] = embed_splashes(top_champions(teams), icons)
         # Matchups und Synergien fuer den Draft-Berater.
-        draft = draft_daten()
+        draft = draft_daten(neu=draftgap_neu)
         if draft:
             data["draft"] = draft
 
@@ -1223,5 +1241,13 @@ def build(embed=False, pages=False):
 if __name__ == "__main__":
     # --pages bettet immer ein: die Seite im Netz darf nichts nachladen.
     pages = "--pages" in sys.argv
-    build(embed=pages or "--standalone" in sys.argv or "--embed-icons" in sys.argv,
-          pages=pages)
+    # --draftgap holt Patchstaerke, Matchups und Synergien neu, auch wenn
+    # schon ein Stand in data/draftgap/ liegt. Eingebettet wird nur mit
+    # --pages oder --standalone - darum schaltet es das Einbetten ein.
+    draftgap = "--draftgap" in sys.argv
+    build(embed=pages or draftgap or "--standalone" in sys.argv
+          or "--embed-icons" in sys.argv,
+          pages=pages, draftgap_neu=draftgap)
+    if draftgap and not pages:
+        print("  Hinweis: index.html (GitHub Pages) nur mit --pages - "
+              "python build.py --pages --draftgap")

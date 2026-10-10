@@ -2339,6 +2339,14 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       <span class="hint">Öffnet ein Browserfenster, rund eine Minute je Spieler —
         zusätzlich Solo/Flex getrennt und ältere Seasons.</span>
     </div>
+    <div class="row">
+      <span class="label">DraftGap</span>
+      <button class="more" type="button" id="do-draftgap"
+              title="Patchst\u00e4rke, Matchups und Synergien neu von bucket.draftgap.com"
+              >Patchdaten neu holen</button>
+      <span class="hint">Rund 55 MB, ein paar Minuten. Ohne diesen Knopf bleibt der
+        alte Stand — neu bauen allein holt nichts.</span>
+    </div>
     <span class="hint" id="tools-note"></span>
     <div class="row" style="margin-top:0.4rem">
       <button class="more" type="button" id="make-share"
@@ -4291,10 +4299,11 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       + (d.abstand ? ". Laufender Patch laut Data Dragon: " + d.aktuell
          + " (" + d.abstand + (d.abstand === 1 ? " Patch" : " Patches")
          + " Abstand)" : "")
-      // build.py holt DraftGap nur, wenn data/draftgap/*.json fehlt - ein
-      // blosses Neubauen nimmt wieder den alten Stand.
-      + (d.warnung ? ". Die Daten sind veraltet: data/draftgap/*.json"
-         + " entfernen und neu bauen, sonst bleibt der alte Stand." : "");
+      // Ein blosses Neubauen nimmt den alten Stand - neu geholt wird nur
+      // ausdruecklich. Beide Wege nennen, immer.
+      + (d.warnung ? ". Die Daten sind veraltet" : "")
+      + ". Aktualisieren: im Programm unter \u201eProgramm \u2192 DraftGap: Patchdaten"
+      + " neu holen\u201c, sonst python build.py --pages --draftgap.";
     return el("span", {class: "sub ld-quelle" + (d.warnung ? " veraltet" : ""),
                        title: titel},
       (d.warnung ? "Veraltet: " : "") + teile.join(" \u00b7 "));
@@ -7208,6 +7217,43 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     } finally { knopf.disabled = false; }
   });
 
+
+  // DraftGap neu holen: Patchstaerke, Matchups, Synergien. Vorher ging das
+  // nur, indem man data/draftgap/*.json von Hand loeschte.
+  document.getElementById("do-draftgap").addEventListener("click", async () => {
+    const knopf = document.getElementById("do-draftgap");
+    knopf.disabled = true;
+    toolsNote("Hole DraftGap neu (rund 55 MB) und baue ... das dauert ein paar Minuten.");
+    try {
+      const antwort = await fetch("api/draftgap", {method: "POST"});
+      if (antwort.status === 404) {
+        toolsNote("Das laufende Programm kennt diesen Knopf noch nicht \u2014 "
+                + "schwarzes Fenster schlie\u00dfen und neu starten.");
+        return;
+      }
+      const info = await antwort.json().catch(() => ({}));
+      const log = document.getElementById("scrape-log");
+      log.hidden = false;
+      log.textContent = (info.log || []).join("\n");
+      log.scrollTop = log.scrollHeight;
+      if (!info.ok) { toolsNote(info.error || "Fehlgeschlagen \u2014 siehe Protokoll."); return; }
+      const st = (s) => s && s["current-patch"]
+        ? "Patch " + (s["current-patch"].version || "?") + " vom "
+          + (s["current-patch"].date ? deDate(s["current-patch"].date) : "?")
+        : "kein Stand";
+      if (info.nichtNeu) {
+        toolsNote("DraftGap war nicht erreichbar \u2014 es bleibt " + st(info.vorher) + ".");
+        return;
+      }
+      const gleich = JSON.stringify(info.vorher) === JSON.stringify(info.nachher);
+      toolsNote((gleich ? "DraftGap hat nichts Neueres: " + st(info.nachher)
+                        : st(info.vorher) + " \u2192 " + st(info.nachher))
+                + " \u2014 lade neu ...");
+      setTimeout(() => location.reload(), 1500);
+    } catch (e) {
+      toolsNote("Fehlgeschlagen: " + e.message);
+    } finally { knopf.disabled = false; }
+  });
 
   document.getElementById("reveal").addEventListener("click", () => {
     fetch("api/reveal", {method: "POST"}).catch(() => {});

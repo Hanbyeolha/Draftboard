@@ -86,7 +86,8 @@ test("Patchabstand wird gemessen, nicht geraten", () => {
   assert.equal(patchAbstand("16.19.1", "16.21.0"), 2);
   assert.equal(patchAbstand("16.19.1", null), null);
   assert.equal(patchWarnung(q, q.patch), null);
-  const w = patchWarnung(q, "16.25.0");
+  const [h, nb] = q.patch.split(".").map(Number);
+  const w = patchWarnung(q, h + "." + (nb + 6) + ".0");
   assert.ok(w && w.abstand >= 2, JSON.stringify(w));
 });
 
@@ -123,10 +124,14 @@ test("P2.5: der Datenstand nennt Abstand und warnt ab der Schwelle", () => {
   const gleich = datenstand(q, q.patch);
   assert.equal(gleich.abstand, 0);
   assert.equal(gleich.warnung, null);
-  const einer = datenstand(q, "16.20.1");
+  // Relativ zum Datenpatch - feste Nummern veralten mit dem naechsten
+  // DraftGap-Update (so passiert am 10.10.2026, 16.19 -> 16.20).
+  const [haupt, neben] = q.patch.split(".").map(Number);
+  const plus = (k) => haupt + "." + (neben + k) + ".1";
+  const einer = datenstand(q, plus(1));
   assert.equal(einer.abstand, 1, "ein Patch: genannt");
   assert.equal(einer.warnung, null, "unter KONFIDENZ.veraltetAbPatches keine Warnung");
-  const zwei = datenstand(q, "16.21.1");
+  const zwei = datenstand(q, plus(2));
   assert.ok(zwei.warnung, "ab zwei Patches gewarnt");
   assert.equal(datenstand(q, null).abstand, null, "ohne Bezug kein Abstand");
   assert.equal(gleich.paareTage, DATA.draft.fenster.paare.tage);

@@ -21,6 +21,7 @@ import contextlib
 import io
 import json
 import pathlib
+import re
 import subprocess
 import sys
 import threading
@@ -128,6 +129,26 @@ def liga_status():
 # Ausgabe des laufenden Scrapes, damit die Seite den Fortschritt zeigen kann.
 scrape_lock = threading.Lock()
 scrape_state = {"running": False, "lines": collections.deque(maxlen=400), "done": None}
+
+
+def draftgap_stand():
+    """Patch und Datum der abgelegten DraftGap-Daten. Gelesen wird nur der
+    Anfang jeder Datei - version und date stehen dort zuerst, und 30-days
+    ganz zu laden kostete Sekunden."""
+    stand = {}
+    for name in ("current-patch", "30-days"):
+        pfad = ROOT / "data" / "draftgap" / f"{name}.json"
+        try:
+            with open(pfad, encoding="utf-8") as f:
+                kopf = f.read(400)
+        except OSError:
+            stand[name] = None
+            continue
+        v = re.search(r'"version"\s*:\s*"([^"]*)"', kopf)
+        d = re.search(r'"date"\s*:\s*"([^"]{10})', kopf)
+        stand[name] = {"version": v.group(1) if v else None,
+                       "date": d.group(1) if d else None}
+    return stand
 
 
 def rebuild():
@@ -511,7 +532,8 @@ class Handler(BaseHTTPRequestHandler):
                             "file": target.name if target else None,
                             "features": ["save", "share", "reveal", "scrape",
                                          "player", "players", "team", "edit",
-                                         "liga", "ligastatus", "schnell"]})
+                                         "liga", "ligastatus", "schnell",
+                                         "draftgap"]})
         elif path == "/api/liga/status":
             self.send_json(liga_status())
         elif path == "/api/teams":
@@ -550,6 +572,22 @@ class Handler(BaseHTTPRequestHandler):
                 # Explorer oeffnen und die Datei markieren - nur Windows.
                 subprocess.Popen(["explorer", "/select,", str(target)])
             self.send_json({"ok": bool(target)})
+        elif path == "/api/draftgap":
+            # Patchstaerke, Matchups und Synergien frisch von DraftGap und
+            # neu bauen. Rund 55 MB - dauert, braucht aber keinen Browser.
+            vorher = draftgap_stand()
+            out = io.StringIO()
+            ok = True
+            try:
+                with contextlib.redirect_stdout(out):
+                    build.build(embed=True, pages=True, draftgap_neu=True)
+            except Exception as exc:           # noqa: BLE001 - Bau darf melden
+                ok = False
+                out.write("Fehler: " + str(exc) + "\n")
+            log = out.getvalue().splitlines()
+            self.send_json({"ok": ok, "log": log, "vorher": vorher,
+                            "nachher": draftgap_stand(),
+                            "nichtNeu": any("nicht neu geholt" in z for z in log)})
         elif path == "/api/liga":
             # Dauert Sekunden, kein Browser noetig - daher direkt statt als Lauf.
             # Reihenfolge: erst die Partien (das frischt auch die Riot-IDs und
