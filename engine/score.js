@@ -1,0 +1,366 @@
+/* Der Match-Score: aus benannten Teilen eine Zahl - und die Spur dahin.
+   ---------------------------------------------------------------------------
+   Eine Empfehlung ohne sichtbaren Grund ist ein Orakel. Darum gibt diese
+   Datei nicht nur Punkte zurueck, sondern eine maschinenlesbare Spur: was
+   hat beigetragen, wie viel, woher kam es, wie sicher ist es.
+
+   Die Regel, die alles traegt:
+
+     Fehlt ein Teil, faellt er aus Summe UND Hoechstwert.
+
+   Er wird nicht geschaetzt, und der Rest wird nicht heimlich schwerer.
+   Ein Champion ohne Matchupdaten bekommt darum keine schlechtere Note -
+   nur eine unsicherere, und das steht dran.
+
+   Die Teile ueberschneiden sich nicht. compFit traegt bereits
+   Schadensbalance, Kurve und Rollenabdeckung; sie stehen deshalb nicht
+   noch einmal einzeln. Ein frueher Entwurf hatte sie doppelt.
+*/
+
+import { wert, konfidenzWort } from "./provenance.js";
+import {
+  GEWICHTE, KOMFORT, PICKFOLGE, STOERUNG, RISIKOPROFILE, STANDARD_RISIKO,
+  ANZEIGE, VERSION,
+} from "./config.js";
+import { normQuote, normVorteil, klemm } from "./features.js";
+import { GESCHAETZTE_ACHSEN } from "./comp.js";
+import { ROLLEN_FOLGE, gegenseite } from "./state.js";
+
+export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik}) {
+
+  /** Einen Kandidaten bewerten. Gibt die volle Spur zurueck - die
+   *  Oberflaeche nimmt sich daraus, was sie zeigen will. */
+  function bewerte(zustand, champ, rolle, {
+    spielerTeam = null, spielerLabel = null,
+    risikoprofil = STANDARD_RISIKO, lookahead = null,
+  } = {}) {
+    const m = merkmale.fuer(champ, rolle);
+    if (!m) return null;                 // auf dieser Rolle nicht gespielt
+
+    const uns = zustand.wirSind, sie = gegenseite(uns);
+    const unsere = zustand.picks[uns].map(mitRolle);
+    const ihre = zustand.picks[sie].map(mitRolle);
+    const teile = {};
+    const gruende = [], risiken = [];
+
+    let summe = 0, hoechst = 0, konfSumme = 0, konfGewicht = 0;
+
+    const nimm = (name, roh, {quelle: q, konfidenz = null, text = null,
+                              gewicht = null, paare = null,
+                              ohneDaten = null} = {}) => {
+      if (roh === null || roh === undefined || !Number.isFinite(roh)) return;
+      const g = gewicht === null ? (GEWICHTE[name] || 0) : gewicht;
+      if (!g) return;
+      const v = klemm(roh, 0, 1);
+      teile[name] = {roh: v, gewicht: g, beitrag: g * v, quelle: q,
+                     konfidenz, text, paare, ohneDaten};
+      summe += g * v;
+      hoechst += Math.max(0, g);
+      if (konfidenz !== null) {
+        konfSumme += Math.abs(g) * konfidenz;
+        konfGewicht += Math.abs(g);
+      }
+    };
+
+    /* 1 ------------------------------------------------ Patchstaerke */
+    nimm("meta", normQuote(m.staerke.value), {
+      quelle: "draftgap", konfidenz: m.staerke.confidence,
+      text: prozent(m.staerke.value) + " auf " + rolle + " im Patch",
+    });
+
+    /* 2 ---------------------------------- Gegen die gegnerischen Picks */
+    const gegen = paarSchnitt(champ, rolle, "m", ihre);
+    if (gegen) {
+      nimm("matchup", normVorteil(gegen.vorteil), {
+        quelle: "draftgap", konfidenz: gegen.konfidenz,
+        text: prozent(gegen.quote) + " gegen " + gegen.n + " ihrer Picks",
+        paare: gegen.teile, ohneDaten: gegen.ohneDaten,
+      });
+      for (const t of gegen.teile) {
+        const d = t.quote - t.erwartet;
+        if (d >= 0.02) gruende.push("stark gegen " + t.wer
+          + " (" + prozent(t.quote) + ", sonst " + prozent(t.erwartet) + ")");
+        if (d <= -0.02) risiken.push("schwach gegen " + t.wer
+          + " (" + prozent(t.quote) + ", sonst " + prozent(t.erwartet) + ")");
+      }
+    }
+
+    /* 3 ------------------------------------- Mit den eigenen Picks */
+    const mit = paarSchnitt(champ, rolle, "s", unsere.filter((p) => p.rolle !== rolle));
+    if (mit) {
+      nimm("synergie", normVorteil(mit.vorteil), {
+        quelle: "draftgap", konfidenz: mit.konfidenz,
+        text: prozent(mit.quote) + " mit " + mit.n + " eigenen Picks",
+        paare: mit.teile, ohneDaten: mit.ohneDaten,
+      });
+      for (const t of mit.teile) {
+        const d = t.quote - t.erwartet;
+        if (d >= 0.015) gruende.push("passt zu " + t.wer
+          + " (" + prozent(t.quote) + ", sonst " + prozent(t.erwartet) + ")");
+        if (d <= -0.015) risiken.push("harmoniert nicht mit " + t.wer
+          + " (" + prozent(t.quote) + ", sonst " + prozent(t.erwartet) + ")");
+      }
+    }
+
+    /* 4 ------------------------------------------------ Marginalwert */
+    const gegnerProfil = ihre.length ? comp.profil(ihre) : null;
+    const marg = comp.marginal(unsere, {champ, rolle},
+                               {gegner: gegnerProfil});
+    if (marg.punkte !== null) {
+      nimm("compFit", marg.punkte, {
+        quelle: marg.anteilGemessen >= 0.99 ? "draftgap" : "gemischt",
+        konfidenz: 0.4 + 0.5 * marg.anteilGemessen,
+        text: marginalText(marg),
+      });
+      const bal = marg.achsen.schadensbalance;
+      if (bal && bal.delta > 0.08) {
+        gruende.push("bringt fehlenden Schadenstyp");
+      } else if (bal && bal.delta < -0.08) {
+        risiken.push("macht die Schadensverteilung einseitiger");
+      }
+    }
+
+    /* 5 ------------------------------- Stoert er ihren Plan? */
+    /* Nur mit gepflegter Heuristiktabelle. Ohne sie faellt der Teil
+       vollstaendig weg - dafuer gibt es keine gemessene Grundlage. */
+    const stoerung = stoerwert(champ, ihre);
+    if (stoerung) {
+      nimm("gegnerStoerung", stoerung.wert, {
+        quelle: "heuristik", konfidenz: stoerung.konfidenz,
+        text: stoerung.text,
+      });
+      if (stoerung.wert > 0.6) gruende.push(stoerung.text);
+    }
+
+    /* 6 --------------------------------------------- Informationswert */
+    if (m.flex) {
+      nimm("flex", m.flex.value, {
+        quelle: "draftgap", konfidenz: 0.8,
+        text: m.flex.value > 0.3 ? "verraet die Rolle nicht (" + m.flex.note + ")"
+                                 : "eindeutige Rolle",
+      });
+      if (m.flex.value > 0.5) gruende.push("flexibel: " + m.flex.note);
+    }
+
+    /* 7 --------------------------------------------------- Komfort */
+    const k = (spielerTeam && spielerLabel)
+      ? team.komfort(spielerTeam, spielerLabel, champ) : null;
+    if (k) {
+      // Komfort darf einen strategischen Nachteil daempfen, aber nicht
+      // ueberstimmen. Darum ein Deckel auf seinen Anteil am Ganzen.
+      const deckel = KOMFORT.hoechstanteil * (hoechst + GEWICHTE.komfort);
+      nimm("komfort", k.value, {
+        quelle: "team", konfidenz: k.confidence, text: k.note,
+        gewicht: Math.min(GEWICHTE.komfort, deckel),
+      });
+      if (k.value >= 0.7) gruende.push("Komfort: " + k.note);
+      if (k.value <= 0.1) risiken.push("kaum Erfahrung: " + k.note);
+    }
+
+    /* 8 ------------------------------------------- Blind oder Counter */
+    /* Nur im Blindfall. Steht der Lanegegner schon, ist die echte
+       Paarung gemessen und zaehlt unter "matchup" - die Streuung dann
+       noch einmal zu werten, waere dieselbe Aussage zweimal. */
+    const lane = ihre.find((p) => p.rolle === rolle);
+    const blind = !lane;
+    if (blind && m.streuung && m.streuung.gegner >= PICKFOLGE.mindestGegner) {
+      const sp = m.streuung.streuung.value;
+      const sicher = 1 - klemm(
+        (sp - PICKFOLGE.streuungEng) / (PICKFOLGE.streuungWeit - PICKFOLGE.streuungEng),
+        0, 1);
+      nimm("pickReihenfolge", sicher, {
+        quelle: "draftgap", konfidenz: m.streuung.streuung.confidence,
+        text: "Streuung " + (sp * 100).toFixed(1) + " ueber "
+              + m.streuung.gegner + " Lanegegner",
+      });
+      if (sicher > 0.7) gruende.push("sicherer Blindpick, kaum konterbar");
+      if (sicher < 0.3) risiken.push("blind riskant, stark konterbar");
+    }
+
+    /* 9 ------------------------------------------------- Lookahead */
+    /* Kommt in Phase 5. Bis dahin faellt der Teil weg, statt eine Zahl
+       zu erfinden. */
+    if (lookahead && Number.isFinite(lookahead.wert)) {
+      nimm("lookahead", lookahead.wert, {
+        quelle: "draftgap", konfidenz: lookahead.konfidenz ?? null,
+        text: lookahead.text || null,
+      });
+    }
+
+    /* 10 ---------------------------------------------------- Risiko */
+    const konfidenz = konfGewicht ? konfSumme / konfGewicht : null;
+    const profil = RISIKOPROFILE[risikoprofil] || RISIKOPROFILE[STANDARD_RISIKO];
+    const risikoRoh = risikoAus({konfidenz, blind, m, lookahead});
+    if (risikoRoh !== null) {
+      // Negatives Gewicht: der Beitrag zieht ab, der Hoechstwert waechst
+      // nicht mit.
+      const g = GEWICHTE.risiko * profil.risiko;
+      teile.risiko = {roh: risikoRoh, gewicht: g, beitrag: g * risikoRoh,
+                      quelle: "abgeleitet", konfidenz: null,
+                      text: risikoText(risikoRoh)};
+      summe += g * risikoRoh;
+    }
+
+    const punkte = hoechst > 0
+      ? klemm(100 * summe / hoechst, 0, 100) : null;
+
+    return {
+      champion: champ,
+      rolle,
+      // Keine Scheingenauigkeit: 87, nicht 87,391728.
+      score: punkte === null ? null
+        : Number(punkte.toFixed(ANZEIGE.punkteNachkomma)),
+      confidence: konfidenz === null ? null : Number(konfidenz.toFixed(2)),
+      confidenceWort: konfidenzWort(konfidenz),
+      blind,
+      components: teile,
+      hoechstwert: hoechst,
+      reasons: eindeutig(gruende).slice(0, 5),
+      risks: eindeutig(risiken).slice(0, 4),
+      metadata: {
+        optimizerVersion: VERSION.optimizer,
+        dataVersion: VERSION.data,
+        patch: quelle.patch,
+        risikoprofil,
+      },
+    };
+  }
+
+  /* ------------------------------------------------------------ Helfer */
+
+  function mitRolle(p) {
+    return {champ: p.champ, rolle: p.rolle || hauptRolle(p.champ)};
+  }
+
+  function hauptRolle(champ) {
+    for (const r of ROLLEN_FOLGE) {
+      const m = merkmale.fuer(champ, r);
+      if (m && m.rollen.length && m.rollen[0].rolle === r) return r;
+    }
+    return null;
+  }
+
+  /** Nach Partien gewichteter Schnitt ueber die gemessenen Paarungen -
+   *  und daneben, was ein DURCHSCHNITTLICHER Champion in derselben Lage
+   *  geholt haette.
+   *
+   *  Die Erwartung kommt aus dem Gegenueber selbst: Ornns eigener
+   *  Matchupschnitt von 51,1 % heisst, dass ein beliebiger Gegner gegen
+   *  ihn auf 48,9 % kommt. Jinx' Synergieschnitt von 52,6 % heisst, dass
+   *  ein beliebiger Mitspieler neben ihr dort landet.
+   *
+   *  Warum nicht die Staerke des Kandidaten als Bezug? Gemessen an 87
+   *  Topkandidaten lag die Synergiequote im Median 2,17 Punkte darueber
+   *  und die Matchupquote gegen zwei Metachampions 2,10 darunter - die
+   *  Komponente saettigte damit bei fast jedem und unterschied nichts.
+   *  Mit der Erwartung aus dem Gegenueber liegt der Median bei -0,05
+   *  beziehungsweise -0,29, und die Streuung traegt die Aussage.
+   *
+   *  Kein Modell: ein noch frueherer Entwurf addierte die Abweichungen
+   *  der fuenf Matchups auf die Grundquote und landete bei JEDEM
+   *  Champion unter 50 %, weil in jeder Quote die Staerke des Gegners
+   *  schon steckt. */
+  function paarSchnitt(champ, rolle, art, andere) {
+    let summe = 0, erwartet = 0, gewicht = 0;
+    const teile = [], ohneDaten = [];
+    for (const p of andere) {
+      if (!p.rolle) continue;
+      const e = art === "m" ? quelle.matchup(champ, rolle, p.champ, p.rolle)
+                            : quelle.synergie(champ, rolle, p.champ, p.rolle);
+      const eigen = e ? quelle.paarMittel(p.champ, p.rolle, art) : null;
+      if (!e || !eigen) {
+        // Nicht stumm ueberspringen: die Oberflaeche soll sagen koennen,
+        // dass es zu dieser Paarung nichts gibt. Sonst sieht "keine
+        // Daten" genauso aus wie "unauffaellig".
+        ohneDaten.push(p.champ);
+        continue;
+      }
+      const soll = art === "m" ? 1 - eigen.value : eigen.value;
+      teile.push({wer: p.champ, quote: e.value, erwartet: soll,
+                  spiele: e.sampleSize});
+      summe += e.value * e.sampleSize;
+      erwartet += soll * e.sampleSize;
+      gewicht += e.sampleSize;
+    }
+    if (!gewicht) return null;
+    return {quote: summe / gewicht, erwartet: erwartet / gewicht,
+            vorteil: (summe - erwartet) / gewicht,
+            spiele: gewicht, n: teile.length, teile, ohneDaten,
+            konfidenz: Math.min(1, Math.sqrt(gewicht / 2000))};
+  }
+
+  /** Wirkt unser Kandidat dem entgegen, was sie vorhaben? Braucht die
+   *  Heuristiktabelle auf beiden Seiten - ohne sie kein Wert. */
+  function stoerwert(champ, ihre) {
+    if (!heuristik || !heuristik.kennt(champ)) return null;
+    let summe = 0, n = 0;
+    const genannt = [];
+    for (const [ihreAchse, unsere] of Object.entries(STOERUNG)) {
+      // Wie stark ist diese Achse bei ihnen?
+      const sie = ihre.map((p) => heuristik.achse(p.champ, ihreAchse))
+                      .filter(Boolean);
+      if (!sie.length) continue;
+      const staerke = sie.reduce((a, w) => a + w.value, 0) / ihre.length;
+      if (staerke < 0.2) continue;        // kein nennenswerter Plan
+      // Was setzen wir dagegen?
+      const gegen = unsere.map((a) => heuristik.achse(champ, a))
+                          .filter(Boolean);
+      if (!gegen.length) continue;
+      const antwort = Math.max(...gegen.map((w) => w.value));
+      summe += staerke * antwort;
+      n += staerke;
+      if (antwort >= 0.5) genannt.push(ihreAchse);
+    }
+    if (!n) return null;
+    return {
+      wert: klemm(summe / n, 0, 1),
+      konfidenz: 0.45,
+      text: genannt.length ? "wirkt gegen ihr " + genannt.join(" und ")
+                           : "wenig gegen ihren Plan",
+    };
+  }
+
+  function marginalText(marg) {
+    const grosse = Object.entries(marg.achsen)
+      .filter(([, a]) => Math.abs(a.delta) > 0.05)
+      .sort((a, b) => Math.abs(b[1].delta) - Math.abs(a[1].delta))
+      .slice(0, 2)
+      .map(([name, a]) => name + " " + (a.delta > 0 ? "+" : "")
+                          + (a.delta * 100).toFixed(0));
+    return grosse.length ? grosse.join(", ") : "aendert wenig";
+  }
+
+  function risikoAus({konfidenz, blind, m, lookahead}) {
+    const teile = [];
+    if (konfidenz !== null) teile.push(1 - konfidenz);
+    if (blind && m.streuung && m.streuung.gegner >= PICKFOLGE.mindestGegner) {
+      teile.push(klemm(
+        (m.streuung.streuung.value - PICKFOLGE.streuungEng)
+        / (PICKFOLGE.streuungWeit - PICKFOLGE.streuungEng), 0, 1));
+    }
+    if (lookahead && Number.isFinite(lookahead.spanne)) {
+      teile.push(klemm(lookahead.spanne, 0, 1));
+    }
+    if (!teile.length) return null;
+    return teile.reduce((a, b) => a + b, 0) / teile.length;
+  }
+
+  function risikoText(r) {
+    return r > 0.6 ? "schwankend" : r > 0.35 ? "mittel" : "stabil";
+  }
+
+  return {bewerte};
+}
+
+/* ------------------------------------------------------------- Kleinkram */
+
+function prozent(q) {
+  return (q * 100).toLocaleString("de-DE", {
+    minimumFractionDigits: ANZEIGE.quoteNachkomma,
+    maximumFractionDigits: ANZEIGE.quoteNachkomma,
+  }) + " %";
+}
+
+function eindeutig(xs) {
+  return [...new Set(xs)];
+}

@@ -1,0 +1,7 @@
+{
+  "name": "draftboard-engine",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "Draft-Engine: reine Module ohne DOM. Node laedt sie fuer Tests und Backtest, build.py fuegt sie in die eine HTML-Datei ein."
+}

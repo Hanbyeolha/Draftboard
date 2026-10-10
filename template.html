@@ -15,6 +15,7 @@ __FONTS__
   --ink-muted: #4a5465;
   --ink-faint: #5a6476;
   --blue: #1a56c4;
+  --blue-ink: #ffffff;
   --red: #b3281c;
   --brass: #7a5c14;
   --good: #1d7a4a;
@@ -29,6 +30,9 @@ __FONTS__
      Orange dunkler sein als im Dunkelmodus, sonst steht es nicht auf Weiss. */
   --eigen: #a8500c;
   --eigen-ink: #ffffff;
+  /* Kleine gruene Schrift auf getoenter Flaeche: --good kam dort auf
+     4,34:1. Nur fuer Text unter 14 px, nicht fuer Flaechen. */
+  --good-klein: #17633c;
   --gegner: #1a56c4;
   --shadow: 0 1px 2px rgba(14, 18, 24, 0.10), 0 6px 14px -8px rgba(14, 18, 24, 0.30);
   --licht: inset 0 1px 0 rgba(255, 255, 255, 0.55);
@@ -50,7 +54,8 @@ __FONTS__
     --ground: #0b0d12; --surface: #151922; --surface-sunk: #10141b;
     --border: #242a36; --border-strong: #39404f;
     --ink: #f2f5f9; --ink-muted: #a3adbd; --ink-faint: #8f99a9;
-    --blue: #5aa2ff; --red: #ff6b5e; --brass: #e0b44f; --good: #46cf8b;
+    --blue: #5aa2ff; --blue-ink: #10131a;
+    --red: #ff6b5e; --brass: #e0b44f; --good: #46cf8b;
     --warn: #e0b44f; --warn-soft: #2b2411;
     --role-top: #ff8a4c; --role-jgl: #3ddbc8; --role-mid: #b492ff;
     --role-bot: #ff6b85; --role-sup: #ffd45e;
@@ -61,6 +66,7 @@ __FONTS__
     --accent-ink: #0b0d12;
     --eigen: #ff8a4c;
     --eigen-ink: #10131a;
+    --good-klein: #46cf8b;
     --gegner: #5ac8ff;
     --shadow: 0 2px 4px rgba(0, 0, 0, 0.5), 0 8px 16px -8px rgba(0, 0, 0, 0.9);
   --licht: inset 0 1px 0 rgba(255, 255, 255, 0.07);
@@ -72,7 +78,8 @@ __FONTS__
     --ground: #0b0d12; --surface: #151922; --surface-sunk: #10141b;
     --border: #242a36; --border-strong: #39404f;
     --ink: #f2f5f9; --ink-muted: #a3adbd; --ink-faint: #8f99a9;
-    --blue: #5aa2ff; --red: #ff6b5e; --brass: #e0b44f; --good: #46cf8b;
+    --blue: #5aa2ff; --blue-ink: #10131a;
+    --red: #ff6b5e; --brass: #e0b44f; --good: #46cf8b;
     --warn: #e0b44f; --warn-soft: #2b2411;
     --role-top: #ff8a4c; --role-jgl: #3ddbc8; --role-mid: #b492ff;
     --role-bot: #ff6b85; --role-sup: #ffd45e;
@@ -83,6 +90,7 @@ __FONTS__
     --accent-ink: #0b0d12;
     --eigen: #ff8a4c;
     --eigen-ink: #10131a;
+    --good-klein: #46cf8b;
     --gegner: #5ac8ff;
     --shadow: 0 2px 4px rgba(0, 0, 0, 0.5), 0 8px 16px -8px rgba(0, 0, 0, 0.9);
   --licht: inset 0 1px 0 rgba(255, 255, 255, 0.07);
@@ -516,6 +524,34 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
              padding: 0.1rem 0.4rem; border-radius: var(--radius-sm);
              border: 1px solid var(--border-strong); background: var(--surface-sunk); }
 
+/* ------------------------------------- Gemerkte Spiele der Serie */
+.ld-merken { font: inherit; font-size: 0.78rem; font-weight: 600;
+             cursor: pointer; padding: 0.2rem 0.6rem;
+             border-radius: var(--radius-sm); border: 1px solid transparent;
+             background: var(--eigen); color: var(--eigen-ink); }
+.ld-merken:hover:not(:disabled) { filter: brightness(1.08); }
+.ld-merken:disabled { background: var(--surface-sunk); color: var(--ink-faint);
+                      border-color: var(--border-strong); cursor: default; }
+.ld-merken:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ld-serie-leiste { display: flex; align-items: center; gap: 0.4rem 0.6rem;
+                   flex-wrap: wrap; padding: 0.4rem 0.55rem;
+                   border: 1px solid var(--border); border-left: 3px solid var(--eigen);
+                   border-radius: var(--radius-sm); background: var(--surface-sunk); }
+.ld-serie-wort { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em;
+                 text-transform: uppercase; color: var(--ink-faint); }
+.ld-serie-liste { display: flex; flex-wrap: wrap; gap: 0.3rem; min-width: 0; }
+.ld-serie-spiel { display: inline-flex; align-items: center; gap: 0.3rem;
+                  font-size: 0.72rem; padding: 0.1rem 0.15rem 0.1rem 0.45rem;
+                  border: 1px solid var(--border-strong);
+                  border-radius: var(--radius-sm); background: var(--surface); }
+.ld-serie-spiel b { font-family: Rajdhani, Archivo, sans-serif;
+                    letter-spacing: 0.04em; }
+.ld-serie-weg { appearance: none; cursor: pointer; font: inherit;
+                font-size: 0.9rem; line-height: 1; padding: 0 0.25rem;
+                border: 0; background: none; color: var(--ink-faint); }
+.ld-serie-weg:hover { color: var(--red); }
+.ld-serie-weg:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
 /* ------------------------------------------------- Was gesperrt ist */
 .ld-sperren { display: flex; flex-direction: column; gap: 0.35rem; }
 .ld-sperren[hidden] { display: none; }
@@ -561,6 +597,12 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
   outline: 2px solid var(--accent); outline-offset: 2px; }
 .ld-suche { margin-left: auto; min-width: 11rem; }
 
+/* Der Backtest kann nicht zeigen, dass das Modell den Muenzwurf
+   schlaegt. Das steht an der Empfehlung, nicht im Kleingedruckten. */
+.ld-warnung { margin: 0.2rem 0 0.4rem; padding: 0.4rem 0.6rem;
+              border-left: 3px solid var(--warn); border-radius: 0 3px 3px 0;
+              background: var(--warn-soft); color: var(--ink-muted); }
+
 /* ----------------------------------------------- Die Championkarten */
 .ld-abschnitt { display: flex; flex-direction: column; gap: 0.35rem;
                 margin-top: 0.5rem; }
@@ -596,6 +638,88 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
 .ld-karte-zahlen { font-size: 0.68rem; color: var(--ink-muted);
                    font-variant-numeric: tabular-nums; min-width: 0;
                    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Zwei Empfehlungen mit gleicher Note sind nicht gleich viel wert, wenn
+   die eine auf duennen Daten steht. Das muss man sehen. */
+.ld-konfidenz { margin-left: auto; flex: none; font-size: 0.58rem;
+                font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.ld-konfidenz.hoch { color: var(--good-klein); }
+.ld-konfidenz.mittel { color: var(--ink-faint); }
+.ld-konfidenz.niedrig { color: var(--warn); }
+.ld-konfidenz.unbekannt { color: var(--ink-faint); }
+/* Blind pickbar ist die Angabe, die im Draft am schnellsten zaehlt: der
+   Spieler nimmt den Champion ohne zu wissen, was dagegen kommt. Sie stand
+   bisher nur im Komforttext und war dort hinter dem Ellipsenschnitt fast
+   unsichtbar. */
+.ld-blind-chip { flex: none; font-size: 0.64rem; font-weight: 700;
+                 letter-spacing: 0.1em; text-transform: uppercase;
+                 padding: 0.08rem 0.26rem; border-radius: 2px;
+                 color: var(--blue-ink); background: var(--blue); }
+.ld-karte.ld-blind .ld-bild { border-color: var(--blue);
+                              box-shadow: 0 0 0 2px var(--blue) inset; }
+/* Zweite Marke, bewusst anders: gefuellt heisst "unser Draftplan sagt
+   es", umrandet heisst "der Patch gibt es her". Wer beides sieht, weiss
+   dass sich zwei unabhaengige Gruende decken. */
+.ld-sicher-chip { flex: none; font-size: 0.64rem; font-weight: 700;
+                  letter-spacing: 0.08em; text-transform: uppercase;
+                  padding: 0.02rem 0.26rem; border-radius: 2px;
+                  color: var(--good-klein);
+                  border: 1px solid currentColor; }
+.ld-karte.ld-sicher:not(.ld-blind) .ld-bild {
+  border-color: var(--good-klein); }
+
+/* Was der Lookahead gerechnet hat. */
+.ld-vorschau { display: flex; align-items: baseline; gap: 0.3rem;
+               flex-wrap: wrap; font-size: 0.64rem; color: var(--ink-muted);
+               padding: 0.15rem 0; border-top: 1px solid var(--border); }
+.ld-vorschau-wort { font-weight: 700; letter-spacing: 0.1em;
+                    text-transform: uppercase; color: var(--ink-faint); }
+.ld-robust { margin-left: auto; font-weight: 700; }
+.ld-robust.hoch { color: var(--good-klein); }
+.ld-robust.mittel { color: var(--ink-faint); }
+.ld-robust.niedrig { color: var(--red); }
+
+/* Jede eingetragene Paarung einzeln. Sie soll auffallen - darum Bild
+   und Zahl nebeneinander statt einer Zeile Text. Der kleine Zusatz ist
+   der Abstand zur Erwartung, also die eigentliche Aussage. */
+.ld-paarungen { display: flex; flex-direction: column; gap: 2px;
+                padding: 0.25rem 0; border-top: 1px solid var(--border); }
+.ld-paare { display: grid; align-items: center; gap: 0.3rem;
+            grid-template-columns: 2.4rem minmax(0, 1fr); }
+.ld-paare-wort { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em;
+                 text-transform: uppercase; color: var(--ink-faint); }
+.ld-paare.gegen .ld-paare-wort { color: var(--gegner); }
+.ld-paare.mit .ld-paare-wort { color: var(--eigen); }
+.ld-paare-liste { display: flex; flex-wrap: wrap; gap: 0.2rem; min-width: 0; }
+.ld-paar { display: inline-flex; align-items: baseline; gap: 0.15rem;
+           padding: 0.05rem 0.25rem 0.05rem 0.05rem; border-radius: 3px;
+           border: 1px solid var(--border); background: var(--surface); }
+.ld-paar img { width: 16px; height: 16px; border-radius: 2px;
+               align-self: center; }
+.ld-paar b { font-family: Rajdhani, Archivo, sans-serif; font-size: 0.72rem;
+             font-weight: 700; font-variant-numeric: tabular-nums;
+             color: var(--ink-muted); }
+.ld-paar i { font-style: normal; font-size: 0.58rem;
+             font-variant-numeric: tabular-nums; color: var(--ink-faint); }
+.ld-paar.gut { border-color: color-mix(in srgb, var(--good) 55%, transparent); }
+.ld-paar.gut b, .ld-paar.gut i { color: var(--good-klein); }
+.ld-paar.schwach { border-color: color-mix(in srgb, var(--red) 50%, transparent); }
+.ld-paar.schwach b, .ld-paar.schwach i { color: var(--red); }
+.ld-paar.ohne { border-style: dashed; }
+.ld-paar.ohne img { filter: grayscale(1); opacity: 0.5; }
+
+/* Die Erklaerungsspur: jeder Teil mit seinem Beitrag. Geschaetzte Teile
+   (Heuristiktabelle) sind gestrichelt umrandet - sie sind keine Messung. */
+.ld-spur { display: flex; flex-wrap: wrap; gap: 0.15rem;
+           padding: 0.2rem 0; border-top: 1px solid var(--border); }
+.ld-spur-teil { display: inline-flex; align-items: baseline; gap: 0.2rem;
+                font-size: 0.6rem; padding: 0.05rem 0.25rem; border-radius: 2px;
+                border: 1px solid var(--border); background: var(--surface); }
+.ld-spur-teil b { font-weight: 600; color: var(--ink-faint); }
+.ld-spur-teil i { font-style: normal; font-family: Rajdhani, Archivo, sans-serif;
+                  font-weight: 700; font-variant-numeric: tabular-nums; }
+.ld-spur-teil.plus i { color: var(--good-klein); }
+.ld-spur-teil.minus i { color: var(--red); }
+.ld-spur-teil.geschaetzt { border-style: dashed; }
 /* Die einzelnen Paarungen. Sie sollen auffallen - darum Bild und Zahl
    nebeneinander statt einer Zeile Text, und die Farbe traegt die Aussage. */
 .ld-paarungen { display: flex; flex-direction: column; gap: 2px;
@@ -1651,7 +1775,8 @@ dialog#champ-dialog > * { padding-left: 1rem; padding-right: 1rem; }
 .plan-tag { font-size: 0.72rem; font-weight: 700; padding: 0 0.18rem;
             border-radius: 2px; border: 1px solid currentColor;
             margin-left: 0.25rem; white-space: nowrap; }
-.plan-tag.blind { color: var(--blue); }
+.plan-tag.blind { color: var(--blue-ink); background: var(--blue);
+                  border-color: var(--blue); }
 .plan-tag.likes { color: var(--brass); }
 /* Eine Zeile je Spieler: Name, dann First-Pick- und Blind-Felder. */
 .plan-row { display: grid; gap: 0.35rem 0.5rem; align-items: center;
@@ -2014,6 +2139,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
 <datalist id="champ-list"></datalist>
 
 <script id="scout-data" type="application/json">__DATA__</script>
+<script>__ENGINE__</script>
 <script>
 (function () {
   "use strict";
@@ -3341,17 +3467,34 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   }
 
   // =================================================== Live Draft
-  // Zwei Ebenen, bewusst getrennt: der Spieler-Reiter beantwortet "was hat
-  // dieser Spieler frueher gespielt", dieser hier "was kann und soll er
-  // JETZT picken". Die Historie bleibt die Datengrundlage, ist aber nur
-  // noch ein Faktor von mehreren.
-  //
-  // Daten von DraftGap (MIT, github.com/vigovlugt/draftgap), aufbereitet aus
-  // lolalytics. Die Schluessel sind Nummern - siehe draft_daten() in build.py.
-  const DRAFT = DATA.draft || null;
-  const DRAFT_NR = new Map();
-  if (DRAFT) DRAFT.namen.forEach((n, i) => DRAFT_NR.set(n, String(i)));
+  // Gerechnet wird in engine/ - siehe engine/README.md. Diese Datei
+  // zeigt nur noch an. Vorher stand dieselbe Logik hier drin und war
+  // ausserhalb eines Browsers nicht pruefbar; jetzt laeuft sie unter
+  // Node mit ueber hundert Tests und wird beim Bauen eingefuegt.
+  const ENGINE = typeof DraftEngine === "undefined" ? null : DraftEngine;
 
+  const liveTeile = (() => {
+    if (!ENGINE || !DATA.draft) return null;
+    const quelle = ENGINE.quelleAnlegen(DATA.draft);
+    const heuristik = ENGINE.heuristikAnlegen(DATA.heuristik || null);
+    const merkmale = ENGINE.merkmaleAnlegen(quelle, heuristik);
+    const comp = ENGINE.compAnlegen(merkmale, heuristik);
+    const mannschaft = ENGINE.teamAnlegen(DATA.teams);
+    const bewerter = ENGINE.bewerterAnlegen(
+      {quelle, merkmale, comp, team: mannschaft, heuristik});
+    const suche = ENGINE.sucheAnlegen({quelle, merkmale, bewerter});
+    const protokoll = ENGINE.protokollAnlegen({
+      speicher: (() => { try { return window.localStorage; }
+                         catch (e) { return null; } })(),
+    });
+    return {quelle, heuristik, merkmale, comp, mannschaft, bewerter,
+            suche, protokoll};
+  })();
+
+  const DRAFT = liveTeile ? liveTeile.quelle : null;
+
+  /* Zustand der Oberflaeche. Der Draftzustand selbst wird daraus gebaut -
+     eine Wahrheit, siehe engine/state.js. */
   const SEITEN = [["eigen", "wir"], ["gegner", "gegner"]];
   const leer5 = () => [null, null, null, null, null];
   const liveStand = {
@@ -3360,89 +3503,105 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   };
   let liveAktiv = {seite: "eigen", rolle: 0};
   let liveFearless = false;
+  // Keine Vorauswahl: eine eingetragene Serie ist eine bewusste Wahl.
+  // Vorher stand hier die zuletzt gespielte, und wer ein Spiel merkte,
+  // sperrte sich ungewollt auch deren zehn Champions.
   let liveSerie = null;
   let liveFilter = "alle";
   let liveSuche = "";
   let liveGegner = "";
+  let liveRisiko = "ausgewogen";
 
-  function draftBasis(champ, rolle) {
-    if (!DRAFT) return null;
-    const i = DRAFT_NR.get(champ);
-    if (i === undefined) return null;
-    const alle = DRAFT.basis[i] || {};
-    const e = alle[rolle];
-    if (!e) return null;
-    const gesamt = Object.values(alle).reduce((n, x) => n + x[0], 0);
-    // Nebenrollen aussortieren: Ahri hat 7.691 Partien auf Top, gemessen an
-    // ihren 236.000 auf Mid ist das Rauschen - und sie stand beim Toplaner
-    // einmal als bester Vorschlag.
-    if (e[0] < 1000 || e[0] < gesamt / 20) return null;
-    return {spiele: e[0], quote: e[1] / 1000};
+  /* Spiele der laufenden Serie, die noch nicht in games.json stehen.
+     Je Eintrag die zehn gepickten Champions. Bleibt im Browser - das ist
+     ein Zwischenstand fuer den Abend, kein Ergebnis. */
+  let liveSerienSpiele = (() => {
+    try {
+      const roh = window.localStorage.getItem("live-serie");
+      const d = roh ? JSON.parse(roh) : null;
+      return Array.isArray(d) ? d : [];
+    } catch (e) { return []; }
+  })();
+
+  // Wer Spiele gemerkt hat, meinte Fearless - sonst waeren sie nach dem
+  // Neuladen zwar noch da, aber wirkungslos.
+  if (liveSerienSpiele.length) liveFearless = true;
+
+  function serieSichern() {
+    try {
+      window.localStorage.setItem("live-serie", JSON.stringify(liveSerienSpiele));
+    } catch (e) { /* voll oder gesperrt - dann eben nur fuer diese Sitzung */ }
   }
 
-  // art: "m" Matchup gegen die gegnerische Rolle, "s" Synergie mit der eigenen.
-  function draftPaar(champ, rolle, art, fremd, rolle2) {
-    if (!DRAFT) return null;
-    const i = DRAFT_NR.get(champ), j = DRAFT_NR.get(fremd);
-    if (i === undefined || j === undefined) return null;
-    const stufe = (((DRAFT.paare[i] || {})[rolle] || {})[art] || {})[rolle2];
-    const e = stufe && stufe[j];
-    return e ? {spiele: e[0], quote: e[1] / 1000} : null;
+  /** Den aktuellen Draft als gespieltes Spiel merken und das Brett
+   *  leeren. Bans zaehlen nicht: Fearless sperrt Picks. */
+  function serieMerken() {
+    const champs = [...liveStand.picks.eigen, ...liveStand.picks.gegner]
+      .filter(Boolean);
+    if (!champs.length) return;
+    liveSerienSpiele.push(champs);
+    serieSichern();
+    liveStand.picks.eigen = leer5();
+    liveStand.picks.gegner = leer5();
+    liveStand.bans.eigen = leer5();
+    liveStand.bans.gegner = leer5();
+    liveFearless = true;        // wer ein Spiel merkt, meint Fearless
+    liveCache.clear();
+    renderLiveDraft();
   }
 
-  // Anteil magischen Schadens in Prozent - gemessen, nicht geschaetzt.
-  function liveSchaden(champ, rolle) {
-    if (!DRAFT || !DRAFT.schaden) return null;
-    const i = DRAFT_NR.get(champ);
-    if (i === undefined) return null;
-    const e = (DRAFT.schaden[i] || {})[String(rolle)];
-    return e === undefined ? null : e;
+  function serieVergessen(i) {
+    liveSerienSpiele.splice(i, 1);
+    serieSichern();
+    liveCache.clear();
+    renderLiveDraft();
   }
 
-  // Wie einseitig unsere bisherigen Picks sind. Ohne Picks gibt es nichts
-  // zu sagen - dann faellt der Faktor weg, statt eine Zahl zu erfinden.
-  function liveMischung() {
-    const werte = [];
-    for (let r = 0; r < 5; r++) {
-      const c = liveStand.picks.eigen[r];
-      if (!c) continue;
-      const m = liveSchaden(c, r);
-      if (m !== null) werte.push(m);
-    }
-    if (!werte.length) return null;
-    return {magisch: Math.round(werte.reduce((a, b) => a + b, 0) / werte.length),
-            n: werte.length};
+  /** Aus den Feldern der Oberflaeche den Draftzustand bauen. */
+  function liveZustand() {
+    const z = ENGINE.ausFeldern({
+      picks: liveStand.picks, bans: liveStand.bans,
+      wirSind: "blue", patch: DRAFT.patch,
+      fearless: liveFearless ? fearlessVerbraucht() : null,
+    });
+    return z;
   }
 
-  // ------------------------------------------------ Was ist weg
-  // Ein Champion ist aus drei Gruenden nicht mehr waehlbar, und der Grund
-  // gehoert dazu: gebannt, schon gepickt, oder in dieser Fearless-Serie
-  // verbraucht. Alle drei verschwinden aus den Empfehlungen.
-  function liveGesperrt() {
-    const raus = new Map();
-    const setz = (champ, art, text) => {
-      if (champ && !raus.has(champ)) raus.set(champ, {art, text});
-    };
-    for (const [seite] of SEITEN) {
-      const wer = seite === "eigen" ? team.team : (liveGegnerName() || "Gegner");
-      for (const c of liveStand.bans[seite]) setz(c, "ban", "gebannt von " + wer);
-      for (const c of liveStand.picks[seite]) setz(c, "pick", "gepickt von " + wer);
-    }
-    if (liveFearless && liveSerie) {
+  /** Welche Champions diese Fearless-Serie schon verbraucht hat. Die
+     einzige Stelle, die auf vergangene Partien schaut - und das ist die
+     Spielregel, kein Staerkeurteil. */
+  function fearlessVerbraucht() {
+    const raus = [];
+    // Eingetragene Partien der gewaehlten Serie ...
+    if (liveSerie) {
       for (const g of games) {
         if (g.series !== liveSerie) continue;
-        for (const p of g.picks || []) {
-          setz(p.champ, "fearless",
-               "Fearless \u00b7 Spiel " + (g.game || "?") + " der Serie");
-        }
+        for (const p of g.picks || []) if (p.champ) raus.push(p.champ);
       }
+    }
+    // ... und die heute Abend gemerkten.
+    for (const spiel of liveSerienSpiele) raus.push(...spiel);
+    return [...new Set(raus)];
+  }
+
+  /** Gesperrte Champions mit Grund - fuer die Sperrleiste. */
+  function liveGesperrt() {
+    const z = liveZustand();
+    const roh = ENGINE.gesperrt(z);
+    const raus = new Map();
+    for (const [champ, v] of roh) {
+      raus.set(champ, {
+        art: v.art,
+        text: v.art === "fearless" ? "in dieser Serie schon gespielt"
+            : v.text.replace("uns", team.team)
+                    .replace("dem Gegner", liveGegnerName() || "dem Gegner"),
+      });
     }
     return raus;
   }
 
   const liveGegnerName = () => liveGegner.trim() || null;
 
-  // Gegner der gewaehlten Serie - nur als Vorschlag fuer das leere Feld.
   function liveSerienGegner() {
     for (const block of gameBlocks()) {
       if (block.series === liveSerie) return block.games[0].opponent;
@@ -3457,150 +3616,88 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   const liveSpieler = (rolle) =>
     team.players.find((p) => !p.bench && p.role === ROLES[rolle][0]) || null;
 
-  // ------------------------------------------------ Die Bewertung
-  // Vier bis fuenf benannte Teile, jeder aus vorhandenen Daten. Fehlt ein
-  // Teil, faellt er aus Summe UND Hoechstwert - er wird nicht geschaetzt.
-  // Darum steht unter jeder Karte, woraus sich die Zahl ergeben hat.
-  const klemm = (x, a, c) => Math.max(a, Math.min(c, x));
+  /* Die im Gegnerfeld genannte Mannschaft, sofern wir sie gescoutet
+     haben. Frei getippte Namen ergeben null - dann wissen wir ueber den
+     Gegner nichts und der Komfort faellt aus. */
+  const liveGegnerTeam = () => {
+    const n = (liveGegner || "").trim();
+    return n ? TEAMS.find((t) => t.team === n) || null : null;
+  };
 
-  function liveBewerten(champ, rolle, pool, plan) {
-    const basis = draftBasis(champ, String(rolle));
-    if (!basis) return null;              // auf dieser Rolle nicht gespielt
-    const zeile = pool.get(champ) || null;
-    const spiele = zeile ? zeile.play : 0;
-    const entschieden = zeile ? zeile.decided : 0;
-    const teile = [];
-    let summe = 0, hoechst = 0;
+  /* Zu welchem Slot gehoert welcher Spieler. Vorher nahm die Liste
+     immer den Starter der EIGENEN Mannschaft, auch auf einem
+     Gegnerslot - die Gegnerempfehlung war damit nach unserem Pool
+     gefaerbt. Kennen wir die gegnerische Mannschaft, gehoeren ihre
+     Spieler dorthin; kennen wir sie nicht, faellt der Komfort aus. */
+  function liveSpielerVon(seite, rolle) {
+    if (seite === "eigen") return liveSpieler(rolle);
+    const g = liveGegnerTeam();
+    if (!g) return null;
+    return (g.players || []).find((p) => !p.bench
+                                      && p.role === ROLES[rolle][0]) || null;
+  }
+  const liveSpielerAktiv = (rolle) => liveSpielerVon(liveAktiv.seite, rolle);
 
-    const nimm = (wort, punkte, max, art, text) => {
-      summe += punkte; hoechst += max;
-      teile.push({wort, art, text, anteil: max ? punkte / max : 0});
-    };
+  /* --------------------------------------------------- Die Rangliste */
+  /* Gleiche Lage, gleiches Ergebnis - und beim zweiten Mal ohne Rechnen.
+     Der Schluessel kommt aus der Engine und enthaelt alles, was zaehlt. */
+  const liveCache = new Map();
 
-    // 1. Patch-Staerke der Rolle (46 % -> 0, 54 % -> voll)
-    nimm("Patch", 20 * klemm((basis.quote - 0.46) / 0.08, 0, 1), 20,
-         basis.quote >= 0.51 ? "plus" : basis.quote <= 0.49 ? "minus" : "info",
-         dbQuote(basis.quote) + " auf " + ROLES[rolle][1]);
+  function liveRangliste(rolle) {
+    if (!liveTeile) return {liste: [], ms: 0, ausCache: false};
+    const z = liveZustand();
+    const spieler = liveSpielerAktiv(rolle);
+    const k = ENGINE.schluessel(z, rolle + "|" + liveRisiko
+      + "|" + liveAktiv.seite
+      + "|" + (spieler ? spieler.team + "/" + spieler.label : ""));
+    if (liveCache.has(k)) return {...liveCache.get(k), ausCache: true};
 
-    // 2. Gegen den gegnerischen Draft, und 3. mit den eigenen Picks. Zwei
-    //    getrennte Teile: ein Champion kann gegen den Gegner gut stehen und
-    //    trotzdem nicht zu den eigenen Picks passen. In einer gemeinsamen
-    //    Zahl war das nicht zu sehen.
-    const fit = liveFit(champ, rolle);
-    if (fit.gegen) {
-      const d = fit.gegen.quote - basis.quote;
-      nimm("Gegen", 20 * klemm((d + 0.02) / 0.04, 0, 1), 20,
-           d >= 0.005 ? "plus" : d <= -0.005 ? "minus" : "info",
-           dbQuote(fit.gegen.quote) + " gegen deren Picks");
+    const t0 = performance.now();
+    const liste = liveTeile.suche.rangliste(z, ROLES[rolle][0], {
+      // spieler.team statt team.team: auf einem Gegnerslot ist das die
+      // gegnerische Mannschaft.
+      spielerTeam: spieler ? spieler.team : null,
+      spielerLabel: spieler ? spieler.label : null,
+      spielerFuer: (r) => {
+        const sp = liveSpielerVon(liveAktiv.seite,
+                                  ROLES.findIndex(([w]) => w === r));
+        return sp ? {team: sp.team, label: sp.label} : null;
+      },
+      risikoprofil: liveRisiko,
+    });
+    const ergebnis = {liste, ms: performance.now() - t0};
+    // Der Cache darf nicht unbegrenzt wachsen; ein Draft hat zwanzig Zuege.
+    if (liveCache.size > 60) liveCache.clear();
+    liveCache.set(k, ergebnis);
+    if (liste.length && liveAktiv.seite === "eigen") {
+      liveTeile.protokoll.notiere(z, ROLES[rolle][0], liste,
+        {risikoprofil: liveRisiko, dauerMs: Math.round(ergebnis.ms)});
     }
-    if (fit.mit) {
-      const d = fit.mit.quote - basis.quote;
-      nimm("Synergie", 20 * klemm((d + 0.02) / 0.04, 0, 1), 20,
-           d >= 0.005 ? "plus" : d <= -0.005 ? "minus" : "info",
-           dbQuote(fit.mit.quote) + " mit unseren Picks");
-    }
-
-    // 4. Erfahrung des Spielers - 100 Partien schoepfen aus
-    nimm("Erfahrung", 35 * klemm(Math.log10(1 + spiele) / Math.log10(101), 0, 1), 35,
-         spiele >= 20 ? "plus" : spiele ? "info" : "minus",
-         spiele ? spiele + " eigene Partien" : "noch nie gespielt");
-
-    // 5. Eigene Winrate - erst ab zehn entschiedenen Partien, darunter sagt
-    //    sie nichts.
-    if (entschieden >= 10) {
-      const q = zeile.win / entschieden;
-      nimm("Eigene WR", 10 * klemm((q - 0.42) / 0.16, 0, 1), 10,
-           q >= 0.52 ? "plus" : q <= 0.45 ? "minus" : "info",
-           pct(zeile.win, entschieden) + " aus " + entschieden);
-    }
-
-    // 6. Zusammensetzung - nur wenn schon etwas von uns steht. Ein
-    //    Champion, der die Einseitigkeit ausgleicht, bekommt Punkte; einer,
-    //    der sie verstaerkt, nicht. Ohne eigene Picks faellt der Teil weg.
-    const mischung = liveMischung();
-    const magisch = liveSchaden(champ, rolle);
-    if (mischung && magisch !== null && mischung.n < 5) {
-      // Abstand zur Mitte vorher und nachher - kleiner ist besser.
-      const vorher = Math.abs(mischung.magisch - 50);
-      const nachher = Math.abs(
-        (mischung.magisch * mischung.n + magisch) / (mischung.n + 1) - 50);
-      nimm("Mischung", 10 * klemm((vorher - nachher) / 10 + 0.5, 0, 1), 10,
-           nachher < vorher - 1 ? "plus" : nachher > vorher + 1 ? "minus" : "info",
-           magisch + " % magisch, Team bisher " + mischung.magisch + " %");
-    }
-
-    // 7. Draftplan - eine ausdrueckliche Ansage des Spielers wiegt schwerer
-    //    als eine Handvoll Ranked-Partien.
-    const imPlan = plan.blind.includes(champ) ? "blind"
-                 : plan.likes.includes(champ) ? "likes" : null;
-    nimm("Plan", imPlan === "blind" ? 15 : imPlan === "likes" ? 10 : 0, 15,
-         imPlan ? "plus" : "info",
-         imPlan === "blind" ? "blind pickbar laut Plan"
-         : imPlan === "likes" ? "spielt er gerne" : "nicht im Draftplan");
-
-    const punkte = hoechst ? Math.round(100 * summe / hoechst) : 0;
-    const kategorie = spiele >= 20 ? "pool"
-                    : (spiele >= 3 || imPlan) ? "alternativen" : "selten";
-    return {punkte, sterne: klemm(Math.round(punkte / 20), 1, 5),
-            teile, basis, fit, spiele, entschieden, zeile, kategorie, imPlan};
+    return {...ergebnis, ausCache: false};
   }
 
-  // Gemessene Quoten, getrennt nach "gegen wen" und "mit wem". Kein Modell:
-  // ein erster Versuch addierte die Abweichungen der fuenf Matchups auf die
-  // Grundquote und landete bei JEDEM Champion unter 50 %, weil in jeder
-  // Matchup-Quote die Staerke des Gegners schon steckt.
-  function liveFit(champ, rolle) {
-    const sammeln = (art) => {
-      let summe = 0, gewicht = 0;
-      const teile = [];
-      for (let r2 = 0; r2 < 5; r2++) {
-        const seite = art === "m" ? "gegner" : "eigen";
-        const wer = liveStand.picks[seite][r2];
-        if (!wer || (art === "s" && r2 === rolle)) continue;
-        const e = draftPaar(champ, String(rolle), art, wer, String(r2));
-        if (!e) continue;
-        teile.push({art, wer, rolle: r2, quote: e.quote, spiele: e.spiele});
-        summe += e.quote * e.spiele; gewicht += e.spiele;
-      }
-      return gewicht ? {quote: summe / gewicht, spiele: gewicht, teile} : null;
-    };
-    return {gegen: sammeln("m"), mit: sammeln("s")};
+  /** In welche Schublade gehoert ein Kandidat? Die Kategorien richten
+     sich nach der Erfahrung des Spielers, nicht nach der Note. */
+  function liveKategorie(r, spieler) {
+    const k = r.components.komfort;
+    const partien = k && k.text ? Number((/(\d+) Partien/.exec(k.text) || [])[1] || 0) : 0;
+    const imPlan = k && /blind pickbar|spielt gerne/.test(k.text || "");
+    return partien >= 20 ? "pool"
+         : (partien >= 3 || imPlan) ? "alternativen" : "selten";
   }
 
-  const dbQuote = (q) =>
-    (Math.round(q * 1000) / 10).toLocaleString("de-DE", {minimumFractionDigits: 1})
-    + " %";
-
-  // Beide Aufstellungen im Ueberblick. Die Quote ist der nach Partien
-  // gewichtete Schnitt ueber ALLE gemessenen Paarungen zwischen unseren und
-  // ihren Picks - keine Hochrechnung auf eine Teamstaerke, sondern das, was
-  // diese Champions gegeneinander tatsaechlich geholt haben.
+  /** Beide Aufstellungen im Ueberblick. */
   function liveComp() {
-    const seite = (s) => {
-      const raus = [];
-      for (let r = 0; r < 5; r++) {
-        if (liveStand.picks[s][r]) raus.push({champ: liveStand.picks[s][r], rolle: r});
-      }
-      return raus;
+    if (!liveTeile) return null;
+    const z = liveZustand();
+    const unser = liveTeile.comp.profil(z.picks.blue);
+    const ihr = liveTeile.comp.profil(z.picks.red);
+    return {
+      wir: z.picks.blue, sie: z.picks.red,
+      unser, ihr,
+      quote: liveTeile.suche.compQuote(z),
+      phasen: liveTeile.comp.phasenVorteil(unser, ihr),
     };
-    const mischung = (liste) => {
-      const w = liste.map((p) => liveSchaden(p.champ, p.rolle))
-                     .filter((x) => x !== null);
-      if (!w.length) return null;
-      return {magisch: Math.round(w.reduce((a, b) => a + b, 0) / w.length),
-              n: w.length};
-    };
-    const wir = seite("eigen"), sie = seite("gegner");
-    let summe = 0, gewicht = 0, paare = 0;
-    for (const a of wir) {
-      for (const b of sie) {
-        const e = draftPaar(a.champ, String(a.rolle), "m", b.champ, String(b.rolle));
-        if (!e) continue;
-        summe += e.quote * e.spiele; gewicht += e.spiele; paare += 1;
-      }
-    }
-    return {wir, sie, mischWir: mischung(wir), mischSie: mischung(sie),
-            quote: gewicht ? summe / gewicht : null, paare, spiele: gewicht};
   }
 
   // ------------------------------------------------ Darstellung
@@ -3618,23 +3715,54 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       return;
     }
     const serien = liveSerien();
-    if (liveSerie === null && serien.length) liveSerie = serien[0];
 
-    ziel.append(liveKopf(serien), liveBoard(),
-                el("div", {class: "ld-comp"}),
-                el("div", {class: "ld-sperren"}),
-                liveFilterLeiste(),
-                el("div", {class: "ld-liste"}));
+    /* .filter(Boolean) ist Pflicht: serienLeiste() liefert null, wenn
+       nichts gemerkt ist, und Element.append(null) haengt den TEXT "null"
+       an. el() filtert Nullwerte selbst, append tut das nicht. */
+    ziel.append(...[liveKopf(serien), serienLeiste(), liveBoard(),
+                    el("div", {class: "ld-comp"}),
+                    el("div", {class: "ld-sperren"}),
+                    liveFilterLeiste(),
+                    el("div", {class: "ld-liste"})].filter(Boolean));
     liveAktualisieren();
+  }
+
+  /* Die heute Abend gemerkten Spiele. Sie stehen hier und nicht nur in
+     der Sperrleiste, damit man sie auch wieder loswird - ein Fehlgriff
+     beim Merken soll kein Neuanfang sein. */
+  function serienLeiste() {
+    if (!liveSerienSpiele.length) return null;
+    const alles = el("button", {class: "ld-reset", type: "button"},
+                     "Serie zurücksetzen");
+    alles.addEventListener("click", () => {
+      liveSerienSpiele = [];
+      serieSichern();
+      liveCache.clear();
+      renderLiveDraft();
+    });
+    return el("div", {class: "ld-serie-leiste"},
+      el("span", {class: "ld-serie-wort"}, "Gemerkte Spiele"),
+      el("div", {class: "ld-serie-liste"}, liveSerienSpiele.map((spiel, i) => {
+        const weg = el("button", {class: "ld-serie-weg", type: "button",
+            "aria-label": "Spiel " + (i + 1) + " vergessen",
+            title: spiel.join(", ")}, "×");
+        weg.addEventListener("click", () => serieVergessen(i));
+        return el("span", {class: "ld-serie-spiel"},
+          el("b", {}, "Spiel " + (i + 1)),
+          el("span", {class: "sub"}, spiel.length + " Champions"),
+          weg);
+      })),
+      alles);
   }
 
   function liveKopf(serien) {
     const haken = el("input", {type: "checkbox"});
     haken.checked = liveFearless;
     const wahl = el("select", {class: "ld-serie",
-        "aria-label": "Serie, deren Picks gesperrt sind"},
-      serien.length ? serien.map((n) => el("option", {value: n}, n))
-                    : el("option", {value: ""}, "keine Serie erfasst"));
+        "aria-label": "Eingetragene Serie, deren Picks zusaetzlich gesperrt sind"},
+      el("option", {value: ""}, serien.length
+         ? "— nur gemerkte Spiele —" : "keine Serie erfasst"),
+      serien.map((n) => el("option", {value: n}, n)));
     wahl.value = liveSerie || "";
     wahl.disabled = !liveFearless;
     // Der Gegner ist frei waehlbar - er haengt nicht an der Serie. Vorher
@@ -3669,14 +3797,25 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       liveStand.picks.eigen = leer5(); liveStand.picks.gegner = leer5();
       renderLiveDraft();
     });
+    // Ein abgeschlossenes Spiel merken: die zehn Picks wandern in die
+    // Serie, das Brett wird frei fuers naechste. Nur sinnvoll, wenn auch
+    // etwas steht.
+    const merken = el("button", {class: "ld-merken", type: "button",
+        title: "Die zehn Picks dieses Spiels sperren und das Brett leeren"},
+      "Spiel merken");
+    merken.disabled = ![...liveStand.picks.eigen, ...liveStand.picks.gegner]
+      .some(Boolean);
+    merken.addEventListener("click", serieMerken);
+
     return el("div", {class: "ld-kopf"},
       el("span", {class: "ld-titel"}, "Live Draft"),
       el("span", {class: "ld-paarung"},
         el("b", {class: "eigen"}, team.team), " vs "),
       gegnerFeld,
       el("label", {class: "ld-schalter"}, haken, " Fearless"),
-      wahl, zurueck,
-      el("span", {class: "sub ld-quelle"}, "Patch " + (DRAFT.version || "?")
+      wahl, merken, zurueck,
+      // Die Engine-Quelle nennt das Feld patch, nicht version.
+      el("span", {class: "sub ld-quelle"}, "Patch " + (DRAFT.patch || "?")
          + (DRAFT.stand ? " \u00b7 " + deDate(DRAFT.stand) : "")));
   }
 
@@ -3744,7 +3883,8 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
         });
         return k;
       }));
-    const arten = [["alle", "Alle"], ["pool", "Dein Pool"],
+    const arten = [["alle", "Alle"], ["blind", "Blind pickbar"],
+                   ["pool", "Dein Pool"],
                    ["alternativen", "Alternativen"], ["selten", "Selten gespielt"],
                    ["gesperrt", "Gesperrt"]];
     const kategorien = el("div", {class: "ld-kategorien"}, arten.map(([wert, wort]) => {
@@ -3767,6 +3907,13 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   function liveAktualisieren() {
     const knoepfe = document.querySelectorAll("#live-draft .ld-rolle-knopf");
     knoepfe.forEach((k, i) => k.classList.toggle("an", i === liveAktiv.rolle));
+    // Der Kopf wird beim Tippen nicht neu gebaut - der Merken-Knopf muss
+    // seinen Zustand trotzdem mitbekommen, sonst bleibt er ewig grau.
+    const merken = document.querySelector("#live-draft .ld-merken");
+    if (merken) {
+      merken.disabled = ![...liveStand.picks.eigen, ...liveStand.picks.gegner]
+        .some(Boolean);
+    }
     liveCompZeichnen();
     liveSperrleiste();
     liveListeZeichnen();
@@ -3777,44 +3924,49 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     if (!host) return;
     host.textContent = "";
     const c = liveComp();
-    if (!c.wir.length && !c.sie.length) { host.hidden = true; return; }
+    if (!c || (!c.wir.length && !c.sie.length)) { host.hidden = true; return; }
     host.hidden = false;
 
-    const balken = (m, seite) => {
-      if (!m) {
+    const balken = (profil) => {
+      if (!profil || !profil.schaden) {
         return el("span", {class: "ld-comp-leer"}, "kein Schadensprofil");
       }
+      const m = Math.round(profil.schaden.magisch.value * 100);
       return el("span", {class: "ld-mix"},
-        el("span", {class: "ld-mix-balken",
-                    title: m.magisch + " % magisch aus " + m.n
-                           + (m.n === 1 ? " Pick" : " Picks")},
-          el("i", {class: "magisch", style: "width:" + m.magisch + "%"})),
+        el("span", {class: "ld-mix-balken", title: profil.schaden.magisch.note},
+          el("i", {class: "magisch", style: "width:" + m + "%"})),
         el("span", {class: "ld-mix-wort"},
-           m.magisch + " % magisch \u00b7 " + (100 - m.magisch) + " % physisch"));
+           m + " % magisch \u00b7 " + (100 - m) + " % physisch"));
     };
 
-    const zeile = (seite, wort, liste, m) =>
+    const zeile = (seite, wort, picks, profil) =>
       el("div", {class: "ld-comp-zeile " + seite},
         el("span", {class: "ld-comp-name"}, wort),
-        el("span", {class: "ld-comp-zahl"}, liste.length + "/5"),
-        balken(m, seite));
+        el("span", {class: "ld-comp-zahl"}, picks.length + "/5"),
+        balken(profil));
 
-    host.append(
-      el("div", {class: "ld-comp-kopf"},
-        el("span", {class: "ld-comp-wort"}, "Aufstellungen"),
-        c.quote !== null
-          ? el("span", {class: "ld-comp-quote " + (c.quote >= 0.515 ? "gut"
-                : c.quote <= 0.485 ? "schwach" : ""),
-               title: "Nach Partien gewichteter Schnitt \u00fcber " + c.paare
-                      + " Paarungen, zusammen " + tausend(c.spiele) + " Partien"},
-              el("b", {}, dbQuote(c.quote)), " f\u00fcr " + team.team)
-          : el("span", {class: "sub"},
-              "Quote erst, wenn auf beiden Seiten etwas steht"),
-        c.quote !== null
-          ? el("span", {class: "sub"}, "aus " + c.paare + " gemessenen Paarungen")
-          : null),
-      zeile("eigen", team.team, c.wir, c.mischWir),
-      zeile("gegner", liveGegnerName() || "Gegner", c.sie, c.mischSie));
+    const kopf = el("div", {class: "ld-comp-kopf"},
+      el("span", {class: "ld-comp-wort"}, "Aufstellungen"));
+    if (c.quote !== null && c.quote !== undefined) {
+      kopf.append(
+        el("span", {class: "ld-comp-quote " + (c.quote >= 0.515 ? "gut"
+             : c.quote <= 0.485 ? "schwach" : ""),
+           title: "Nach Partien gewichteter Schnitt ueber die gemessenen "
+                  + "Paarungen beider Aufstellungen"},
+          el("b", {}, dbQuote(c.quote)), " f\u00fcr " + team.team),
+        el("span", {class: "sub"}, "aus gemessenen Paarungen"));
+    } else {
+      kopf.append(el("span", {class: "sub"},
+        "Quote erst, wenn auf beiden Seiten etwas steht"));
+    }
+    if (c.phasen) {
+      kopf.append(el("span", {class: "sub"}, "stark: "
+        + {frueh: "frueh", mittel: "mittel", spaet: "sp\u00e4t"}[c.phasen.stark]));
+    }
+
+    host.append(kopf,
+      zeile("eigen", team.team, c.wir, c.unser),
+      zeile("gegner", liveGegnerName() || "Gegner", c.sie, c.ihr));
   }
 
   function liveSperrleiste() {
@@ -3824,8 +3976,8 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     const gesperrt = liveGesperrt();
     if (!gesperrt.size) { host.hidden = true; return; }
     host.hidden = false;
-    // Keine Emoji: sie sehen auf jedem System anders aus und passen nicht zu
-    // den uebrigen Marken des Boards, die gezeichnet sind.
+    // Keine Emoji: sie sehen auf jedem System anders aus und passen nicht
+    // zu den uebrigen Marken des Boards, die gezeichnet sind.
     const gruppen = [["fearless", "Fearless gesperrt"],
                      ["ban", "Gebannt"], ["pick", "Schon gepickt"]];
     for (const [art, wort] of gruppen) {
@@ -3835,7 +3987,8 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
         el("span", {class: "ld-sperr-wort"}, wort + " (" + liste.length + ")"),
         el("div", {class: "ld-sperr-liste"}, liste.map(([champ, v]) => {
           const src = iconUrl(champ);
-          return el("span", {class: "ld-sperr ld-" + art, title: champ + " \u2014 " + v.text},
+          return el("span", {class: "ld-sperr ld-" + art,
+                             title: champ + " \u2014 " + v.text},
             src ? el("img", {src, alt: "", loading: "lazy"}) : null,
             el("span", {}, champ));
         }))));
@@ -3846,8 +3999,14 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     const host = document.querySelector("#live-draft .ld-liste");
     if (!host) return;
     host.textContent = "";
+    if (!liveTeile) {
+      host.append(el("p", {class: "hint"},
+        "Keine Draftdaten eingebettet \u2014 build.py konnte die Datens\u00e4tze "
+        + "nicht laden."));
+      return;
+    }
     const rolle = liveAktiv.rolle;
-    const spieler = liveSpieler(rolle);
+    const spieler = liveSpielerAktiv(rolle);
     const gesperrt = liveGesperrt();
 
     if (liveFilter === "gesperrt") {
@@ -3860,117 +4019,195 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       return;
     }
 
-    const turnier = tournamentIndex();
-    const pool = new Map();
-    const plan = spieler ? planOf(spieler) : {blind: [], likes: [], note: ""};
-    if (spieler) {
-      for (const r of championRows(spieler, turnier, false)) pool.set(r.champ, r);
-    }
+    /* Aus dem Draftplan, nicht aus dem Komforttext: der Plan kann im
+       Browser eingetragen sein und noch in keiner Datei stehen. */
+    const blindbar = new Set(spieler ? planOf(spieler).blind : []);
 
-    const alle = [];
-    for (const champ of DRAFT.namen) {
-      if (gesperrt.has(champ)) continue;
-      if (liveSuche && !champ.toLowerCase().includes(liveSuche)) continue;
-      const w = liveBewerten(champ, rolle, pool, plan);
-      if (w) alle.push({champ, w});
-    }
-    alle.sort((x, y) => y.w.punkte - x.w.punkte
-                     || (y.w.spiele - x.w.spiele));
+    /* Blindsicher ist eine Eigenschaft des Champions im Patch und haengt
+       nicht am Spieler - sie gilt also auch auf dem Gegnerslot. */
+    const sicher = (champ) => {
+      const m = liveTeile.merkmale.fuer(champ, ROLES[rolle][0]);
+      return m && m.blindsicher && m.blindsicher.value ? m.blindsicher : null;
+    };
 
-    const gefiltert = liveFilter === "alle" ? alle
-      : alle.filter((x) => x.w.kategorie === liveFilter);
+    const {liste, ms, ausCache} = liveRangliste(rolle);
+    const gefiltert = (liveSuche
+        ? liste.filter((r) => r.champion.toLowerCase().includes(liveSuche))
+        : liste)
+      .map((r) => ({r, kat: liveKategorie(r, spieler),
+                    blind: blindbar.has(r.champion),
+                    sicher: sicher(r.champion)}))
+      .filter((x) => liveFilter === "alle" ? true
+                   // Der Filter meint die Frage "was kann ich frueh
+                   // setzen" - beide Begruendungen zaehlen, die Marken
+                   // auf der Karte sagen welche.
+                   : liveFilter === "blind" ? (x.blind || x.sicher)
+                   : x.kat === liveFilter);
 
     host.append(el("p", {class: "hint"},
-      (spieler ? spieler.label + " \u00b7 " : "")
+      (liveAktiv.seite === "eigen" ? "" : "Gegnerslot \u00b7 ")
+      + (spieler ? spieler.label + " \u00b7 " : "")
       + gefiltert.length + " w\u00e4hlbar auf " + ROLES[rolle][1]
       + (gesperrt.size ? " \u00b7 " + gesperrt.size + " gesperrt" : "")
-      + (liveStand.picks.gegner.some(Boolean)
-         ? " \u00b7 Reihenfolge ber\u00fccksichtigt den eingetragenen Draft"
-         : " \u00b7 noch kein Gegnerpick eingetragen, darum z\u00e4hlt der Draft "
-           + "noch nicht mit")));
+      + " \u00b7 " + Math.round(ms) + " ms" + (ausCache ? " (gemerkt)" : "")));
+
+    /* Der Backtest ueber 68 Partien kann nicht zeigen, dass das Modell
+       den Muenzwurf schlaegt. Das gehoert an die Empfehlung, nicht ins
+       Kleingedruckte. */
+    host.append(el("p", {class: "hint ld-warnung"},
+      "Entscheidungshilfe, keine Prognose: im Backtest \u00fcber 68 Partien "
+      + "l\u00e4sst sich nicht zeigen, dass das Modell besser trifft als ein "
+      + "M\u00fcnzwurf. Die Begr\u00fcndungen unter jeder Karte sind gemessen \u2014 "
+      + "die Rangfolge ist ein Vorschlag."));
 
     if (liveFilter === "alle" && gefiltert.length) {
-      // Die Kategorien lassen die besten Treffer bewusst stehen: ein
-      // Champion darf oben als bester Treffer UND unten im eigenen Pool
-      // auftauchen - das sind zwei verschiedene Fragen.
-      host.append(liveAbschnitt("Beste Treffer", gefiltert.slice(0, 6), rolle, true));
-      for (const [art, wort, deckel] of [["pool", "Dein Pool", 0],
+      host.append(liveAbschnitt("Beste Treffer", gefiltert.slice(0, 6), true));
+      /* Auf einem Gegnerslot ist es nicht "dein" Pool, sondern der des
+         gegnerischen Spielers - und ohne gescoutete Mannschaft gibt es
+         gar keinen. */
+      const poolWort = liveAktiv.seite === "eigen" ? "Dein Pool"
+        : spieler ? spieler.label + " spielt oft" : "Viel gespielt";
+      for (const [art, wort, deckel] of [["pool", poolWort, 0],
                                          ["alternativen", "Alternativen", 0],
                                          ["selten", "Selten gespielt", 24]]) {
-        const teil = gefiltert.filter((x) => x.w.kategorie === art);
+        const teil = gefiltert.filter((x) => x.kat === art);
         if (!teil.length) continue;
-        // Selten gespielte gibt es dutzendweise. In der Alle-Ansicht die
-        // besten, vollstaendig steht die Liste unter ihrem eigenen Filter.
         host.append(liveAbschnitt(wort, deckel ? teil.slice(0, deckel) : teil,
-                                  rolle, false, teil.length));
+                                  false, teil.length));
       }
     } else {
-      host.append(liveAbschnitt(null, gefiltert, rolle, false));
+      host.append(liveAbschnitt(null, gefiltert, false));
     }
   }
 
-  function liveAbschnitt(titel, eintraege, rolle, hervor, gesamt) {
+  function liveAbschnitt(titel, eintraege, hervor, gesamt) {
     const zahl = gesamt && gesamt > eintraege.length
       ? eintraege.length + " von " + gesamt : String(eintraege.length);
     return el("div", {class: "ld-abschnitt"},
       titel ? el("h3", {class: "ld-abschnitt-wort"}, titel,
                  el("span", {class: "sub"}, " " + zahl)) : null,
       el("div", {class: "ld-karten"},
-         eintraege.map((x) => liveKarte(x.champ, x.w, rolle, hervor))));
+         eintraege.map((x) => liveKarte(x.r, x.kat, hervor, x.blind,
+                                        x.sicher))));
   }
 
-  function liveKarte(champ, w, rolle, hervor) {
-    const src = iconUrl(champ);
-    const stufe = w.punkte >= 70 ? "sehrgut" : w.punkte >= 55 ? "gut" : "normal";
-    const knopf = el("button", {class: "ld-picken", type: "button"},
-      "Picken");
+  /* Die Karte zeigt die Spur, die die Engine mitliefert: jeder Teil mit
+     seinem Beitrag, dazu Konfidenz und - wo gerechnet - Robustheit. */
+  function liveKarte(r, kategorie, hervor, blind, sicher) {
+    const src = iconUrl(r.champion);
+    const A = ENGINE.ANZEIGE;
+    const stufe = r.score >= A.gruenAb ? "sehrgut"
+                : r.score >= A.orangeAb ? "gut" : "normal";
+    const sterne = A.sterne.filter((x) => r.score >= x).length + 1;
+    const knopf = el("button", {class: "ld-picken", type: "button"}, "Picken");
     knopf.addEventListener("click", () => {
-      liveStand.picks[liveAktiv.seite][liveAktiv.rolle] = champ;
+      liveStand.picks[liveAktiv.seite][liveAktiv.rolle] = r.champion;
       renderLiveDraft();
     });
-    return el("div", {class: "ld-karte " + stufe + (hervor ? " hervor" : ""),
-                      "data-kat": w.kategorie},
+
+    const k = r.components.komfort;
+    return el("div", {class: "ld-karte " + stufe + (hervor ? " hervor" : "")
+                             + (blind ? " ld-blind" : "")
+                             + (sicher ? " ld-sicher" : ""),
+                      "data-kat": kategorie},
       el("div", {class: "ld-karte-kopf"},
         src ? el("img", {class: "ld-bild", src, alt: "", loading: "lazy"}) : null,
-        el("span", {class: "ld-karte-name"}, champ),
-        el("span", {class: "ld-punkte " + stufe, title: "Match-Score"}, w.punkte)),
+        el("span", {class: "ld-karte-name"}, r.champion),
+        blind ? el("span", {class: "ld-blind-chip",
+                            title: "Draftplan: blind pickbar"}, "blind") : null,
+        sicher ? el("span", {class: "ld-sicher-chip",
+                             title: "Statistisch blindsicher — "
+                                    + sicher.note}, "sicher") : null,
+        el("span", {class: "ld-punkte " + stufe, title: "Match-Score"}, r.score)),
       el("div", {class: "ld-karte-zeile"},
-        el("span", {class: "ld-sterne", "aria-label": w.sterne + " von 5"},
-           "\u2605".repeat(w.sterne) + "\u2606".repeat(5 - w.sterne)),
-        el("span", {class: "ld-karte-zahlen"}, w.spiele
-           ? w.spiele + " Sp \u00b7 " + (w.entschieden
-               ? pct(w.zeile.win, w.entschieden) : "\u2014")
-           : "keine eigenen Partien")),
-      livePaarungen(w),
-      el("ul", {class: "ld-gruende"}, w.teile.map((t) =>
-        el("li", {class: "ld-grund " + t.art},
-          el("b", {}, t.wort), " ", t.text))),
+        el("span", {class: "ld-sterne", "aria-label": sterne + " von 5"},
+           "\u2605".repeat(sterne) + "\u2606".repeat(5 - sterne)),
+        el("span", {class: "ld-karte-zahlen"},
+           k ? k.text : "kein Komfortbeleg"),
+        el("span", {class: "ld-konfidenz " + r.confidenceWort,
+                    title: "Konfidenz " + (r.confidence ?? "?")},
+           r.confidenceWort)),
+      r.lookahead ? el("div", {class: "ld-vorschau"},
+        el("span", {class: "ld-vorschau-wort"}, "Vorausschau"),
+        el("span", {}, r.lookahead.text),
+        el("span", {class: "ld-robust " + r.lookahead.robustheit},
+           "robust: " + r.lookahead.robustheit)) : null,
+      livePaarungen(r),
+      liveSpur(r),
+      r.reasons.length ? el("ul", {class: "ld-gruende"},
+        r.reasons.slice(0, 3).map((g) => el("li", {class: "ld-grund plus"}, g)))
+        : null,
+      r.risks.length ? el("ul", {class: "ld-gruende"},
+        r.risks.slice(0, 2).map((g) => el("li", {class: "ld-grund minus"}, g)))
+        : null,
       knopf);
   }
 
-  // Jede einzelne Paarung als Chip - das war die Bitte: Synergien sollen
-  // auffallen, nicht in einem Schnitt verschwinden. Gruen ab 52 %, rot
-  // unter 48 %, sonst ruhig.
-  function livePaarungen(w) {
-    const reihe = (wort, fit, klasse) => {
-      if (!fit) return null;
+  /* Jede eingetragene Paarung einzeln - nicht nur die auffaelligen.
+     Vorher nannte die Karte nur, was mehr als zwei Punkte von der
+     Erwartung abwich; Wukong gegen Jarvan lag bei +1,9 und fehlte
+     darum, obwohl er mitgerechnet wurde. "Nicht gezaehlt" sah damit
+     genauso aus wie "unauffaellig". Jetzt steht jede Paarung da, und
+     eine ohne Daten sagt das auch. */
+  function livePaarungen(r) {
+    const reihe = (wort, teil, klasse) => {
+      if (!teil || (!teil.paare && !teil.ohneDaten)) return null;
+      const chips = (teil.paare || []).map((t) => {
+        const d = t.quote - t.erwartet;
+        const ton = d >= 0.015 ? "gut" : d <= -0.015 ? "schwach" : "neutral";
+        const src = iconUrl(t.wer);
+        return el("span", {class: "ld-paar " + ton,
+            title: t.wer + ": " + dbQuote(t.quote) + ", sonst "
+                   + dbQuote(t.erwartet) + " · "
+                   + tausend(t.spiele) + " Partien"},
+          src ? el("img", {src, alt: "", loading: "lazy"}) : null,
+          el("b", {}, dbQuote(t.quote).replace(" %", "")),
+          el("i", {}, (d >= 0 ? "+" : "") + (d * 100).toFixed(1)));
+      });
+      for (const wer of teil.ohneDaten || []) {
+        const src = iconUrl(wer);
+        chips.push(el("span", {class: "ld-paar ohne",
+            title: wer + ": keine Paarung mit genug Partien"},
+          src ? el("img", {src, alt: "", loading: "lazy"}) : null,
+          el("b", {}, "—")));
+      }
+      if (!chips.length) return null;
       return el("div", {class: "ld-paare " + klasse},
         el("span", {class: "ld-paare-wort"}, wort),
-        el("span", {class: "ld-paare-liste"}, fit.teile.map((t) =>
-          el("span", {class: "ld-paar " + dbPfeil(t.quote),
-              title: t.wer + " · " + dbQuote(t.quote) + " aus "
-                     + tausend(t.spiele) + " Partien"},
-            iconUrl(t.wer)
-              ? el("img", {src: iconUrl(t.wer), alt: "", loading: "lazy"}) : null,
-            el("b", {}, dbQuote(t.quote).replace(" %", ""))))));
+        el("span", {class: "ld-paare-liste"}, chips));
     };
-    const gegen = reihe("gegen", w.fit && w.fit.gegen, "gegen");
-    const mit = reihe("mit", w.fit && w.fit.mit, "mit");
+    const gegen = reihe("gegen", r.components.matchup, "gegen");
+    const mit = reihe("mit", r.components.synergie, "mit");
     if (!gegen && !mit) return null;
     return el("div", {class: "ld-paarungen"}, gegen, mit);
   }
 
-  const dbPfeil = (q) => q >= 0.52 ? "gut" : q <= 0.48 ? "schwach" : "neutral";
+  /* Die Erklaerungsspur: jeder Teil mit seinem Beitrag. Ohne sie waere
+     die Zahl ein Orakel. */
+  function liveSpur(r) {
+    const teile = Object.entries(r.components)
+      .filter(([, t]) => Math.abs(t.beitrag) >= 0.5)
+      .sort((a, b) => Math.abs(b[1].beitrag) - Math.abs(a[1].beitrag));
+    if (!teile.length) return null;
+    return el("div", {class: "ld-spur"}, teile.map(([name, t]) =>
+      el("span", {class: "ld-spur-teil " + (t.beitrag >= 0 ? "plus" : "minus")
+                         + (t.quelle === "heuristik" ? " geschaetzt" : ""),
+          title: name + ": " + t.text + "  (" + t.quelle
+                 + (t.konfidenz !== null && t.konfidenz !== undefined
+                    ? ", Konfidenz " + t.konfidenz.toFixed(2) : "") + ")"},
+        el("b", {}, SPUR_WORT[name] || name),
+        el("i", {}, (t.beitrag >= 0 ? "+" : "") + t.beitrag.toFixed(0)))));
+  }
+
+  const SPUR_WORT = {
+    meta: "Patch", matchup: "gegen", synergie: "mit", compFit: "Comp",
+    gegnerStoerung: "st\u00f6rt", flex: "Flex", komfort: "Komfort",
+    pickReihenfolge: "blind", lookahead: "Vorschau", risiko: "Risiko",
+  };
+
+  const dbQuote = (q) =>
+    (Math.round(q * 1000) / 10).toLocaleString("de-DE",
+      {minimumFractionDigits: 1}) + " %";
 
   function liveKarteGesperrt(champ, v) {
     const src = iconUrl(champ);

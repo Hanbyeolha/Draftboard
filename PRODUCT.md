@@ -403,6 +403,248 @@ dagegen im DraftGap-Datensatz schon vorhanden und kostet neun KB; damit
 beantwortet „Mischung“ die Frage nach der Zusammensetzung mit
 gemessenen Zahlen.
 
+**Die Draft-Engine zieht aus `template.html` aus, 9. Oktober 2026.**
+Phase 1 eines groesseren Umbaus zum Live-Draft-Entscheidungssystem. Die
+Engine lag in `template.html` mit der Darstellung verflochten und war
+ausserhalb eines Browsers nicht pruefbar. Jetzt liegt sie in `engine/`
+als reine Module: Node laedt sie fuer Tests, `build.py` fuegt sie beim
+Bauen ein. Die Einzeldatei-Auslieferung bleibt unberuehrt. Siehe
+`engine/README.md`.
+
+Dazu neu:
+
+- **Ein Draftzustand.** Vorher drei - `liveStand`, das Spielformular und
+  die Partienliste, jede kannte einen Teil. `engine/state.js` haelt ihn
+  einmal, mit Zugfolge und Cache-Schluessel.
+- **Jeder Wert traegt seine Herkunft** `{value, source, patch,
+  sampleSize, confidence}`. Konfidenz waechst mit der Stichprobe und
+  saettigt bei 2.000 Partien; eine Quote aus 43 Partien zaehlt gar nicht.
+- **Die Skalierungskurve ist eingebettet.** `statsByTime` aus den
+  DraftGap-Daten: fuenf Eimer nach Spieldauer je Rolle. Kayle 43 % -> 58 %,
+  Pantheon 52 % -> 47 %. Damit sind Skalierung und Frueh-/Mittel-/
+  Spaetspiel **gemessen** statt behauptet. Kosten 62 KB roh.
+- **Die Heuristiktabelle** `data/champion-heuristik.json` haelt zwoelf
+  strukturelle Achsen (Engage, Peel, Frontline, Poke, Dive, Catch,
+  Disengage, Siege, Splitpush, Teamfight, Objective, Scaling), fuer die
+  es **keine Datenquelle** gibt. Sie wird von Hand gepflegt, traegt die
+  eigene Quelle `heuristik` mit fester Konfidenz 0,45 und darf nirgends
+  als Statistik auftreten. Bewusst **nicht** aus Data Dragon abgeleitet -
+  das saehe genauer aus, als es waere.
+- **28 Tests** unter Nodes eingebautem Laeufer, ohne Abhaengigkeiten. Die
+  Datentests lesen die echte `index.html`.
+
+**Phase 2: die Merkmalsschicht.** `engine/features.js` buendelt alles,
+was nur von Champion, Rolle und Patch abhaengt - Patchstaerke,
+Rollenverteilung, Flexgrad, Schadensanteil, Skalierungskurve und die
+daraus abgeleiteten Phasen frueh/mittel/spaet. Gecacht, weil es fuer
+einen Patch konstant ist. Matchups und Synergien gehoeren NICHT dorthin:
+sie haengen am Draftzustand, und ein Cache darueber waere eine Luege.
+
+`engine/team.js` rechnet den Komfort aus drei Belegen, die nicht dasselbe
+sagen: Partien (logarithmisch), eigene Quote (erst ab zehn entschiedenen
+Partien) und Draftplan. Erfahrung und Ansage werden **nicht addiert** -
+wer einen Champion blind pickt, hat ihn meist auch gespielt; addieren
+zaehlte dieselbe Aussage zweimal.
+
+Gemessen: 342 Merkmalsbuendel in 3,0 ms, 8.700 Paarabfragen in 1,9 ms.
+Die Zielmarke von 250 ms hat reichlich Luft. **44 Tests.**
+
+**Phase 3: die Aufstellung, und was ein Pick ihr hinzufuegt.**
+`engine/comp.js` beantwortet die Frage, auf die es im Draft ankommt -
+nicht "wie gut ist Champion X", sondern "wie viel besser wird UNSERE
+Aufstellung mit X". Ein starker Champion, der nichts beitraegt, was
+fehlt, ist der schlechtere Pick als ein mittelmaessiger, der eine Luecke
+schliesst.
+
+An echten Daten, ohne jede Heuristik: zu Malphite und Amumu (75 %
+magischer Schaden, Balance 0,85) rangiert die Schicht Talon, Yasuo und
+Zed vor Ahri, Syndra und Veigar - weil ein weiterer magischer Champion
+die Aufstellung billig konterbar macht. Das kommt aus dem gemessenen
+Schadensprofil, nicht aus einer Behauptung.
+
+- **"Skaliert besser" gibt es nur relativ.** Ohne Gegenueber ist das
+  keine Aussage; `phasenVorteil` liefert nur etwas, wenn beide Kurven
+  belegt sind, und der Marginalwert laesst die Kurvenachse ohne Gegner
+  weg. Gegen die Beispielaufstellung steht unser Paar frueh +3,0 und
+  spaet -1,1 - daraus folgt ein Plan, nicht aus einem absoluten Urteil.
+- **Zwei Schwellen fuer dieselbe Achse.** Fuers Anzeigen braucht eine
+  Heuristikachse zwei gepflegte Picks, sonst ist sie eine Aussage ueber
+  einen Champion. Fuer eine DIFFERENZ gilt das nicht - sonst verschwaende
+  sie genau dann, wenn der Kandidat sie erst belegbar macht. Ein Test
+  hat das aufgedeckt.
+- **Jeder Marginalwert nennt `anteilGemessen`** - wie viel der Aussage
+  auf Messungen beruht statt auf Einschaetzung.
+
+**58 Tests.**
+
+**Phase 4: der Match-Score.** `engine/score.js` fuehrt die Teile zu einer
+Zahl zusammen und gibt die Spur dahin mit zurueck - was hat beigetragen,
+wie viel, woher kam es, wie sicher ist es. Eine Empfehlung ohne
+sichtbaren Grund ist ein Orakel.
+
+**Zwei Kalibrierungsfehler, die erst die Messung gezeigt hat:**
+
+- Die Teile ueberlappten sich. `compFit` traegt Schadensbalance, Kurve
+  und Rollenabdeckung bereits; sie standen zusaetzlich einzeln in den
+  Gewichten und zaehlten damit doppelt. Jetzt nur noch in `compFit`.
+- Die Bezugsgroesse fuer Matchup und Synergie war falsch. An der eigenen
+  Patchstaerke gemessen lag die Synergiequote ueber 87 Topkandidaten im
+  Median **+2,17 Punkte** und die Matchupquote **-2,10 Punkte** - beide
+  Komponenten saettigten und unterschieden gar nichts. Der Grund ist die
+  Lage, nicht der Champion: mit Jinx und Thresh zu spielen ist fuer jeden
+  besser, gegen Ornn und Wukong fuer jeden schlechter. Richtig ist die
+  Erwartung aus dem **Gegenueber**: Ornns eigener Matchupschnitt von
+  51,1 % heisst, ein beliebiger Gegner kommt gegen ihn auf 48,9 %. Damit
+  liegt der Median bei -0,05 beziehungsweise -0,29, und die Streuung
+  traegt die Aussage.
+
+**Konterbarkeit ist messbar.** Die Standardabweichung der Matchupquoten
+ueber alle Lanegegner: Lee Sin 1,49, Ornn 2,49, Malphite 3,83, Kassadin
+5,83, Neeko 6,62. Ein enger Wert heisst "steht gegen fast jeden gleich" -
+der sichere Blindpick. Die Schwellen sind an der Verteilung ueber alle
+342 Champion-Rollen-Paare geeicht, nicht geschaetzt. Steht der Lanegegner
+schon, faellt der Teil weg: dann ist die echte Paarung gemessen, und die
+Streuung noch einmal zu werten waere dieselbe Aussage zweimal.
+
+**Komfort hat einen Deckel.** Er darf hoechstens ein Viertel des Ganzen
+ausmachen (`KOMFORT.hoechstanteil`) - daempfen ja, ueberstimmen nein.
+
+**Keine Turnierdaten in der Bewertung.** Auf Wunsch des Nutzers kommt die
+Staerke eines Champions aus dem Patch, nicht aus unseren eigenen Spielen:
+die sagen, was jemand im Draft bekommen hat, nicht was er kann. Der
+Komfort kommt aus op.gg Ranked und nennt das im Text; die Queue LIGA ist
+als Komfortbeleg gesperrt und wirft einen Fehler. Die einzige Stelle, die
+auf vergangene Partien schaut, ist die Fearless-Sperre - und das ist die
+Spielregel, kein Staerkeurteil. Fuenf Tests halten es fest.
+
+**80 Tests.** 87 Kandidaten in 23 ms bewertet.
+
+**Phase 5: vorausschauen.** `engine/search.js` fragt, was der Gegner
+antwortet und wie wir danach stehen - unser Kandidat, wahrscheinliche
+Antwort, unsere beste Erwiderung. Tiefer nicht: das Gegnermodell ist eine
+Schaetzung, und in der dritten Lage waere davon nichts mehr uebrig.
+
+**Ein Irrweg, den erst die Messung aufgedeckt hat.** Als Zustandswert
+diente zuerst die Note unserer besten naechsten Wahl. Die wird aber von
+DEREN Patchstaerke beherrscht und haengt kaum daran, was wir gerade
+gepickt haben: in jeder Verzweigung gewann Rammus mit konstant 79
+Punkten. Der Lookahead addierte ueberall dasselbe und unterschied nichts.
+Jetzt traegt die gemessene Quote der Aufstellungen den Wert - sie bewegt
+sich nur um Zehntelpunkte (Vex 51,56 % gegen Malzahar 51,19 %), weil ein
+Pick von fuenf auch nicht mehr bewegen SOLL. Die Komponente wird darum
+ueber die Vorauswahl normiert: sie ordnet diese Kandidaten, statt eine
+absolute Siegchance zu behaupten.
+
+**Laufzeit:** schlimmster Fall 168 von 250 ms (drei gegen drei). Zwei
+Deckel halten das - der innere Kreis ist global begrenzt statt je Rolle,
+und der Gegnervorrat wird vorgefiltert, bevor er bewertet wird. Ohne
+beides hing die Laufzeit daran, wie frueh im Draft man steht.
+
+**Phase 6: der Backtest - und sein unbequemes Ergebnis.**
+
+| | n | Treffer | Brier |
+|---|---|---|---|
+| Modell (Comp-Quote) | 68 | 54,4 % ± 11,8 | 0,2495 |
+| nur Patchstaerke | 68 | 57,4 % ± 11,8 | 0,2493 |
+| Muenzwurf | 68 | - | 0,2500 |
+
+**Das Modell schlaegt den Muenzwurf nicht nachweisbar.** Das
+95-Prozent-Intervall reicht von 42,6 bis 66,2 % und schliesst 50 % ein.
+Die simple Grundlinie "wer hat die staerkeren Champions" ist sogar
+minimal besser; bei 68 Partien ist beides nicht unterscheidbar.
+
+Das ist kein Grund, das Modell wegzuwerfen, aber einer, es nicht zu
+ueberschaetzen. Der Ausgang eines Uniliga-Spiels haengt vor allem an
+Spielstaerke, Form und Ausfuehrung - der Draft erklaert davon einen
+kleinen Teil. Ein Modell, das aus dem Draft allein 70 % traefe, waere
+verdaechtig, nicht gut. Die Richtung stimmt immerhin: im Eimer 48-50 %
+traten 47,4 % ein, im Eimer 50-52 % dann 52,0 %. Und das Modell gibt sich
+zurueckhaltend - es sagt nie mehr als 52,9 % oder weniger als 47,3 %.
+
+**Was der Backtest nicht pruefen kann:** games.json hat keine
+Pick-Reihenfolge. Lookahead und Pickfolge bleiben ungeprueft. Dafuer
+schreibt `engine/log.js` ab Phase 7 mit, was in echten Drafts empfohlen
+und was gepickt wurde - ohne Namen, ohne Konten. Erst zaehlen, dann
+deuten: ein Modell auf dreissig Eintraegen zu trimmen waere schlimmer als
+keines.
+
+**102 Tests.**
+
+**Phase 7: der Reiter rechnet nicht mehr selbst.** `build.py` ersetzt
+einen vierten Platzhalter `__ENGINE__`; der Buendler haengt die elf Module
+in Abhaengigkeitsreihenfolge aneinander, streicht import und export und
+packt sie in eine Klammer (88 KB). Zwei Wachhunde brechen den Bau ab,
+bevor etwas still schiefgeht: doppelte Namen auf oberster Ebene - davon
+gab es drei - und nicht erkannte import/export-Zeilen.
+
+Neu sichtbar im Reiter: **Konfidenz** je Empfehlung, die vollstaendige
+**Erklaerungsspur** mit Beitrag je Teil (geschaetzte Teile gestrichelt
+umrandet), die **Vorausschau** mit Robustheit, und die **Herkunft im
+Text** ("67 Partien · 54 % aus 67 (RANKED S33)").
+
+**Und die Warnung steht an der Empfehlung**, nicht im Kleingedruckten:
+der Backtest kann nicht zeigen, dass das Modell besser trifft als ein
+Muenzwurf. Die Begruendungen darunter sind gemessen, die Rangfolge ist
+ein Vorschlag. Eine Oberflaeche, die 76 Punkte zeigt und verschweigt, was
+die Zahl wert ist, waere unehrlich.
+
+Gemessen im Browser: eine volle Rangliste 141 ms, beim zweiten Mal aus
+dem Cache. `index.html` 12.287 KB, **4,76 MB gzip**.
+
+**Zwei Rueckmeldungen aus dem ersten Gebrauch, 10. Oktober 2026.**
+
+*"Zu sehr auf die Vorlieben des Spielers geschnitten, ich sehe kaum
+gruen."* Die Messung gab halb recht: Komfort trug im Schnitt nur 2,0
+Punkte, bei gespielten Champions aber bis +14 - er wirkte wie ein
+Schalter. Beide naheliegenden Korrekturen waren falsch, und beide
+gemessen: eine belegte 0 gab 14 Punkte Abzug dafuer, dass wir nichts
+wissen; den Teil wegfallen zu lassen liess den Hoechstwert mitschrumpfen,
+und ploetzlich waren fuenf der sechs besten Vorschlaege nie gespielt.
+Richtig ist dazwischen - 0,15 bei Konfidenz 0,25, "moeglich, aber
+ungeuebt". Dass jemand einen Champion in dieser Season nicht gespielt
+hat, ist echte schwache Information, nicht fehlende.
+
+Und das Gruen: die Schwellen standen bei 70 und 55, bei einer Verteilung
+mit Median 43. Jetzt 60 und 50, geeicht ueber 310 Kandidaten in vier
+Draftlagen - 9 % gruen, 19 % orange. Die Sterne hingen an Punkte/20,
+fuenf Sterne haette es erst ab 90 gegeben.
+
+*"Ich kann die fertige Draft nicht voruebergehend speichern."* Stimmte:
+Fearless kannte nur Serien aus games.json, also nur Eingetragenes.
+Waehrend einer laufenden Bo3 nuetzt das nichts. Jetzt gibt es **Spiel
+merken**: die zehn Picks wandern in die Serie, das Brett wird frei, und
+der naechste Draft sperrt sie. Gemerkt wird im Browser - ein
+Zwischenstand fuer den Abend, kein Ergebnis; eingetragen wird weiterhin
+ueber den Reiter Turnierspiele. Gemerkte Spiele lassen sich einzeln
+wieder entfernen, und die Serienauswahl steht jetzt auf "nur gemerkte
+Spiele": vorher zog sie ungefragt die zuletzt gespielte Serie mit hinein.
+
+*"Warum sehe ich nicht, wie gut Wukong gegen Jarvan waere?"* Die
+Paarung WAR gerechnet - Wukong Jungle gegen Jarvan IV 52,8 % aus 12.083
+Partien, erwartet 50,9, also +1,9 Punkte. Die Schwelle fuers Nennen lag
+bei 2,0. Damit sah "nicht gezaehlt" genauso aus wie "unauffaellig", und
+das ist der schlechteste Zustand fuer eine Erklaerung. Jede Karte zeigt
+jetzt ALLE eingetragenen Paarungen als Chips mit Quote und Abstand zur
+Erwartung; eine ohne Daten steht gestrichelt mit "-" da, statt zu fehlen.
+
+**Mein Kontrastpruefer hatte die dritte blinde Stelle.** `color-mix()`
+liefert `color(srgb 0.88 0.92 0.92)` - Anteile von 0 bis 1. Der Pruefer
+las sie als 0 bis 255, hielt die gruen getoente Karte fuer fast schwarz
+und meldete acht Verstoesse, die keine waren. Dahinter lag genau einer:
+kleine gruene Schrift kam auf der Toenung in Hell auf 4,34:1 und hat
+jetzt einen eigenen, dunkleren Ton.
+
+**Die Regel, die das Modell ehrlich haelt:** fehlt ein Wert, faellt er aus
+Summe UND Hoechstwert. Er wird nicht geschaetzt, und der Rest wird nicht
+heimlich schwerer.
+
+**Was der Audit ergeben hat.** Der Partienkorpus ist besser als gedacht:
+68 vollstaendige Spiele mit Seite, Sieger, allen zehn Picks samt Rollen
+und Bans. **Aber ohne Pick-Reihenfolge** - ein "was waere an Pick 4
+richtig gewesen" laesst sich damit nicht nachspielen. Backtesten laesst
+sich der Endzustand gegen das Ergebnis; bei 68 Stichproben mit breiten
+Fehlerbalken.
+
 ## Technische Merkposten
 
 **Die Dateigröße ist kleiner, als sie aussieht.** `index.html` wiegt roh rund

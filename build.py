@@ -166,6 +166,71 @@ def embed_icons(icons, version):
     return out
 
 
+# Die Draft-Engine liegt als ES-Module in engine/. Node laedt sie direkt
+# fuer Tests und Backtest; die ausgelieferte Datei bekommt sie gebuendelt.
+# Reihenfolge ist Abhaengigkeitsreihenfolge - sie steht hier und nicht im
+# Dateinamen, damit man sie lesen kann.
+ENGINE_ORDNUNG = [
+    "config.js", "provenance.js", "state.js", "heuristik.js", "data.js",
+    "features.js", "team.js", "comp.js", "score.js", "search.js", "log.js",
+]
+ENGINE_DIR = ROOT / "engine"
+IMPORT_RE = re.compile(r"^import\s[^;]*?;\s*$", re.M | re.S)
+EXPORT_RE = re.compile(r"^export\s+(?=(?:function|const|let|class)\s)", re.M)
+NAME_RE = re.compile(
+    r"^(?:export\s+)?(?:function|const|let|class)\s+([A-Za-z_$][\w$]*)", re.M)
+
+
+def engine_buendeln():
+    """engine/*.js zu einem Block, der im Browser laeuft.
+
+    Gibt None zurueck, wenn der Ordner fehlt - dann rechnet die Seite wie
+    bisher selbst, statt mit einem halben Modul zu starten."""
+    if not ENGINE_DIR.exists():
+        print("  Engine: engine/ fehlt - Seite rechnet selbst")
+        return None
+
+    teile, namen, oeffentlich = [], {}, []
+    for datei in ENGINE_ORDNUNG:
+        pfad = ENGINE_DIR / datei
+        if not pfad.exists():
+            raise SystemExit(f"Engine: {datei} fehlt")
+        text = pfad.read_text(encoding="utf-8")
+
+        # Was dieses Modul nach aussen gibt - das wird spaeter zurueckgegeben.
+        for treffer in NAME_RE.finditer(text):
+            if treffer.group(0).startswith("export"):
+                oeffentlich.append(treffer.group(1))
+
+        ohne = IMPORT_RE.sub("", text)
+        if re.search(r"^\s*import\s", ohne, re.M):
+            raise SystemExit(f"Engine: nicht erkanntes import in {datei}")
+        ohne = EXPORT_RE.sub("", ohne)
+        if re.search(r"^\s*export\s", ohne, re.M):
+            raise SystemExit(f"Engine: nicht erkanntes export in {datei}")
+
+        # Zwei gleiche Namen auf oberster Ebene waeren in einer gemeinsamen
+        # Klammer ein Syntaxfehler - und zwar einer, der erst im Browser
+        # auffaellt. Darum hier abbrechen.
+        for treffer in NAME_RE.finditer(ohne):
+            name = treffer.group(1)
+            if name in namen:
+                raise SystemExit(
+                    f"Engine: '{name}' steht in {namen[name]} und {datei} - "
+                    "in einer Datei kollidieren die beiden")
+            namen[name] = datei
+
+        teile.append(f"/* ---- engine/{datei} ---- */\n{ohne.strip()}\n")
+
+    gibt = ", ".join(sorted(set(oeffentlich)))
+    block = ("const DraftEngine = (() => {\n"
+             + "\n".join(teile)
+             + "\nreturn {" + gibt + "};\n})();\n")
+    print(f"  Engine: {len(ENGINE_ORDNUNG)} Module, {len(namen)} Namen, "
+          f"{len(set(oeffentlich))} oeffentlich ({len(block) // 1024} KB)")
+    return block
+
+
 def draft_holen(name):
     """Einen DraftGap-Datensatz laden, mit Ablage auf der Platte.
 
@@ -223,6 +288,25 @@ def draft_daten():
         if rollen:
             schaden[str(nr[c["name"]])] = rollen
 
+    # Kurve ueber die Spieldauer: fuenf Eimer je Rolle. Kayle geht von
+    # 43 auf 58 Prozent, Pantheon von 52 auf 47 - das ist Skalierung als
+    # Messung statt als Behauptung.
+    zeit = {}
+    for c in aktuell["championData"].values():
+        if c["name"] not in nr:
+            continue
+        rollen = {}
+        for r, st in (c.get("statsByRole") or {}).items():
+            eimer = st.get("statsByTime") or []
+            if not st.get("games") or not eimer:
+                continue
+            rollen[r] = [[b.get("games") or 0,
+                          round(1000 * (b.get("wins") or 0) / b["games"])
+                          if b.get("games") else 0]
+                         for b in eimer]
+        if rollen:
+            zeit[str(nr[c["name"]])] = rollen
+
     # Matchups und Synergien aus den letzten 30 Tagen.
     nach_id = tage30["championData"]
     paare = {}
@@ -259,7 +343,8 @@ def draft_daten():
           f"{len(paare)} mit Matchups ({gesamt} KB)")
     return {"version": aktuell.get("version"),
             "stand": (aktuell.get("date") or "")[:10],
-            "namen": namen, "basis": basis, "paare": paare, "schaden": schaden}
+            "namen": namen, "basis": basis, "paare": paare,
+            "schaden": schaden, "zeit": zeit}
 
 
 def embed_splashes(champs, icons):
@@ -1041,6 +1126,18 @@ def build(embed=False, pages=False):
         if draft:
             data["draft"] = draft
 
+    # Die handgepflegte Championeinschaetzung. Sie wird IMMER eingebettet,
+    # auch ohne --pages: ohne sie fehlen der Comp-Bewertung die
+    # strukturellen Achsen. Fehlt die Datei, laeuft alles weiter - die
+    # Achsen fallen dann aus Summe und Hoechstwert.
+    heuristik_datei = ROOT / "data" / "champion-heuristik.json"
+    if heuristik_datei.exists():
+        roh = json.loads(heuristik_datei.read_text(encoding="utf-8"))
+        gepflegt = len(roh.get("champions") or {})
+        data["heuristik"] = roh
+        print(f"  Heuristik: {gepflegt} Champions gepflegt"
+              + (" - die strukturellen Achsen bleiben leer" if not gepflegt else ""))
+
     # Seitenname = eigenes Team (erster Eintrag in teams.json) + Draftboard.
     title = (teams[0]["team"] + " Draftboard") if teams else "Draftboard"
     # Die Standalone-Datei traegt den Namen, den die Mitspieler im Chat sehen.
@@ -1053,6 +1150,7 @@ def build(embed=False, pages=False):
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(
         template.replace("__TITLE__", title).replace("__FONTS__", fonts)
+                .replace("__ENGINE__", engine_buendeln() or "")
                 .replace("__DATA__", payload),
         encoding="utf-8")
 
