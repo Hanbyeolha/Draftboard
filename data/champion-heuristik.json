@@ -13,28 +13,25 @@
     "Nicht aus Data Dragon abgeleitet - eine Ableitung aus Tags und",
     "Grundwerten saehe genauer aus, als sie waere."
   ],
-
   "_skala": {
     "0": "trifft nicht zu",
     "1": "teilweise / situativ",
     "2": "ausgepraegt"
   },
-
   "_achsen": {
-    "engage":    "kann einen Kampf von sich aus eroeffnen",
+    "engage": "kann einen Kampf von sich aus eroeffnen",
     "disengage": "kann einen begonnenen Kampf abbrechen, Gegner wegdruecken",
-    "peel":      "kann die eigenen Trager schuetzen",
-    "frontline":"haelt Schaden aus und steht vorn",
-    "dive":      "kommt an die hinteren Reihen heran",
-    "catch":     "faengt einzelne Gegner ab (Haken, Betaeubung ueber Distanz)",
-    "poke":      "macht Schaden aus Distanz, ohne sich zu binden",
-    "siege":     "hilft, einen Turm zu brechen oder zu halten",
+    "peel": "kann die eigenen Trager schuetzen",
+    "frontline": "haelt Schaden aus und steht vorn",
+    "dive": "kommt an die hinteren Reihen heran",
+    "catch": "faengt einzelne Gegner ab (Haken, Betaeubung ueber Distanz)",
+    "poke": "macht Schaden aus Distanz, ohne sich zu binden",
+    "siege": "hilft, einen Turm zu brechen oder zu halten",
     "splitpush": "kann eine Seitenlane allein druecken",
     "teamfight": "Wert im geordneten Fuenf-gegen-Fuenf",
     "objective": "Wert um Drache, Herold und Baron",
-    "scaling":   "wird mit Spieldauer staerker (nur Rueckfall - gemessen wird die Kurve aus DraftGap)"
+    "scaling": "wird mit Spieldauer staerker (nur Rueckfall - gemessen wird die Kurve aus DraftGap)"
   },
-
   "_pflege": [
     "Eintragen lohnt sich fuer die Champions, die wirklich im Draft",
     "vorkommen: unsere Pools und die haeufigen Gegnerpicks. Alles, was",
@@ -49,9 +46,844 @@
     "Der Stand wird in '_stand' mitgefuehrt, damit spaetere Auswertungen",
     "wissen, gegen welche Fassung sie gelaufen sind."
   ],
-
   "_stand": "2026-10-09",
   "_fassung": 1,
-
-  "champions": {}
+  "champions": {},
+  "_vorschlag_hinweis": [
+    "ERSTEINSCHAETZUNG VON CLAUDE, VOM TEAM NOCH UNGEPRUEFT.",
+    "",
+    "Allgemeines Spielwissen, keine Messung und nicht eure Sicht.",
+    "Traegt eine eigene, noch niedrigere Konfidenz (0,30) und den",
+    "Hinweis 'ungeprueft' in jeder Erklaerung.",
+    "",
+    "Ein Eintrag oben in 'champions' ersetzt den Vorschlag fuer",
+    "diesen Champion VOLLSTAENDIG. So uebernehmt ihr einen Champion:",
+    "Zeile aus 'vorschlag' nach 'champions' kopieren, pruefen,",
+    "anpassen. Was ihr nie anfasst, bleibt als Vorschlag erkennbar.",
+    "",
+    "Locke, Yunara und Zaahen fehlen mit Absicht: ihre Kits sind",
+    "mir nicht sicher genug bekannt. Sie fallen aus der Bewertung,",
+    "statt geraten zu werden."
+  ],
+  "_vorschlag_stand": "2026-10-10",
+  "vorschlag": {
+    "Aatrox": {
+      "frontline": 1,
+      "dive": 1,
+      "teamfight": 2,
+      "splitpush": 1
+    },
+    "Ahri": {
+      "catch": 2,
+      "dive": 1,
+      "poke": 1
+    },
+    "Akali": {
+      "dive": 2,
+      "splitpush": 1
+    },
+    "Akshan": {
+      "splitpush": 1,
+      "poke": 1
+    },
+    "Alistar": {
+      "engage": 2,
+      "peel": 2,
+      "frontline": 2,
+      "disengage": 1,
+      "teamfight": 1
+    },
+    "Ambessa": {
+      "dive": 2,
+      "frontline": 1,
+      "splitpush": 1
+    },
+    "Amumu": {
+      "engage": 2,
+      "frontline": 1,
+      "teamfight": 2,
+      "catch": 1
+    },
+    "Anivia": {
+      "disengage": 2,
+      "siege": 1,
+      "teamfight": 1,
+      "poke": 1,
+      "peel": 1
+    },
+    "Annie": {
+      "engage": 1,
+      "teamfight": 2,
+      "catch": 1
+    },
+    "Aphelios": {
+      "teamfight": 2,
+      "siege": 1
+    },
+    "Ashe": {
+      "catch": 2,
+      "engage": 1,
+      "poke": 1,
+      "peel": 1
+    },
+    "Aurelion Sol": {
+      "teamfight": 2,
+      "siege": 1,
+      "poke": 1
+    },
+    "Aurora": {
+      "catch": 1,
+      "dive": 1,
+      "disengage": 1
+    },
+    "Azir": {
+      "disengage": 2,
+      "siege": 2,
+      "teamfight": 2,
+      "poke": 1,
+      "peel": 1
+    },
+    "Bard": {
+      "catch": 2,
+      "peel": 1,
+      "engage": 1,
+      "disengage": 1
+    },
+    "Bel'Veth": {
+      "dive": 2,
+      "objective": 2,
+      "splitpush": 1
+    },
+    "Blitzcrank": {
+      "catch": 2,
+      "engage": 1
+    },
+    "Brand": {
+      "teamfight": 2,
+      "poke": 1,
+      "siege": 1
+    },
+    "Braum": {
+      "peel": 2,
+      "disengage": 2,
+      "frontline": 2
+    },
+    "Briar": {
+      "dive": 2,
+      "engage": 1
+    },
+    "Caitlyn": {
+      "poke": 2,
+      "siege": 2
+    },
+    "Camille": {
+      "dive": 2,
+      "splitpush": 2,
+      "catch": 1
+    },
+    "Cassiopeia": {
+      "teamfight": 2,
+      "peel": 1
+    },
+    "Cho'Gath": {
+      "frontline": 2,
+      "objective": 2,
+      "catch": 1,
+      "teamfight": 1
+    },
+    "Corki": {
+      "poke": 2,
+      "siege": 1
+    },
+    "Darius": {
+      "frontline": 1,
+      "teamfight": 1,
+      "splitpush": 1
+    },
+    "Diana": {
+      "dive": 2,
+      "engage": 1,
+      "teamfight": 2
+    },
+    "Dr. Mundo": {
+      "frontline": 2,
+      "splitpush": 1
+    },
+    "Draven": {
+      "siege": 1,
+      "teamfight": 1
+    },
+    "Ekko": {
+      "dive": 2,
+      "splitpush": 1,
+      "teamfight": 1
+    },
+    "Elise": {
+      "catch": 2,
+      "dive": 1,
+      "objective": 1
+    },
+    "Evelynn": {
+      "catch": 2,
+      "dive": 1
+    },
+    "Ezreal": {
+      "poke": 2,
+      "siege": 1
+    },
+    "Fiddlesticks": {
+      "engage": 2,
+      "teamfight": 2
+    },
+    "Fiora": {
+      "splitpush": 2,
+      "dive": 1
+    },
+    "Fizz": {
+      "dive": 2,
+      "catch": 1
+    },
+    "Galio": {
+      "engage": 2,
+      "peel": 1,
+      "frontline": 1,
+      "teamfight": 2,
+      "disengage": 1
+    },
+    "Gangplank": {
+      "teamfight": 2,
+      "siege": 1,
+      "splitpush": 1,
+      "poke": 1
+    },
+    "Garen": {
+      "frontline": 1,
+      "splitpush": 1
+    },
+    "Gnar": {
+      "engage": 1,
+      "frontline": 1,
+      "teamfight": 2,
+      "peel": 1
+    },
+    "Gragas": {
+      "engage": 2,
+      "disengage": 2,
+      "peel": 1,
+      "frontline": 1,
+      "catch": 1
+    },
+    "Graves": {
+      "objective": 1,
+      "splitpush": 1
+    },
+    "Gwen": {
+      "dive": 1,
+      "splitpush": 2,
+      "teamfight": 1
+    },
+    "Hecarim": {
+      "engage": 2,
+      "dive": 2
+    },
+    "Heimerdinger": {
+      "siege": 2,
+      "poke": 1,
+      "peel": 1,
+      "disengage": 1
+    },
+    "Hwei": {
+      "poke": 2,
+      "siege": 2,
+      "catch": 1,
+      "disengage": 1
+    },
+    "Illaoi": {
+      "splitpush": 2,
+      "frontline": 1
+    },
+    "Irelia": {
+      "dive": 2,
+      "splitpush": 2
+    },
+    "Ivern": {
+      "peel": 2,
+      "objective": 2,
+      "disengage": 1
+    },
+    "Janna": {
+      "peel": 2,
+      "disengage": 2
+    },
+    "Jarvan IV": {
+      "engage": 2,
+      "dive": 1,
+      "catch": 1,
+      "teamfight": 1,
+      "objective": 1
+    },
+    "Jax": {
+      "splitpush": 2,
+      "dive": 1
+    },
+    "Jayce": {
+      "poke": 2,
+      "siege": 2
+    },
+    "Jhin": {
+      "poke": 2,
+      "catch": 1,
+      "siege": 1
+    },
+    "Jinx": {
+      "teamfight": 2,
+      "siege": 1
+    },
+    "K'Sante": {
+      "frontline": 2,
+      "dive": 1,
+      "peel": 1
+    },
+    "Kai'Sa": {
+      "dive": 1,
+      "teamfight": 1
+    },
+    "Kalista": {
+      "objective": 2,
+      "engage": 1
+    },
+    "Karma": {
+      "poke": 1,
+      "peel": 2,
+      "disengage": 1
+    },
+    "Karthus": {
+      "teamfight": 2,
+      "objective": 1
+    },
+    "Kassadin": {
+      "dive": 2,
+      "splitpush": 1
+    },
+    "Katarina": {
+      "dive": 2,
+      "teamfight": 2
+    },
+    "Kayle": {
+      "teamfight": 2,
+      "siege": 1
+    },
+    "Kayn": {
+      "dive": 2,
+      "catch": 1
+    },
+    "Kennen": {
+      "engage": 2,
+      "teamfight": 2
+    },
+    "Kha'Zix": {
+      "dive": 2,
+      "catch": 2
+    },
+    "Kindred": {
+      "objective": 2,
+      "peel": 1
+    },
+    "Kled": {
+      "engage": 2,
+      "dive": 2,
+      "frontline": 1
+    },
+    "Kog'Maw": {
+      "teamfight": 2,
+      "siege": 1,
+      "poke": 1
+    },
+    "LeBlanc": {
+      "catch": 2,
+      "dive": 2
+    },
+    "Lee Sin": {
+      "dive": 2,
+      "catch": 1,
+      "engage": 1,
+      "peel": 1
+    },
+    "Leona": {
+      "engage": 2,
+      "frontline": 2,
+      "catch": 1
+    },
+    "Lillia": {
+      "teamfight": 2,
+      "dive": 1,
+      "objective": 1
+    },
+    "Lissandra": {
+      "engage": 2,
+      "catch": 1,
+      "peel": 1,
+      "teamfight": 1
+    },
+    "Lucian": {
+      "dive": 1,
+      "siege": 1
+    },
+    "Lulu": {
+      "peel": 2,
+      "disengage": 1
+    },
+    "Lux": {
+      "poke": 2,
+      "catch": 2,
+      "peel": 1,
+      "siege": 1
+    },
+    "Malphite": {
+      "engage": 2,
+      "frontline": 2,
+      "teamfight": 2
+    },
+    "Malzahar": {
+      "catch": 2,
+      "siege": 1
+    },
+    "Maokai": {
+      "engage": 2,
+      "frontline": 2,
+      "peel": 1,
+      "disengage": 1
+    },
+    "Master Yi": {
+      "splitpush": 1,
+      "objective": 1
+    },
+    "Mel": {
+      "poke": 2,
+      "siege": 1,
+      "disengage": 1
+    },
+    "Milio": {
+      "peel": 2,
+      "disengage": 1
+    },
+    "Miss Fortune": {
+      "teamfight": 2,
+      "poke": 1,
+      "siege": 1
+    },
+    "Mordekaiser": {
+      "catch": 1,
+      "frontline": 1,
+      "splitpush": 1
+    },
+    "Morgana": {
+      "catch": 2,
+      "peel": 2
+    },
+    "Naafiri": {
+      "dive": 2,
+      "catch": 1
+    },
+    "Nami": {
+      "peel": 2,
+      "engage": 1,
+      "disengage": 1
+    },
+    "Nasus": {
+      "splitpush": 2,
+      "frontline": 1
+    },
+    "Nautilus": {
+      "engage": 2,
+      "catch": 2,
+      "frontline": 2
+    },
+    "Neeko": {
+      "engage": 2,
+      "teamfight": 2,
+      "catch": 1
+    },
+    "Nidalee": {
+      "poke": 2,
+      "objective": 1
+    },
+    "Nilah": {
+      "dive": 1,
+      "teamfight": 1
+    },
+    "Nocturne": {
+      "dive": 2,
+      "engage": 1,
+      "catch": 1
+    },
+    "Nunu & Willump": {
+      "catch": 1,
+      "objective": 2,
+      "engage": 1,
+      "frontline": 1
+    },
+    "Olaf": {
+      "dive": 2,
+      "frontline": 1
+    },
+    "Orianna": {
+      "teamfight": 2,
+      "peel": 1,
+      "siege": 1,
+      "engage": 1
+    },
+    "Ornn": {
+      "engage": 2,
+      "frontline": 2,
+      "teamfight": 2
+    },
+    "Pantheon": {
+      "catch": 1,
+      "dive": 2,
+      "engage": 1
+    },
+    "Poppy": {
+      "disengage": 2,
+      "peel": 2,
+      "frontline": 2,
+      "engage": 1
+    },
+    "Pyke": {
+      "catch": 2,
+      "dive": 1
+    },
+    "Qiyana": {
+      "dive": 2,
+      "teamfight": 2,
+      "engage": 1
+    },
+    "Quinn": {
+      "splitpush": 2,
+      "poke": 1
+    },
+    "Rakan": {
+      "engage": 2,
+      "peel": 1,
+      "dive": 1,
+      "disengage": 1
+    },
+    "Rammus": {
+      "engage": 2,
+      "frontline": 2,
+      "dive": 1
+    },
+    "Rek'Sai": {
+      "dive": 1,
+      "catch": 1,
+      "objective": 1,
+      "engage": 1
+    },
+    "Rell": {
+      "engage": 2,
+      "frontline": 2,
+      "teamfight": 2
+    },
+    "Renata Glasc": {
+      "peel": 2,
+      "teamfight": 2,
+      "disengage": 1
+    },
+    "Renekton": {
+      "dive": 2,
+      "frontline": 1
+    },
+    "Rengar": {
+      "catch": 2,
+      "dive": 2
+    },
+    "Riven": {
+      "dive": 2,
+      "splitpush": 1
+    },
+    "Rumble": {
+      "teamfight": 2,
+      "siege": 1
+    },
+    "Ryze": {
+      "siege": 1,
+      "teamfight": 1,
+      "splitpush": 1
+    },
+    "Samira": {
+      "dive": 2,
+      "teamfight": 2
+    },
+    "Sejuani": {
+      "engage": 2,
+      "frontline": 2,
+      "catch": 1,
+      "teamfight": 1
+    },
+    "Senna": {
+      "poke": 2,
+      "peel": 1,
+      "siege": 1
+    },
+    "Seraphine": {
+      "teamfight": 2,
+      "peel": 1,
+      "poke": 1,
+      "engage": 1,
+      "disengage": 1
+    },
+    "Sett": {
+      "engage": 1,
+      "frontline": 2,
+      "teamfight": 1
+    },
+    "Shaco": {
+      "catch": 2,
+      "splitpush": 1
+    },
+    "Shen": {
+      "peel": 2,
+      "frontline": 2,
+      "engage": 1
+    },
+    "Shyvana": {
+      "objective": 2,
+      "teamfight": 1,
+      "dive": 1
+    },
+    "Singed": {
+      "frontline": 1,
+      "splitpush": 1,
+      "disengage": 1
+    },
+    "Sion": {
+      "engage": 2,
+      "frontline": 2,
+      "splitpush": 1
+    },
+    "Sivir": {
+      "siege": 2,
+      "teamfight": 1,
+      "disengage": 1,
+      "engage": 1
+    },
+    "Skarner": {
+      "catch": 2,
+      "engage": 2,
+      "frontline": 2
+    },
+    "Smolder": {
+      "siege": 1,
+      "poke": 1,
+      "teamfight": 1
+    },
+    "Sona": {
+      "peel": 2,
+      "teamfight": 2,
+      "poke": 1
+    },
+    "Soraka": {
+      "peel": 2,
+      "disengage": 1
+    },
+    "Swain": {
+      "frontline": 1,
+      "teamfight": 2,
+      "catch": 1
+    },
+    "Sylas": {
+      "dive": 1,
+      "teamfight": 1,
+      "catch": 1
+    },
+    "Syndra": {
+      "catch": 2,
+      "poke": 1
+    },
+    "Tahm Kench": {
+      "peel": 2,
+      "frontline": 2,
+      "catch": 1
+    },
+    "Taliyah": {
+      "catch": 1,
+      "disengage": 1,
+      "poke": 1,
+      "teamfight": 1
+    },
+    "Talon": {
+      "dive": 2,
+      "catch": 1
+    },
+    "Taric": {
+      "peel": 2,
+      "engage": 1,
+      "frontline": 1,
+      "teamfight": 1
+    },
+    "Teemo": {
+      "poke": 1,
+      "splitpush": 1,
+      "siege": 1
+    },
+    "Thresh": {
+      "catch": 2,
+      "engage": 2,
+      "peel": 2,
+      "disengage": 1
+    },
+    "Tristana": {
+      "siege": 2,
+      "dive": 1,
+      "peel": 1
+    },
+    "Trundle": {
+      "splitpush": 2,
+      "objective": 2,
+      "frontline": 1
+    },
+    "Tryndamere": {
+      "splitpush": 2
+    },
+    "Twisted Fate": {
+      "catch": 2,
+      "siege": 1,
+      "splitpush": 1
+    },
+    "Twitch": {
+      "teamfight": 2,
+      "dive": 1
+    },
+    "Udyr": {
+      "frontline": 1,
+      "splitpush": 1,
+      "objective": 1
+    },
+    "Urgot": {
+      "frontline": 2,
+      "catch": 1,
+      "splitpush": 1
+    },
+    "Varus": {
+      "poke": 2,
+      "catch": 2,
+      "engage": 1
+    },
+    "Vayne": {
+      "dive": 1,
+      "splitpush": 1
+    },
+    "Veigar": {
+      "catch": 1,
+      "teamfight": 2,
+      "disengage": 1
+    },
+    "Vel'Koz": {
+      "poke": 2,
+      "siege": 1
+    },
+    "Vex": {
+      "peel": 1,
+      "teamfight": 1,
+      "engage": 1,
+      "catch": 1
+    },
+    "Vi": {
+      "engage": 1,
+      "dive": 2,
+      "catch": 2
+    },
+    "Viego": {
+      "dive": 2,
+      "teamfight": 1
+    },
+    "Viktor": {
+      "teamfight": 2,
+      "siege": 1,
+      "poke": 1,
+      "disengage": 1
+    },
+    "Vladimir": {
+      "teamfight": 2,
+      "dive": 1
+    },
+    "Volibear": {
+      "dive": 2,
+      "frontline": 1,
+      "engage": 1
+    },
+    "Warwick": {
+      "catch": 1,
+      "dive": 1,
+      "frontline": 1
+    },
+    "Wukong": {
+      "engage": 2,
+      "teamfight": 2,
+      "dive": 1
+    },
+    "Xayah": {
+      "teamfight": 1,
+      "peel": 1
+    },
+    "Xerath": {
+      "poke": 2,
+      "siege": 2
+    },
+    "Xin Zhao": {
+      "dive": 2,
+      "engage": 1,
+      "objective": 1
+    },
+    "Yasuo": {
+      "dive": 1,
+      "teamfight": 1,
+      "splitpush": 1
+    },
+    "Yone": {
+      "dive": 1,
+      "engage": 1,
+      "splitpush": 1,
+      "teamfight": 1
+    },
+    "Yorick": {
+      "splitpush": 2,
+      "siege": 1
+    },
+    "Yuumi": {
+      "peel": 2
+    },
+    "Zac": {
+      "engage": 2,
+      "frontline": 2,
+      "catch": 1,
+      "teamfight": 1
+    },
+    "Zed": {
+      "dive": 2,
+      "splitpush": 1,
+      "catch": 1
+    },
+    "Zeri": {
+      "teamfight": 1,
+      "dive": 1
+    },
+    "Ziggs": {
+      "siege": 2,
+      "poke": 2
+    },
+    "Zilean": {
+      "peel": 2,
+      "disengage": 1
+    },
+    "Zoe": {
+      "poke": 2,
+      "catch": 2
+    },
+    "Zyra": {
+      "teamfight": 1,
+      "poke": 1,
+      "peel": 1
+    }
+  }
 }

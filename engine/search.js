@@ -19,9 +19,12 @@
    tragen darum eine eigene, niedrige Konfidenz.
 */
 
-import { SUCHE, RISIKOPROFILE, STANDARD_RISIKO } from "./config.js";
-import { gegenseite, offeneRollen, gesperrt } from "./state.js";
+import {
+  SUCHE, RISIKOPROFILE, STANDARD_RISIKO, KONFIDENZ, ANZEIGE, COMP_REFERENZ,
+} from "./config.js";
+import { ROLLEN_FOLGE, gegenseite, offeneRollen, gesperrt } from "./state.js";
 import { klemm } from "./features.js";
+import { LANE_GEGNER } from "./blind.js";
 
 export function sucheAnlegen({quelle, merkmale, bewerter}) {
 
@@ -47,7 +50,7 @@ export function sucheAnlegen({quelle, merkmale, bewerter}) {
     }
     const raus = [];
     for (const k of eng) {
-      const r = bewerter.bewerte(ihreSicht, k.champ, k.rolle);
+      const r = bewerter.bewerte(ihreSicht, k.champ, k.rolle, {schnell: true});
       if (r) raus.push({champ: k.champ, rolle: k.rolle, score: r.score});
     }
     raus.sort((a, b) => b.score - a.score);
@@ -65,7 +68,7 @@ export function sucheAnlegen({quelle, merkmale, bewerter}) {
     const bewertet = [];
     for (const k of vorrat) {
       if (weg.has(k.champ)) continue;
-      const r = bewerter.bewerte(ihreSicht, k.champ, k.rolle);
+      const r = bewerter.bewerte(ihreSicht, k.champ, k.rolle, {schnell: true});
       if (r) bewertet.push({champ: k.champ, rolle: k.rolle, score: r.score});
     }
     if (!bewertet.length) return [];
@@ -91,10 +94,20 @@ export function sucheAnlegen({quelle, merkmale, bewerter}) {
     const antworten = gegnerAntworten(nach, vorrat || gegnerVorrat(nach));
     if (!antworten.length) return null;
 
+    /* Was der Lookahead NICHT noch einmal zaehlen darf: den Kandidaten
+       gegen die Gegner, die schon feststehen (das ist "matchup"), und
+       gegen seinen Lanegegner (das ist "blindSicherheit"). */
+    const ohne = {
+      champ: kandidat,
+      bekannt: new Set(zustand.picks[gegenseite(zustand.wirSind)]
+                         .map((p) => p.champ)),
+      lane: new Set(LANE_GEGNER[rolle] || []),
+    };
+
     const aeste = [];
     for (const a of antworten) {
       const danach = mitPick(nach, gegenseite(zustand.wirSind), a.champ, a.rolle);
-      const w = zustandsWert(danach, spielerFuer);
+      const w = zustandsWert(danach, spielerFuer, ohne);
       if (w === null) continue;
       aeste.push({antwort: a.champ, rolle: a.rolle, p: a.p, wert: w.wert,
                   erwiderung: w.erwiderung, art: w.art});
@@ -139,7 +152,7 @@ export function sucheAnlegen({quelle, merkmale, bewerter}) {
    *
    *  Ohne den zweiten Fall waere der Lookahead ausgerechnet beim letzten
    *  Pick blind - und das ist der, bei dem es am meisten zaehlt. */
-  function zustandsWert(zustand, spielerFuer) {
+  function zustandsWert(zustand, spielerFuer, ohne = null) {
     // Haben wir noch einen Zug, gehoert unsere beste Antwort zur Lage:
     // ein Pick ist mehr wert, wenn uns danach noch etwas Gutes bleibt.
     let lage = zustand, erwiderung = null;
@@ -150,7 +163,7 @@ export function sucheAnlegen({quelle, merkmale, bewerter}) {
         lage = mitPick(zustand, zustand.wirSind, b.champion, b.rolle);
       }
     }
-    const q = compQuote(lage);
+    const q = compQuote(lage, ohne);
     if (q === null) return null;
     // Die gemessene Quote selbst, NICHT auf eine Punkteskala gelegt. Die
     // Normierung geschieht spaeter ueber die Vorauswahl - siehe
@@ -162,12 +175,16 @@ export function sucheAnlegen({quelle, merkmale, bewerter}) {
   /** Die nach Partien gewichtete Quote ueber ALLE gemessenen Paarungen
    *  zwischen unseren und ihren Picks. Keine Hochrechnung auf eine
    *  Teamstaerke - das, was diese Champions gegeneinander geholt haben. */
-  function compQuote(zustand) {
+  function compQuote(zustand, ohne = null) {
     const sie = gegenseite(zustand.wirSind);
     let summe = 0, gewicht = 0;
     for (const a of zustand.picks[zustand.wirSind]) {
       for (const b of zustand.picks[sie]) {
         if (!a.rolle || !b.rolle) continue;
+        if (ohne && a.champ === ohne.champ
+            && (ohne.bekannt.has(b.champ) || ohne.lane.has(b.rolle))) {
+          continue;
+        }
         const e = quelle.matchup(a.champ, a.rolle, b.champ, b.rolle);
         if (!e) continue;
         summe += e.value * e.sampleSize;
@@ -175,6 +192,110 @@ export function sucheAnlegen({quelle, merkmale, bewerter}) {
       }
     }
     return gewicht ? summe / gewicht : null;
+  }
+
+  /* -------------------------------------------- Woraus die Quote besteht */
+  /** Dieselbe Rechnung wie compQuote, aber jede Paarung einzeln - damit
+   *  man sieht, warum die Zahl fast immer bei 50 % liegt. Lane-Paarungen
+   *  (dieselbe Rolle, Botlane als 2v2) stehen getrennt vom Rest. */
+  function compAufschluesselung(zustand) {
+    const sie = gegenseite(zustand.wirSind);
+    const paare = [];
+    let summe = 0, gewicht = 0, laneSumme = 0, laneGewicht = 0;
+    for (const a of zustand.picks[zustand.wirSind]) {
+      for (const b of zustand.picks[sie]) {
+        if (!a.rolle || !b.rolle) continue;
+        const lane = (LANE_GEGNER[a.rolle] || []).includes(b.rolle);
+        const m = quelle.matchup(a.champ, a.rolle, b.champ, b.rolle);
+        paare.push({wir: a.champ, wirRolle: a.rolle, sie: b.champ, sieRolle: b.rolle,
+                    lane, quote: m ? m.value : null, spiele: m ? m.sampleSize : 0});
+        if (!m) continue;
+        summe += m.value * m.sampleSize; gewicht += m.sampleSize;
+        if (lane) { laneSumme += m.value * m.sampleSize; laneGewicht += m.sampleSize; }
+      }
+    }
+    return {
+      quote: gewicht ? summe / gewicht : null,
+      spiele: gewicht,
+      paare,
+      mitDaten: paare.filter((p) => p.quote !== null).length,
+      lane: laneGewicht ? {quote: laneSumme / laneGewicht,
+                           anteil: laneGewicht / gewicht} : null,
+      rest: gewicht > laneGewicht
+        ? {quote: (summe - laneSumme) / (gewicht - laneGewicht),
+           anteil: (gewicht - laneGewicht) / gewicht} : null,
+    };
+  }
+
+  /** Der Massstab: die Quote echter, vollstaendiger Drafts. drafts:
+   *  [{wir: [{champ, rolle}], sie: [...]}] - am besten jede Partie aus
+   *  beiden Sichten, dann liegt die Verteilung symmetrisch um 50 %. */
+  function compReferenz(drafts) {
+    const quoten = [], paare = [];
+    for (const d of drafts || []) {
+      if ((d.wir || []).length !== 5 || (d.sie || []).length !== 5) continue;
+      const x = compAufschluesselung({wirSind: "blue",
+                                      picks: {blue: d.wir, red: d.sie}});
+      if (x.quote === null) continue;
+      quoten.push(x.quote);
+      for (const p of x.paare) if (p.quote !== null) paare.push(p.quote);
+    }
+    const sortiert = (xs) => xs.slice().sort((a, b) => a - b);
+    const qs = sortiert(quoten), ps = sortiert(paare);
+    const bei = (xs, k) => xs.length ? xs[Math.min(xs.length - 1, Math.floor(xs.length * k))] : null;
+    return {quoten: qs, n: qs.length,
+            min: qs.length ? qs[0] : null, max: qs.length ? qs[qs.length - 1] : null,
+            p5: bei(qs, 0.05), p95: bei(qs, 0.95),
+            paarP5: bei(ps, 0.05), paarP95: bei(ps, 0.95)};
+  }
+
+  /** Der Massstab aus dem Patch: Aufstellungen, gezogen nach der
+   *  gemessenen Spielhaeufigkeit jeder Rolle (alle Partien im
+   *  DraftGap-Datensatz), ohne doppelte Champions. Unabhaengig je Rolle -
+   *  gemessen weicht das bei der Botlane um 0,18 Punkte je Paar von der
+   *  echten gemeinsamen Haeufigkeit ab. Einmal gerechnet, dann gemerkt. */
+  let globaleReferenz = null;
+  function compReferenzGlobal() {
+    if (globaleReferenz) return globaleReferenz;
+    const felder = {};
+    for (const r of ROLLEN_FOLGE) {
+      felder[r] = quelle.champions
+        .map((c) => ({c, n: (quelle.staerke(c, r) || {}).sampleSize || 0}))
+        .filter((x) => x.n > 0);
+    }
+    const z = zufallAus(COMP_REFERENZ.saat);
+    const ziehe = (rolle, weg) => {
+      const f = felder[rolle];
+      let summe = 0;
+      for (const x of f) if (!weg.has(x.c)) summe += x.n;
+      let u = z() * summe;
+      for (const x of f) {
+        if (weg.has(x.c)) continue;
+        u -= x.n;
+        if (u <= 0) return x.c;
+      }
+      return null;
+    };
+    const drafts = [];
+    for (let i = 0; i < COMP_REFERENZ.anzahl; i++) {
+      const weg = new Set(), wir = [], sie = [];
+      for (const r of ROLLEN_FOLGE) {
+        const a = ziehe(r, weg); if (a) { weg.add(a); wir.push({champ: a, rolle: r}); }
+        const b = ziehe(r, weg); if (b) { weg.add(b); sie.push({champ: b, rolle: r}); }
+      }
+      drafts.push({wir, sie});
+    }
+    globaleReferenz = {...compReferenz(drafts), quelle: "draftgap",
+                       art: "gezogen nach Spielhaeufigkeit im Patch"};
+    return globaleReferenz;
+  }
+
+  /** Anteil der Referenzdrafts mit niedrigerer Quote, 0..1. */
+  function compPerzentil(quote, referenz) {
+    if (quote === null || !referenz || !referenz.n) return null;
+    let unter = 0;
+    for (const x of referenz.quoten) { if (x < quote) unter++; else break; }
+    return unter / referenz.n;
   }
 
   /** Unsere beste Erwiderung in einer Lage. Beschraenkt auf die
@@ -199,6 +320,7 @@ export function sucheAnlegen({quelle, merkmale, bewerter}) {
       const r = bewerter.bewerte(zustand, m.champ, m.rolle, {
         spielerTeam: wer ? wer.team : null,
         spielerLabel: wer ? wer.label : null,
+        schnell: true,
       });
       if (r && (!bestes || r.score > bestes.score)) bestes = r;
     }
@@ -211,17 +333,18 @@ export function sucheAnlegen({quelle, merkmale, bewerter}) {
    *  wurde. */
   function rangliste(zustand, rolle, {
     spielerTeam = null, spielerLabel = null, spielerFuer = null,
-    risikoprofil = STANDARD_RISIKO, mitLookahead = true,
+    risikoprofil = STANDARD_RISIKO, mitLookahead = true, gegnerFuer = null,
   } = {}) {
     const weg = gesperrt(zustand);
     const grund = [];
     for (const m of merkmale.kandidaten(rolle, {ausser: new Set(weg.keys())})) {
       const r = bewerter.bewerte(zustand, m.champ, rolle,
-                                 {spielerTeam, spielerLabel, risikoprofil});
+                                 {spielerTeam, spielerLabel, risikoprofil,
+                                  gegnerFuer});
       if (r) grund.push(r);
     }
     grund.sort((a, b) => b.score - a.score);
-    if (!mitLookahead) return grund;
+    if (!mitLookahead) return entscheiden(grund);
 
     // Der Gegnervorrat wird EINMAL bestimmt und je Kandidat neu bewertet.
     const vorrat = gegnerVorrat(zustand);
@@ -248,18 +371,125 @@ export function sucheAnlegen({quelle, merkmale, bewerter}) {
       const anteil = spanne && spanne.max > spanne.min
         ? (l.roh - spanne.min) / (spanne.max - spanne.min) : 0.5;
       const neu = bewerter.bewerte(zustand, r.champion, rolle, {
-        spielerTeam, spielerLabel, risikoprofil,
+        spielerTeam, spielerLabel, risikoprofil, gegnerFuer,
         lookahead: {...l, wert: anteil},
       });
       return {...neu, lookahead: {...l, wert: anteil}};
     });
-    const alle = fertig.concat(grund.slice(SUCHE.beiteEigen));
-    alle.sort((a, b) => b.score - a.score);
-    return alle;
+    return entscheiden(fertig.concat(grund.slice(SUCHE.beiteEigen)));
+  }
+
+  /* ---------------------------------------------------- Entscheidung */
+  /** Je unsicherer, desto naeher am Durchschnitt.
+   *
+   *  Eine Note von 92 auf duenner Datenlage ist nicht mehr wert als 89
+   *  auf dicker. Multiplizieren mit der Konfidenz waere falsch: es
+   *  bestrafte jeden unsicheren Champion, auch einen schwachen. Hier
+   *  wird zum Median der Liste geschrumpft - beide Enden ruecken zur
+   *  Mitte, und genau das heisst "wir wissen es nicht genau".
+   *
+   *  Die Note selbst bleibt unveraendert stehen; sortiert wird nach dem
+   *  Entscheidungswert. */
+  function entscheiden(liste) {
+    const noten = liste.map((r) => r.score).filter(Number.isFinite)
+      .sort((a, b) => a - b);
+    const median = noten.length ? noten[Math.floor(noten.length / 2)] : 50;
+    const b = KONFIDENZ.schrumpfBoden;
+    for (const r of liste) {
+      const k = Number.isFinite(r.confidence) ? r.confidence : 0.5;
+      const f = b + (1 - b) * k;
+      r.entscheidung = Number((median + (r.score - median) * f).toFixed(1));
+      r.median = median;
+    }
+    return liste.sort((x, y) => y.entscheidung - x.entscheidung
+                             || y.score - x.score
+                             || (x.champion < y.champion ? -1 : 1));
+  }
+
+  /* ---------------------------------------------------- Kategorien */
+  /** Fuenf Antworten auf fuenf Fragen. Sie duerfen sich ueberschneiden.
+   *
+   *  Nur Kandidaten nahe am besten kommen in Frage (ANZEIGE.
+   *  kategorieAbstand). Sonst waere der Komfortpick ein strategisch
+   *  schlechter Champion, den jemand eben gern spielt - genau das soll
+   *  Komfort nicht koennen. */
+  function kategorien(liste) {
+    if (!liste.length) return [];
+    const bester = liste[0];
+    const nahe = liste.filter((r) =>
+      r.entscheidung >= bester.entscheidung - ANZEIGE.kategorieAbstand);
+    const max = (xs, f) => {
+      let top = null, v = -Infinity;
+      for (const r of xs) {
+        const w = f(r);
+        if (Number.isFinite(w) && w > v) { v = w; top = r; }
+      }
+      return top ? {r: top, wert: v} : null;
+    };
+    const teil = (r, name) => r.components[name] ? r.components[name].roh : null;
+
+    // Sicher: der schlechteste Ausgang zaehlt. Im Blindfall das
+    // schlechteste Fuenftel der Lanegegner, sonst der schlechteste Ast
+    // des Lookaheads, sonst die Konfidenz.
+    const sicherheit = (r) =>
+      r.blindDetail ? r.blindDetail.schlechtestes
+      : r.lookahead ? r.lookahead.schlechtester - 0.5
+      : (r.confidence ?? 0) - 1;
+    // Aggressiv: das beste Fuenftel, der beste Ast, oder der Matchupvorteil.
+    const aufwaerts = (r) =>
+      r.blindDetail ? r.blindDetail.bestes
+      : r.lookahead ? r.lookahead.bester - 0.5
+      : teil(r, "matchup");
+
+    const raus = [];
+    const dazu = (art, wort, treffer, grund) => {
+      if (treffer) raus.push({art, wort, ...treffer, grund: grund(treffer.r)});
+    };
+    dazu("gesamt", "Bester Pick", {r: bester, wert: bester.entscheidung},
+         (r) => "h\u00f6chster Entscheidungswert ("
+                + String(r.entscheidung).replace(".", ",") + ")");
+    dazu("sicher", "Sicherster Pick", max(nahe, sicherheit),
+         (r) => r.blindDetail ? "schlechtestes F\u00fcnftel "
+                + punkteText(r.blindDetail.schlechtestes)
+              : r.lookahead ? "schlechtester Ast " + prozentText(r.lookahead.schlechtester)
+              : "Konfidenz " + Math.round((r.confidence ?? 0) * 100) + " %");
+    dazu("aggressiv", "Aggressivster Pick", max(nahe, aufwaerts),
+         (r) => r.blindDetail ? "bestes F\u00fcnftel " + punkteText(r.blindDetail.bestes)
+              : r.lookahead ? "bester Ast " + prozentText(r.lookahead.bester)
+              : "Matchupvorteil");
+    const flex = max(nahe.filter((r) => (teil(r, "flex") ?? 0) > 0.3),
+                     (r) => teil(r, "flex"));
+    dazu("flex", "Flexpick", flex, (r) => r.components.flex.text);
+    const komfort = max(nahe.filter((r) => r.components.komfort),
+                        (r) => teil(r, "komfort"));
+    dazu("komfort", "Komfortpick", komfort, (r) => r.components.komfort.text);
+    return raus;
   }
 
   return {gegnerVorrat, gegnerAntworten, lookahead, besteErwiderung,
-          zustandsWert, compQuote, rangliste};
+          zustandsWert, compQuote, compAufschluesselung, compReferenz,
+          compReferenzGlobal, compPerzentil, rangliste, kategorien, entscheiden};
+}
+
+/* Kleiner, schneller Zufallsgenerator mit Startwert (mulberry32). Nicht
+   Math.random: derselbe Datenstand soll denselben Massstab ergeben. */
+function zufallAus(saat) {
+  let a = saat >>> 0;
+  return () => {
+    a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function punkteText(d) {
+  const v = d * 100;
+  return (v >= 0 ? "+" : "") + v.toFixed(1).replace(".", ",") + " Punkte";
+}
+
+function prozentText(q) {
+  return (q * 100).toFixed(1).replace(".", ",") + " %";
 }
 
 /* ------------------------------------------------------------- Helfer */

@@ -125,40 +125,6 @@ export function quelleAnlegen(roh) {
 
      Gerechnet ueber die GEGNERISCHE LANE, also dieselbe Rolle - das ist
      die Paarung, um die es beim Blindpick geht. */
-  /* Streuung je Rolle, einmal sortiert. Gebraucht fuer die Frage
-     "robuster als wie viele andere auf dieser Rolle" - absolute Werte
-     taugen dafuer nicht, weil die Rollen weit auseinanderliegen. */
-  const streuungsFeldCache = new Map();
-  function streuungsFeld(rolle) {
-    if (streuungsFeldCache.has(rolle)) return streuungsFeldCache.get(rolle);
-    const xs = [];
-    for (const c of roh.namen) {
-      /* staerke() faellt auf Nebenrollen weg (zu wenige Partien oder zu
-         kleiner Rollenanteil). Diese Champions gehoeren auch hier nicht
-         ins Feld: ihre Matchuptabellen sind duenn und streuen darum
-         erratisch, was echte Laner robuster aussehen liesse als sie
-         sind. Dasselbe Sieb wie bei den Kandidaten. */
-      if (!staerke(c, rolle)) continue;
-      const s = streuung(c, rolle);
-      if (s) xs.push(s.streuung.value);
-    }
-    xs.sort((a, b) => a - b);
-    streuungsFeldCache.set(rolle, xs);
-    return xs;
-  }
-
-  /** Anteil der Champions dieser Rolle, die WENIGER streuen. 0 ist der
-   *  robusteste, 1 der anfaelligste. null ohne Messung. */
-  function streuungsPerzentil(champ, rolle) {
-    const s = streuung(champ, rolle);
-    if (!s) return null;
-    const xs = streuungsFeld(rolle);
-    if (xs.length < 10) return null;
-    let unter = 0;
-    for (const x of xs) { if (x < s.streuung.value) unter++; else break; }
-    return unter / xs.length;
-  }
-
   const streuungCache = new Map();
   function streuung(champ, rolle) {
     const k = champ + "|" + rolle;
@@ -248,7 +214,7 @@ export function quelleAnlegen(roh) {
     champions: roh.namen.slice(),
     kennt: (champ) => nr.has(champ),
     staerke, rollenVerteilung, matchup, synergie, schaden, kurve,
-    skalierung, prioritaet, streuung, streuungsPerzentil, paarMittel,
+    skalierung, prioritaet, streuung, paarMittel,
   };
 }
 
@@ -258,7 +224,7 @@ function leereQuelle() {
     patch: null, stand: null, champions: [], kennt: () => false,
     staerke: nix, rollenVerteilung: nix, matchup: nix, synergie: nix,
     schaden: nix, kurve: nix, skalierung: nix, prioritaet: nix,
-    streuung: nix, streuungsPerzentil: () => null, paarMittel: nix,
+    streuung: nix, paarMittel: nix,
   };
 }
 

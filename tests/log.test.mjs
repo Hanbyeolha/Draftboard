@@ -125,3 +125,28 @@ test("das Protokoll laesst sich ausgeben", () => {
   assert.equal(d.fassung, FASSUNG);
   assert.equal(d.eintraege.length, 1);
 });
+
+test("ein Eintrag haelt Modus, Kategorien und Gruppen - und spaeter das Ergebnis", () => {
+  const p = protokollAnlegen({speicher: null});
+  const r = {champion: "Ornn", score: 70, confidence: 0.8, entscheidung: 68,
+             modus: "blind",
+             components: {meta: {gewicht: 14, beitrag: 10},
+                          blindSicherheit: {gewicht: 18, beitrag: 12}},
+             blindDetail: {ev: 0.012, schlechtestes: -0.02,
+                           konter: [{champ: "Jax"}]}};
+  const e = p.notiere(leererDraft({patch: "1.0"}), "TOP", [r], {
+    draft: 7, kategorien: [{art: "gesamt", r}]});
+  assert.equal(e.modus, "blind");
+  assert.deepEqual(e.kategorien, [{art: "gesamt", champ: "Ornn"}]);
+  assert.equal(e.empfohlen[0].gruppen.draftgap, 71);
+  assert.equal(e.empfohlen[0].gruppen.spieler, null, "fehlt -> null, nicht 0");
+  assert.deepEqual(e.empfohlen[0].blind.konter, ["Jax"]);
+  assert.equal(e.ergebnis, null);
+  assert.equal(p.ergebnis(7, true), 1);
+  assert.equal(p.alle()[0].ergebnis, "sieg");
+  p.nachtragen(e.schluessel, "Ornn");
+  const a = p.auswertung();
+  assert.equal(a.sieg.n, 1);
+  assert.equal(a.sieg.top1, 1);
+  assert.match(a.hinweis, /zu wenig/);
+});

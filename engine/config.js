@@ -33,9 +33,19 @@ export const GEWICHTE = {
   gegnerStoerung: 8,   // stoert er ihren Plan (braucht die Heuristiktabelle)
   flex: 5,             // Rollen-Mehrdeutigkeit als Informationswert
   komfort: 14,         // was unsere Spieler wirklich koennen
-  pickReihenfolge: 7,  // blind sicher vs. counterbar
+  /* Wie gut steht der Pick ueber die wahrscheinlichen KUENFTIGEN
+     Lanegegner? Ersetzt das fruehere "pickReihenfolge", das nur die
+     Streuung der Matchups kannte. Gilt nur, solange der Lanegegner
+     (ganz oder teilweise) unbekannt ist, und wiegt dann nach dem
+     unbekannten Anteil - siehe blind.js. Gleich schwer wie "matchup":
+     es ist dieselbe Frage, nur ueber Gegner, die noch nicht feststehen. */
+  blindSicherheit: 18,
   lookahead: 10,       // Erwartungswert ueber wahrscheinliche Antworten
-  risiko: -8,          // Abzug fuer Volatilitaet
+  /* Ein eigener Risikoabzug steht hier nicht mehr. Er enthielt die
+     Streuung (die schon als Bonus zaehlte - dieselbe Zahl zweimal) und
+     (1 - Konfidenz). Der schlechteste Ausgang wirkt jetzt in
+     blindSicherheit und im Lookahead, beide ueber das Risikoprofil;
+     Unsicherheit wirkt als Schrumpfung (KONFIDENZ.schrumpfBoden). */
 };
 
 /* Welche unserer Achsen welcher gegnerischen entgegenwirkt. Das ist eine
@@ -54,19 +64,101 @@ export const STOERUNG = {
   catch:     ["peel"],
 };
 
-/* Blind oder Counter: wie stark die Streuung der Matchupquoten zaehlt.
-   Ein Champion, dessen Quoten je nach Gegner weit auseinanderliegen, ist
-   leicht konterbar - als spaeter Pick wertvoll, als blinder riskant.
-   Die Streuung ist gemessen, die Schwelle gesetzt. */
-export const PICKFOLGE = {
-  // An der gemessenen Verteilung ueber alle 342 Champion-Rollen-Paare
-  // geeicht, nicht geschaetzt: Median 2,77, 25. Perzentil 2,35,
-  // 75. Perzentil 3,42. Die engsten sind Jungler ohne festen Lanegegner
-  // (Lee Sin 1,49), die weitesten Kassadin 5,83 und Neeko 6,62.
-  streuungEng: 0.024,
-  streuungWeit: 0.034,
-  // Mindestzahl Gegner mit Daten, damit die Streuung etwas aussagt
-  mindestGegner: 20,
+/* ------------------------------------------------------ Teildeckung */
+/* Achsen, die eine andere teilweise mittragen - Heuristik, keine Messung.
+   Frontline steht zwischen Gegnern und Carries und faengt Dive ab; echten
+   Peel (Schilde, Wegstossen) ersetzt sie nicht. Der Faktor kommt aus der
+   Skala der Tabelle selbst: ausgepraegt (2) zaehlt als teilweise (1).
+   Wirkt in heuristik.achse(), also ueberall gleich: Bedarf, Comp-Wertung,
+   Stoerung. Eingetragen auf Hinweis des Teams am 10.10.2026. */
+export const TEILDECKUNG = {
+  peel: {frontline: 0.5},
+};
+
+/* ------------------------------------------------------------ Blindpicks */
+/* Ein Blindpick wird gegen die wahrscheinlichen KUENFTIGEN Lanegegner
+   gerechnet, nicht ueber eine einzelne Streuungszahl. Die fruehere Fassung
+   (nur Streuung) mass zu einem guten Teil Rauschen: von 3,85 Punkten
+   beobachteter Standardabweichung der Matchupabweichungen sind 2,74
+   Zufall und nur 2,70 echt (22.004 Lanepaarungen, 10.10.2026). Ein
+   Champion mit duenner Tabelle sah dadurch konterbarer aus, als er ist. */
+export const BLIND = {
+  /* Rauschkorrektur: eine gemessene Abweichung wird mit n / (n + k)
+     geschrumpft. k = 0,25 / tau^2 mit tau = 2,70 Punkten echter Streuung
+     ergibt 343 - bei 343 Partien ist eine Quote halb Signal, halb Zufall.
+     Gemessen, nicht gesetzt. */
+  schrumpfK: 343,
+
+  /* Das Szenariofeld: die haeufigsten Lanegegner bis zu diesem Anteil
+     ihrer Rollenpartien. Eine erste Fassung schnitt bei 90 % ab - dann
+     fiel ein seltener Counter ganz heraus und wurde nicht einmal mehr
+     genannt. Jetzt das ganze Feld: der Schwanz zaehlt mit seiner
+     geringen Wahrscheinlichkeit, und seine duennen Paarungen schrumpft
+     die Rauschkorrektur ohnehin. Die Obergrenze ist nur ein Sicherheitsnetz
+     (Top hat 87 Champions). */
+  feldAnteil: 1.0,
+  feldHoechstens: 100,
+  // Botlane: ADC- und Supportpaare nach gemessener gemeinsamer Partienzahl.
+  // 15 x 15 haeufigste: alle 225 Paare haben Daten.
+  botBreite: 15,
+  botPaareHoechstens: 80,
+
+  /* Unter dieser abgedeckten Wahrscheinlichkeitsmasse ist der Wert keine
+     Aussage ueber das Feld, sondern ueber ein paar Paarungen - dann
+     faellt die Komponente weg (Summe UND Hoechstwert). Gesetzt. */
+  mindestAbdeckung: 0.6,
+
+  /* Gefahrenstufen fuer einen Counter, aus der gemessenen Verteilung
+     aller Lane-Abweichungen (12.358 Paarungen mit >= 200 Partien):
+       ungünstig       schlechtestes Fuenftel   <= -2,40 Punkte
+       gefaehrlich     schlechtestes Zehntel    <= -3,85 Punkte
+       sehr gefaehrlich schlechtestes Zwanzigstel <= -5,32 Punkte
+     Die Stufen gelten fuer die geschrumpfte Abweichung. */
+  stufen: {unguenstig: -0.024, gefaehrlich: -0.0385, sehrGefaehrlich: -0.0532},
+
+  /* Wie viel Wahrscheinlichkeitsmasse das "schlechteste Fuenftel"
+     (CVaR) umfasst. Ein seltener Counter allein fuellt es nicht - er
+     zieht den Wert nur im Mass seiner Wahrscheinlichkeit herunter, statt
+     den Champion zu zerstoeren. */
+  schwanzAnteil: 0.20,
+
+  /* Abbildung des Rohwerts (Punkte Siegquote) auf 0..1. 0,5 = so gut wie
+     ein durchschnittlicher Champion gegen dieses Feld. Geeicht an allen
+     342 Kandidaten im leeren Draft, Profil "ausgewogen": p5 -2,82,
+     Median -0,15, p95 +1,64 Punkte. Mit 3,0 landet p5 bei 0,03 und p95
+     bei 0,77 - kaum etwas wird abgeschnitten. 2,5 haette das untere
+     Zwanzigstel auf 0 gekappt. */
+  spanne: 0.030,
+
+  /* Kennen wir die gegnerische Mannschaft (gescoutet), ist ihr Spieler auf
+     der Rolle die bessere Quelle als das Metafeld: wer 120 Partien Aatrox
+     hat, pickt eher Aatrox. Gemischt wird, weil auch ein Pool kein
+     Versprechen ist. Der Mischanteil ist GESETZT, nicht gemessen - uns
+     fehlen beobachtete Gegnerdrafts, um ihn zu pruefen. */
+  gegnerPoolAnteil: 0.5,
+  // Unter so vielen Rankedpartien traegt ein gegnerischer Pool nichts.
+  gegnerPoolMindestPartien: 20,
+
+  /* Prio-Pick: gehoert zu den meistgespielten der Rolle, die zusammen
+     die Haelfte aller Rollenpartien stellen. Gemessen sind das 18 (Top),
+     14 (Jungle), 14 (Mid), 7 (ADC) und 11 (Support) Champions. */
+  prioAnteil: 0.5,
+
+  /* Ab welchem Blindwert ein Kandidat als "sicher" markiert wird.
+     Gemessen ueber 342 Kandidaten im leeren Draft: Median 0,472,
+     p75 0,598, p90 0,703. 0,6 heisst also "im besten Viertel gegen das
+     wahrscheinliche Feld". Robust UND Prio sind dann z. B. Malphite,
+     Garen, Gangplank, Wukong, Cho'Gath, Ahri, Jinx, Tristana, Leona,
+     Thresh, Blitzcrank. */
+  sicherAb: 0.6,
+
+  /* Rollenunsicherheit beim Gegner: KEINE eigene Schwelle. Unsicher ist
+     die Rolle eines gegnerischen Champions genau dann, wenn eine andere,
+     beim Gegner noch offene Rolle mindestens ROLLEN.flexAbAnteil seiner
+     Partien hat - dieselbe Definition von "flexibel", die das Board
+     ueberall benutzt. Gemessen: Jax 13 % Jungle, Darius 10 % -> sicher;
+     Gragas 19 % Jungle, Sylas, Pantheon -> unsicher. Eine erste Fassung
+     mit 90 % Rollenanteil haette auch Darius als Flexpick gefuehrt. */
 };
 
 /* ------------------------------------------------------------- Konfidenz */
@@ -85,9 +177,23 @@ export const KONFIDENZ = {
   // Konfidenz der Team-Heuristik. Bewusst niedrig: sie ist eine
   // Einschaetzung unserer Mannschaft, keine Messung. Siehe heuristik.js.
   heuristik: 0.45,
+  // Die Ersteinschaetzung (Abschnitt "vorschlag") hat noch niemand aus
+  // der Mannschaft geprueft - sie traegt darum noch weniger.
+  heuristikVorschlag: 0.3,
   // Schwellen fuer die Anzeige
   hoch: 0.7,
   mittel: 0.45,
+  /* Entscheidungswert statt roher Note: eine Note mit duenner Datenlage
+     wird zum Median der Liste hin gezogen, nicht mit der Konfidenz
+     multipliziert. Multiplizieren wuerde jeden unsicheren Champion
+     bestrafen, auch einen schwachen - schrumpfen zieht beide Enden zur
+     Mitte, und genau das heisst "wir wissen es nicht genau".
+
+       entscheidung = median + (note - median) * (boden + (1 - boden) * konfidenz)
+
+     Bei Konfidenz 1 bleibt die Note, bei 0 bleibt die Haelfte des
+     Abstands. Gesetzt. */
+  schrumpfBoden: 0.5,
 };
 
 /* -------------------------------------------------------------- Rollenwahl */
@@ -99,29 +205,14 @@ export const ROLLEN = {
   mindestAnteil: 0.05,
   // Ab diesem Anteil auf einer zweiten Rolle gilt ein Champion als flexibel
   flexAbAnteil: 0.15,
+  /* Fuer den Informationswert zaehlt eine zweite Rolle nur, wenn der
+     Champion dort auch etwas taugt - eine Rolle, auf der er 46 % holt,
+     verbirgt nichts, weil niemand ihn dort erwartet. Gesetzt knapp unter
+     dem Mittel. */
+  flexMindestStaerke: 0.485,
 };
 
 /* --------------------------------------------------------------- Komfort */
-/* Wann lohnt es sich, einen Champion blind zu picken - also bevor man
-   den Lanegegner kennt? Gemessen wird die Streuung seiner Matchupquoten;
-   wenig Streuung heisst, der Gegner aendert wenig.
-
-   Das Perzentil gilt INNERHALB der Rolle. Die Rollen liegen weit
-   auseinander (Jungle-Median 2,27 Punkte gegen Top-Median 3,28), eine
-   feste Schwelle haette darum vor allem die Rolle markiert und nicht den
-   Champion. Gemessen am 10.10.2026 ueber 342 Paare. */
-export const BLINDSICHER = {
-  // Robuster als dieser Anteil der Champions derselben Rolle
-  perzentil: 0.20,
-  // Ein robuster, aber unterdurchschnittlicher Champion ist kein Gewinn.
-  // Streuung und Staerke sind praktisch unabhaengig (r = -0,07), die
-  // Bedingung streicht also nicht einfach die Haelfte weg.
-  mindestStaerke: 0.50,
-  // Unter so wenigen Lanegegnern in der Tabelle ist die Streuung selbst
-  // zu unsicher, um daraus etwas abzuleiten.
-  mindestGegner: 30,
-};
-
 export const KOMFORT = {
   // Eigene Partien, ab denen Erfahrung voll zaehlt
   volleErfahrung: 100,
@@ -199,13 +290,71 @@ export const SUCHE = {
   temperatur: 8,
 };
 
+/* ------------------------------------------------------------- Lagebild */
+/* Schwellen fuer strategie.js. Gemessen am 10.10.2026, Patch 16.19.1. */
+export const STRATEGIE = {
+  // Ab so vielen eingeschaetzten Picks einer Seite gibt es Bedarf und
+  // Gefahr. Eins reicht, weil beides relativ ist ("was fehlt am
+  // meisten"). Die Siegbedingung braucht COMP.heuristikAbPicks.
+  abPicks: 1,
+  // Ein Siegmuster zaehlt erst, wenn seine Achsen im Mittel halb
+  // getragen sind. Gesetzt.
+  musterAb: 0.5,
+  // Ab hier gilt eine Achse als gedeckt: ein weiterer Champion bringt
+  // dort fast nichts mehr (siehe saettigen in comp.js). Gesetzt.
+  gesaettigtAb: 0.9,
+  /* Ab wann eine Seite in einer Phase "vorn" ist. Gemessen ueber die 68
+     Turnierpartien (Betrag der staerksten Phasendifferenz): p25 0,52,
+     Median 0,81, p75 1,68, p90 2,50 Punkte. Gewaehlt ist p75 - nur das
+     obere Viertel der Unterschiede wird genannt. */
+  phasenVorsprung: 0.0168,
+  // So viele Kandidaten je Rolle (nach Patchstaerke) gehen in den Wert
+  // des Wartens. 20 decken die realistischen Picks; 26 ms fuer alle fuenf
+  // Rollen im leeren Draft.
+  wartenKandidaten: 20,
+  /* Ab wann "spaeter picken" genannt wird. Gemessen im leeren Draft:
+     Mid 2,79, Top 2,76, Jungle 1,65, ADC 1,46, Support 0,68 Punkte -
+     die bekannte Reihenfolge "Support frueh, Mid und Top als Counter",
+     hier aus den Matchups und ohne Faustregel. Die Schwelle liegt beim
+     Median der fuenf. */
+  wartenLohntAb: 0.0165,
+  /* "Bringt das mit": so viele Champions je Bedarf, hoechstens so viele
+     je Rolle. Gesetzt - es ist eine Liste zum Nachschlagen, keine Wertung. */
+  bringerAnzahl: 5,
+  bringerJeRolle: 2,
+  // Ab diesem Komfort gilt ein Champion als "im Pool" des Spielers.
+  // Nach der Formel in team.js sind 0,5 rund 10 Rankedpartien
+  // (log10 11 / log10 101 = 0,52) oder ein Eintrag im Draftplan
+  // ("spielt gerne" 0,65, "blind" 1,0). Gesetzt.
+  poolAb: 0.5,
+  // Ab welchem magischen (bzw. physischen) Anteil ein Champion als
+  // Traeger dieses Schadens gilt. Gesetzt, ausserhalb des Mischbands.
+  schadenTraegerAb: 0.6,
+};
+
+/* -------------------------------------------------- Massstab der Comp-Quote */
+/* Woran wird die Comp-Quote gemessen? NICHT an unseren Ligapartien - 68
+   sind zu wenige, und die Staerke kommt aus dem Patch, nicht aus unseren
+   Spielen. Stattdessen Aufstellungen, gezogen nach der gemessenen
+   Spielhaeufigkeit jeder Rolle in den DraftGap-Daten. Gemessen am
+   10.10.2026: ab 2.000 stehen die Raender (p5 48,27, Median 50,00,
+   p95 51,74 %); 500 schwanken noch, 5.000 aendern nichts mehr und kosten
+   das Dreifache. Fester Startwert - gleiche Daten, gleicher Massstab. */
+export const COMP_REFERENZ = {
+  anzahl: 2000,
+  saat: 20261010,
+};
+
 /* ------------------------------------------------------------ Risikoprofil */
 /* Veraendert das Modell, nicht nur die Anzeige: SICHER gewichtet den
-   schlechtesten Ausgang mit, AGGRESSIV den besten. */
+   schlechtesten Ausgang mit, AGGRESSIV den besten. Gilt an zwei Stellen,
+   die sich nicht ueberschneiden: im Blindwert (schlechtestes und bestes
+   Fuenftel der Lanegegner) und im Lookahead (schlechtester und bester
+   Ast der uebrigen Draftfolge). */
 export const RISIKOPROFILE = {
-  sicher:     {schlechtester: 0.45, erwartet: 0.55, bester: 0.00, risiko: 1.4},
-  ausgewogen: {schlechtester: 0.20, erwartet: 0.70, bester: 0.10, risiko: 1.0},
-  aggressiv:  {schlechtester: 0.05, erwartet: 0.60, bester: 0.35, risiko: 0.6},
+  sicher:     {schlechtester: 0.45, erwartet: 0.55, bester: 0.00},
+  ausgewogen: {schlechtester: 0.20, erwartet: 0.70, bester: 0.10},
+  aggressiv:  {schlechtester: 0.05, erwartet: 0.60, bester: 0.35},
 };
 export const STANDARD_RISIKO = "ausgewogen";
 
@@ -227,4 +376,9 @@ export const ANZEIGE = {
   quoteNachkomma: 1,
   topEmpfehlungen: 5,
   avoidEmpfehlungen: 3,
+  /* Fuer "sicherster", "aggressivster", "Flex"- und "Komfortpick" kommen
+     nur Kandidaten in Frage, die hoechstens so viele Punkte hinter dem
+     besten liegen. Sonst waere der Komfortpick ein strategisch
+     schlechter Champion, den der Spieler eben gern spielt. Gesetzt. */
+  kategorieAbstand: 10,
 };

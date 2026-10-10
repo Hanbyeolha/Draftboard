@@ -126,9 +126,16 @@ test("die Rangliste traegt den Lookahead nur bei den aussichtsreichsten", () => 
   const mit = liste.filter((r) => r.lookahead);
   assert.ok(mit.length > 0 && mit.length <= SUCHE.beiteEigen,
             "mit Lookahead: " + mit.length);
-  // Absteigend sortiert.
+  // Absteigend nach Entscheidungswert - der Note, zum Median geschrumpft,
+  // je unsicherer sie ist. Die Note selbst bleibt daneben stehen.
   for (let i = 1; i < liste.length; i++) {
-    assert.ok(liste[i - 1].score >= liste[i].score, "Reihenfolge bei " + i);
+    assert.ok(liste[i - 1].entscheidung >= liste[i].entscheidung,
+              "Reihenfolge bei " + i);
+  }
+  for (const r of liste) {
+    assert.ok(Math.abs(r.entscheidung - r.median)
+              <= Math.abs(r.score - r.median) + 0.05,
+              "Schrumpfen zieht zur Mitte, nie weg davon: " + r.champion);
   }
   // Wer einen Lookahead hat, traegt ihn auch als Teil der Bewertung.
   assert.ok(mit[0].components.lookahead, "Lookahead ist ein Teil");
@@ -168,4 +175,48 @@ test("eine volle Rangliste bleibt unter 250 ms", () => {
   const dt = performance.now() - t0;
   assert.ok(liste.length > 20);
   assert.ok(dt < 250, "gebraucht: " + dt.toFixed(0) + " ms");
+});
+
+test("die Aufschluesselung ergibt genau die Comp-Quote", () => {
+  const x = S.compAufschluesselung(SPAET);
+  assert.ok(Math.abs(x.quote - S.compQuote(SPAET)) < 1e-12, "dieselbe Rechnung");
+  assert.equal(x.paare.length, 3 * 4, "jede Paarung einzeln");
+  assert.ok(x.paare.some((p) => p.lane) && x.paare.some((p) => !p.lane));
+  // Ornn (Top) gegen Jax (Top) ist Lane, Ornn gegen Lulu nicht.
+  assert.equal(x.paare.find((p) => p.wir === "Ornn" && p.sie === "Jax").lane, true);
+  assert.equal(x.paare.find((p) => p.wir === "Ornn" && p.sie === "Lulu").lane, false);
+  // Jinx (ADC) gegen Lulu (Support) ist Botlane, also Lane.
+  assert.equal(x.paare.find((p) => p.wir === "Jinx" && p.sie === "Lulu").lane, true);
+  assert.ok(Math.abs(x.lane.anteil + x.rest.anteil - 1) < 1e-12);
+});
+
+test("die Referenz ordnet eine Quote gegen echte Drafts ein", async () => {
+  const { ladePartien } = await import("./daten.mjs");
+  const drafts = [];
+  for (const p of ladePartien()) {
+    const pk = (t) => (p.picks[t] || []).filter((x) => x.champ && x.role)
+      .map((x) => ({champ: x.champ, rolle: x.role}));
+    drafts.push({wir: pk(p.blue), sie: pk(p.red)}, {wir: pk(p.red), sie: pk(p.blue)});
+  }
+  const ref = S.compReferenz(drafts);
+  assert.equal(ref.n, 136, "68 Partien aus beiden Sichten");
+  assert.ok(ref.min > 0.45 && ref.max < 0.55, "Spanne " + ref.min + " - " + ref.max);
+  // Aus beiden Sichten liegt die Verteilung symmetrisch um 50 %.
+  assert.ok(Math.abs(ref.quoten[68] - 0.5) < 0.003, "Median " + ref.quoten[68]);
+  assert.equal(S.compPerzentil(ref.max + 0.01, ref), 1);
+  assert.equal(S.compPerzentil(ref.min - 0.01, ref), 0);
+  assert.ok(ref.paarP5 < ref.p5 && ref.paarP95 > ref.p95,
+            "einzelne Paarungen streuen weiter als der Schnitt aus 25");
+});
+
+test("der Massstab kommt aus dem Patch, nicht aus der Liga", () => {
+  const ref = S.compReferenzGlobal();
+  assert.equal(ref.n, 2000);
+  assert.equal(ref.quelle, "draftgap");
+  assert.ok(Math.abs(ref.quoten[1000] - 0.5) < 0.002, "Median " + ref.quoten[1000]);
+  assert.ok(ref.p5 > 0.47 && ref.p95 < 0.53, ref.p5 + " .. " + ref.p95);
+  assert.equal(S.compReferenzGlobal(), ref, "einmal gerechnet, dann gemerkt");
+  // Deterministisch: eine zweite Suche auf denselben Daten zieht dasselbe.
+  const S2 = sucheAnlegen({quelle, merkmale, bewerter});
+  assert.deepEqual(S2.compReferenzGlobal().quoten.slice(0, 20), ref.quoten.slice(0, 20));
 });

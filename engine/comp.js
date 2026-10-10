@@ -136,7 +136,11 @@ export function compAnlegen(merkmale, heuristik) {
     return strukturRoh(mit, COMP.heuristikAbPicks);
   }
 
-  /* Die rohe Fassung ohne Mindestzahl. Zwei Nutzungen, zwei Schwellen:
+  /* Saettigend, nicht gemittelt: siehe saettigen(). Ein Peel-Champion
+     senkt unseren Engage nicht, und ein dritter Engager bringt nichts,
+     wenn zwei die Achse schon tragen.
+
+     Die rohe Fassung ohne Mindestzahl. Zwei Nutzungen, zwei Schwellen:
      fuers ANZEIGEN gilt COMP.heuristikAbPicks, weil eine Achse auf einem
      einzigen gepflegten Pick eine Aussage ueber diesen Champion ist und
      nicht ueber die Aufstellung. Fuer eine DIFFERENZ muessen dagegen
@@ -152,7 +156,7 @@ export function compAnlegen(merkmale, heuristik) {
         if (w) xs.push(w.value);
       }
       if (!xs.length || xs.length < abPicks) continue;
-      out[achse] = wert(xs.reduce((a, b) => a + b, 0) / mit.length, {
+      out[achse] = wert(saettigen(xs), {
         quelle: "heuristik",
         hinweis: xs.length + " von " + mit.length + " Picks gepflegt",
       });
@@ -289,6 +293,19 @@ export function compAnlegen(merkmale, heuristik) {
   }
 
   return {profil, vergleich, phasenVorteil, marginal};
+}
+
+/** Wie stark traegt eine Aufstellung eine Achse? 1 - Produkt(1 - x).
+ *
+ *  Kein Mittelwert: ein Champion, der die Achse nicht bedient, senkt sie
+ *  nicht. Keine Summe: zwei ausgepraegte Engager sind nicht doppelt so
+ *  viel Engage, sondern genug. Ohne einen einzigen Parameter - die Form
+ *  folgt daraus, dass jeder Beitrag den verbliebenen Bedarf anteilig
+ *  deckt. */
+export function saettigen(werte) {
+  let rest = 1;
+  for (const x of werte) rest *= 1 - Math.max(0, Math.min(1, x));
+  return 1 - rest;
 }
 
 function schnitt(xs) {

@@ -466,6 +466,23 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
           color: var(--ink-faint); overflow: hidden; text-overflow: ellipsis;
           white-space: nowrap; }
 .ld-feld { min-width: 0; border-radius: var(--radius-sm); }
+/* Gegnerspalte: wer spielt die Rolle - umstellbar bei einem Wechsel.
+   Etwas breiter als das Namensfeld unserer Seite, weil es eine Auswahl
+   ist. Von Hand gesetzt heisst: Rahmen in Warnfarbe. */
+.ld-seite.gegner .ld-pickzeile { grid-template-columns: 3.4rem minmax(0, 1fr) 7.5rem; }
+.ld-wer-wahl { width: 100%; min-width: 0; padding: 0.1rem 0.2rem;
+               border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+               background: var(--surface-sunk); color: var(--ink-muted); cursor: pointer; }
+.ld-wer-wahl.geaendert { border-color: var(--warn); color: var(--ink); }
+.ld-wer-wahl:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.ld-besetzung-zurueck { margin-left: auto; font-size: 0.68rem; padding: 0.1rem 0.45rem;
+                        border-color: var(--warn); color: var(--ink); }
+.ld-besetzung-zurueck + .ld-seite-wort { margin-left: 0.4rem; }
+/* Die Regel oben ist spezifischer als die Handyregel weiter unten - ohne
+   diese Wiederholung blieben es auf dem Handy drei Spalten. */
+@media (max-width: 560px) {
+  .ld-seite.gegner .ld-pickzeile { grid-template-columns: 3rem minmax(0, 1fr); }
+}
 /* Das aktive Feld ist das Ziel des Picken-Knopfs - das muss man sehen. */
 .ld-feld.aktiv { outline: 2px solid var(--eigen); outline-offset: 1px; }
 .ld-feld .champ-field { display: flex; align-items: center; gap: 0.25rem;
@@ -478,6 +495,8 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
   .ld-wer { grid-column: 2; font-size: 0.62rem; }
 }
 .ld-feld.bans input { font-size: 0.72rem; padding: 0.12rem 0.3rem; }
+.ld-ban-hinweis { flex-basis: 100%; font-size: 0.72rem; color: var(--warn); }
+.ld-ban-hinweis:empty { display: none; }
 
 /* ------------------------------------------- Beide Aufstellungen */
 .ld-comp { display: flex; flex-direction: column; gap: 0.25rem;
@@ -518,6 +537,64 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
 .ld-mix-balken i { display: block; height: 100%; background: var(--blue); }
 .ld-mix-wort { font-size: 0.68rem; color: var(--ink-muted); white-space: nowrap; }
 .ld-comp-leer { font-size: 0.68rem; color: var(--ink-faint); }
+/* Achsenprofil: je Achse ein Balken fuer uns und fuer sie. */
+.ld-profil { margin-top: 0.15rem; }
+.ld-profil summary { cursor: pointer; font-size: 0.72rem; font-weight: 600;
+                     color: var(--ink-muted); display: flex; align-items: center; gap: 0.5rem; }
+.ld-profil summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ld-profil p { margin: 0.3rem 0 0; }
+.ld-pf-raster { display: grid; gap: 2px 0.6rem; align-items: center; margin-top: 0.35rem;
+                grid-template-columns: 8rem minmax(0, 1fr) minmax(0, 1fr); }
+@media (max-width: 560px) {
+  .ld-pf-raster { grid-template-columns: 5.5rem minmax(0, 1fr) minmax(0, 1fr); }
+  .ld-pf-wer { display: none; }
+}
+.ld-pf-kopf { font-family: Rajdhani, Archivo, sans-serif; font-size: 0.84rem;
+              font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+              min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ld-pf-kopf.eigen { color: var(--eigen); }
+.ld-pf-kopf.gegner { color: var(--gegner); }
+.ld-pf-wort { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em;
+              text-transform: uppercase; color: var(--ink-faint); }
+.ld-pf-zelle { display: grid; align-items: center; gap: 0.4rem; min-width: 0;
+               grid-template-columns: minmax(3rem, 6rem) 1.8rem minmax(0, 1fr); }
+.ld-pf-zelle.leer { display: block; color: var(--ink-faint); font-size: 0.72rem; }
+.ld-pf-balken { height: 7px; border-radius: 4px; overflow: hidden; background: var(--surface); }
+.ld-pf-balken i { display: block; height: 100%; }
+.ld-pf-zelle.eigen .ld-pf-balken i { background: var(--eigen); }
+.ld-pf-zelle.gegner .ld-pf-balken i { background: var(--gegner); }
+.ld-pf-zelle b { font-family: Rajdhani, Archivo, sans-serif; font-size: 0.84rem;
+                 font-variant-numeric: tabular-nums; text-align: right; }
+.ld-pf-wer { font-size: 0.68rem; color: var(--ink-muted); min-width: 0;
+             overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ld-gefaehrdet { color: var(--ink); }
+/* Leere Hinweise in Bedarf und Gefahr so klein wie die Erklaerungen daneben. */
+.ld-bedarf .ld-lage-leer { font-size: 0.72rem; }
+
+/* Wie die Quote entsteht: ein Raster aller Paarungen. */
+.ld-quote-erklaerung { margin-top: 0.15rem; font-size: 0.78rem; }
+.ld-quote-erklaerung summary { cursor: pointer; font-size: 0.72rem; font-weight: 600;
+                               color: var(--ink-muted); }
+.ld-quote-erklaerung summary:focus-visible { outline: 2px solid var(--accent);
+                                             outline-offset: 2px; }
+.ld-quote-erklaerung p { margin: 0.35rem 0; max-width: 74ch; color: var(--ink-muted); }
+.ld-matrix-huelle { overflow-x: auto; }
+.ld-matrix { display: grid; gap: 2px; align-items: stretch; min-width: 0; }
+.ld-mx-ecke { font-size: 0.6rem; color: var(--ink-faint); align-self: end;
+              padding-bottom: 0.15rem; }
+.ld-mx-kopf { display: flex; align-items: center; gap: 0.25rem; min-width: 0;
+              font-size: 0.68rem; font-weight: 600; }
+.ld-mx-kopf img { width: 18px; height: 18px; border-radius: 3px; flex: none; }
+.ld-mx-kopf span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ld-mx-zelle { display: flex; align-items: center; justify-content: center;
+               font-family: Rajdhani, Archivo, sans-serif; font-size: 0.84rem;
+               font-weight: 700; font-variant-numeric: tabular-nums;
+               padding: 0.15rem 0.2rem; border: 1px solid var(--border);
+               border-radius: 2px; background: var(--surface); color: var(--ink-muted); }
+.ld-mx-zelle.lane { border-color: var(--eigen); }
+.ld-mx-zelle.gut { color: var(--good-klein); }
+.ld-mx-zelle.schwach { color: var(--red); }
+.ld-mx-zelle.ohne, .ld-mx-zelle.leer { color: var(--ink-faint); }
 .ld-gegner { font: inherit; font-size: 0.95rem; font-weight: 700;
              font-family: Rajdhani, Archivo, sans-serif; letter-spacing: 0.04em;
              text-transform: uppercase; width: 11rem; color: var(--gegner);
@@ -679,22 +756,25 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
 .ld-robust.niedrig { color: var(--red); }
 
 /* Jede eingetragene Paarung einzeln. Sie soll auffallen - darum Bild
-   und Zahl nebeneinander statt einer Zeile Text. Der kleine Zusatz ist
-   der Abstand zur Erwartung, also die eigentliche Aussage. */
+   und Zahl nebeneinander statt einer Zeile Text, und die Farbe traegt
+   die Wertung. Der kleine Zusatz ist der Abstand zur Erwartung, also
+   die eigentliche Aussage. Zahl und Zusatz sind kleine Schrift, darum
+   --good-klein statt --good (4,5:1). */
 .ld-paarungen { display: flex; flex-direction: column; gap: 2px;
-                padding: 0.25rem 0; border-top: 1px solid var(--border); }
+                padding: 0.25rem 0; margin: 0.1rem 0;
+                border-top: 1px solid var(--border);
+                border-bottom: 1px solid var(--border); }
 .ld-paare { display: grid; align-items: center; gap: 0.3rem;
             grid-template-columns: 2.4rem minmax(0, 1fr); }
 .ld-paare-wort { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em;
                  text-transform: uppercase; color: var(--ink-faint); }
 .ld-paare.gegen .ld-paare-wort { color: var(--gegner); }
-.ld-paare.mit .ld-paare-wort { color: var(--eigen); }
+.ld-paare.mit .ld-paare-wort { color: color-mix(in srgb, var(--eigen) 82%, var(--ink)); }
 .ld-paare-liste { display: flex; flex-wrap: wrap; gap: 0.2rem; min-width: 0; }
-.ld-paar { display: inline-flex; align-items: baseline; gap: 0.15rem;
+.ld-paar { display: inline-flex; align-items: center; gap: 0.15rem;
            padding: 0.05rem 0.25rem 0.05rem 0.05rem; border-radius: 3px;
            border: 1px solid var(--border); background: var(--surface); }
-.ld-paar img { width: 16px; height: 16px; border-radius: 2px;
-               align-self: center; }
+.ld-paar img { width: 16px; height: 16px; border-radius: 2px; }
 .ld-paar b { font-family: Rajdhani, Archivo, sans-serif; font-size: 0.72rem;
              font-weight: 700; font-variant-numeric: tabular-nums;
              color: var(--ink-muted); }
@@ -720,30 +800,6 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
 .ld-spur-teil.plus i { color: var(--good-klein); }
 .ld-spur-teil.minus i { color: var(--red); }
 .ld-spur-teil.geschaetzt { border-style: dashed; }
-/* Die einzelnen Paarungen. Sie sollen auffallen - darum Bild und Zahl
-   nebeneinander statt einer Zeile Text, und die Farbe traegt die Aussage. */
-.ld-paarungen { display: flex; flex-direction: column; gap: 2px;
-                padding: 0.25rem 0; margin: 0.1rem 0;
-                border-top: 1px solid var(--border);
-                border-bottom: 1px solid var(--border); }
-.ld-paare { display: grid; align-items: center; gap: 0.3rem;
-            grid-template-columns: 2.4rem minmax(0, 1fr); }
-.ld-paare-wort { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em;
-                 text-transform: uppercase; color: var(--ink-faint); }
-.ld-paare.gegen .ld-paare-wort { color: var(--gegner); }
-.ld-paare.mit .ld-paare-wort { color: var(--eigen); }
-.ld-paare-liste { display: flex; flex-wrap: wrap; gap: 0.2rem; min-width: 0; }
-.ld-paar { display: inline-flex; align-items: center; gap: 0.15rem;
-           padding: 0.05rem 0.25rem 0.05rem 0.05rem; border-radius: 3px;
-           border: 1px solid var(--border); background: var(--surface); }
-.ld-paar img { width: 16px; height: 16px; border-radius: 2px; }
-.ld-paar b { font-family: Rajdhani, Archivo, sans-serif; font-size: 0.72rem;
-             font-weight: 700; font-variant-numeric: tabular-nums;
-             color: var(--ink-muted); }
-.ld-paar.gut { border-color: color-mix(in srgb, var(--good) 55%, transparent); }
-.ld-paar.gut b { color: var(--good); }
-.ld-paar.schwach { border-color: color-mix(in srgb, var(--red) 50%, transparent); }
-.ld-paar.schwach b { color: var(--red); }
 
 /* Warum dieser Champion vorgeschlagen wird - keine Blackbox. */
 .ld-gruende { list-style: none; margin: 0; padding: 0;
@@ -761,6 +817,189 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
 .ld-picken:hover { background: var(--eigen); border-color: transparent;
                    color: var(--eigen-ink); }
 .ld-picken:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ------------------------------------------------------- Lagebild */
+/* Ueber dem Draft: was fehlt, was droht, wie gewinnen, welche Rolle.
+   Jede Zeile traegt ihre Herkunft - Einschaetzung gestrichelt, wie die
+   geschaetzten Teile der Spur. */
+.ld-lage { display: flex; flex-direction: column; gap: 0.15rem;
+           padding: 0.45rem 0.55rem; border: 1px solid var(--border);
+           border-left: 3px solid var(--eigen); border-radius: var(--radius-sm);
+           background: var(--surface-sunk); }
+.ld-lage[hidden] { display: none; }
+.ld-lage-kopf { display: flex; align-items: baseline; gap: 0.5rem;
+                margin-bottom: 0.1rem; }
+.ld-lage-zeile { display: grid; align-items: baseline; gap: 0.15rem 0.6rem;
+                 grid-template-columns: 9.5rem minmax(0, 1fr) auto;
+                 padding: 0.15rem 0; border-top: 1px solid var(--border); }
+.ld-lage-wort { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em;
+                text-transform: uppercase; color: var(--ink-faint); }
+.ld-lage-wert { display: flex; align-items: baseline; gap: 0.2rem 0.5rem;
+                flex-wrap: wrap; min-width: 0; }
+.ld-lage-wert b { font-family: Rajdhani, Archivo, sans-serif; font-size: 0.98rem;
+                  font-weight: 700; letter-spacing: 0.03em; }
+.ld-lage-grund { font-size: 0.72rem; color: var(--ink-muted); min-width: 0; }
+.ld-lage-leer { color: var(--ink-faint); }
+/* Bedarf: bis zu drei, der erste fett. Darunter, wer ihn mitbringt. */
+.ld-bedarfe { flex-direction: column; align-items: stretch; gap: 0.35rem; }
+.ld-bedarf { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+.ld-bedarf-kopf { display: flex; align-items: baseline; gap: 0.2rem 0.5rem;
+                  flex-wrap: wrap; }
+.ld-bedarf-wort { font-family: Rajdhani, Archivo, sans-serif; font-size: 0.95rem;
+                  font-weight: 700; letter-spacing: 0.03em; }
+.ld-bedarf:not(.erster) .ld-bedarf-wort { color: var(--ink-muted); }
+.ld-bringer { display: flex; align-items: center; flex-wrap: wrap; gap: 0.25rem; }
+.ld-bringer-wort { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em;
+                   text-transform: uppercase; color: var(--ink-faint);
+                   margin-right: 0.15rem; }
+.ld-bringer-chip { display: inline-flex; align-items: center; gap: 0.25rem;
+                   font: inherit; font-size: 0.72rem; cursor: pointer;
+                   padding: 0.1rem 0.4rem 0.1rem 0.1rem;
+                   border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+                   background: var(--surface); color: var(--ink); }
+.ld-bringer-chip img { width: 20px; height: 20px; border-radius: 3px; flex: none; }
+.ld-bringer-chip b { font-weight: 700; }
+.ld-bringer-chip i { font-style: normal; color: var(--ink-muted); }
+.ld-bringer-chip em { font-style: normal; font-size: 0.6rem; font-weight: 700;
+                      letter-spacing: 0.08em; text-transform: uppercase;
+                      color: var(--eigen); }
+.ld-bringer-chip.pool { border-color: color-mix(in srgb, var(--eigen) 55%, transparent); }
+.ld-bringer-chip:hover { border-color: var(--ink-faint); }
+.ld-naechste { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+.ld-naechste-pick { display: inline-flex; align-items: center; gap: 0.35rem;
+                    font: inherit; font-size: 0.8rem; cursor: pointer;
+                    padding: 0.15rem 0.5rem 0.15rem 0.35rem;
+                    border: 1px solid color-mix(in srgb, var(--eigen) 55%, transparent);
+                    border-radius: var(--radius-sm); background: var(--surface);
+                    color: var(--ink); }
+.ld-naechste-pick img { width: 22px; height: 22px; border-radius: 3px; flex: none; }
+.ld-naechste-pick .ld-punkte { margin: 0; font-size: 1rem; }
+.ld-naechste-pfeil { font-size: 0.72rem; color: var(--ink-muted); }
+.ld-naechste-pick:hover { border-color: var(--eigen); }
+.ld-naechste-pick:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+/* Eine Suche, die filtert, muss man sehen - sonst wirkt die Liste leer. */
+.ld-suchhinweis { margin: 0; display: flex; align-items: center; gap: 0.5rem;
+                  flex-wrap: wrap; font-size: 0.8rem; color: var(--ink-muted); }
+.ld-suchhinweis.leer { padding: 0.4rem 0.6rem; border-left: 3px solid var(--warn);
+                       background: var(--warn-soft); color: var(--ink); }
+.ld-bringer-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.ld-herkunft { flex: none; font-size: 0.58rem; font-weight: 700;
+               letter-spacing: 0.08em; text-transform: uppercase;
+               padding: 0.05rem 0.3rem; border-radius: 2px;
+               border: 1px solid var(--border-strong); color: var(--ink-muted);
+               white-space: nowrap; }
+.ld-herkunft.geschaetzt { border-style: dashed; }
+@media (max-width: 560px) {
+  .ld-lage-zeile { grid-template-columns: minmax(0, 1fr) auto; }
+  .ld-lage-wert { grid-column: 1 / -1; grid-row: 2; }
+}
+
+/* ---------------------------------------------------------- Modus */
+.ld-modus { display: flex; align-items: baseline; flex-wrap: wrap;
+            gap: 0.2rem 0.6rem; padding: 0.35rem 0.55rem;
+            border: 1px solid var(--border); border-radius: var(--radius-sm);
+            background: var(--surface-sunk); }
+.ld-modus-marke { flex: none; font-family: Rajdhani, Archivo, sans-serif;
+                  font-size: 0.9rem; font-weight: 700; letter-spacing: 0.1em;
+                  text-transform: uppercase; padding: 0.05rem 0.45rem;
+                  border-radius: 2px; border: 1px solid currentColor; }
+.ld-modus.blind .ld-modus-marke { color: var(--eigen); }
+.ld-modus.teilweise .ld-modus-marke { color: var(--warn); }
+.ld-modus.counter .ld-modus-marke { color: var(--good-klein); }
+.ld-modus-text { font-size: 0.8rem; font-weight: 600; }
+.ld-modus-warten { flex-basis: 100%; font-size: 0.74rem; color: var(--warn); }
+
+/* --------------------------------------------------- Jetzt picken */
+.ld-jetzt { display: flex; flex-direction: column; gap: 0.45rem;
+            padding: 0.6rem 0.7rem 0.65rem; border: 1px solid var(--border);
+            border-left: 3px solid var(--eigen); border-radius: var(--radius-sm);
+            background: var(--surface-sunk); }
+.ld-jetzt.sehrgut { border-color: color-mix(in srgb, var(--good) 55%, transparent);
+                    border-left-color: var(--good); }
+.ld-jetzt-kopf { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+.ld-jetzt-wort { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.14em;
+                 text-transform: uppercase; color: var(--ink-muted); }
+.ld-jetzt-haupt { display: flex; align-items: center; gap: 0.7rem; min-width: 0; }
+.ld-jetzt-bild { width: 56px; height: 56px; border-radius: 6px; flex: none;
+                 border: 1px solid var(--border-strong); background: var(--surface); }
+.ld-jetzt-name { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+.ld-jetzt-name b { font-family: Rajdhani, Archivo, sans-serif; font-size: 1.3rem;
+                   font-weight: 700; letter-spacing: 0.04em; line-height: 1.05;
+                   text-transform: uppercase; overflow: hidden;
+                   text-overflow: ellipsis; white-space: nowrap; }
+.ld-jetzt-final { margin-left: auto; flex: none; display: flex;
+                  flex-direction: column; align-items: flex-end; }
+.ld-jetzt-final .ld-punkte { margin: 0; font-size: 2.2rem; line-height: 1; }
+.ld-gruppen { display: grid; gap: 0.3rem;
+              grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 560px) {
+  .ld-gruppen { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.ld-gruppe { display: flex; align-items: baseline; justify-content: space-between;
+             gap: 0.4rem; padding: 0.25rem 0.45rem; min-width: 0;
+             border: 1px solid var(--border); border-radius: var(--radius-sm);
+             background: var(--surface); }
+.ld-gruppe-wort { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em;
+                  text-transform: uppercase; color: var(--ink-faint);
+                  min-width: 0; overflow: hidden; text-overflow: ellipsis;
+                  white-space: nowrap; }
+.ld-gruppe b { font-family: Rajdhani, Archivo, sans-serif; font-size: 1.15rem;
+               font-weight: 700; font-variant-numeric: tabular-nums; }
+.ld-gruppe b.leer { color: var(--ink-faint); }
+.ld-jetzt-teile { display: grid; gap: 0.4rem 0.8rem;
+                  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
+.ld-jetzt-block { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+.ld-jetzt-titel { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em;
+                  text-transform: uppercase; color: var(--ink-faint); }
+.ld-jetzt-titel.plus { color: var(--good-klein); }
+.ld-jetzt-titel.minus { color: var(--red); }
+.ld-jetzt-block ul { list-style: none; margin: 0; padding: 0;
+                     display: flex; flex-direction: column; gap: 0.1rem; }
+.ld-jetzt-block li { font-size: 0.74rem; color: var(--ink-muted); }
+.ld-jetzt-block li b { color: var(--ink); font-weight: 700; }
+.ld-jetzt-danach { font-size: 0.74rem; color: var(--ink-muted); }
+.ld-jetzt-danach b { color: var(--ink); }
+.ld-picken-gross { align-self: flex-start; font-size: 0.8rem; padding: 0.35rem 0.9rem;
+                   background: var(--eigen); border-color: transparent;
+                   color: var(--eigen-ink); }
+.ld-picken-gross:hover { filter: brightness(1.08); }
+
+/* ---------------------------------------------------------- Top 5 */
+.ld-top5 { display: grid; gap: 0.4rem;
+           grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); }
+.ld-top5-kachel .ld-picken { margin-top: auto; }
+.ld-top5-kachel { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0;
+                  padding: 0.4rem 0.45rem; border: 1px solid var(--border);
+                  border-radius: var(--radius-sm); background: var(--surface-sunk); }
+.ld-top5-kachel.erste { border-color: color-mix(in srgb, var(--eigen) 45%, transparent); }
+.ld-top5-wort { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em;
+                text-transform: uppercase; color: var(--ink-faint); }
+.ld-top5-kopf { display: flex; align-items: center; gap: 0.4rem; min-width: 0; }
+.ld-top5-kopf .ld-punkte { font-size: 1.05rem; }
+.ld-top5-grund { font-size: 0.68rem; color: var(--ink-muted); min-width: 0; }
+
+/* Dritte Marke: PRIO - gestrichelt, damit sie sich von BLIND (gefuellt,
+   unser Plan) und SICHER (umrandet, die Szenarien) unterscheidet. Sie
+   sagt "wird viel gespielt, wahrscheinlich umkaempft", nicht "stark". */
+.ld-marken { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+.ld-prio-chip { flex: none; font-size: 0.64rem; font-weight: 700;
+                letter-spacing: 0.08em; text-transform: uppercase;
+                padding: 0.02rem 0.26rem; border-radius: 2px;
+                color: var(--brass); border: 1px dashed currentColor; }
+
+/* ------------------------------------------------------ Protokoll */
+.ld-protokoll { display: flex; align-items: center; flex-wrap: wrap;
+                gap: 0.35rem 0.6rem; padding: 0.45rem 0;
+                border-top: 1px solid var(--border); }
+.ld-ergebnis-wort { font-size: 0.72rem; color: var(--ink-muted); }
+.ld-ergebnis { font: inherit; font-size: 0.74rem; font-weight: 600; cursor: pointer;
+               padding: 0.18rem 0.6rem; border-radius: var(--radius-sm);
+               border: 1px solid var(--border-strong);
+               background: var(--surface-sunk); color: var(--ink-muted); }
+.ld-ergebnis:hover { color: var(--ink); border-color: var(--ink-faint); }
+.ld-ergebnis.an { background: var(--ink); color: var(--ground); border-color: transparent; }
+.ld-ergebnis:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ld-protokoll-stand { flex-basis: 100%; }
 
 .ld-karte.gesperrt { opacity: 0.72; background: var(--surface); }
 .ld-karte.gesperrt .ld-bild { filter: grayscale(1); opacity: 0.6; }
@@ -3487,8 +3726,12 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       speicher: (() => { try { return window.localStorage; }
                          catch (e) { return null; } })(),
     });
+    // Das Lagebild nutzt dasselbe Blindmodell wie die Bewertung - ein
+    // Feldcache, eine Wahrheit.
+    const strategie = ENGINE.strategieAnlegen({quelle, merkmale, comp,
+      heuristik, blind: bewerter.blindModell});
     return {quelle, heuristik, merkmale, comp, mannschaft, bewerter,
-            suche, protokoll};
+            suche, protokoll, strategie};
   })();
 
   const DRAFT = liveTeile ? liveTeile.quelle : null;
@@ -3511,6 +3754,21 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   let liveSuche = "";
   let liveGegner = "";
   let liveRisiko = "ausgewogen";
+
+  /* Jeder Draft bekommt eine Nummer. An ihr haengt im Protokoll das
+     Ergebnis - erst damit laesst sich spaeter fragen, welche
+     Empfehlungen gut waren. Neu gezaehlt wird bei "Draft leeren" und
+     "Spiel merken". */
+  let liveDraftNr = (() => {
+    try { return Number(window.localStorage.getItem("live-draft-nr")) || 1; }
+    catch (e) { return 1; }
+  })();
+  const liveErgebnisse = new Map();       // Draftnummer -> "sieg" | "niederlage"
+  function neuerDraft() {
+    liveDraftNr += 1;
+    try { window.localStorage.setItem("live-draft-nr", String(liveDraftNr)); }
+    catch (e) { /* dann zaehlt es eben nur in dieser Sitzung */ }
+  }
 
   /* Spiele der laufenden Serie, die noch nicht in games.json stehen.
      Je Eintrag die zehn gepickten Champions. Bleibt im Browser - das ist
@@ -3541,6 +3799,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     if (!champs.length) return;
     liveSerienSpiele.push(champs);
     serieSichern();
+    neuerDraft();
     liveStand.picks.eigen = leer5();
     liveStand.picks.gegner = leer5();
     liveStand.bans.eigen = leer5();
@@ -3629,26 +3888,153 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
      Gegnerslot - die Gegnerempfehlung war damit nach unserem Pool
      gefaerbt. Kennen wir die gegnerische Mannschaft, gehoeren ihre
      Spieler dorthin; kennen wir sie nicht, faellt der Komfort aus. */
+  /* Wer beim Gegner auf welcher Rolle spielt, wenn es vom Scouting
+     abweicht: {Mannschaft: {TOP: "Label" | "" (unbekannt)}}. Fehlt ein
+     Eintrag, gilt der Starter. Im Browser gemerkt - ein Wechsel haelt
+     meist die ganze Serie. */
+  let liveGegnerBesetzung = (() => {
+    try {
+      const d = JSON.parse(window.localStorage.getItem("live-gegner-besetzung") || "null");
+      return d && typeof d === "object" ? d : {};
+    } catch (e) { return {}; }
+  })();
+  function gegnerBesetzungSichern() {
+    try {
+      window.localStorage.setItem("live-gegner-besetzung",
+                                  JSON.stringify(liveGegnerBesetzung));
+    } catch (e) { /* dann eben nur fuer diese Sitzung */ }
+  }
+  const gegnerStarter = (g, rolleName) =>
+    (g.players || []).find((p) => !p.bench && p.role === rolleName) || null;
+
   function liveSpielerVon(seite, rolle) {
     if (seite === "eigen") return liveSpieler(rolle);
     const g = liveGegnerTeam();
     if (!g) return null;
-    return (g.players || []).find((p) => !p.bench
-                                      && p.role === ROLES[rolle][0]) || null;
+    const rolleName = ROLES[rolle][0];
+    const wahl = (liveGegnerBesetzung[g.team] || {})[rolleName];
+    if (wahl !== undefined) {
+      // "" heisst: von Hand auf unbekannt gesetzt - kein Pool, kein Raten.
+      if (wahl === "") return null;
+      const p = (g.players || []).find((x) => x.label === wahl);
+      if (p) return p;
+    }
+    return gegnerStarter(g, rolleName);
+  }
+
+  /* Die Auswahl in der Gegnerspalte: wer spielt diese Rolle? */
+  function liveGegnerWahl(i) {
+    const g = liveGegnerTeam();
+    if (!g) return el("span", {class: "ld-wer"}, "");
+    const rolleName = ROLES[i][0];
+    const starter = gegnerStarter(g, rolleName);
+    const aktuell = liveSpielerVon("gegner", i);
+    const geaendert = (liveGegnerBesetzung[g.team] || {})[rolleName] !== undefined;
+    // Erst wer laut Scouting auf dieser Rolle steht, dann die uebrigen
+    // Starter, dann die Bank.
+    const rang = (p) => (!p.bench && p.role === rolleName) ? 0 : !p.bench ? 1 : 2;
+    const spieler = (g.players || []).slice()
+      .sort((a, b) => rang(a) - rang(b) || (a.label < b.label ? -1 : 1));
+    const wahl = el("select", {
+        class: "ld-wer ld-wer-wahl" + (geaendert ? " geaendert" : ""),
+        "aria-label": "Gegnerischer Spieler auf " + ROLES[i][1],
+        title: geaendert
+          ? "Von Hand gesetzt" + (starter ? " - laut Scouting: " + starter.label : "")
+          : "Laut Scouting - bei einem Wechsel hier umstellen"},
+      el("option", {value: ""}, "\u2014 unbekannt \u2014"),
+      spieler.map((p) => el("option", {value: p.label},
+        p.label + (p.bench ? " \u00b7 Bank"
+          : p.role !== rolleName ? " \u00b7 " + (ENGINE.ROLLEN_WORT[p.role] || p.role) : ""))));
+    wahl.value = aktuell ? aktuell.label : "";
+    wahl.addEventListener("change", () => {
+      const eintrag = liveGegnerBesetzung[g.team] || (liveGegnerBesetzung[g.team] = {});
+      const setze = (rn, label) => {
+        const st = gegnerStarter(g, rn);
+        // Wer wieder den Starter waehlt, ist zurueck beim Standard.
+        if (st && label === st.label) delete eintrag[rn];
+        else eintrag[rn] = label;
+      };
+      // Steht der Gewaehlte schon auf einer anderen Rolle, ist es ein
+      // Rollentausch: der bisherige Spieler dieser Rolle wandert dorthin.
+      // Sonst stuende derselbe Spieler auf zwei Rollen.
+      if (wahl.value) {
+        ROLES.forEach(([rn], j) => {
+          if (j === i) return;
+          const dort = liveSpielerVon("gegner", j);
+          if (dort && dort.label === wahl.value) setze(rn, aktuell ? aktuell.label : "");
+        });
+      }
+      setze(rolleName, wahl.value);
+      if (!Object.keys(eintrag).length) delete liveGegnerBesetzung[g.team];
+      gegnerBesetzungSichern();
+      // Komfort und Blindszenarien haengen am Spieler - alles neu.
+      liveCache.clear();
+      liveLageCache.clear();
+      renderLiveDraft();
+    });
+    return wahl;
   }
   const liveSpielerAktiv = (rolle) => liveSpielerVon(liveAktiv.seite, rolle);
+
+  /* Die Spieler der ANDEREN Seite - fuer die Blindszenarien. Auf unserem
+     Slot sind das die gegnerischen (sofern gescoutet): ihre Pools machen
+     ihre Picks wahrscheinlicher. Auf einem Gegnerslot sind es unsere. */
+  function liveGegnerFuer(rolleName, seite = liveAktiv.seite) {
+    const andere = seite === "eigen" ? "gegner" : "eigen";
+    const i = ROLES.findIndex(([w]) => w === rolleName);
+    const sp = i >= 0 ? liveSpielerVon(andere, i) : null;
+    return sp ? {team: sp.team, label: sp.label} : null;
+  }
+
+  /* Die Suche gilt fuer die Liste, die man gerade ansieht - nicht ueber
+     einen Rollenwechsel hinweg. Sonst filtert "naut" (fuer Support
+     gesucht) danach die Mid-Liste auf null Treffer. */
+  function liveSucheLeeren() {
+    liveSuche = "";
+    const feld = document.querySelector("#live-draft .ld-suche");
+    if (feld) feld.value = "";
+  }
+
+  /** Einen Champion auf den aktiven Slot setzen - und, wenn es unser
+   *  Slot ist, im Protokoll nachtragen, was wirklich gepickt wurde. */
+  function livePicken(champ) {
+    liveSucheLeeren();
+    if (liveTeile && liveAktiv.seite === "eigen") {
+      liveTeile.protokoll.nachtragen(
+        ENGINE.schluessel(liveZustand(), ROLES[liveAktiv.rolle][0]), champ);
+    }
+    liveStand.picks[liveAktiv.seite][liveAktiv.rolle] = champ;
+    renderLiveDraft();
+  }
 
   /* --------------------------------------------------- Die Rangliste */
   /* Gleiche Lage, gleiches Ergebnis - und beim zweiten Mal ohne Rechnen.
      Der Schluessel kommt aus der Engine und enthaelt alles, was zaehlt. */
   const liveCache = new Map();
 
-  function liveRangliste(rolle) {
-    if (!liveTeile) return {liste: [], ms: 0, ausCache: false};
+  /* Aus wessen Sicht wird bewertet? Auf einem Gegnerslot aus der des
+     GEGNERS. Vorher lief die Rangliste dort aus unserer Sicht: "mit"
+     hiess dann "mit unseren Picks" und "gegen" hiess "gegen ihre" - ein
+     gegnerischer Kandidat galt als gut, wenn er zu UNSEREM Team passte.
+     Derselbe Zustand, nur die Seite gewechselt; der Cacheschluessel
+     enthaelt wirSind und trennt beide Sichten. */
+  function liveSicht(seite = liveAktiv.seite) {
     const z = liveZustand();
-    const spieler = liveSpielerAktiv(rolle);
+    return seite === "eigen" ? z
+      : {...z, wirSind: z.wirSind === "blue" ? "red" : "blue"};
+  }
+
+  /* seite: fuer welche Seite gerechnet wird - der aktive Slot, wenn
+     nichts anderes gesagt ist. Das Lagebild fragt so den besten Pick fuer
+     UNSERE naechste Rolle ab, auch wenn gerade ein anderer Slot aktiv ist. */
+  function liveRangliste(rolle, seite = liveAktiv.seite) {
+    if (!liveTeile) return {liste: [], ms: 0, ausCache: false};
+    const z = liveSicht(seite);
+    const spieler = liveSpielerVon(seite, rolle);
+    // Der Gegner gehoert in den Schluessel: sein Pool aendert die
+    // Blindszenarien.
     const k = ENGINE.schluessel(z, rolle + "|" + liveRisiko
-      + "|" + liveAktiv.seite
+      + "|" + seite + "|" + (liveGegner || "")
       + "|" + (spieler ? spieler.team + "/" + spieler.label : ""));
     if (liveCache.has(k)) return {...liveCache.get(k), ausCache: true};
 
@@ -3659,19 +4045,21 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       spielerTeam: spieler ? spieler.team : null,
       spielerLabel: spieler ? spieler.label : null,
       spielerFuer: (r) => {
-        const sp = liveSpielerVon(liveAktiv.seite,
-                                  ROLES.findIndex(([w]) => w === r));
+        const sp = liveSpielerVon(seite, ROLES.findIndex(([w]) => w === r));
         return sp ? {team: sp.team, label: sp.label} : null;
       },
       risikoprofil: liveRisiko,
+      gegnerFuer: (r) => liveGegnerFuer(r, seite),
     });
-    const ergebnis = {liste, ms: performance.now() - t0};
+    const kategorien = liveTeile.suche.kategorien(liste);
+    const ergebnis = {liste, kategorien, ms: performance.now() - t0};
     // Der Cache darf nicht unbegrenzt wachsen; ein Draft hat zwanzig Zuege.
     if (liveCache.size > 60) liveCache.clear();
     liveCache.set(k, ergebnis);
-    if (liste.length && liveAktiv.seite === "eigen") {
+    if (liste.length && seite === "eigen") {
       liveTeile.protokoll.notiere(z, ROLES[rolle][0], liste,
-        {risikoprofil: liveRisiko, dauerMs: Math.round(ergebnis.ms)});
+        {risikoprofil: liveRisiko, dauerMs: Math.round(ergebnis.ms),
+         kategorien, draft: liveDraftNr});
     }
     return {...ergebnis, ausCache: false};
   }
@@ -3719,11 +4107,14 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     /* .filter(Boolean) ist Pflicht: serienLeiste() liefert null, wenn
        nichts gemerkt ist, und Element.append(null) haengt den TEXT "null"
        an. el() filtert Nullwerte selbst, append tut das nicht. */
-    ziel.append(...[liveKopf(serien), serienLeiste(), liveBoard(),
+    ziel.append(...[el("datalist", {id: "ld-ban-liste"}),
+                    liveKopf(serien), serienLeiste(), liveBoard(),
+                    el("div", {class: "ld-lage"}),
                     el("div", {class: "ld-comp"}),
                     el("div", {class: "ld-sperren"}),
                     liveFilterLeiste(),
-                    el("div", {class: "ld-liste"})].filter(Boolean));
+                    el("div", {class: "ld-liste"}),
+                    el("div", {class: "ld-protokoll"})].filter(Boolean));
     liveAktualisieren();
   }
 
@@ -3795,6 +4186,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     zurueck.addEventListener("click", () => {
       liveStand.bans.eigen = leer5(); liveStand.bans.gegner = leer5();
       liveStand.picks.eigen = leer5(); liveStand.picks.gegner = leer5();
+      neuerDraft();
       renderLiveDraft();
     });
     // Ein abgeschlossenes Spiel merken: die zehn Picks wandern in die
@@ -3830,8 +4222,20 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     // setzt - etwa der Picken-Knopf - muss das selbst anstossen, sonst
     // bleibt das Feld ohne Icon.
     eingabe.dispatchEvent(new Event("input"));
+    if (art === "bans") eingabe.setAttribute("list", "ld-ban-liste");
     eingabe.addEventListener("change", () => {
-      speicher[i] = normaliseChamp(eingabe.value) || null;
+      const champ = normaliseChamp(eingabe.value) || null;
+      // Wer schon gepickt, gebannt oder durch Fearless gesperrt ist, kann
+      // nicht gebannt werden - das Feld nimmt ihn nicht an und sagt warum.
+      const grund = art === "bans" && champ ? liveBanSperre(champ, seite, i) : null;
+      if (grund) {
+        eingabe.value = speicher[i] || "";
+        eingabe.dispatchEvent(new Event("input"));
+        liveBanHinweis(seite, champ + " ist nicht bannbar: " + grund);
+        return;
+      }
+      if (art === "bans") liveBanHinweis(seite, "");
+      speicher[i] = champ;
       liveAktualisieren();
     });
     const aktiv = art === "picks" && liveAktiv.seite === seite && liveAktiv.rolle === i;
@@ -3839,6 +4243,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       beschriftung ? el("span", {class: "ld-feld-wort"}, beschriftung) : null, feld);
     if (art === "picks") {
       eingabe.addEventListener("focus", () => {
+        if (liveAktiv.seite !== seite || liveAktiv.rolle !== i) liveSucheLeeren();
         liveAktiv = {seite, rolle: i};
         for (const k of document.querySelectorAll(".ld-feld.picks")) {
           k.classList.remove("aktiv");
@@ -3850,23 +4255,84 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     return huelle;
   }
 
+  function liveBesetzungZurueck() {
+    const g = liveGegnerTeam();
+    const n = g ? Object.keys(liveGegnerBesetzung[g.team] || {}).length : 0;
+    if (!n) return null;
+    const k = el("button", {class: "ld-reset ld-besetzung-zurueck", type: "button",
+                            title: "Alle Rollen wieder auf die Starter laut Scouting"},
+                 n + (n === 1 ? " Wechsel" : " Wechsel") + " \u00b7 zur\u00fccksetzen");
+    k.addEventListener("click", () => {
+      delete liveGegnerBesetzung[g.team];
+      gegnerBesetzungSichern();
+      liveCache.clear();
+      liveLageCache.clear();
+      renderLiveDraft();
+    });
+    return k;
+  }
+
+  /** Warum ein Champion nicht gebannt werden kann - oder null. Das eigene
+   *  Feld zaehlt nicht mit, sonst liesse sich ein Ban nicht bestaetigen. */
+  function liveBanSperre(champ, seite, i) {
+    const p = liveStand.picks;
+    if ([...p.eigen, ...p.gegner].includes(champ)) return "schon gepickt";
+    for (const s of ["eigen", "gegner"]) {
+      if (liveStand.bans[s].some((c, j) => c === champ && !(s === seite && j === i))) {
+        return "schon gebannt";
+      }
+    }
+    if (liveFearless && fearlessVerbraucht().includes(champ)) {
+      return "durch Fearless gesperrt (in dieser Serie schon gespielt)";
+    }
+    return null;
+  }
+
+  /* Ein kurzer Hinweis unter den Bans der Seite, liest auch ein
+     Screenreader vor. Verschwindet nach ein paar Sekunden. */
+  let liveBanHinweisUhr = null;
+  function liveBanHinweis(seite, text) {
+    const ziel = document.querySelector("#live-draft .ld-seite." + seite + " .ld-ban-hinweis");
+    if (!ziel) return;
+    ziel.textContent = text;
+    clearTimeout(liveBanHinweisUhr);
+    liveBanHinweisUhr = setTimeout(() => { ziel.textContent = ""; }, 4500);
+  }
+
+  /* Die Vorschlagsliste der Ban-Felder: alle Champions ohne die gesperrten.
+     Nach jeder Aenderung neu, damit ein gerade gepickter Champion sofort
+     verschwindet. */
+  function liveBanListeZeichnen() {
+    const liste = document.getElementById("ld-ban-liste");
+    if (!liste) return;
+    const weg = new Set([...liveStand.picks.eigen, ...liveStand.picks.gegner,
+                         ...liveStand.bans.eigen, ...liveStand.bans.gegner,
+                         ...(liveFearless ? fearlessVerbraucht() : [])].filter(Boolean));
+    liste.textContent = "";
+    liste.append(...CHAMPIONS.filter((c) => !weg.has(c))
+      .map((c) => el("option", {value: c})));
+  }
+
   function liveBoard() {
     const spalte = (seite) => {
       const name = seite === "eigen" ? team.team : (liveGegnerName() || "Gegner");
       return el("div", {class: "ld-seite " + seite},
         el("div", {class: "ld-seite-kopf"},
           el("span", {class: "ld-seite-name"}, name),
+          seite === "gegner" ? liveBesetzungZurueck() : null,
           el("span", {class: "ld-seite-wort"}, seite === "eigen" ? "wir" : "Gegner")),
         el("div", {class: "ld-bans"},
           el("span", {class: "ld-bans-wort"}, "Bans"),
           el("div", {class: "ld-bans-felder"},
-            [0, 1, 2, 3, 4].map((i) => liveFeld(seite, "bans", i, null)))),
+            [0, 1, 2, 3, 4].map((i) => liveFeld(seite, "bans", i, null))),
+          el("span", {class: "ld-ban-hinweis", role: "status", "aria-live": "polite"})),
         el("div", {class: "ld-picks"}, ROLES.map(([wert, wort], i) => {
           const spieler = seite === "eigen" ? liveSpieler(i) : null;
           return el("div", {class: "ld-pickzeile"},
             el("span", {class: "ld-rolle"}, wort),
             liveFeld(seite, "picks", i, null),
-            el("span", {class: "ld-wer"}, spieler ? spieler.label : ""));
+            seite === "gegner" ? liveGegnerWahl(i)
+              : el("span", {class: "ld-wer"}, spieler ? spieler.label : ""));
         })));
     };
     return el("div", {class: "ld-board"}, spalte("eigen"), spalte("gegner"));
@@ -3878,6 +4344,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
         const k = el("button", {class: "ld-rolle-knopf" + (liveAktiv.rolle === i ? " an" : ""),
                                 type: "button"}, wort);
         k.addEventListener("click", () => {
+          if (liveAktiv.rolle !== i) liveSucheLeeren();
           liveAktiv = {seite: "eigen", rolle: i};
           renderLiveDraft();
         });
@@ -3914,9 +4381,279 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       merken.disabled = ![...liveStand.picks.eigen, ...liveStand.picks.gegner]
         .some(Boolean);
     }
+    liveBanListeZeichnen();
+    liveLageZeichnen();
     liveCompZeichnen();
     liveSperrleiste();
     liveListeZeichnen();
+    liveProtokollZeichnen();
+  }
+
+  /* ---------------------------------------------------- Lagebild */
+  /* Ueber dem Draft, nicht ueber einem Kandidaten: was fehlt uns, was
+     droht, wie gewinnen wir, welche Rolle jetzt. Jede Zeile sagt, woher
+     sie kommt - gemessen oder eingeschaetzt. */
+  const liveLageCache = new Map();
+  function liveLage() {
+    if (!liveTeile) return null;
+    const z = liveZustand();
+    const k = ENGINE.schluessel(z, "lagebild|" + (liveGegner || "") + "|" + team.team);
+    if (!liveLageCache.has(k)) {
+      if (liveLageCache.size > 40) liveLageCache.clear();
+      liveLageCache.set(k, liveTeile.strategie.lagebild(z, {
+        spielerFuer: (rolleName) => {
+          const sp = liveSpieler(ROLES.findIndex(([w]) => w === rolleName));
+          return sp ? {team: sp.team, label: sp.label} : null;
+        },
+      }));
+    }
+    return liveLageCache.get(k);
+  }
+
+  function liveLageZeichnen() {
+    const host = document.querySelector("#live-draft .ld-lage");
+    if (!host) return;
+    host.textContent = "";
+    const L = liveLage();
+    if (!L) { host.hidden = true; return; }
+    host.hidden = false;
+
+    const herkunft = (q, vorschlag) => {
+      const gem = /draftgap/.test(q || ""), heur = /heuristik/.test(q || "");
+      const wort = gem && heur ? "gemessen + Einsch\u00e4tzung"
+        : gem ? "gemessen" : "Einsch\u00e4tzung" + (vorschlag ? ", ungepr\u00fcft" : "");
+      return el("span", {class: "ld-herkunft" + (heur ? " geschaetzt" : ""),
+                         title: gem && !heur ? "aus DraftGap-Daten berechnet"
+                           : "aus der Heuristiktabelle - keine Messung"
+                             + (vorschlag ? "; enth\u00e4lt die ungepr\u00fcfte Ersteinsch\u00e4tzung" : "")},
+        wort);
+    };
+    const vorschlagU = L.abdeckung.unser.vorschlag > 0;
+    const vorschlagI = L.abdeckung.ihr.vorschlag > 0;
+    const zeile = (wort, inhalt, nebensatz, quelle, vorschlag) =>
+      el("div", {class: "ld-lage-zeile"},
+        el("span", {class: "ld-lage-wort"}, wort),
+        el("span", {class: "ld-lage-wert"},
+          inhalt ? el("b", {}, inhalt) : el("span", {class: "ld-lage-leer"}, "\u2014"),
+          nebensatz ? el("span", {class: "ld-lage-grund"}, nebensatz) : null),
+        quelle ? herkunft(quelle, vorschlag) : el("span"));
+
+    const b = L.groessterBedarf, g = L.groessteGefahr, s = L.siegbedingung;
+    const n = L.naechsteRolle, sp = L.spaeterRolle;
+    const keinePicks = (seite) => seite.gesamt === 0 ? "ab dem ersten Pick"
+      : seite.belegt === 0 ? "f\u00fcr diese Picks keine Einsch\u00e4tzung" : null;
+
+    /* Ein Klick auf einen Bringer springt auf seine Rolle und filtert die
+       Liste auf ihn - dort steht seine Karte mit allen Gruenden. */
+    const bringerChip = (x, br) => {
+      const src = iconUrl(br.champ);
+      const rolleWort = ENGINE.ROLLEN_WORT[br.rolle] || br.rolle;
+      const wie = x.achse === "magisch" || x.achse === "physisch"
+        ? Math.round(br.stufe * 100) + " % " + (x.achse === "magisch" ? "magisch" : "physisch")
+          + " (gemessen)"
+        : br.stufe >= 1 ? "ausgepr\u00e4gt" : "teilweise";
+      const k = el("button", {class: "ld-bringer-chip" + (br.pool ? " pool" : ""),
+          type: "button",
+          title: br.champ + " \u00b7 " + rolleWort + " \u00b7 " + wie
+                 + (br.pool ? " \u00b7 im Pool von " + br.spieler : "")
+                 + " \u2014 Klick zeigt die Karte"},
+        src ? el("img", {src, alt: "", loading: "lazy"}) : null,
+        el("b", {}, br.champ),
+        el("i", {}, rolleWort),
+        br.pool ? el("em", {}, "Pool") : null);
+      k.addEventListener("click", () => {
+        liveAktiv = {seite: "eigen", rolle: ROLES.findIndex(([w]) => w === br.rolle)};
+        liveFilter = "alle";
+        liveSuche = br.champ.toLowerCase();
+        renderLiveDraft();
+      });
+      return k;
+    };
+    const bedarfBlock = (x, i) => el("div", {class: "ld-bedarf" + (i === 0 ? " erster" : "")},
+      el("div", {class: "ld-bedarf-kopf"},
+        el(i === 0 ? "b" : "span", {class: "ld-bedarf-wort"}, x.wort),
+        el("span", {class: "ld-lage-grund"}, x.grund
+          + " \u00b7 bisher: " + (x.bisher && x.bisher.length ? x.bisher.join(", ") : "niemand"))),
+      x.bringer && x.bringer.length
+        ? el("div", {class: "ld-bringer"},
+            el("span", {class: "ld-bringer-wort"}, "bringen das mit"),
+            x.bringer.map((br) => bringerChip(x, br)))
+        : el("span", {class: "ld-lage-leer"},
+             "kein verf\u00fcgbarer Champion auf unseren offenen Rollen"));
+    /* Naechste Rolle: die Lane, warum jetzt - und der beste Pick dafuer
+       mit seinem staerksten Grund. Ein Klick wechselt auf die Rolle. */
+    const naechsteZeile = () => {
+      if (!n) return zeile("N\u00e4chste Rolle", null, null, null, false);
+      const idx = ROLES.findIndex(([w]) => w === n.rolle);
+      const {liste: nl} = liveRangliste(idx, "eigen");
+      const best = nl[0] || null;
+      const src = best ? iconUrl(best.champion) : null;
+      // Steht der Lanegegner, ist der Grund gegen IHN der wichtigste -
+      // nicht der erste beste gegen irgendwen.
+      const laneGegner = (ENGINE.LANE_GEGNER[n.rolle] || [])
+        .map((r) => liveStand.picks.gegner[ROLES.findIndex(([w]) => w === r)])
+        .filter(Boolean);
+      const grund = !best ? null
+        : best.reasons.find((t) => laneGegner.some((c) => t.includes(c)))
+          || best.reasons[0] || best.risks[0] || null;
+      // Die gemessene Lane-Paarung steht immer da, auch wenn sie unauffaellig
+      // ist - bei einem Counterpick ist sie die erste Frage.
+      const lanePaare = best && best.components.matchup
+        ? (best.components.matchup.paare || []).filter((x) => laneGegner.includes(x.wer)) : [];
+      const laneZeile = lanePaare.length
+        ? "Lane: " + lanePaare.map((x) => "gegen " + x.wer + " " + dbQuote(x.quote)
+            + " (sonst " + dbQuote(x.erwartet) + ")").join(" · ")
+        : null;
+      const knopf = el("button", {class: "ld-naechste-pick", type: "button",
+          title: "Zur Rolle " + ROLES[idx][1] + " wechseln"},
+        el("span", {class: "ld-bringer-wort"}, "bester Pick"),
+        src ? el("img", {src, alt: "", loading: "lazy"}) : null,
+        best ? el("b", {}, best.champion) : null,
+        best ? el("span", {class: "ld-punkte"}, String(best.score)) : null,
+        el("span", {class: "ld-naechste-pfeil"}, "\u2192 " + ROLES[idx][1]));
+      knopf.addEventListener("click", () => {
+        liveSucheLeeren();
+        liveAktiv = {seite: "eigen", rolle: idx};
+        renderLiveDraft();
+      });
+      return el("div", {class: "ld-lage-zeile"},
+        el("span", {class: "ld-lage-wort"}, "N\u00e4chste Rolle"),
+        el("div", {class: "ld-lage-wert ld-naechste"},
+          el("div", {class: "ld-bedarf-kopf"},
+            el("b", {class: "ld-bedarf-wort"}, n.wort),
+            el("span", {class: "ld-lage-grund"}, n.text)),
+          best ? knopf : null,
+          laneZeile ? el("span", {class: "ld-lage-grund"}, laneZeile) : null,
+          grund ? el("span", {class: "ld-lage-grund"}, "Warum " + best.champion
+                     + ": " + grund) : null),
+        herkunft("draftgap", false));
+    };
+
+    /* Wer traegt etwas? "Amumu, Leona (\u00fcber Frontline)". */
+    const traegerText = (namen) => namen && namen.length ? namen.join(", ") : "niemand";
+    const pct = (v) => v === null || v === undefined ? "\u2014" : String(Math.round(v * 100));
+
+    /* Groesste Gefahr: bis zu drei, jede mit Traegern, unserer Antwort und
+       wer die duennste Antwort mitbringen wuerde. */
+    const gefahrBlock = (x, i) => {
+      const kopf = el("div", {class: "ld-bedarf-kopf"},
+        el(i === 0 ? "b" : "span", {class: "ld-bedarf-wort"}, x.wort),
+        x.stufe !== null && x.stufe !== undefined
+          ? el("span", {class: "ld-lage-grund"}, "St\u00e4rke " + pct(x.stufe)
+               + (x.traeger && x.traeger.length ? " \u00b7 durch " + x.traeger.join(", ") : ""))
+          : el("span", {class: "ld-lage-grund"}, x.grund || ""));
+      if (!x.antworten) return el("div", {class: "ld-bedarf" + (i === 0 ? " erster" : "")}, kopf);
+      const antwort = x.antworten.length
+        ? el("span", {class: "ld-lage-grund"}, "unsere Antwort: " + x.antworten.map((a) =>
+            a.wort + " " + pct(a.stufe) + ": " + traegerText(a.bisher)).join(" \u00b7 "))
+        : el("span", {class: "ld-lage-leer"},
+             "f\u00fcr " + x.wort + " ist keine Gegenachse hinterlegt");
+      const bringer = x.antwortBringer && x.antwortBringer.length
+        ? el("div", {class: "ld-bringer"},
+            el("span", {class: "ld-bringer-wort"},
+               ENGINE.ACHSEN_WORT[x.antwortAchse] + " bringen mit"),
+            x.antwortBringer.map((br) => bringerChip({achse: x.antwortAchse}, br)))
+        : null;
+      return el("div", {class: "ld-bedarf" + (i === 0 ? " erster" : "")}, kopf, antwort, bringer);
+    };
+    const gefahrZeile = () => L.gefahr.length
+      ? el("div", {class: "ld-lage-zeile"},
+          el("span", {class: "ld-lage-wort"}, "Gr\u00f6\u00dfte Gefahr"),
+          el("div", {class: "ld-lage-wert ld-bedarfe"}, L.gefahr.map(gefahrBlock)),
+          herkunft([...new Set(L.gefahr.map((x) => x.quelle))].join(" "), vorschlagI))
+      : zeile("Gr\u00f6\u00dfte Gefahr", null, keinePicks(L.abdeckung.ihr), null, false);
+
+    /* Siegbedingung: wer sie traegt, wie man sie spielt, Phasen, was sie
+       gefaehrdet, und die zweitbeste. */
+    const PHASE_WORT = {frueh: "fr\u00fch", mittel: "Mitte", spaet: "sp\u00e4t"};
+    const siegZeile = () => {
+      if (!s) return zeile("Siegbedingung", null, "ab zwei eigenen Picks", null, false);
+      const zeilen = [
+        el("div", {class: "ld-bedarf-kopf"},
+          el("b", {class: "ld-bedarf-wort"}, s.wort),
+          s.phase ? el("span", {class: "ld-lage-grund"}, s.phase) : null),
+        s.idee ? el("span", {class: "ld-lage-grund"}, "Spielidee: " + s.idee) : null,
+        el("span", {class: "ld-lage-grund"}, "Getragen von: " + s.achsen.map((a) =>
+          a.wort + " " + pct(a.stufe) + ": " + traegerText(a.traeger)).join(" \u00b7 ")),
+        s.phasen ? el("span", {class: "ld-lage-grund"}, "Phasen (gemessen, wir minus sie): "
+          + Object.entries(s.phasen).map(([ph, d]) => PHASE_WORT[ph] + " "
+              + (d >= 0 ? "+" : "\u2212") + Math.abs(d * 100).toFixed(1).replace(".", ",")).join(" \u00b7 ")
+          + " Punkte") : null,
+        s.gefaehrdet.length
+          ? el("span", {class: "ld-lage-grund ld-gefaehrdet"}, "Gef\u00e4hrdet durch: "
+              + s.gefaehrdet.map((x) => "ihr " + x.wort + " " + pct(x.stufe) + " von "
+                + traegerText(x.traeger) + " \u2013 gegen unseren " + x.gegen).join(" \u00b7 "))
+          : el("span", {class: "ld-lage-grund"}, "Gef\u00e4hrdet durch: nichts Ausgepr\u00e4gtes auf ihrer Seite"),
+        s.alternative ? el("span", {class: "ld-lage-grund"}, "Alternative: "
+          + s.alternative.wort + " (" + pct(s.alternative.traegt) + ")") : null,
+      ];
+      return el("div", {class: "ld-lage-zeile"},
+        el("span", {class: "ld-lage-wort"}, "Siegbedingung"),
+        el("div", {class: "ld-lage-wert ld-naechste"}, zeilen),
+        herkunft(s.quelle, vorschlagU));
+    };
+
+    const bedarfQuelle = [...new Set(L.bedarf.map((x) => x.quelle))].join(" ");
+    const bedarfZeile = L.bedarf.length
+      ? el("div", {class: "ld-lage-zeile"},
+          el("span", {class: "ld-lage-wort"}, "Unser Bedarf"),
+          el("div", {class: "ld-lage-wert ld-bedarfe"}, L.bedarf.map(bedarfBlock)),
+          herkunft(bedarfQuelle, vorschlagU))
+      : zeile("Unser Bedarf", null, keinePicks(L.abdeckung.unser), null, false);
+
+    host.append(
+      el("div", {class: "ld-lage-kopf"},
+        el("span", {class: "ld-comp-wort"}, "Lagebild"),
+        el("span", {class: "sub"}, "nach jedem Pick und Ban neu")),
+      bedarfZeile,
+      gefahrZeile(),
+      siegZeile(),
+      naechsteZeile(),
+      zeile("Vermeiden", L.vermeiden.length
+              ? L.vermeiden.map((v) => v.wort).join(" \u00b7 ") : null,
+            L.vermeiden.length ? L.vermeiden.map((v) => v.grund).join(" \u00b7 ") : null,
+            L.vermeiden.length ? L.vermeiden.map((v) => v.quelle).join(" ") : null,
+            vorschlagU));
+  }
+
+  /* ---------------------------------------------------- Protokoll */
+  /* Was empfohlen und gepickt wurde, bleibt im Browser. Hier kommt das
+     Ergebnis dazu - und der Weg, die Eintraege herauszubekommen. */
+  function liveProtokollZeichnen() {
+    const host = document.querySelector("#live-draft .ld-protokoll");
+    if (!host || !liveTeile) return;
+    host.textContent = "";
+    const p = liveTeile.protokoll;
+    const gesetzt = liveErgebnisse.get(liveDraftNr) || null;
+    const knopf = (wort, wert) => {
+      const k = el("button", {class: "ld-ergebnis" + (gesetzt === wert ? " an" : ""),
+                              type: "button", "aria-pressed": String(gesetzt === wert)},
+                   wort);
+      k.addEventListener("click", () => {
+        p.ergebnis(liveDraftNr, wert === "sieg");
+        liveErgebnisse.set(liveDraftNr, wert);
+        liveProtokollZeichnen();
+      });
+      return k;
+    };
+    const laden = el("button", {class: "ld-reset", type: "button"},
+                     "Protokoll herunterladen");
+    laden.addEventListener("click", () => {
+      const blob = new Blob([p.alsJson()], {type: "application/json"});
+      const a = el("a", {href: URL.createObjectURL(blob),
+                         download: "draft-protokoll.json"});
+      document.body.append(a);
+      a.click();
+      setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
+    });
+    const a = p.auswertung();
+    host.append(
+      el("span", {class: "ld-comp-wort"}, "Protokoll"),
+      el("span", {class: "sub"}, p.anzahl() + " Empfehlungen \u00b7 Draft " + liveDraftNr),
+      el("span", {class: "ld-ergebnis-wort"}, "Ergebnis dieses Drafts:"),
+      knopf("Sieg", "sieg"), knopf("Niederlage", "niederlage"),
+      laden,
+      el("span", {class: "sub ld-protokoll-stand"}, a.hinweis));
   }
 
   function liveCompZeichnen() {
@@ -3945,28 +4682,147 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
         el("span", {class: "ld-comp-zahl"}, picks.length + "/5"),
         balken(profil));
 
+    /* Der Massstab kommt aus dem Patch, nicht aus unseren Ligapartien:
+       2.000 Aufstellungen, gezogen nach der gemessenen Spielhaeufigkeit.
+       Eingeordnet wird erst bei fuenf gegen fuenf - mit weniger Picks
+       schwankt die Quote viel staerker, der Vergleich waere schief. */
+    const ref = liveTeile.suche.compReferenzGlobal();
+    const voll = c.wir.length === 5 && c.sie.length === 5;
+    const perz = voll ? liveTeile.suche.compPerzentil(c.quote, ref) : null;
+
     const kopf = el("div", {class: "ld-comp-kopf"},
       el("span", {class: "ld-comp-wort"}, "Aufstellungen"));
     if (c.quote !== null && c.quote !== undefined) {
       kopf.append(
-        el("span", {class: "ld-comp-quote " + (c.quote >= 0.515 ? "gut"
-             : c.quote <= 0.485 ? "schwach" : ""),
-           title: "Nach Partien gewichteter Schnitt ueber die gemessenen "
+        el("span", {class: "ld-comp-quote " + (perz === null ? ""
+             : perz >= 0.8 ? "gut" : perz <= 0.2 ? "schwach" : ""),
+           title: "Nach Partien gewichteter Schnitt \u00fcber die gemessenen "
                   + "Paarungen beider Aufstellungen"},
           el("b", {}, dbQuote(c.quote)), " f\u00fcr " + team.team),
-        el("span", {class: "sub"}, "aus gemessenen Paarungen"));
+        el("span", {class: "sub"}, perz !== null
+          ? "besser als " + Math.round(perz * 100) + " % von "
+            + GANZZAHL.format(ref.n) + " Aufstellungen im Patch"
+          : "Einordnung ab f\u00fcnf gegen f\u00fcnf"));
     } else {
       kopf.append(el("span", {class: "sub"},
         "Quote erst, wenn auf beiden Seiten etwas steht"));
     }
     if (c.phasen) {
       kopf.append(el("span", {class: "sub"}, "stark: "
-        + {frueh: "frueh", mittel: "mittel", spaet: "sp\u00e4t"}[c.phasen.stark]));
+        + {frueh: "fr\u00fch", mittel: "mittel", spaet: "sp\u00e4t"}[c.phasen.stark]));
     }
 
     host.append(kopf,
       zeile("eigen", team.team, c.wir, c.unser),
       zeile("gegner", liveGegnerName() || "Gegner", c.sie, c.ihr));
+    const profil = liveProfil();
+    if (profil) host.append(profil);
+    if (c.quote !== null && c.quote !== undefined) host.append(liveQuoteErklaerung(ref));
+  }
+
+  /* Das Achsenprofil beider Aufstellungen: wie viel Engage, Peel, Catch,
+     Poke ... und wer es traegt. Einschaetzung, keine Messung. */
+  const liveProfilOffen = {wert: true};
+  function liveProfil() {
+    const L = liveLage();
+    if (!L || !L.profil) return null;
+    const {unser, ihr} = L.profil;
+    if (!unser.belegt && !ihr.belegt) return null;
+    const zelle = (seite, x, belegt) => {
+      if (!belegt) return el("span", {class: "ld-pf-zelle leer"}, "\u2014");
+      const v = Math.round((x.stufe || 0) * 100);
+      const wer = x.traeger.map((t) => t.champ + (t.ueber
+        ? " (\u00fcber " + (ENGINE.ACHSEN_WORT[t.ueber] || t.ueber) + ")" : "")).join(", ");
+      return el("span", {class: "ld-pf-zelle " + seite, title: x.wort + " " + v
+                          + (wer ? " \u2014 " + wer : " \u2014 niemand")},
+        el("span", {class: "ld-pf-balken"}, el("i", {style: "width:" + v + "%"})),
+        el("b", {}, String(v)),
+        el("span", {class: "ld-pf-wer"}, wer || "\u2014"));
+    };
+    const zeilen = Object.values(unser.achsen).map((x) => [
+      el("span", {class: "ld-pf-wort"}, x.wort),
+      zelle("eigen", x, unser.belegt),
+      zelle("gegner", ihr.achsen[x.achse], ihr.belegt)]).flat();
+    const vorschlag = unser.vorschlag || ihr.vorschlag;
+    const d = el("details", {class: "ld-profil"},
+      el("summary", {}, "Achsenprofil",
+        el("span", {class: "ld-herkunft geschaetzt"},
+           "Einsch\u00e4tzung" + (vorschlag ? ", ungepr\u00fcft" : ""))),
+      el("div", {class: "ld-pf-raster"},
+        el("span", {}),
+        el("span", {class: "ld-pf-kopf eigen"}, team.team),
+        el("span", {class: "ld-pf-kopf gegner"}, liveGegnerName() || "Gegner"),
+        zeilen),
+      el("p", {class: "sub"}, "100 = die Achse ist gedeckt (ges\u00e4ttigt). "
+        + "Frontline tr\u00e4gt Peel zur H\u00e4lfte mit. Schaden und Spieldauer "
+        + "stehen oben und sind gemessen."));
+    d.open = liveProfilOffen.wert;
+    d.addEventListener("toggle", () => { liveProfilOffen.wert = d.open; });
+    return d;
+  }
+
+  /* Wie die Quote entsteht: jede Paarung einzeln, Lane umrandet. Die Zahl
+     liegt fast immer nahe 50 % - das soll man nicht glauben muessen,
+     sondern sehen. */
+  const liveQuoteOffen = {wert: false};
+  function liveQuoteErklaerung(ref) {
+    const z = liveZustand();
+    const x = liveTeile.suche.compAufschluesselung(z);
+    const wir = z.picks[z.wirSind];
+    const sie = z.picks[z.wirSind === "blue" ? "red" : "blue"];
+    const pz = (v) => dbQuote(v).replace(" %", "");
+    const zelle = (p) => {
+      if (!p) return el("span", {class: "ld-mx-zelle leer"}, "");
+      if (p.quote === null) {
+        return el("span", {class: "ld-mx-zelle ohne" + (p.lane ? " lane" : ""),
+                           title: p.wir + " gegen " + p.sie + ": keine Daten"}, "\u2014");
+      }
+      const d = p.quote - 0.5;
+      return el("span", {class: "ld-mx-zelle" + (p.lane ? " lane" : "")
+                          + (d >= 0.015 ? " gut" : d <= -0.015 ? " schwach" : ""),
+          title: p.wir + " (" + ENGINE.ROLLEN_WORT[p.wirRolle] + ") gegen " + p.sie
+                 + " (" + ENGINE.ROLLEN_WORT[p.sieRolle] + "): " + dbQuote(p.quote)
+                 + " aus " + tausend(p.spiele) + " Partien"
+                 + (p.lane ? " \u00b7 Lane" : "")},
+        pz(p.quote));
+    };
+    const kopfZelle = (p) => {
+      const src = iconUrl(p.champ);
+      return el("span", {class: "ld-mx-kopf", title: p.champ},
+        src ? el("img", {src, alt: "", loading: "lazy"}) : null,
+        el("span", {}, p.champ));
+    };
+    const matrix = el("div", {class: "ld-matrix",
+        style: "grid-template-columns: minmax(5.5rem, 8rem) repeat(" + sie.length
+               + ", minmax(2.8rem, 1fr))"},
+      el("span", {class: "ld-mx-ecke"}, "wir \u2193 \u00b7 sie \u2192"),
+      sie.map(kopfZelle),
+      wir.map((a) => [kopfZelle(a), sie.map((b) =>
+        zelle(x.paare.find((p) => p.wir === a.champ && p.sie === b.champ)))]).flat(2));
+
+    const teil = (wort, t) => t ? wort + " " + dbQuote(t.quote) + " ("
+      + Math.round(t.anteil * 100) + " % des Gewichts)" : null;
+    const details = el("details", {class: "ld-quote-erklaerung"},
+      el("summary", {}, "Wie entsteht diese Quote?"),
+      el("p", {},
+        "Sie ist der nach Partien gewichtete Schnitt aller " + x.mitDaten
+        + " gemessenen Paarungen zwischen beiden Aufstellungen \u2014 auch quer "
+        + "\u00fcber die Karte, etwa euer Top gegen ihren Support. Eine einzelne "
+        + "Paarung liegt meist zwischen " + pz(ref.paarP5) + " und " + pz(ref.paarP95)
+        + " %; im Schnitt \u00fcber alle gleichen sich St\u00e4rken und Schw\u00e4chen "
+        + "weitgehend aus. Darum liegt die Quote fast immer nahe 50 %: bei "
+        + GANZZAHL.format(ref.n) + " Aufstellungen, gezogen nach der Spielh\u00e4ufigkeit "
+        + "im Patch, in 90 % der F\u00e4lle zwischen " + pz(ref.p5) + " und "
+        + pz(ref.p95) + " %. Aussagekr\u00e4ftig ist deshalb die Einordnung, "
+        + "nicht der Abstand zu 50."),
+      el("p", {class: "sub"}, [teil("Lane-Paarungen (umrandet):", x.lane),
+                                teil("\u00fcbrige Paarungen:", x.rest)]
+        .filter(Boolean).join(" \u00b7 ")),
+      el("div", {class: "ld-matrix-huelle"}, matrix));
+    // Offen bleibt offen, wenn sich die Lage aendert.
+    details.open = liveQuoteOffen.wert;
+    details.addEventListener("toggle", () => { liveQuoteOffen.wert = details.open; });
+    return details;
   }
 
   function liveSperrleiste() {
@@ -4023,26 +4879,48 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
        Browser eingetragen sein und noch in keiner Datei stehen. */
     const blindbar = new Set(spieler ? planOf(spieler).blind : []);
 
-    /* Blindsicher ist eine Eigenschaft des Champions im Patch und haengt
-       nicht am Spieler - sie gilt also auch auf dem Gegnerslot. */
-    const sicher = (champ) => {
-      const m = liveTeile.merkmale.fuer(champ, ROLES[rolle][0]);
-      return m && m.blindsicher && m.blindsicher.value ? m.blindsicher : null;
+    /* SICHER kommt aus den Blindszenarien dieser Lage (Bans und Picks
+       eingerechnet), PRIO aus der gemessenen Spielhaeufigkeit auf der
+       Rolle. Beides haengt nicht am Spieler und gilt auch auf dem
+       Gegnerslot. */
+    const B = ENGINE.BLIND;
+    const sicher = (r) => r.blindDetail && r.blindDetail.wert >= B.sicherAb
+      ? r.blindDetail : null;
+    const prio = (r) => {
+      const p = liveTeile.bewerter.blindModell.prio(r.champion, ROLES[rolle][0]);
+      return p && p.prio ? p : null;
     };
 
-    const {liste, ms, ausCache} = liveRangliste(rolle);
+    const {liste, kategorien, ms, ausCache} = liveRangliste(rolle);
     const gefiltert = (liveSuche
         ? liste.filter((r) => r.champion.toLowerCase().includes(liveSuche))
         : liste)
       .map((r) => ({r, kat: liveKategorie(r, spieler),
                     blind: blindbar.has(r.champion),
-                    sicher: sicher(r.champion)}))
+                    sicher: sicher(r), prio: prio(r)}))
       .filter((x) => liveFilter === "alle" ? true
                    // Der Filter meint die Frage "was kann ich frueh
                    // setzen" - beide Begruendungen zaehlen, die Marken
                    // auf der Karte sagen welche.
                    : liveFilter === "blind" ? (x.blind || x.sicher)
                    : x.kat === liveFilter);
+
+    if (liveSuche) {
+      const leeren = el("button", {class: "ld-reset", type: "button"}, "Suche leeren");
+      leeren.addEventListener("click", () => { liveSucheLeeren(); liveListeZeichnen(); });
+      host.append(el("p", {class: "ld-suchhinweis" + (gefiltert.length ? "" : " leer"),
+                           role: "status"},
+        gefiltert.length
+          ? "Suche \u201e" + liveSuche + "\u201c filtert die Liste \u2014 die "
+            + "Empfehlung oben erscheint wieder ohne Suche. "
+          : "Keine Treffer f\u00fcr \u201e" + liveSuche + "\u201c auf "
+            + ROLES[rolle][1] + ". ",
+        leeren));
+    }
+
+    // Der Modus der Rolle: steht der Lanegegner schon?
+    const erster = liste[0];
+    if (erster && erster.lage) host.append(liveModus(erster.lage, erster));
 
     host.append(el("p", {class: "hint"},
       (liveAktiv.seite === "eigen" ? "" : "Gegnerslot \u00b7 ")
@@ -4059,6 +4937,11 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       + "l\u00e4sst sich nicht zeigen, dass das Modell besser trifft als ein "
       + "M\u00fcnzwurf. Die Begr\u00fcndungen unter jeder Karte sind gemessen \u2014 "
       + "die Rangfolge ist ein Vorschlag."));
+
+    if (liveFilter === "alle" && !liveSuche && gefiltert.length) {
+      host.append(liveJetzt(gefiltert[0]));
+      if (kategorien && kategorien.length > 1) host.append(liveTop5(kategorien));
+    }
 
     if (liveFilter === "alle" && gefiltert.length) {
       host.append(liveAbschnitt("Beste Treffer", gefiltert.slice(0, 6), true));
@@ -4088,22 +4971,137 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
                  el("span", {class: "sub"}, " " + zahl)) : null,
       el("div", {class: "ld-karten"},
          eintraege.map((x) => liveKarte(x.r, x.kat, hervor, x.blind,
-                                        x.sicher))));
+                                        x.sicher, x.prio))));
+  }
+
+  /* ------------------------------------------------- Modus der Rolle */
+  function liveModus(lage, r) {
+    const wort = {blind: "Blind Pick", teilweise: "Teilweise Info",
+                  counter: "Counter Pick"}[lage.modus] || lage.modus;
+    const d = r.blindDetail;
+    const zusatz = lage.modus === "counter"
+      ? "Die gemessene Paarung z\u00e4hlt voll, Blindszenarien entfallen."
+      : lage.modus === "blind"
+        ? "Bewertet \u00fcber die wahrscheinlichen Lanegegner"
+          + (d ? " (" + d.szenarien + " Szenarien"
+                 + (d.poolWort && d.poolWort.length ? ", gewichtet mit " + d.poolWort.join(", ") : "")
+                 + ")" : "") + "."
+        : "Der offene Teil der Lane z\u00e4hlt zu "
+          + Math.round(lage.unbekannt * 100) + " % \u00fcber Szenarien.";
+    const L = liveAktiv.seite === "eigen" ? liveLage() : null;
+    const warten = L && L.spaeterRolle && L.spaeterRolle.rolle === ROLES[liveAktiv.rolle][0]
+      ? L.spaeterRolle : null;
+    return el("div", {class: "ld-modus " + lage.modus},
+      el("span", {class: "ld-modus-marke"}, wort),
+      el("span", {class: "ld-modus-text"}, lage.text),
+      el("span", {class: "sub"}, zusatz),
+      warten ? el("span", {class: "ld-modus-warten"},
+        "Lagebild: " + warten.wort + " lieber sp\u00e4ter \u2013 " + warten.text) : null);
+  }
+
+  /* --------------------------------------------- Jetzt picken */
+  /* Die eine Empfehlung, gross: Final, die vier Gruppen, warum, Risiko,
+     und was danach wahrscheinlich kommt. Die Gruppen sind keine eigene
+     Rechnung - sie fassen die Teile der Bewertung zusammen. */
+  function liveJetzt(x) {
+    const r = x.r;
+    const src = iconUrl(r.champion);
+    const g = ENGINE.teilGruppen(r);
+    const A = ENGINE.ANZEIGE;
+    const stufe = r.score >= A.gruenAb ? "sehrgut" : r.score >= A.orangeAb ? "gut" : "normal";
+    const zahl = (wort, wert, titel) => el("div", {class: "ld-gruppe", title: titel},
+      el("span", {class: "ld-gruppe-wort"}, wort),
+      el("b", {class: wert === null ? "leer" : ""}, wert === null ? "\u2014" : String(wert)));
+    const knopf = el("button", {class: "ld-picken ld-picken-gross", type: "button"},
+                     r.champion + " picken");
+    knopf.addEventListener("click", () => livePicken(r.champion));
+
+    const aeste = r.lookahead && r.lookahead.aeste
+      ? r.lookahead.aeste.slice().sort((a, b) => b.p - a.p).slice(0, 3) : [];
+    // Bleibt unsere beste Erwiderung in jedem Ast dieselbe, steht sie
+    // einmal darunter - dreimal "dann Jinx" liest sich wie ein Fehler.
+    const erwiderungen = new Set(aeste.map((a) => a.erwiderung).filter(Boolean));
+    const eineErwiderung = aeste.length > 1 && erwiderungen.size === 1
+      ? [...erwiderungen][0] : null;
+    const k = Number.isFinite(r.confidence) ? Math.round(r.confidence * 100) : null;
+    const geschrumpft = Number.isFinite(r.entscheidung)
+      && Math.abs(r.entscheidung - r.score) >= 1;
+
+    return el("section", {class: "ld-jetzt " + stufe, "aria-label": "Empfehlung"},
+      el("div", {class: "ld-jetzt-kopf"},
+        el("span", {class: "ld-jetzt-wort"}, "Jetzt picken \u00b7 " + ROLES[liveAktiv.rolle][1]),
+        x.blind ? el("span", {class: "ld-blind-chip", title: "Draftplan: blind pickbar"}, "blind") : null,
+        x.sicher ? el("span", {class: "ld-sicher-chip",
+          title: "Blindsicher \u00fcber die Szenarien: " + x.sicher.text}, "sicher") : null,
+        x.prio ? el("span", {class: "ld-prio-chip",
+          title: "Prio: Platz " + x.prio.rang + " der meistgespielten auf der Rolle"}, "prio") : null),
+      el("div", {class: "ld-jetzt-haupt"},
+        src ? el("img", {class: "ld-jetzt-bild", src, alt: "", loading: "lazy"}) : null,
+        el("div", {class: "ld-jetzt-name"},
+          el("b", {}, r.champion),
+          el("span", {class: "sub"},
+            (k !== null ? "Konfidenz " + k + " % (" + r.confidenceWort + ")" : "Konfidenz unbekannt")
+            + (geschrumpft ? " \u00b7 Entscheidungswert " + Math.round(r.entscheidung) : ""))),
+        el("div", {class: "ld-jetzt-final", title: "Final: die Note aus allen Teilen"},
+          el("span", {class: "ld-gruppe-wort"}, "Final"),
+          el("b", {class: "ld-punkte " + stufe}, String(r.score)))),
+      el("div", {class: "ld-gruppen"},
+        zahl("DraftGap", g.draftgap, "Patchst\u00e4rke, Matchups, Synergien - gemessen"),
+        zahl("Team-Fit", g.team, "Comp-Marginalwert, St\u00f6rung, Flex, Vorschau"),
+        zahl("Spieler-Fit", g.spieler, "Komfort des Spielers - Ranked und Draftplan"),
+        zahl("Blind-Sicherheit", g.blind,
+             g.blind === null ? "Lanegegner steht - keine Blindszenarien"
+                              : "\u00fcber die wahrscheinlichen Lanegegner")),
+      el("div", {class: "ld-jetzt-teile"},
+        r.reasons.length ? el("div", {class: "ld-jetzt-block"},
+          el("span", {class: "ld-jetzt-titel plus"}, "Warum"),
+          el("ul", {}, r.reasons.slice(0, 3).map((t) => el("li", {}, t)))) : null,
+        r.risks.length ? el("div", {class: "ld-jetzt-block"},
+          el("span", {class: "ld-jetzt-titel minus"}, "Risiko"),
+          el("ul", {}, r.risks.slice(0, 3).map((t) => el("li", {}, t)))) : null,
+        aeste.length ? el("div", {class: "ld-jetzt-block"},
+          el("span", {class: "ld-jetzt-titel"}, "Wenn wir das picken"),
+          el("ul", {}, aeste.map((a) => el("li", {},
+            el("b", {}, a.antwort), " (" + (ENGINE.ROLLEN_WORT[a.rolle] || a.rolle) + ") "
+            + Math.round(a.p * 100) + " % wahrscheinlich",
+            !eineErwiderung && a.erwiderung ? " \u2192 dann " : "",
+            !eineErwiderung && a.erwiderung ? el("b", {}, a.erwiderung) : null))),
+          eineErwiderung ? el("span", {class: "ld-jetzt-danach"},
+            "Unser bester n\u00e4chster Pick in jedem Fall: ",
+            el("b", {}, eineErwiderung)) : null) : null),
+      knopf);
+  }
+
+
+  /* ---------------------------------------------------------- Top 5 */
+  function liveTop5(kategorien) {
+    return el("div", {class: "ld-top5"}, kategorien.map((k, i) => {
+      const r = k.r;
+      const src = iconUrl(r.champion);
+      const knopf = el("button", {class: "ld-picken", type: "button",
+                                  "aria-label": r.champion + " picken"}, "Picken");
+      knopf.addEventListener("click", () => livePicken(r.champion));
+      return el("div", {class: "ld-top5-kachel" + (i === 0 ? " erste" : "")},
+        el("span", {class: "ld-top5-wort"}, "#" + (i + 1) + " " + k.wort),
+        el("div", {class: "ld-top5-kopf"},
+          src ? el("img", {class: "ld-bild", src, alt: "", loading: "lazy"}) : null,
+          el("b", {class: "ld-karte-name"}, r.champion),
+          el("span", {class: "ld-punkte"}, String(r.score))),
+        el("span", {class: "ld-top5-grund"}, k.grund),
+        knopf);
+    }));
   }
 
   /* Die Karte zeigt die Spur, die die Engine mitliefert: jeder Teil mit
      seinem Beitrag, dazu Konfidenz und - wo gerechnet - Robustheit. */
-  function liveKarte(r, kategorie, hervor, blind, sicher) {
+  function liveKarte(r, kategorie, hervor, blind, sicher, prio) {
     const src = iconUrl(r.champion);
     const A = ENGINE.ANZEIGE;
     const stufe = r.score >= A.gruenAb ? "sehrgut"
                 : r.score >= A.orangeAb ? "gut" : "normal";
     const sterne = A.sterne.filter((x) => r.score >= x).length + 1;
     const knopf = el("button", {class: "ld-picken", type: "button"}, "Picken");
-    knopf.addEventListener("click", () => {
-      liveStand.picks[liveAktiv.seite][liveAktiv.rolle] = r.champion;
-      renderLiveDraft();
-    });
+    knopf.addEventListener("click", () => livePicken(r.champion));
 
     const k = r.components.komfort;
     return el("div", {class: "ld-karte " + stufe + (hervor ? " hervor" : "")
@@ -4113,12 +5111,20 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       el("div", {class: "ld-karte-kopf"},
         src ? el("img", {class: "ld-bild", src, alt: "", loading: "lazy"}) : null,
         el("span", {class: "ld-karte-name"}, r.champion),
+        el("span", {class: "ld-punkte " + stufe, title: "Match-Score"}, r.score)),
+      /* Die Marken in einer eigenen Zeile: mit drei davon (Plan, Szenarien,
+         Prio) reichte der Kopf einer 216px-Karte nicht mehr, und der Name
+         wurde abgeschnitten. */
+      (blind || sicher || prio) ? el("div", {class: "ld-marken"},
         blind ? el("span", {class: "ld-blind-chip",
                             title: "Draftplan: blind pickbar"}, "blind") : null,
         sicher ? el("span", {class: "ld-sicher-chip",
-                             title: "Statistisch blindsicher — "
-                                    + sicher.note}, "sicher") : null,
-        el("span", {class: "ld-punkte " + stufe, title: "Match-Score"}, r.score)),
+                             title: "Blindsicher \u00fcber die Szenarien: "
+                                    + sicher.text}, "sicher") : null,
+        prio ? el("span", {class: "ld-prio-chip",
+                           title: "Prio: Platz " + prio.rang + " der meistgespielten "
+                                  + "auf der Rolle (" + Math.round(prio.anteil * 1000) / 10
+                                  + " % der Partien)"}, "prio") : null) : null,
       el("div", {class: "ld-karte-zeile"},
         el("span", {class: "ld-sterne", "aria-label": sterne + " von 5"},
            "\u2605".repeat(sterne) + "\u2606".repeat(5 - sterne)),
@@ -4202,12 +5208,13 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   const SPUR_WORT = {
     meta: "Patch", matchup: "gegen", synergie: "mit", compFit: "Comp",
     gegnerStoerung: "st\u00f6rt", flex: "Flex", komfort: "Komfort",
-    pickReihenfolge: "blind", lookahead: "Vorschau", risiko: "Risiko",
+    blindSicherheit: "blind", lookahead: "Vorschau",
   };
 
-  const dbQuote = (q) =>
-    (Math.round(q * 1000) / 10).toLocaleString("de-DE",
-      {minimumFractionDigits: 1}) + " %";
+  const DB_QUOTE = new Intl.NumberFormat("de-DE", {minimumFractionDigits: 1});
+  // "2.000", nicht "2k" - tausend() kuerzt fuer Partienzahlen ab.
+  const GANZZAHL = new Intl.NumberFormat("de-DE");
+  const dbQuote = (q) => DB_QUOTE.format(Math.round(q * 1000) / 10) + " %";
 
   function liveKarteGesperrt(champ, v) {
     const src = iconUrl(champ);

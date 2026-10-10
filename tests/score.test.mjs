@@ -60,13 +60,18 @@ test("Synergien tauchen mit eigenen Picks auf", () => {
 });
 
 test("fehlende Teile senken die Note nicht, nur die Sicherheit", () => {
+  // Ein eigener Pick bringt die Synergie als zusaetzlichen Teil. (Ein
+  // bekannter Lanegegner taugt dafuer nicht mehr: er TAUSCHT den
+  // Szenarioteil gegen die gemessene Paarung, beide gleich schwer.)
   const ohne = B.bewerte(zustand(), "Ornn", "TOP");
-  const mit = B.bewerte(zustand({ihre: [{champ: "Jax", rolle: "TOP"}]}),
+  const mit = B.bewerte(zustand({unsere: [{champ: "Lee Sin", rolle: "JUNGLE"}]}),
                         "Ornn", "TOP");
+  assert.equal(ohne.components.synergie, undefined);
+  assert.ok(mit.components.synergie);
   // Der Hoechstwert waechst mit den vorhandenen Teilen - die Note bleibt
   // vergleichbar, statt durch Fehlendes gedrueckt zu werden.
   assert.ok(mit.hoechstwert > ohne.hoechstwert);
-  assert.ok(ohne.score > 0, "ohne Gegner trotzdem bewertbar");
+  assert.ok(ohne.score > 0, "ohne eigene Picks trotzdem bewertbar");
 });
 
 test("die Spur nennt Gewicht, Beitrag, Quelle und Text je Teil", () => {
@@ -116,43 +121,62 @@ test("Komfort ueberstimmt einen klaren Nachteil nicht", () => {
   assert.ok(rest > k, "Komfort " + k.toFixed(1) + " gegen Rest " + rest.toFixed(1));
 });
 
-test("blind und Counter sind verschiedene Lagen", () => {
+test("blind, Counter und teilweise sind verschiedene Lagen", () => {
   const blind = B.bewerte(zustand(), "Ornn", "TOP");
   const counter = B.bewerte(zustand({ihre: [{champ: "Jax", rolle: "TOP"}]}),
                             "Ornn", "TOP");
+  assert.equal(blind.modus, "blind");
   assert.equal(blind.blind, true);
+  assert.ok(blind.components.blindSicherheit, "blind: die Szenarien zaehlen");
+  assert.equal(counter.modus, "counter");
   assert.equal(counter.blind, false);
-  assert.ok(blind.components.pickReihenfolge, "blind: Streuung zaehlt");
-  assert.equal(counter.components.pickReihenfolge, undefined,
-               "mit bekanntem Lanegegner zaehlt die echte Paarung");
+  assert.equal(counter.components.blindSicherheit, undefined,
+               "mit bekanntem Lanegegner zaehlt die echte Paarung (matchup)");
+  assert.ok(counter.components.matchup);
+  // Botlane halb bekannt: der Blindteil zaehlt nur zur Haelfte.
+  const halb = B.bewerte(zustand({ihre: [{champ: "Thresh", rolle: "UTILITY"}]}),
+                         "Jinx", "BOTTOM");
+  assert.equal(halb.modus, "teilweise");
+  assert.ok(halb.components.blindSicherheit && halb.components.matchup);
+  assert.equal(halb.components.blindSicherheit.gewicht,
+               GEWICHTE.blindSicherheit / 2);
 });
 
-test("enge Streuung ist der sicherere Blindpick", () => {
-  const ornn = B.bewerte(zustand(), "Ornn", "TOP");        // Streuung 2,49
-  const malphite = B.bewerte(zustand(), "Malphite", "TOP"); // Streuung 3,83
-  assert.ok(ornn.components.pickReihenfolge.roh
-            > malphite.components.pickReihenfolge.roh,
-            "Ornn " + ornn.components.pickReihenfolge.roh
-            + " vs Malphite " + malphite.components.pickReihenfolge.roh);
-});
-
-test("Risiko zieht ab und waechst den Hoechstwert nicht", () => {
+test("der Blindwert rechnet ueber Szenarien und nennt die Counter", () => {
   const r = B.bewerte(zustand(), "Malphite", "TOP");
-  assert.ok(r.components.risiko, "Risiko vorhanden");
-  assert.ok(r.components.risiko.beitrag <= 0, "zieht ab");
-  const summeOhneRisiko = Object.entries(r.components)
-    .filter(([n]) => n !== "risiko")
-    .reduce((a, [, t]) => a + Math.max(0, t.gewicht), 0);
-  assert.equal(r.hoechstwert, summeOhneRisiko);
+  const d = r.blindDetail;
+  assert.ok(d.szenarien >= 20, "Szenarien: " + d.szenarien);
+  assert.ok(d.abdeckung >= 0.6, "abgedeckt: " + d.abdeckung);
+  assert.ok(d.schlechtestes <= d.ev && d.ev <= d.bestes,
+            "Fuenftel liegen um den Erwartungswert");
+  assert.match(r.components.blindSicherheit.text, /wahrscheinliche Gegner/);
+  // Counter absteigend nach Wahrscheinlichkeit mal Schaden.
+  const k = d.konter;
+  for (let i = 1; i < k.length; i++) {
+    assert.ok(k[i - 1].p * -k[i - 1].d >= k[i].p * -k[i].d - 1e-12);
+  }
+});
+
+test("es gibt keinen zweiten Risikoabzug neben dem Blindwert", () => {
+  // Frueher zog "risiko" fuer die Streuung ab, die zugleich als Bonus in
+  // "pickReihenfolge" stand - dieselbe Zahl zweimal. Der schlechteste
+  // Ausgang wirkt jetzt nur noch im Blindwert und im Lookahead.
+  const r = B.bewerte(zustand(), "Malphite", "TOP");
+  assert.equal(r.components.risiko, undefined);
+  assert.equal(r.components.pickReihenfolge, undefined);
+  const summe = Object.values(r.components)
+    .reduce((a, t) => a + Math.max(0, t.gewicht), 0);
+  assert.equal(r.hoechstwert, summe);
 });
 
 test("das Risikoprofil veraendert das Modell, nicht nur die Anzeige", () => {
   const s = zustand();
   const sicher = B.bewerte(s, "Malphite", "TOP", {risikoprofil: "sicher"});
   const mutig = B.bewerte(s, "Malphite", "TOP", {risikoprofil: "aggressiv"});
-  assert.ok(sicher.components.risiko.beitrag < mutig.components.risiko.beitrag,
-            "sicher bestraft Schwankung staerker");
-  assert.ok(sicher.score < mutig.score);
+  const bs = sicher.components.blindSicherheit, bm = mutig.components.blindSicherheit;
+  assert.ok(bs.roh < bm.roh,
+            "sicher gewichtet das schlechteste Fuenftel: " + bs.roh + " < " + bm.roh);
+  assert.ok(sicher.score <= mutig.score);
 });
 
 test("ohne Heuristiktabelle gibt es keine Stoerungsachse", () => {
@@ -259,4 +283,19 @@ test("vergangene Turnierpicks veraendern keine Bewertung", () => {
   const zweiter = bewerterAnlegen({quelle, merkmale, comp, team, heuristik: leer});
   const b = zweiter.bewerte(s, "Jax", "TOP");
   assert.deepEqual(a, b);
+});
+
+test("aus der Sicht des Gegners: mit SEINEN Picks, gegen UNSERE", () => {
+  // Das Board bewertet einen Gegnerslot, indem es denselben Zustand mit
+  // getauschtem wirSind uebergibt. Dann muss "mit" die Gegnerpicks und
+  // "gegen" unsere meinen - sonst galt ein gegnerischer Kandidat als
+  // gut, wenn er zu unserem Team passte.
+  const s = zustand({unsere: [{champ: "Jarvan IV", rolle: "JUNGLE"}],
+                     ihre: [{champ: "Gnar", rolle: "TOP"}]});
+  const ihreSicht = {...s, wirSind: "red"};
+  const r = B.bewerte(ihreSicht, "Ahri", "MIDDLE");
+  const mit = r.components.synergie, gegen = r.components.matchup;
+  const namen = (t) => [...(t.paare || []).map((x) => x.wer), ...(t.ohneDaten || [])];
+  assert.deepEqual(namen(mit), ["Gnar"], "Synergie mit ihrem Toplaner");
+  assert.deepEqual(namen(gegen), ["Jarvan IV"], "Matchup gegen unseren Jungler");
 });

@@ -13,7 +13,7 @@
 
 import { wert } from "./provenance.js";
 import { moeglicheRollen, istFlex } from "./data.js";
-import { ROLLEN, BLINDSICHER } from "./config.js";
+import { ROLLEN } from "./config.js";
 import { ROLLEN_FOLGE } from "./state.js";
 
 /* Die fuenf Eimer der Skalierungskurve nach Spieldauer, zu drei Phasen
@@ -65,9 +65,6 @@ export function merkmaleAnlegen(quelle, heuristik) {
       kurve,
       phasen: phasenAus(kurve),
       skalierung: quelle.skalierung(champ, rolle),
-      // Lohnt es sich, ihn blind zu picken - also bevor der Lanegegner
-      // steht? Siehe blindSicher() weiter unten.
-      blindsicher: blindSicher(quelle, champ, rolle, staerke),
       // Die handgepflegte Einschaetzung - bewusst in einem eigenen Feld,
       // damit sie beim Lesen nicht mit den Messungen verschwimmt
       heuristik: heuristik ? heuristik.profil(champ) : null,
@@ -92,48 +89,6 @@ export function merkmaleAnlegen(quelle, heuristik) {
 }
 
 /* ------------------------------------------------------------- Ableitungen */
-
-/** Blindsicherheit: haengt das Ergebnis wenig davon ab, was auf der
- *  Lane gegenuebersteht?
- *
- *  Gemessen wird die Streuung der Matchupquoten, verglichen INNERHALB
- *  der Rolle. Absolute Werte taugen dafuer nicht: der Jungle-Median liegt
- *  bei 2,27 Punkten, der Top-Median bei 3,28. Eine feste Schwelle haette
- *  fast jeden Jungler markiert und fast keinen Toplaner - das waere eine
- *  Aussage ueber die Rolle gewesen, nicht ueber den Champion.
- *
- *  Zweite Bedingung ist die Staerke: einen unterdurchschnittlichen
- *  Champion blind zu picken ist kein Gewinn, nur ein kalkulierbarer
- *  Verlust. Streuung und Staerke sind praktisch unabhaengig (r = -0,07),
- *  die Bedingung streicht also keine halbe Liste weg.
- *
- *  Das ist ausdruecklich NICHT dasselbe wie der Blindpick-Eintrag im
- *  Draftplan. Der sagt, was ein Spieler sich zutraut; das hier sagt, was
- *  der Patch hergibt. Beides kann zutreffen, keines ersetzt das andere.
- *  null, wenn die Tabelle zu duenn ist - nicht false. */
-export function blindSicher(quelle, champ, rolle, staerke) {
-  const s = quelle.streuung(champ, rolle);
-  if (!s || s.gegner < BLINDSICHER.mindestGegner) return null;
-  const p = quelle.streuungsPerzentil(champ, rolle);
-  if (p === null) return null;
-  const robust = p <= BLINDSICHER.perzentil;
-  const stark = !!staerke && staerke.value >= BLINDSICHER.mindestStaerke;
-  /* Die Zusatzfelder haengen AUSSEN am Wert: wert() nimmt nur die
-     Provenienzfelder und wuerde alles andere stillschweigend schlucken. */
-  const w = wert(robust && stark, {
-    quelle: "draftgap",
-    patch: s.streuung.patch,
-    stichprobe: s.streuung.sampleSize,
-    konfidenz: s.streuung.confidence,
-    hinweis: "streut " + (s.streuung.value * 100).toFixed(2)
-             + " Punkte ueber " + s.gegner + " Lanegegner, robuster als "
-             + Math.round((1 - p) * 100) + " % auf dieser Rolle"
-             + (robust && !stark
-                ? " — aber nur " + (staerke.value * 100).toFixed(1)
-                  + " % Patchstaerke" : ""),
-  });
-  return {...w, perzentil: p, streuung: s.streuung.value, robust, stark};
-}
 
 /** Flexgrad 0..1: wie gut laesst sich die Rolle aus dem Pick NICHT ablesen.
  *  Eindeutiger Champion -> 0. Zwei gleich starke Rollen -> nahe 1.

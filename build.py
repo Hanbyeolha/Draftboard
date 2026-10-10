@@ -172,7 +172,8 @@ def embed_icons(icons, version):
 # Dateinamen, damit man sie lesen kann.
 ENGINE_ORDNUNG = [
     "config.js", "provenance.js", "state.js", "heuristik.js", "data.js",
-    "features.js", "team.js", "comp.js", "score.js", "search.js", "log.js",
+    "features.js", "team.js", "blind.js", "comp.js", "score.js", "search.js",
+    "strategie.js", "log.js",
 ]
 ENGINE_DIR = ROOT / "engine"
 IMPORT_RE = re.compile(r"^import\s[^;]*?;\s*$", re.M | re.S)
@@ -1134,9 +1135,12 @@ def build(embed=False, pages=False):
     if heuristik_datei.exists():
         roh = json.loads(heuristik_datei.read_text(encoding="utf-8"))
         gepflegt = len(roh.get("champions") or {})
+        vorschlag = len(set(roh.get("vorschlag") or {}) - set(roh.get("champions") or {}))
         data["heuristik"] = roh
-        print(f"  Heuristik: {gepflegt} Champions gepflegt"
-              + (" - die strukturellen Achsen bleiben leer" if not gepflegt else ""))
+        print(f"  Heuristik: {gepflegt} vom Team gepflegt, {vorschlag} als"
+              " ungepruefte Ersteinschaetzung"
+              + (" - die strukturellen Achsen bleiben leer"
+                 if not (gepflegt or vorschlag) else ""))
 
     # Seitenname = eigenes Team (erster Eintrag in teams.json) + Draftboard.
     title = (teams[0]["team"] + " Draftboard") if teams else "Draftboard"

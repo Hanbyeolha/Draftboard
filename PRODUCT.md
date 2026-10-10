@@ -645,6 +645,51 @@ richtig gewesen" laesst sich damit nicht nachspielen. Backtesten laesst
 sich der Endzustand gegen das Ergebnis; bei 68 Stichproben mit breiten
 Fehlerbalken.
 
+**"Was sollen wir JETZT picken?" - 10. Oktober 2026.** Der Auftrag:
+DraftGap behalten, aber zu UNSERER Empfehlung machen; vor allem bessere
+Blindpicks. Drei Messungen haben die Richtung bestimmt.
+
+*Die Streuung war zur Haelfte Rauschen.* Der alte Blindwert war die
+Streuung der Matchupquoten. Ueber 22.004 Lanepaarungen sind von 3,85
+Punkten Streuung 2,74 Zufall - ein Champion mit duenner Tabelle sah
+konterbar aus, weil seine Zahlen wackelten. Jetzt wird jede Abweichung
+um das Rauschen geschrumpft, und der Blindwert rechnet ueber die
+wahrscheinlichen kuenftigen Lanegegner: gemessene Haeufigkeit (bei
+gescoutetem Gegner zur Haelfte sein Pool), Bans und Picks draussen,
+Botlane als Paare. Die sichersten Blindpicks, die dabei herauskommen,
+sind die bekannten: Jinx, Braum, Leona, Thresh, Rammus, Wukong.
+
+*Die Rollenfolge ist messbar.* Wie viel bringt es, auf einer Rolle zu
+warten, bis der Lanegegner steht? Im leeren Draft Mid 2,79, Top 2,76,
+Jungle 1,65, ADC 1,46, Support 0,68 Punkte - die bekannte Faustregel
+"Support frueh, Mid und Top als Counter", hier ohne Faustregel. Das
+Lagebild sagt daraus, welche Rolle jetzt und welche spaeter.
+
+*Die Note zaehlte dieselbe Sorge mehrfach.* Die Streuung stand als Bonus
+UND als Risikoabzug in der Note, der Lookahead rechnete die Paarungen mit
+den bekannten Gegnern noch einmal. Beides ist raus; der schlechteste
+Ausgang wirkt jetzt an genau zwei Stellen, die sich nicht ueberschneiden.
+
+Dabei gefunden, nicht gesucht: 34,5 % der Ranglistenzeit gingen in einen
+Zahlenformatierer, der bei jedem Aufruf neu gebaut wurde. Die Rangliste
+ist dadurch fuenfmal schneller (rund 40 statt 210 ms).
+
+Neu sichtbar: Lagebild (Bedarf, Gefahr, Siegbedingung, naechste Rolle,
+vermeiden), Modus je Rolle, die Jetzt-picken-Karte mit DraftGap /
+Team-Fit / Spieler-Fit / Blind-Sicherheit / Final, die Top 5, die Marken
+BLIND / SICHER / PRIO, ein Protokoll mit Ergebnis. Bedarf, Gefahr und
+Siegbedingung beruhen auf der Heuristiktabelle - dafuer steht dort jetzt
+eine **ungepruefte Ersteinschaetzung von Claude** fuer 170 Champions,
+getrennt von der Einschaetzung der Mannschaft und als solche
+gekennzeichnet. Was die Mannschaft eintraegt, ersetzt sie.
+
+Was weiterhin gilt: im Backtest ueber 68 Partien laesst sich nicht
+zeigen, dass das Modell den Muenzwurf schlaegt (54,4 % +/- 11,8). Das
+Nachspielen echter Picks zeigt mehr Uebereinstimmung als vorher (Top-3
+29 % statt 25 %, Zufall 5 %), aber ob gewonnene Drafts naeher an der
+Empfehlung lagen, ist je Mannschaft getrennt nicht von Rauschen zu
+unterscheiden. Darum schreibt das Protokoll jetzt das Ergebnis mit.
+
 ## Technische Merkposten
 
 **Die Dateigröße ist kleiner, als sie aussieht.** `index.html` wiegt roh rund

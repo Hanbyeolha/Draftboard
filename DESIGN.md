@@ -91,6 +91,12 @@ typography:
     fontSize: "1.1rem"
     fontWeight: 700
     letterSpacing: "-0.01em"
+  recommendation-number:
+    fontFamily: "Rajdhani, Archivo, sans-serif"
+    fontSize: "2.2rem"
+    fontWeight: 700
+    lineHeight: 1
+    fontFeature: "tabular-nums"
 rounded:
   inner: "3px"
   xs: "2px"
@@ -368,8 +374,15 @@ global auf `body`.
 - **Mono** (IBM Plex Mono, `0.84rem` in der Kennzahlzeile, `0.78rem` als
   `.sub.maschine`, `0.72rem` in Kacheln, Protokoll und Ausgabefeldern).
 
+- **Empfehlungszahl** (Rajdhani 700, `2.2rem`, `line-height: 1`): die
+  Final-Note in der Jetzt-picken-Karte des Live Drafts — und nur dort. Sie ist
+  die einzige Stufe über der Leiter: die eine Empfehlung soll das Größte im
+  Reiter sein, ohne dass der Championname dafür über Display hinauswächst
+  (der steht auf `1.3rem`).
+
 Die Größen des Builds bilden eine geschlossene Leiter: `0.72 / 0.78 / 0.84 /
-0.95 / 1.05 / 1.1 / 1.25 / 1.3rem`. Dazwischen wird nicht interpoliert.
+0.95 / 1.05 / 1.1 / 1.25 / 1.3rem`, dazu die eine Empfehlungszahl `2.2rem`.
+Dazwischen wird nicht interpoliert.
 
 ### Named Rules
 

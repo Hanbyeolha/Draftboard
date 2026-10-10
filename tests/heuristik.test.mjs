@@ -15,10 +15,38 @@ test("die ausgelieferte Tabelle ist lesbar und dokumentiert die Achsen", () => {
 });
 
 test("eine leere Tabelle liefert ueberall null statt Nullen", () => {
-  const h = heuristikAnlegen(roh);
+  const h = heuristikAnlegen({champions: {}});
   assert.equal(h.achse("Ornn", "engage"), null);
   assert.equal(h.profil("Ornn"), null);
   assert.equal(h.kennt("Ornn"), false);
+});
+
+test("die Ersteinschaetzung ist als ungeprueft erkennbar und traegt weniger", () => {
+  const h = heuristikAnlegen(roh);
+  assert.equal(h.anzahlTeam, Object.keys(roh.champions).length);
+  assert.ok(h.anzahlVorschlag > 100, "Vorschlaege: " + h.anzahlVorschlag);
+  const w = h.achse("Ornn", "engage");
+  assert.equal(w.source, "heuristik", "keine Messung");
+  assert.equal(w.confidence, KONFIDENZ.heuristikVorschlag);
+  assert.ok(KONFIDENZ.heuristikVorschlag < KONFIDENZ.heuristik);
+  assert.match(w.note, /ungepr\u00fcft/);
+  // Nichts geraten: wen ich nicht sicher kenne, der fehlt.
+  for (const c of ["Locke", "Yunara", "Zaahen"]) {
+    assert.equal(h.kennt(c), false, c + " ist nicht eingeschaetzt");
+  }
+});
+
+test("ein Team-Eintrag ersetzt den Vorschlag ganz, nicht achsenweise", () => {
+  const h = heuristikAnlegen({
+    champions: {Ornn: {frontline: 2}},
+    vorschlag: {Ornn: {engage: 2, frontline: 1, teamfight: 2}},
+  });
+  assert.equal(h.art("Ornn"), "team");
+  assert.equal(h.achse("Ornn", "frontline").value, 1);
+  assert.equal(h.achse("Ornn", "frontline").confidence, KONFIDENZ.heuristik);
+  assert.match(h.achse("Ornn", "frontline").note, /Mannschaft/);
+  assert.equal(h.achse("Ornn", "engage"), null,
+               "keine Mischung: Engage aus dem Vorschlag gilt nicht mehr");
 });
 
 test("gepflegte Werte tragen Quelle heuristik und niedrige Konfidenz", () => {
@@ -31,7 +59,7 @@ test("gepflegte Werte tragen Quelle heuristik und niedrige Konfidenz", () => {
   assert.equal(w.value, 1);                       // 2 von 2 -> 1.0
   assert.equal(w.confidence, KONFIDENZ.heuristik);
   assert.ok(w.confidence < 0.6, "bewusst niedrig");
-  assert.match(w.note, /Einschaetzung/);
+  assert.match(w.note, /Einsch\u00e4tzung/);
   assert.equal(h.achse("Ornn", "poke").value, 0); // gepflegte Null bleibt
   assert.equal(h.achse("Ornn", "dive"), null);    // ungepflegt bleibt null
 });
@@ -60,4 +88,19 @@ test("Abdeckung sagt, wie viel ueberhaupt gepflegt ist", () => {
   assert.equal(a.gepflegt, 1);
   assert.equal(a.gesamt, 4);
   assert.equal(a.anteil, 0.25);
+});
+
+test("ausgepraegte Frontline traegt Peel teilweise mit - und sagt das", () => {
+  const h = heuristikAnlegen({champions: {
+    Ornn: {frontline: 2}, Leona: {frontline: 2, peel: 2}, Jhin: {poke: 2},
+    Sion: {frontline: 1}}});
+  const ornn = h.achse("Ornn", "peel");
+  assert.equal(ornn.value, 0.5, "ausgepraegt (2) zaehlt als teilweise (1)");
+  assert.equal(ornn.abgeleitetAus, "frontline");
+  assert.match(ornn.note, /\u00fcber frontline/);
+  assert.equal(h.achse("Leona", "peel").value, 1, "eigener Peel geht vor");
+  assert.equal(h.achse("Leona", "peel").abgeleitetAus, undefined);
+  assert.equal(h.achse("Sion", "peel").value, 0.25);
+  assert.equal(h.achse("Jhin", "peel"), null, "ohne Frontline nichts abgeleitet");
+  assert.equal(h.achse("Ornn", "frontline").value, 1, "die Quelle bleibt unveraendert");
 });

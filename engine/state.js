@@ -12,6 +12,11 @@
 
 export const ROLLEN_FOLGE = ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"];
 
+/* Die Woerter, die angezeigt werden. Eine Stelle fuer alle Module. */
+export const ROLLEN_WORT = {
+  TOP: "Top", JUNGLE: "Jungle", MIDDLE: "Mid", BOTTOM: "ADC", UTILITY: "Support",
+};
+
 /* Die Zugfolge im Turnierdraft. Blau beginnt. Jede Zeile: wer ist dran,
    was tut er, der wievielte Zug seiner Art.
    Bewusst als Tabelle und nicht als Formel: wer die Regel nachschlaegt,

@@ -15,24 +15,47 @@
    Die Teile ueberschneiden sich nicht. compFit traegt bereits
    Schadensbalance, Kurve und Rollenabdeckung; sie stehen deshalb nicht
    noch einmal einzeln. Ein frueher Entwurf hatte sie doppelt.
+
+   Dieselbe Pruefung fuer die Lane (Stand 10.10.2026):
+     matchup          die BEKANNTEN Gegner
+     blindSicherheit  die noch UNBEKANNTEN Lanegegner, nach Anteil
+     lookahead        ohne Kandidat/bekannte Gegner und ohne die
+                      Lanepaarung - die stehen schon oben
+     risiko           entfallen: Streuung und Konfidenz standen dort ein
+                      zweites Mal. Der schlechteste Ausgang steckt im
+                      Blindwert und im Lookahead (Risikoprofil).
 */
 
 import { wert, konfidenzWort } from "./provenance.js";
 import {
-  GEWICHTE, KOMFORT, PICKFOLGE, STOERUNG, RISIKOPROFILE, STANDARD_RISIKO,
-  ANZEIGE, VERSION,
+  GEWICHTE, KOMFORT, STOERUNG, STANDARD_RISIKO, ANZEIGE, VERSION, ROLLEN,
+  BLIND,
 } from "./config.js";
 import { normQuote, normVorteil, klemm } from "./features.js";
-import { GESCHAETZTE_ACHSEN } from "./comp.js";
-import { ROLLEN_FOLGE, gegenseite } from "./state.js";
+import { GESCHAETZTE_ACHSEN, saettigen } from "./comp.js";
+import { ROLLEN_FOLGE, ROLLEN_WORT, gegenseite, offeneRollen } from "./state.js";
+import { moeglicheRollen } from "./data.js";
+import { blindAnlegen } from "./blind.js";
 
-export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik}) {
+export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik,
+                                 blind = null}) {
+  // Ein Blindmodell fuer alle Bewertungen - sein Feldcache gilt ueber
+  // Kandidaten hinweg.
+  const blindModell = blind || blindAnlegen({quelle, team});
 
   /** Einen Kandidaten bewerten. Gibt die volle Spur zurueck - die
    *  Oberflaeche nimmt sich daraus, was sie zeigen will. */
+  /* gegnerFuer(rolle) -> {team, label} | null: der gegnerische Spieler
+     auf einer Rolle, wenn die Mannschaft gescoutet ist. Dann kommen die
+     Blindszenarien zur Haelfte aus seinem Pool.
+     schnell: ohne Blindszenarien. Fuer die Bewertungen INNERHALB der
+     Suche (Gegnermodell, Erwiderung) - dort geht es um die Folgezuege,
+     und die Szenarien je Ast neu zu bauen kostet Zeit, die der Draft
+     nicht hat. Die Note, die angezeigt wird, rechnet immer voll. */
   function bewerte(zustand, champ, rolle, {
     spielerTeam = null, spielerLabel = null,
     risikoprofil = STANDARD_RISIKO, lookahead = null,
+    gegnerFuer = null, schnell = false,
   } = {}) {
     const m = merkmale.fuer(champ, rolle);
     if (!m) return null;                 // auf dieser Rolle nicht gespielt
@@ -133,13 +156,14 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik}) {
     }
 
     /* 6 --------------------------------------------- Informationswert */
-    if (m.flex) {
-      nimm("flex", m.flex.value, {
-        quelle: "draftgap", konfidenz: 0.8,
-        text: m.flex.value > 0.3 ? "verraet die Rolle nicht (" + m.flex.note + ")"
-                                 : "eindeutige Rolle",
-      });
-      if (m.flex.value > 0.5) gruende.push("flexibel: " + m.flex.note);
+    /* Haengt am Zustand, nicht nur am Champion. Gragas verbirgt nichts
+       mehr, wenn unser Jungle schon steht; und wenn der Gegner nicht mehr
+       pickt, verbirgt niemand etwas vor niemandem. */
+    const fx = flexWert(zustand, champ, rolle, uns, sie);
+    if (fx) {
+      nimm("flex", fx.value, {quelle: "draftgap", konfidenz: 0.8,
+                              text: fx.text});
+      if (fx.value > 0.5) gruende.push("verr\u00e4t die Rolle nicht: " + fx.text);
     }
 
     /* 7 --------------------------------------------------- Komfort */
@@ -157,24 +181,38 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik}) {
       if (k.value <= 0.1) risiken.push("kaum Erfahrung: " + k.note);
     }
 
-    /* 8 ------------------------------------------- Blind oder Counter */
-    /* Nur im Blindfall. Steht der Lanegegner schon, ist die echte
-       Paarung gemessen und zaehlt unter "matchup" - die Streuung dann
-       noch einmal zu werten, waere dieselbe Aussage zweimal. */
-    const lane = ihre.find((p) => p.rolle === rolle);
-    const blind = !lane;
-    if (blind && m.streuung && m.streuung.gegner >= PICKFOLGE.mindestGegner) {
-      const sp = m.streuung.streuung.value;
-      const sicher = 1 - klemm(
-        (sp - PICKFOLGE.streuungEng) / (PICKFOLGE.streuungWeit - PICKFOLGE.streuungEng),
-        0, 1);
-      nimm("pickReihenfolge", sicher, {
-        quelle: "draftgap", konfidenz: m.streuung.streuung.confidence,
-        text: "Streuung " + (sp * 100).toFixed(1) + " ueber "
-              + m.streuung.gegner + " Lanegegner",
+    /* 8 ------------------------------------- Blind, teilweise, Counter */
+    /* Gilt nur fuer den UNBEKANNTEN Teil der Lane und wiegt nach diesem
+       Anteil: ganz blind voll, Botlane halb bekannt halb, ein
+       rollenunsicherer gegnerischer Flexpick nach seiner Unsicherheit.
+       Der bekannte Teil steht unter "matchup" - zweimal zaehlt nichts. */
+    const lage = blindModell.lage(zustand, rolle);
+    const blindWert = (!schnell && lage.modus !== "counter")
+      ? blindModell.bewerte(zustand, champ, rolle, {gegnerFuer, risikoprofil})
+      : null;
+    if (blindWert) {
+      nimm("blindSicherheit", blindWert.wert, {
+        quelle: "draftgap", konfidenz: blindWert.konfidenz,
+        text: blindWert.text,
+        gewicht: GEWICHTE.blindSicherheit * lage.unbekannt,
       });
-      if (sicher > 0.7) gruende.push("sicherer Blindpick, kaum konterbar");
-      if (sicher < 0.3) risiken.push("blind riskant, stark konterbar");
+      if (blindWert.wert >= 0.7) {
+        gruende.push("sicher gegen die wahrscheinlichen Gegner ("
+                     + blindWert.text + ")");
+      }
+      if (blindWert.guenstigMasse >= 0.3) {
+        gruende.push("klar g\u00fcnstig gegen " + Math.round(blindWert.guenstigMasse * 100)
+                     + " % der wahrscheinlichen Lanegegner");
+      }
+      for (const k of blindWert.konter) {
+        if (k.stufe === "unguenstig" && k.p < 0.05) continue;
+        risiken.push(STUFE_WORT[k.stufe] + " Counter noch verf\u00fcgbar: " + k.champ
+          + " (" + Math.round(k.p * 100) + " % wahrscheinlich, "
+          + prozent(k.quote) + ")");
+      }
+      if (blindWert.wert <= 0.3) {
+        risiken.push("blind riskant: " + blindWert.text);
+      }
     }
 
     /* 9 ------------------------------------------------- Lookahead */
@@ -187,19 +225,12 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik}) {
       });
     }
 
-    /* 10 ---------------------------------------------------- Risiko */
+    /* 10 -------------------------------------------------- Konfidenz */
+    /* Kein Abzug mehr fuer Unsicherheit an dieser Stelle - sie wirkt in
+       der Rangliste als Schrumpfung zum Median (KONFIDENZ.schrumpfBoden).
+       Hier stand frueher ein Risikoabzug aus (1 - Konfidenz), Streuung und
+       Lookaheadspanne; die Streuung zaehlte damit doppelt. */
     const konfidenz = konfGewicht ? konfSumme / konfGewicht : null;
-    const profil = RISIKOPROFILE[risikoprofil] || RISIKOPROFILE[STANDARD_RISIKO];
-    const risikoRoh = risikoAus({konfidenz, blind, m, lookahead});
-    if (risikoRoh !== null) {
-      // Negatives Gewicht: der Beitrag zieht ab, der Hoechstwert waechst
-      // nicht mit.
-      const g = GEWICHTE.risiko * profil.risiko;
-      teile.risiko = {roh: risikoRoh, gewicht: g, beitrag: g * risikoRoh,
-                      quelle: "abgeleitet", konfidenz: null,
-                      text: risikoText(risikoRoh)};
-      summe += g * risikoRoh;
-    }
 
     const punkte = hoechst > 0
       ? klemm(100 * summe / hoechst, 0, 100) : null;
@@ -212,7 +243,12 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik}) {
         : Number(punkte.toFixed(ANZEIGE.punkteNachkomma)),
       confidence: konfidenz === null ? null : Number(konfidenz.toFixed(2)),
       confidenceWort: konfidenzWort(konfidenz),
-      blind,
+      // blind heisst: der Lanegegner steht (ganz oder teilweise) noch
+      // nicht fest. modus unterscheidet die drei Lagen.
+      blind: lage.modus !== "counter",
+      modus: lage.modus,
+      lage: {modus: lage.modus, text: lage.text, unbekannt: lage.unbekannt},
+      blindDetail: blindWert,
       components: teile,
       hoechstwert: hoechst,
       reasons: eindeutig(gruende).slice(0, 5),
@@ -261,7 +297,7 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik}) {
    *  Champion unter 50 %, weil in jeder Quote die Staerke des Gegners
    *  schon steckt. */
   function paarSchnitt(champ, rolle, art, andere) {
-    let summe = 0, erwartet = 0, gewicht = 0;
+    let summe = 0, erwartet = 0, gewicht = 0, bereinigt = 0;
     const teile = [], ohneDaten = [];
     for (const p of andere) {
       if (!p.rolle) continue;
@@ -276,15 +312,20 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik}) {
         continue;
       }
       const soll = art === "m" ? 1 - eigen.value : eigen.value;
-      teile.push({wer: p.champ, quote: e.value, erwartet: soll,
-                  spiele: e.sampleSize});
-      summe += e.value * e.sampleSize;
-      erwartet += soll * e.sampleSize;
-      gewicht += e.sampleSize;
+      const n = e.sampleSize;
+      teile.push({wer: p.champ, quote: e.value, erwartet: soll, spiele: n});
+      summe += e.value * n;
+      erwartet += soll * n;
+      // Rauschbereinigt, wie im Blindmodell (BLIND.schrumpfK): bei 343
+      // Partien ist eine Abweichung halb Zufall. Angezeigt werden weiter
+      // die gemessenen Quoten - nur die Wertung schrumpft.
+      bereinigt += (e.value - soll) * n * (n / (n + BLIND.schrumpfK));
+      gewicht += n;
     }
     if (!gewicht) return null;
     return {quote: summe / gewicht, erwartet: erwartet / gewicht,
-            vorteil: (summe - erwartet) / gewicht,
+            vorteil: bereinigt / gewicht,
+            vorteilRoh: (summe - erwartet) / gewicht,
             spiele: gewicht, n: teile.length, teile, ohneDaten,
             konfidenz: Math.min(1, Math.sqrt(gewicht / 2000))};
   }
@@ -300,7 +341,9 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik}) {
       const sie = ihre.map((p) => heuristik.achse(p.champ, ihreAchse))
                       .filter(Boolean);
       if (!sie.length) continue;
-      const staerke = sie.reduce((a, w) => a + w.value, 0) / ihre.length;
+      // Saettigend wie in comp.js: ihr Plan wird nicht schwaecher, weil
+      // ein weiterer Champion ihn nicht mittraegt.
+      const staerke = saettigen(sie.map((w) => w.value));
       if (staerke < 0.2) continue;        // kein nennenswerter Plan
       // Was setzen wir dagegen?
       const gegen = unsere.map((a) => heuristik.achse(champ, a))
@@ -327,38 +370,94 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik}) {
       .slice(0, 2)
       .map(([name, a]) => name + " " + (a.delta > 0 ? "+" : "")
                           + (a.delta * 100).toFixed(0));
-    return grosse.length ? grosse.join(", ") : "aendert wenig";
+    return grosse.length ? grosse.join(", ") : "\u00e4ndert wenig";
   }
 
-  function risikoAus({konfidenz, blind, m, lookahead}) {
-    const teile = [];
-    if (konfidenz !== null) teile.push(1 - konfidenz);
-    if (blind && m.streuung && m.streuung.gegner >= PICKFOLGE.mindestGegner) {
-      teile.push(klemm(
-        (m.streuung.streuung.value - PICKFOLGE.streuungEng)
-        / (PICKFOLGE.streuungWeit - PICKFOLGE.streuungEng), 0, 1));
+  /** Informationswert eines Picks in DIESER Lage.
+   *
+   *  null - es gibt nichts zu verbergen: der Gegner pickt nicht mehr, oder
+   *         uns bleibt nur noch eine Rolle (dann kennt er sie ohnehin).
+   *  0    - eindeutige Rolle, verraet die Lane.
+   *  >0   - glaubhafte zweite Rolle, die bei uns noch offen ist und auf der
+   *         der Champion etwas taugt. Wie flexGrad: zweitstaerkste Rolle
+   *         im Verhaeltnis zur staerksten. */
+  function flexWert(zustand, champ, rolle, uns, sie) {
+    if (!offeneRollen(zustand, sie).length) return null;
+    const unsereOffen = offeneRollen(zustand, uns);
+    if (unsereOffen.length <= 1) return null;
+    // Die eigene Rolle bleibt immer drin, auch wenn der Champion sie nur
+    // zu 5-15 % spielt - sonst fehlt der Bezug fuer das Verhaeltnis.
+    const rollen = moeglicheRollen(quelle, champ).filter((r) => {
+      if (r.rolle === rolle) return true;
+      if (r.anteil < ROLLEN.flexAbAnteil || !unsereOffen.includes(r.rolle)) {
+        return false;
+      }
+      const st = quelle.staerke(champ, r.rolle);
+      return st && st.value >= ROLLEN.flexMindestStaerke;
+    });
+    const andere = rollen.filter((r) => r.rolle !== rolle);
+    if (!andere.length || rollen.length < 2) {
+      return {value: 0, text: "eindeutige Rolle \u2013 verr\u00e4t die Lane"};
     }
-    if (lookahead && Number.isFinite(lookahead.spanne)) {
-      teile.push(klemm(lookahead.spanne, 0, 1));
+    const sortiert = rollen.slice().sort((a, b) => b.anteil - a.anteil);
+    const v = Math.min(1, sortiert[1].anteil / sortiert[0].anteil);
+    return {value: v,
+            text: "auch " + andere.map((r) => ROLLEN_WORT[r.rolle] + " "
+                    + Math.round(r.anteil * 100) + " %").join(", ")
+                  + ", bei uns noch offen"};
+  }
+
+  return {bewerte, blindModell};
+}
+
+/* Die Gefahrenstufen aus blind.js als Adjektiv fuer die Risikozeile. */
+const STUFE_WORT = {
+  "unguenstig": "ung\u00fcnstiger",
+  "gefaehrlich": "gef\u00e4hrlicher",
+  "sehr gefaehrlich": "sehr gef\u00e4hrlicher",
+};
+
+/* -------------------------------------------------------------- Gruppen */
+/* Die Teile der Bewertung, fuer die Anzeige zusammengefasst. KEINE neue
+   Rechnung und keine neuen Gewichte: jede Gruppe ist der gewichtete
+   Schnitt ihrer vorhandenen Teile. So bleibt DraftGap als eigenes Signal
+   sichtbar, getrennt von dem, was wir daraus fuer UNSER Team machen. */
+export const SCORE_GRUPPEN = {
+  draftgap: {wort: "DraftGap", teile: ["meta", "matchup", "synergie"]},
+  team: {wort: "Team-Fit", teile: ["compFit", "gegnerStoerung", "flex", "lookahead"]},
+  spieler: {wort: "Spieler-Fit", teile: ["komfort"]},
+  blind: {wort: "Blind-Sicherheit", teile: ["blindSicherheit"]},
+};
+
+/** {draftgap, team, spieler, blind} -> 0..100 oder null, wenn die Gruppe
+ *  in dieser Lage keinen Teil hat. */
+export function teilGruppen(r) {
+  const out = {};
+  for (const [name, g] of Object.entries(SCORE_GRUPPEN)) {
+    let b = 0, w = 0;
+    for (const t of g.teile) {
+      const x = r.components && r.components[t];
+      if (!x || x.gewicht <= 0) continue;
+      b += x.beitrag; w += x.gewicht;
     }
-    if (!teile.length) return null;
-    return teile.reduce((a, b) => a + b, 0) / teile.length;
+    out[name] = w ? Math.round(100 * b / w) : null;
   }
-
-  function risikoText(r) {
-    return r > 0.6 ? "schwankend" : r > 0.35 ? "mittel" : "stabil";
-  }
-
-  return {bewerte};
+  return out;
 }
 
 /* ------------------------------------------------------------- Kleinkram */
 
+/* Der Formatierer wird EINMAL angelegt. toLocaleString baut bei jedem
+   Aufruf einen neuen - das kostete im Profil 34,5 % der gesamten
+   Ranglistenzeit, weil es fuer jeden Begruendungstext jeder Bewertung
+   laeuft, auch tief in der Suche. Ausgabe identisch. (toFixed mit Komma
+   waere schneller, rundet aber an 285 von 100.001 Halbstellen anders.) */
+const PROZENT_FORMAT = new Intl.NumberFormat("de-DE", {
+  minimumFractionDigits: ANZEIGE.quoteNachkomma,
+  maximumFractionDigits: ANZEIGE.quoteNachkomma,
+});
 function prozent(q) {
-  return (q * 100).toLocaleString("de-DE", {
-    minimumFractionDigits: ANZEIGE.quoteNachkomma,
-    maximumFractionDigits: ANZEIGE.quoteNachkomma,
-  }) + " %";
+  return PROZENT_FORMAT.format(q * 100) + " %";
 }
 
 function eindeutig(xs) {
