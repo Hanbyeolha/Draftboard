@@ -1,18 +1,18 @@
 {
   "AllianceForChampions I": {
+    "Køstja": {
+      "riotId": "Køstja#ATZE",
+      "rolle": "Mid",
+      "verifiziert": true
+    },
     "HartzFor": {
       "riotId": "HartzFor#EUW",
       "rolle": "Jungle",
       "verifiziert": true
     },
-    "Route65": {
-      "riotId": "Route65#EUW",
-      "rolle": "Mid_sub",
-      "verifiziert": true
-    },
-    "Køstja": {
-      "riotId": "Køstja#ATZE",
-      "rolle": "Mid",
+    "jasxnbrg": {
+      "riotId": "jasxnbrg#EUW",
+      "rolle": "Top_sub",
       "verifiziert": true
     },
     "Aaghn": {
@@ -25,6 +25,11 @@
       "rolle": "Top",
       "verifiziert": true
     },
+    "smiling": {
+      "riotId": "smiling#LUSQ",
+      "rolle": "ADC",
+      "verifiziert": true
+    },
     "Dasizz": {
       "riotId": "Dasizz#4121",
       "rolle": "Support_sub",
@@ -35,46 +40,26 @@
       "rolle": "",
       "verifiziert": true
     },
+    "Route65": {
+      "riotId": "Route65#EUW",
+      "rolle": "Mid_sub",
+      "verifiziert": true
+    },
     "Sir Johny": {
       "riotId": "Sir Johny#EUW",
       "rolle": "",
       "verifiziert": true
-    },
-    "jasxnbrg": {
-      "riotId": "jasxnbrg#EUW",
-      "rolle": "Top_sub",
-      "verifiziert": true
-    },
-    "smiling": {
-      "riotId": "smiling#LUSQ",
-      "rolle": "ADC",
-      "verifiziert": true
     }
   },
   "AllianceForChampions II": {
+    "Vermilion": {
+      "riotId": "Vermilion#AFC",
+      "rolle": "Top_sub",
+      "verifiziert": true
+    },
     "AFC Bernard Bär": {
       "riotId": "AFC Bernard Bär#AFC",
       "rolle": "ADC",
-      "verifiziert": true
-    },
-    "PlayboiiHieu": {
-      "riotId": "PlayboiiHieu#Hieu",
-      "rolle": "Jungle",
-      "verifiziert": true
-    },
-    "AFC Xander": {
-      "riotId": "AFC Xander#AFC",
-      "rolle": "Support_sub",
-      "verifiziert": true
-    },
-    "AFC AFC": {
-      "riotId": "AFC AFC#AFC",
-      "rolle": "Top",
-      "verifiziert": true
-    },
-    "rageQ": {
-      "riotId": "rageQ#1234",
-      "rolle": "Mid_sub",
       "verifiziert": true
     },
     "AFC Captain Hook": {
@@ -82,9 +67,24 @@
       "rolle": "Support",
       "verifiziert": true
     },
-    "Dominixnlp": {
-      "riotId": "Dominixnlp#EUW",
-      "rolle": "Top_sub",
+    "PlayboiiHieu": {
+      "riotId": "PlayboiiHieu#Hieu",
+      "rolle": "Jungle",
+      "verifiziert": true
+    },
+    "AFC AFC": {
+      "riotId": "AFC AFC#AFC",
+      "rolle": "Top",
+      "verifiziert": true
+    },
+    "AFC Xander": {
+      "riotId": "AFC Xander#AFC",
+      "rolle": "Support_sub",
+      "verifiziert": true
+    },
+    "rageQ": {
+      "riotId": "rageQ#1234",
+      "rolle": "Mid_sub",
       "verifiziert": true
     },
     "DeLouis": {
@@ -114,13 +114,13 @@
       "rolle": "",
       "verifiziert": true
     },
-    "Glaceon": {
-      "riotId": "Glaceon#evo",
+    "BSeS Angel": {
+      "riotId": "BSeS Angel#EUW",
       "rolle": "",
       "verifiziert": true
     },
-    "BSeS Angel": {
-      "riotId": "BSeS Angel#EUW",
+    "Glaceon": {
+      "riotId": "Glaceon#evo",
       "rolle": "",
       "verifiziert": true
     },
@@ -173,13 +173,13 @@
       "rolle": "",
       "verifiziert": true
     },
-    "chungi": {
-      "riotId": "chungi#mybad",
+    "Salemx": {
+      "riotId": "Salemx#EUW",
       "rolle": "",
       "verifiziert": true
     },
-    "Salemx": {
-      "riotId": "Salemx#EUW",
+    "chungi": {
+      "riotId": "chungi#mybad",
       "rolle": "",
       "verifiziert": true
     },
@@ -198,13 +198,13 @@
       "rolle": "",
       "verifiziert": true
     },
-    "Eurospike": {
-      "riotId": "Eurospike#FNC",
+    "KillMyADC": {
+      "riotId": "KillMyADC#EUW10",
       "rolle": "",
       "verifiziert": true
     },
-    "KillMyADC": {
-      "riotId": "KillMyADC#EUW10",
+    "Eurospike": {
+      "riotId": "Eurospike#FNC",
       "rolle": "",
       "verifiziert": true
     },
@@ -241,7 +241,7 @@
     },
     "LethalRaptorJD": {
       "riotId": "LethalRaptorJD#EUW",
-      "rolle": "",
+      "rolle": "Mid_sub",
       "verifiziert": true
     },
     "GeneralKnabe": {
@@ -266,7 +266,7 @@
     },
     "Akuma": {
       "riotId": "Akuma#9102",
-      "rolle": "",
+      "rolle": "Top_sub",
       "verifiziert": true
     },
     "RIZIX": {
@@ -281,29 +281,19 @@
       "rolle": "ADC_sub",
       "verifiziert": true
     },
-    "Niklas Knueppel": {
-      "riotId": "Niklas Knueppel#4242",
-      "rolle": "Jungle",
-      "verifiziert": true
-    },
-    "abcdasher": {
-      "riotId": "abcdasher#miau",
-      "rolle": "Top",
-      "verifiziert": true
-    },
     "UIMAnsumke": {
       "riotId": "UIMAnsumke#RIPAT",
       "rolle": "",
       "verifiziert": true
     },
+    "Niklas Knueppel": {
+      "riotId": "Niklas Knueppel#4242",
+      "rolle": "Jungle",
+      "verifiziert": true
+    },
     "JonazzanoJ": {
       "riotId": "JonazzanoJ#S04",
       "rolle": "",
-      "verifiziert": true
-    },
-    "Lightníngs": {
-      "riotId": "Lightníngs#EUW",
-      "rolle": "ADC",
       "verifiziert": true
     },
     "Dazorax361": {
@@ -316,14 +306,24 @@
       "rolle": "",
       "verifiziert": true
     },
-    "I am Mayham": {
-      "riotId": "I am Mayham#EUW",
-      "rolle": "Support",
+    "abcdasher": {
+      "riotId": "abcdasher#miau",
+      "rolle": "Top",
       "verifiziert": true
     },
     "Zoom": {
       "riotId": "Zoom#AZB",
       "rolle": "Mid_sub",
+      "verifiziert": true
+    },
+    "I am Mayham": {
+      "riotId": "I am Mayham#EUW",
+      "rolle": "Support",
+      "verifiziert": true
+    },
+    "Lightníngs": {
+      "riotId": "Lightníngs#EUW",
+      "rolle": "ADC",
       "verifiziert": true
     }
   },
@@ -333,19 +333,9 @@
       "rolle": "Mid",
       "verifiziert": true
     },
-    "Salzu": {
-      "riotId": "Salzu#ooga",
-      "rolle": "ADC",
-      "verifiziert": true
-    },
     "LegendOctavian": {
       "riotId": "LegendOctavian#monke",
       "rolle": "ADC_sub",
-      "verifiziert": true
-    },
-    "Xen": {
-      "riotId": "Xen#NGE67",
-      "rolle": "Top",
       "verifiziert": true
     },
     "ShendNoods": {
@@ -358,9 +348,19 @@
       "rolle": "Support",
       "verifiziert": true
     },
+    "Xen": {
+      "riotId": "Xen#NGE67",
+      "rolle": "Top",
+      "verifiziert": true
+    },
     "no need âdc": {
       "riotId": "no need âdc#EUW",
       "rolle": "",
+      "verifiziert": true
+    },
+    "Salzu": {
+      "riotId": "Salzu#ooga",
+      "rolle": "ADC",
       "verifiziert": true
     }
   },
@@ -397,14 +397,14 @@
     }
   },
   "SSV Remlingen II": {
-    "Meister FiTTi": {
-      "riotId": "Meister FiTTi#EUW",
-      "rolle": "Top",
-      "verifiziert": true
-    },
     "ChaosIVIaster": {
       "riotId": "ChaosIVIaster#Chaos",
       "rolle": "ADC",
+      "verifiziert": true
+    },
+    "Meister FiTTi": {
+      "riotId": "Meister FiTTi#EUW",
+      "rolle": "Top",
       "verifiziert": true
     },
     "Discalon": {
@@ -432,21 +432,21 @@
       "rolle": "Support",
       "verifiziert": true
     },
-    "FGG Lewer": {
-      "riotId": "FGG Lewer#EUW",
-      "rolle": "Top_sub",
-      "verifiziert": true
-    },
     "KOOOOAHLLLL": {
       "riotId": "KOOOOAHLLLL#EUW",
       "rolle": "Jungle",
       "verifiziert": true
+    },
+    "hefenBRO": {
+      "riotId": "hefenBRO#3389",
+      "rolle": "Top_sub",
+      "verifiziert": true
     }
   },
   "SV Innerstetal I": {
-    "Verveigar": {
-      "riotId": "Verveigar#SVI",
-      "rolle": "Mid",
+    "Eleone": {
+      "riotId": "Eleone#1008",
+      "rolle": "",
       "verifiziert": true
     },
     "Thueringerkloss": {
@@ -454,14 +454,14 @@
       "rolle": "Top",
       "verifiziert": true
     },
+    "Verveigar": {
+      "riotId": "Verveigar#SVI",
+      "rolle": "Mid",
+      "verifiziert": true
+    },
     "zPiro": {
       "riotId": "zPiro#thrsh",
       "rolle": "Jungle",
-      "verifiziert": true
-    },
-    "Eleone": {
-      "riotId": "Eleone#1008",
-      "rolle": "",
       "verifiziert": true
     },
     "Tamashi": {
@@ -491,6 +491,11 @@
       "rolle": "ADC_sub",
       "verifiziert": true
     },
+    "snakegerman": {
+      "riotId": "snakegerman#EUW",
+      "rolle": "Top",
+      "verifiziert": true
+    },
     "Clown Angel": {
       "riotId": "Clown Angel#MtoL",
       "rolle": "Mid_sub",
@@ -501,24 +506,14 @@
       "rolle": "ADC",
       "verifiziert": true
     },
-    "Triplos": {
-      "riotId": "Triplos#EUW",
-      "rolle": "Support",
-      "verifiziert": true
-    },
-    "Would love Some": {
-      "riotId": "Would love Some#420",
-      "rolle": "Jungle_sub",
-      "verifiziert": true
-    },
     "mazl": {
       "riotId": "mazl#1337",
       "rolle": "Mid",
       "verifiziert": true
     },
-    "snakegerman": {
-      "riotId": "snakegerman#EUW",
-      "rolle": "Top",
+    "Triplos": {
+      "riotId": "Triplos#EUW",
+      "rolle": "Support",
       "verifiziert": true
     },
     "MurphyyLOL": {
@@ -529,6 +524,11 @@
     "Gumagod": {
       "riotId": "Gumagod#SKTT1",
       "rolle": "",
+      "verifiziert": true
+    },
+    "Would love Some": {
+      "riotId": "Would love Some#420",
+      "rolle": "Jungle_sub",
       "verifiziert": true
     }
   }

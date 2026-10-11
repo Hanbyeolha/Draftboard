@@ -16011,5 +16011,945 @@
         "champ": "Alistar"
       }
     ]
+  },
+  {
+    "series": "AFC1 vs MTV Lichtenberg - Best-of-3 (11.10.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-10-11",
+    "matchId": "EUW1_8010678074",
+    "blue": "MTV Lichtenberg",
+    "red": "AFC1",
+    "winner": "AFC1",
+    "picks": {
+      "MTV Lichtenberg": [
+        {
+          "role": "TOP",
+          "champ": "Riven",
+          "player": "xSPEXx",
+          "k": 0,
+          "d": 9,
+          "a": 1,
+          "cs": 189,
+          "gold": 7734,
+          "dmg": 8536,
+          "taken": 21288,
+          "vs": 20,
+          "lvl": 14
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Sylas",
+          "player": "UIMAnsumke",
+          "k": 1,
+          "d": 5,
+          "a": 1,
+          "cs": 150,
+          "gold": 8006,
+          "dmg": 6022,
+          "taken": 21279,
+          "vs": 22,
+          "lvl": 13
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Aurora",
+          "player": "Zoom",
+          "k": 1,
+          "d": 3,
+          "a": 0,
+          "cs": 215,
+          "gold": 8556,
+          "dmg": 6960,
+          "taken": 15571,
+          "vs": 18,
+          "lvl": 14
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Twisted Fate",
+          "player": "Lightníngs",
+          "k": 3,
+          "d": 7,
+          "a": 1,
+          "cs": 163,
+          "gold": 9931,
+          "dmg": 10795,
+          "taken": 16116,
+          "vs": 9,
+          "lvl": 12
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "I am Mayham",
+          "k": 0,
+          "d": 8,
+          "a": 4,
+          "cs": 32,
+          "gold": 6255,
+          "dmg": 3487,
+          "taken": 19174,
+          "vs": 75,
+          "lvl": 12
+        }
+      ],
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Gragas",
+          "player": "jasxnbrg",
+          "k": 7,
+          "d": 0,
+          "a": 6,
+          "cs": 172,
+          "gold": 11126,
+          "dmg": 13266,
+          "taken": 16582,
+          "vs": 20,
+          "lvl": 18
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "HartzFor",
+          "k": 3,
+          "d": 2,
+          "a": 20,
+          "cs": 195,
+          "gold": 11599,
+          "dmg": 13432,
+          "taken": 18019,
+          "vs": 28,
+          "lvl": 16
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Hwei",
+          "player": "Køstja",
+          "k": 7,
+          "d": 0,
+          "a": 9,
+          "cs": 255,
+          "gold": 12171,
+          "dmg": 20538,
+          "taken": 5883,
+          "vs": 22,
+          "lvl": 16
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Yunara",
+          "player": "smiling",
+          "k": 14,
+          "d": 1,
+          "a": 7,
+          "cs": 251,
+          "gold": 16705,
+          "dmg": 25158,
+          "taken": 15441,
+          "vs": 19,
+          "lvl": 15
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Thresh",
+          "player": "Aaghn",
+          "k": 1,
+          "d": 2,
+          "a": 23,
+          "cs": 27,
+          "gold": 8101,
+          "dmg": 5399,
+          "taken": 9102,
+          "vs": 63,
+          "lvl": 12
+        }
+      ]
+    },
+    "bans": {
+      "MTV Lichtenberg": [
+        "Malzahar",
+        "Smolder",
+        "Jinx",
+        "Sivir",
+        "Kalista"
+      ],
+      "AFC1": [
+        "Tristana",
+        "Shyvana",
+        "Galio",
+        "Lucian",
+        "Fiora"
+      ]
+    },
+    "time": "2026-10-11T18:00:00+00:00",
+    "dauer": 1563,
+    "teamStats": {
+      "MTV Lichtenberg": {
+        "tuerme": 1,
+        "drachen": 0,
+        "barone": 0,
+        "herolde": 0,
+        "inhibitoren": 0,
+        "firstBlood": false,
+        "firstTower": false
+      },
+      "AFC1": {
+        "tuerme": 11,
+        "drachen": 4,
+        "barone": 1,
+        "herolde": 1,
+        "inhibitoren": 2,
+        "firstBlood": true,
+        "firstTower": true
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "smiling",
+        "champ": "Yunara"
+      },
+      {
+        "name": "Der Unsterbliche",
+        "was": "Gewonnen, ohne ein einziges Mal zu sterben.",
+        "wer": "jasxnbrg",
+        "champ": "Gragas"
+      },
+      {
+        "name": "Der Unsterbliche",
+        "was": "Gewonnen, ohne ein einziges Mal zu sterben.",
+        "wer": "Køstja",
+        "champ": "Hwei"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "Aaghn",
+        "champ": "Thresh"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "I am Mayham",
+        "champ": "Braum"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "Køstja",
+        "champ": "Hwei"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "smiling",
+        "champ": "Yunara"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "smiling",
+        "champ": "Yunara"
+      }
+    ]
+  },
+  {
+    "series": "AFC2 vs TSV Salzgitter - Best-of-3 (11.10.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-10-11",
+    "matchId": "EUW1_8010687603",
+    "blue": "AFC2",
+    "red": "TSV Salzgitter",
+    "winner": "AFC2",
+    "picks": {
+      "AFC2": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "AFC AFC",
+          "k": 3,
+          "d": 1,
+          "a": 7,
+          "cs": 220,
+          "gold": 11327,
+          "dmg": 37644,
+          "taken": 24487,
+          "vs": 26,
+          "lvl": 18
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "PlayboiiHieu",
+          "k": 6,
+          "d": 3,
+          "a": 11,
+          "cs": 151,
+          "gold": 10862,
+          "dmg": 13836,
+          "taken": 26177,
+          "vs": 33,
+          "lvl": 14
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Cassiopeia",
+          "player": "Vermilion",
+          "k": 7,
+          "d": 3,
+          "a": 16,
+          "cs": 224,
+          "gold": 12382,
+          "dmg": 36047,
+          "taken": 24575,
+          "vs": 19,
+          "lvl": 17
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Twitch",
+          "player": "AFC Bernard Bär",
+          "k": 13,
+          "d": 2,
+          "a": 7,
+          "cs": 245,
+          "gold": 15813,
+          "dmg": 31227,
+          "taken": 11936,
+          "vs": 14,
+          "lvl": 15
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Leona",
+          "player": "AFC Captain Hook",
+          "k": 3,
+          "d": 1,
+          "a": 18,
+          "cs": 39,
+          "gold": 8213,
+          "dmg": 7757,
+          "taken": 11011,
+          "vs": 76,
+          "lvl": 13
+        }
+      ],
+      "TSV Salzgitter": [
+        {
+          "role": "TOP",
+          "champ": "Dr. Mundo",
+          "player": "snakegerman",
+          "k": 3,
+          "d": 6,
+          "a": 2,
+          "cs": 216,
+          "gold": 10320,
+          "dmg": 23761,
+          "taken": 70396,
+          "vs": 11,
+          "lvl": 16
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Amumu",
+          "player": "MurphyyLOL",
+          "k": 1,
+          "d": 8,
+          "a": 4,
+          "cs": 147,
+          "gold": 8727,
+          "dmg": 11306,
+          "taken": 26106,
+          "vs": 22,
+          "lvl": 13
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Ahri",
+          "player": "mazl",
+          "k": 5,
+          "d": 6,
+          "a": 2,
+          "cs": 167,
+          "gold": 10829,
+          "dmg": 15457,
+          "taken": 21109,
+          "vs": 23,
+          "lvl": 14
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Tristana",
+          "player": "Rias Gremory",
+          "k": 1,
+          "d": 5,
+          "a": 6,
+          "cs": 193,
+          "gold": 10533,
+          "dmg": 9525,
+          "taken": 12473,
+          "vs": 20,
+          "lvl": 13
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rakan",
+          "player": "Triplos",
+          "k": 0,
+          "d": 7,
+          "a": 5,
+          "cs": 40,
+          "gold": 6314,
+          "dmg": 3327,
+          "taken": 15736,
+          "vs": 65,
+          "lvl": 12
+        }
+      ]
+    },
+    "bans": {
+      "AFC2": [
+        "Rell",
+        "Aatrox",
+        "Vladimir",
+        "Yasuo",
+        "Mordekaiser"
+      ],
+      "TSV Salzgitter": [
+        "Shyvana",
+        "Thresh",
+        "LeBlanc",
+        "Shen",
+        "Irelia"
+      ]
+    },
+    "time": "2026-10-11T18:00:00+00:00",
+    "dauer": 1598,
+    "teamStats": {
+      "AFC2": {
+        "tuerme": 9,
+        "drachen": 4,
+        "barone": 1,
+        "herolde": 1,
+        "inhibitoren": 1,
+        "firstBlood": true,
+        "firstTower": true
+      },
+      "TSV Salzgitter": {
+        "tuerme": 2,
+        "drachen": 0,
+        "barone": 0,
+        "herolde": 0,
+        "inhibitoren": 0,
+        "firstBlood": false,
+        "firstTower": false
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "AFC Bernard Bär",
+        "champ": "Twitch"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "AFC Captain Hook",
+        "champ": "Leona"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "AFC Captain Hook",
+        "champ": "Leona"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "AFC Bernard Bär",
+        "champ": "Twitch"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "AFC AFC",
+        "champ": "Ornn"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "PlayboiiHieu",
+        "champ": "Wukong"
+      }
+    ]
+  },
+  {
+    "series": "AFC2 vs TSV Salzgitter - Best-of-3 (11.10.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-10-11",
+    "matchId": "EUW1_8010729429",
+    "blue": "TSV Salzgitter",
+    "red": "AFC2",
+    "winner": "AFC2",
+    "picks": {
+      "TSV Salzgitter": [
+        {
+          "role": "TOP",
+          "champ": "Darius",
+          "player": "snakegerman",
+          "k": 9,
+          "d": 5,
+          "a": 4,
+          "cs": 229,
+          "gold": 13857,
+          "dmg": 29599,
+          "taken": 37685,
+          "vs": 39,
+          "lvl": 17
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Briar",
+          "player": "Would love Some",
+          "k": 8,
+          "d": 5,
+          "a": 6,
+          "cs": 213,
+          "gold": 14765,
+          "dmg": 20069,
+          "taken": 30338,
+          "vs": 49,
+          "lvl": 16
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Hwei",
+          "player": "mazl",
+          "k": 1,
+          "d": 11,
+          "a": 6,
+          "cs": 198,
+          "gold": 9514,
+          "dmg": 15652,
+          "taken": 26063,
+          "vs": 18,
+          "lvl": 15
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jinx",
+          "player": "MurphyyLOL",
+          "k": 2,
+          "d": 5,
+          "a": 8,
+          "cs": 268,
+          "gold": 13291,
+          "dmg": 20140,
+          "taken": 16106,
+          "vs": 14,
+          "lvl": 15
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "Triplos",
+          "k": 0,
+          "d": 6,
+          "a": 8,
+          "cs": 36,
+          "gold": 7289,
+          "dmg": 3893,
+          "taken": 21616,
+          "vs": 65,
+          "lvl": 13
+        }
+      ],
+      "AFC2": [
+        {
+          "role": "TOP",
+          "champ": "Shen",
+          "player": "AFC AFC",
+          "k": 1,
+          "d": 4,
+          "a": 16,
+          "cs": 180,
+          "gold": 11098,
+          "dmg": 15580,
+          "taken": 29003,
+          "vs": 32,
+          "lvl": 19
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Xin Zhao",
+          "player": "PlayboiiHieu",
+          "k": 4,
+          "d": 5,
+          "a": 10,
+          "cs": 216,
+          "gold": 13608,
+          "dmg": 14403,
+          "taken": 32917,
+          "vs": 47,
+          "lvl": 16
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Aurora",
+          "player": "Vermilion",
+          "k": 21,
+          "d": 4,
+          "a": 5,
+          "cs": 249,
+          "gold": 18279,
+          "dmg": 51467,
+          "taken": 25273,
+          "vs": 31,
+          "lvl": 18
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Yunara",
+          "player": "AFC Bernard Bär",
+          "k": 6,
+          "d": 4,
+          "a": 11,
+          "cs": 292,
+          "gold": 16182,
+          "dmg": 22198,
+          "taken": 15261,
+          "vs": 24,
+          "lvl": 16
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lulu",
+          "player": "AFC Captain Hook",
+          "k": 0,
+          "d": 3,
+          "a": 22,
+          "cs": 33,
+          "gold": 8763,
+          "dmg": 5671,
+          "taken": 13484,
+          "vs": 90,
+          "lvl": 15
+        }
+      ]
+    },
+    "bans": {
+      "TSV Salzgitter": [
+        "Thresh",
+        "Caitlyn",
+        "Akali",
+        "LeBlanc",
+        "Irelia"
+      ],
+      "AFC2": [
+        "Rell",
+        "Aatrox",
+        "Vladimir",
+        "Mordekaiser",
+        "Viktor"
+      ]
+    },
+    "time": "2026-10-11T18:40:51.771006+00:00",
+    "dauer": 1931,
+    "teamStats": {
+      "TSV Salzgitter": {
+        "tuerme": 2,
+        "drachen": 3,
+        "barone": 0,
+        "herolde": 1,
+        "inhibitoren": 0,
+        "firstBlood": true,
+        "firstTower": true
+      },
+      "AFC2": {
+        "tuerme": 11,
+        "drachen": 2,
+        "barone": 1,
+        "herolde": 0,
+        "inhibitoren": 2,
+        "firstBlood": false,
+        "firstTower": false
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "Vermilion",
+        "champ": "Aurora"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "AFC Captain Hook",
+        "champ": "Lulu"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "AFC Captain Hook",
+        "champ": "Lulu"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "AFC Bernard Bär",
+        "champ": "Yunara"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "Vermilion",
+        "champ": "Aurora"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "snakegerman",
+        "champ": "Darius"
+      }
+    ]
+  },
+  {
+    "series": "AFC1 vs MTV Lichtenberg - Best-of-3 (11.10.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-10-11",
+    "matchId": "EUW1_8010742193",
+    "blue": "AFC1",
+    "red": "MTV Lichtenberg",
+    "winner": "AFC1",
+    "picks": {
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Malphite",
+          "player": "jasxnbrg",
+          "k": 1,
+          "d": 5,
+          "a": 7,
+          "cs": 183,
+          "gold": 10842,
+          "dmg": 14755,
+          "taken": 25243,
+          "vs": 22,
+          "lvl": 18
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Amumu",
+          "player": "HartzFor",
+          "k": 1,
+          "d": 2,
+          "a": 17,
+          "cs": 224,
+          "gold": 13476,
+          "dmg": 17834,
+          "taken": 23048,
+          "vs": 55,
+          "lvl": 17
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Akali",
+          "player": "Køstja",
+          "k": 11,
+          "d": 5,
+          "a": 11,
+          "cs": 242,
+          "gold": 15028,
+          "dmg": 27916,
+          "taken": 30826,
+          "vs": 38,
+          "lvl": 18
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Kai'Sa",
+          "player": "smiling",
+          "k": 18,
+          "d": 7,
+          "a": 7,
+          "cs": 308,
+          "gold": 23553,
+          "dmg": 49855,
+          "taken": 28276,
+          "vs": 15,
+          "lvl": 18
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Pantheon",
+          "player": "Aaghn",
+          "k": 8,
+          "d": 2,
+          "a": 13,
+          "cs": 49,
+          "gold": 13357,
+          "dmg": 15690,
+          "taken": 21314,
+          "vs": 87,
+          "lvl": 15
+        }
+      ],
+      "MTV Lichtenberg": [
+        {
+          "role": "TOP",
+          "champ": "Mordekaiser",
+          "player": "abcdasher",
+          "k": 8,
+          "d": 7,
+          "a": 3,
+          "cs": 246,
+          "gold": 14233,
+          "dmg": 28918,
+          "taken": 40431,
+          "vs": 39,
+          "lvl": 18
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "UIMAnsumke",
+          "k": 2,
+          "d": 7,
+          "a": 8,
+          "cs": 158,
+          "gold": 11042,
+          "dmg": 8694,
+          "taken": 30840,
+          "vs": 45,
+          "lvl": 15
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Viktor",
+          "player": "Zoom",
+          "k": 4,
+          "d": 6,
+          "a": 2,
+          "cs": 275,
+          "gold": 13353,
+          "dmg": 27071,
+          "taken": 14318,
+          "vs": 21,
+          "lvl": 17
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jhin",
+          "player": "Lightníngs",
+          "k": 5,
+          "d": 8,
+          "a": 6,
+          "cs": 262,
+          "gold": 15470,
+          "dmg": 16541,
+          "taken": 24270,
+          "vs": 20,
+          "lvl": 16
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Camille",
+          "player": "xSPEXx",
+          "k": 2,
+          "d": 11,
+          "a": 10,
+          "cs": 53,
+          "gold": 10590,
+          "dmg": 14935,
+          "taken": 38781,
+          "vs": 91,
+          "lvl": 15
+        }
+      ]
+    },
+    "bans": {
+      "AFC1": [
+        "Tristana",
+        "Shyvana",
+        "Galio",
+        "Kennen",
+        "Kayle"
+      ],
+      "MTV Lichtenberg": [
+        "Jinx",
+        "Smolder",
+        "Ahri",
+        "Gangplank",
+        "Malzahar"
+      ]
+    },
+    "time": "2026-10-11T18:41:21.410501+00:00",
+    "dauer": 2076,
+    "teamStats": {
+      "AFC1": {
+        "tuerme": 11,
+        "drachen": 4,
+        "barone": 2,
+        "herolde": 0,
+        "inhibitoren": 5,
+        "firstBlood": false,
+        "firstTower": true
+      },
+      "MTV Lichtenberg": {
+        "tuerme": 3,
+        "drachen": 1,
+        "barone": 0,
+        "herolde": 1,
+        "inhibitoren": 0,
+        "firstBlood": true,
+        "firstTower": false
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "smiling",
+        "champ": "Kai'Sa"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "HartzFor",
+        "champ": "Amumu"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "xSPEXx",
+        "champ": "Camille"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "smiling",
+        "champ": "Kai'Sa"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "smiling",
+        "champ": "Kai'Sa"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "Lightníngs",
+        "champ": "Jhin"
+      }
+    ]
   }
 ]

@@ -293,3 +293,31 @@ test("P2.10: die Oberflaeche waehlt die Seite und rechnet mit ihr", () => {
   assert.ok(!/wirSind: "blue", patch: DRAFT\.patch/.test(html), "nicht mehr fest Blau");
   assert.match(html, /wirSind: liveSeite/);
 });
+
+/* Eigene Besetzung (11.10.2026): vorher nahm unsere Seite fest den
+   Starter. Jetzt dieselbe Auswahl je Rolle wie beim Gegner - und kein
+   Weg mehr am gewaehlten Spieler vorbei. */
+test("Live Draft: auch unsere Seite waehlt den Spieler je Rolle", () => {
+  const html = readFileSync("template.html", "utf8");
+  assert.match(html, /liveWahl\(seite, i\)/, "Auswahl in beiden Spalten");
+  assert.match(html, /live-eigen-besetzung/, "je Mannschaft gemerkt");
+  assert.ok(!/const liveSpieler = /.test(html), "kein fester Starter mehr");
+  assert.match(html, /liveSpielerVon\("eigen", ROLES\.findIndex/, "Bringer im Lagebild folgen der Wahl");
+});
+
+/* Die Tests rechnen mit engine/, die Oberflaeche steht aber als Skript
+   in index.html. Am 11.10.2026 brach dort eine Klammer zu viel den Live
+   Draft ab - alle Tests waren gruen. Jetzt wird jedes Skript der
+   gebauten Seite wenigstens kompiliert. */
+test("die gebaute Seite enthaelt nur kompilierbare Skripte", async () => {
+  const vm = await import("node:vm");
+  const html = readFileSync("index.html", "utf8");
+  const re = /<script(?![^>]*type="application\/json")[^>]*>([\s\S]*?)<\/script>/g;
+  let n = 0, m;
+  while ((m = re.exec(html))) {
+    if (!m[1].trim()) continue;
+    n++;
+    assert.doesNotThrow(() => new vm.Script(m[1]), "Skript " + n + " kompiliert nicht");
+  }
+  assert.ok(n >= 2, "Skripte gefunden: " + n);
+});
