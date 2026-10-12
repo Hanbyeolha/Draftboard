@@ -104,3 +104,31 @@ test("ausgepraegte Frontline traegt Peel teilweise mit - und sagt das", () => {
   assert.equal(h.achse("Jhin", "peel"), null, "ohne Frontline nichts abgeleitet");
   assert.equal(h.achse("Ornn", "frontline").value, 1, "die Quelle bleibt unveraendert");
 });
+
+/* Paket A (12.10.2026): die Pruef-Oberflaeche schreibt die Datei ueber
+   heuristikDatei - eine reine Funktion, damit das Format testbar bleibt. */
+test("heuristikDatei: unveraendert ergibt dieselbe Datei, Byte fuer Byte", async () => {
+  const { heuristikDatei } = await import("../engine/heuristik.js");
+  const text = readFileSync("data/champion-heuristik.json", "utf8");
+  assert.equal(heuristikDatei(roh, roh.champions), text);
+});
+
+test("heuristikDatei: uebernommen heisst gepruefter Eintrag, sonst nichts", async () => {
+  const { heuristikDatei } = await import("../engine/heuristik.js");
+  const text = heuristikDatei(roh, {
+    Ornn: {engage: 2, frontline: 2, poke: 0, erfunden: 1, scaling: 1},
+  }, "2026-10-12");
+  const neu = JSON.parse(text);
+  assert.deepEqual(neu.champions.Ornn, {engage: 2, frontline: 2},
+                   "0, unbekannte Achsen und das gemessene scaling fallen weg");
+  assert.equal(neu._stand, "2026-10-12");
+  assert.deepEqual(neu.vorschlag, roh.vorschlag, "der Vorschlag bleibt");
+  for (const k of Object.keys(roh).filter((k) => k.startsWith("_") && k !== "_stand")) {
+    assert.deepEqual(neu[k], roh[k], k + " bleibt");
+  }
+  const h = heuristikAnlegen(neu);
+  assert.equal(h.art("Ornn"), "team");
+  assert.ok(h.geprueft.kennt("Ornn"), "zaehlt jetzt in der Note");
+  assert.ok(!h.geprueft.kennt("Jax"), "Jax bleibt Vorschlag");
+  assert.deepEqual(Object.keys(neu), Object.keys(roh), "Reihenfolge der Abschnitte bleibt");
+});

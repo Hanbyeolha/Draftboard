@@ -199,10 +199,14 @@ test("die Referenz ordnet eine Quote gegen echte Drafts ein", async () => {
     drafts.push({wir: pk(p.blue), sie: pk(p.red)}, {wir: pk(p.red), sie: pk(p.blue)});
   }
   const ref = S.compReferenz(drafts);
-  assert.equal(ref.n, 136, "68 Partien aus beiden Sichten");
+  // Aus den Daten, nicht fest: mit jedem Liga-Update kommen Partien dazu
+  // (68 bis 10.10., 72 seit 11.10.2026).
+  assert.equal(ref.n, drafts.filter((d) => d.wir.length === 5 && d.sie.length === 5).length,
+               ladePartien().length + " Partien aus beiden Sichten");
   assert.ok(ref.min > 0.45 && ref.max < 0.55, "Spanne " + ref.min + " - " + ref.max);
   // Aus beiden Sichten liegt die Verteilung symmetrisch um 50 %.
-  assert.ok(Math.abs(ref.quoten[68] - 0.5) < 0.003, "Median " + ref.quoten[68]);
+  const mitte = ref.quoten[Math.floor(ref.n / 2)];
+  assert.ok(Math.abs(mitte - 0.5) < 0.003, "Median " + mitte);
   assert.equal(S.compPerzentil(ref.max + 0.01, ref), 1);
   assert.equal(S.compPerzentil(ref.min - 0.01, ref), 0);
   assert.ok(ref.paarP5 < ref.p5 && ref.paarP95 > ref.p95,

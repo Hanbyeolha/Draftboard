@@ -32,7 +32,9 @@ import build
 
 ROOT = pathlib.Path(__file__).parent
 # Nur diese beiden Dateien darf die Seite beschreiben.
-WRITABLE = {"draftplan": ROOT / "draftplan.json", "games": ROOT / "games.json"}
+WRITABLE = {"draftplan": ROOT / "draftplan.json", "games": ROOT / "games.json",
+            # Reiter "Einschätzung": geprüfte Einträge der Heuristik.
+            "heuristik": ROOT / "data" / "champion-heuristik.json"}
 ROLES = {"TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY", "UNKNOWN"}
 # Die Regionen, die op.gg in der URL kennt. Etwas anderes fuehrt beim Scrapen
 # nur dazu, dass jeder Spieler als "nicht gefunden" gemeldet wird.

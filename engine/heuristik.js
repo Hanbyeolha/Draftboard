@@ -120,6 +120,33 @@ export function heuristikAnlegen(roh) {
   return h;
 }
 
+/** Die Datei data/champion-heuristik.json mit neuem Abschnitt
+ *  "champions" (Pruef-Oberflaeche, 12.10.2026). Alles andere - Hinweise,
+ *  Achsenbeschreibung, Vorschlag - bleibt, wie es war, in derselben
+ *  Reihenfolge und demselben Format (2 Leerzeichen, Zeilenumbruch am
+ *  Ende); eine unveraenderte Tabelle ergibt dieselbe Datei.
+ *  Je Champion nur die Achsen, die ungleich 0 sind (Konvention der
+ *  Tabelle); unbekannte Achsen und das gemessene scaling fallen weg.
+ *  stand: neues "_stand", wenn gesetzt. */
+export function heuristikDatei(roh, champions, stand = null) {
+  const sauber = {};
+  for (const champ of Object.keys(champions || {}).sort()) {
+    const e = {};
+    for (const [achse, v] of Object.entries(champions[champ] || {})) {
+      const w = Math.round(Number(v));
+      if (!ACHSEN.includes(achse) || GEMESSEN_VORHANDEN.has(achse)) continue;
+      if (w >= 1 && w <= 2) e[achse] = w;
+    }
+    if (Object.keys(e).length) sauber[champ] = e;
+  }
+  const neu = {};
+  for (const [k, v] of Object.entries(roh || {})) {
+    neu[k] = k === "champions" ? sauber : k === "_stand" && stand ? stand : v;
+  }
+  if (!("champions" in neu)) neu.champions = sauber;
+  return JSON.stringify(neu, null, 2) + "\n";
+}
+
 /** Summe einer Achse ueber eine Aufstellung. Gibt mit zurueck, auf wie
  *  vielen Picks die Aussage beruht - fuenf gepflegte Champions tragen
  *  anders als einer. */

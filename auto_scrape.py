@@ -177,18 +177,63 @@ def scrape_player(scout, entry, team, region, do_update, warn):
 
 
 def load_existing(team_name):
-    """Neueste Rohdatei dieses Teams. Gebraucht, wenn nur einzelne Spieler
-    nachgezogen werden - die uebrigen sollen dabei nicht verlorengehen."""
+    """Der bisherige Stand dieses Teams - ueber ALLE seine Rohdateien, wie
+    build.py sie liest: je Spieler gewinnt die juengste Datei, ausser sie
+    hat fuer ihn keine Championzeilen (nie verschlechtern). Vorher nur die
+    neueste Datei - fehlte dort ein Spieler, ging sein Stand beim
+    naechsten Lauf verloren (12.10.2026)."""
     found = {}
-    for path in sorted(RAW.glob("*.json")):
+    for path in sorted(RAW.glob("*.json")):     # Datum im Namen: alt -> neu
         blob = json.loads(path.read_text(encoding="utf-8"))
         teams_inside = {p["meta"]["team"] for p in blob.get("players", {}).values()}
-        if teams_inside == {team_name}:
-            found = blob                      # sortiert: die juengste gewinnt
+        if teams_inside != {team_name}:
+            continue
+        if not found:
+            found = {**blob, "players": dict(blob.get("players", {})),
+                     "queues": dict(blob.get("queues", {})),
+                     "icons": dict(blob.get("icons", {}))}
+            continue
+        for k, p in (blob.get("players") or {}).items():
+            if hat_zeilen(p) or not hat_zeilen(found["players"].get(k)):
+                found["players"][k] = p
+                if k in (blob.get("queues") or {}):
+                    found["queues"][k] = blob["queues"][k]
+        found["icons"].update(blob.get("icons") or {})
+        for feld in ("version", "scrapedAt", "seasonNames"):
+            if blob.get(feld):
+                found[feld] = blob[feld]
     return found
 
 
-def write_team(team_name, players, queues, icons, season_names, keep_old, base=None):
+def hat_zeilen(player):
+    """Hat dieser Spieler ueberhaupt Championzeilen?"""
+    return any(s.get("c") for s in (player or {}).get("seasons") or [])
+
+
+def write_team(team_name, players, queues, icons, season_names, keep_old, base=None,
+               roster_keys=None):
+    """Die Teamdatei schreiben - auf dem alten Stand (base) aufgebaut.
+
+    Was dieser Lauf nicht neu geholt hat, bleibt aus base erhalten, aber nur
+    fuer Spieler, die noch im Kader stehen (roster_keys) - sonst lebten
+    Ausgetretene ewig weiter. Liefert ein Spieler leere Tabellen, bleibt
+    sein alter Eintrag stehen: nie verschlechtern, wie schnell_scrape.py
+    (12.10.2026; vorher verlor DeLouis so seine 79 Zeilen).
+    Gibt (Datei, entfernte alte Dateien, Schluessel mit altem Stand) zurueck."""
+    behalten = []
+    if base:
+        alt_spieler = dict(base.get("players", {}))
+        alt_queues = dict(base.get("queues", {}))
+        if roster_keys is not None:
+            alt_spieler = {k: v for k, v in alt_spieler.items() if k in roster_keys}
+            alt_queues = {k: v for k, v in alt_queues.items() if k in roster_keys}
+        players, queues = dict(players), dict(queues)
+        for k in list(players):
+            if not hat_zeilen(players[k]) and hat_zeilen(alt_spieler.get(k)):
+                players.pop(k)
+                queues.pop(k, None)
+                behalten.append(k)
+        base = {**base, "players": alt_spieler, "queues": alt_queues}
     version = None
     icon_keys = {}
     for champ, url in icons.items():
@@ -230,7 +275,7 @@ def write_team(team_name, players, queues, icons, season_names, keep_old, base=N
             if stale:
                 path.unlink()
                 removed.append(path.name)
-    return target, removed
+    return target, removed, behalten
 
 
 def main():
@@ -276,13 +321,15 @@ def main():
             name = team["team"]
             region = team.get("region", "euw")
             roster = team["players"]
-            base = None
+            # Immer auf dem alten Stand des Teams aufbauen: wer in diesem
+            # Lauf scheitert, behaelt seine Zahlen (12.10.2026).
+            base = load_existing(name)
+            roster_keys = {key_for(p["label"]) for p in team["players"]}
             if args.only:
                 pick = {o.lower() for o in args.only}
                 roster = [p for p in roster if p["label"].lower() in pick]
                 if not roster:
                     continue
-                base = load_existing(name)      # die uebrigen Spieler behalten
                 # Bei einem frischen Team gibt es nichts zu behalten - nur warnen,
                 # wenn im Roster noch andere stehen, deren Zahlen fehlen wuerden.
                 if not base and len(team["players"]) > len(roster):
@@ -312,8 +359,11 @@ def main():
                 page.wait_for_timeout(2000)          # op.gg nicht fluten
 
             if players:
-                target, removed = write_team(name, players, queues, icons,
-                                             scout.season_names, args.keep_old, base)
+                target, removed, behalten = write_team(
+                    name, players, queues, icons, scout.season_names, args.keep_old,
+                    base, roster_keys)
+                for k in behalten:
+                    warn.append(f"{name}/{k}: leere Tabellen geliefert - alter Stand behalten")
                 written.append(target)
                 print(f"  -> {target.relative_to(ROOT)}"
                       + (f"  (ersetzt {', '.join(removed)})" if removed else ""), flush=True)
@@ -329,7 +379,9 @@ def main():
 
     if written and not args.no_build:
         print()
-        subprocess.run([sys.executable, "build.py", "--standalone"], cwd=ROOT, check=False)
+        # --pages: auch index.html (GitHub Pages), nicht nur out/ - vorher
+        # blieb die Seite fuers Netz nach einem vollen Lauf alt.
+        subprocess.run([sys.executable, "build.py", "--pages"], cwd=ROOT, check=False)
     return 0
 
 

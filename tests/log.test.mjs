@@ -152,3 +152,18 @@ test("ein Eintrag haelt Modus, Kategorien und Gruppen - und spaeter das Ergebnis
   assert.equal(a.sieg.top1, 1);
   assert.match(a.hinweis, /zu wenig/);
 });
+
+/* Solo Queue (12.10.2026): eigene Eintraege, getrennt von den Turnier-
+   drafts - sonst verfaelschte jede Ranked-Partie die Auswertung der
+   Mannschaft. */
+test("ein zweites Protokoll mit eigenem Schluessel mischt sich nicht ein", () => {
+  const sp = speicherAttrappe();
+  const turnier = protokollAnlegen({speicher: sp});
+  const solo = protokollAnlegen({speicher: sp, speicherName: "draft-protokoll-solo"});
+  turnier.notiere(lage(), "TOP", EMPFEHLUNGEN);
+  solo.notiere(lage(), "MIDDLE", EMPFEHLUNGEN);
+  solo.notiere(lage(), "MIDDLE", EMPFEHLUNGEN);
+  assert.equal(protokollAnlegen({speicher: sp}).anzahl(), 1);
+  assert.equal(protokollAnlegen({speicher: sp, speicherName: "draft-protokoll-solo"}).anzahl(), 2);
+  assert.ok(sp._daten.has("draft-protokoll") && sp._daten.has("draft-protokoll-solo"));
+});

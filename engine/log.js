@@ -37,13 +37,17 @@ function runde(x) {
   return Number.isFinite(x) ? Math.round(x * 10000) / 10000 : null;
 }
 
-export function protokollAnlegen({speicher = null, grenze = 2000} = {}) {
+/* speicherName: wo im Speicher. Solo-Queue-Drafts stehen getrennt
+   ("draft-protokoll-solo"), sonst verfaelschten sie die Auswertung der
+   Mannschaft (12.10.2026). */
+export function protokollAnlegen({speicher = null, grenze = 2000,
+                                  speicherName = "draft-protokoll"} = {}) {
   let eintraege = lade();
 
   function lade() {
     if (!speicher) return [];
     try {
-      const roh = speicher.getItem("draft-protokoll");
+      const roh = speicher.getItem(speicherName);
       const d = roh ? JSON.parse(roh) : null;
       return d && d.fassung === FASSUNG && Array.isArray(d.eintraege)
         ? d.eintraege : [];
@@ -56,7 +60,7 @@ export function protokollAnlegen({speicher = null, grenze = 2000} = {}) {
   function sichern() {
     if (!speicher) return;
     try {
-      speicher.setItem("draft-protokoll",
+      speicher.setItem(speicherName,
         JSON.stringify({fassung: FASSUNG, eintraege}));
     } catch (e) {
       // Voll oder gesperrt - dann eben nicht. Kein Abbruch.
