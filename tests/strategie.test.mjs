@@ -290,8 +290,10 @@ test("P2.10: ohne gegnerischen Pick vor unserem letzten wird keine Rolle aufgeho
 
 test("P2.10: die Oberflaeche waehlt die Seite und rechnet mit ihr", () => {
   const html = readFileSync("template.html", "utf8");
-  assert.ok(!/wirSind: "blue", patch: DRAFT\.patch/.test(html), "nicht mehr fest Blau");
-  assert.match(html, /wirSind: liveSeite/);
+  // Der Team-Live-Draft rechnet mit der gewaehlten Seite. (Der Reiter Solo
+  // Queue steht absichtlich fest auf Blau: dort hat die Seite keine Wirkung.)
+  assert.match(html, /function liveZustand\(\) \{[\s\S]{0,400}wirSind: liveSeite/,
+               "Team-Live-Draft nicht mehr fest Blau");
 });
 
 /* Eigene Besetzung (11.10.2026): vorher nahm unsere Seite fest den

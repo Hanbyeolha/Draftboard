@@ -532,6 +532,163 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
 .ld-reset:hover { color: var(--ink); border-color: var(--ink-faint); }
 .ld-quelle { margin-left: auto; }
 
+/* --------------------------------------------------- Reiter Solo Queue
+   Gebaut fuer den Champ Select: die Mitte beantwortet "was picke ich
+   jetzt", links und rechts die Teams wie im Client. */
+#solo-draft { display: flex; flex-direction: column; gap: 0.9rem; }
+.so-klein { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--ink-muted); }
+.so-kopf { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1.4rem;
+           padding-bottom: 0.7rem; border-bottom: 1px solid var(--border); }
+.so-titel { margin: 0; font-family: Rajdhani, Archivo, sans-serif; font-size: 1.5rem;
+            font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.so-ich { display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; }
+.so-wahl { font: inherit; font-size: 0.85rem; padding: 0.3rem 0.5rem; min-width: 0;
+           border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+           background: var(--surface); color: var(--ink); }
+.so-wahl:focus-visible, .so-leeren:focus-visible, .so-einst summary:focus-visible,
+.so-rec summary:focus-visible, .so-picken:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px; }
+.so-kopf-rechts { margin-left: auto; display: flex; align-items: center; gap: 0.8rem;
+                  flex-wrap: wrap; }
+.so-kopf-rechts .ld-quelle { margin-left: 0; font-size: 0.72rem; }
+.so-leeren { font: inherit; font-size: 0.78rem; padding: 0.25rem 0.6rem; cursor: pointer;
+             border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+             background: transparent; color: var(--ink-muted); }
+.so-leeren:hover { color: var(--ink); border-color: var(--ink-faint); }
+.so-einst { position: relative; }
+.so-einst summary { cursor: pointer; font-size: 0.78rem; color: var(--ink-muted);
+                    list-style: none; padding: 0.25rem 0.6rem; border-radius: var(--radius-sm);
+                    border: 1px solid var(--border-strong); }
+.so-einst summary:hover { color: var(--ink); border-color: var(--ink-faint); }
+.so-einst summary::-webkit-details-marker { display: none; }
+.so-einst[open] summary { color: var(--ink); }
+.so-einst-inhalt { position: absolute; right: 0; top: calc(100% + 0.3rem); z-index: 6;
+                   width: 16rem; display: flex; flex-direction: column; gap: 0.4rem;
+                   padding: 0.7rem 0.8rem; border: 1px solid var(--border-strong);
+                   border-radius: var(--radius-sm); background: var(--surface);
+                   box-shadow: 0 8px 24px rgb(0 0 0 / 0.18); }
+.so-einst-inhalt label { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.so-einst-inhalt p { margin: 0; }
+
+.so-buehne { display: grid; gap: 1rem; align-items: start;
+             grid-template-columns: minmax(14rem, 1fr) minmax(0, 1.7fr) minmax(14rem, 1fr); }
+.so-team { display: flex; flex-direction: column; gap: 0.6rem; padding: 0.8rem;
+           border: 1px solid var(--border); border-radius: var(--radius-sm);
+           background: var(--surface); }
+.so-team-name { margin: 0; font-family: Rajdhani, Archivo, sans-serif; font-size: 1.05rem;
+                letter-spacing: 0.06em; text-transform: uppercase; }
+.so-team.eigen .so-team-name { color: var(--eigen); }
+.so-team.gegner .so-team-name { color: var(--gegner); }
+.so-bans { display: flex; flex-direction: column; gap: 0.3rem; }
+.so-bans-felder { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.25rem; }
+/* Fuenf Bans je Seite in einer schmalen Spalte: das Feld schrumpft, das
+   Icon bleibt - sonst ragte das fuenfte Feld aus der Spalte. */
+.so-bans-felder .champ-field { display: flex; align-items: center; gap: 0.15rem;
+                               width: 100%; min-width: 0; }
+.so-bans-felder .preview { flex: none; }
+.so-bans-felder .preview:empty { display: none; }      /* leer: kein Kaestchen */
+.so-bans-felder .preview img { width: 18px; height: 18px; }
+/* .champ-field davor: die allgemeine Regel ".champ-field input" (min-width
+   4.5rem) steht weiter unten und gewaenne sonst. */
+.so-bans-felder .champ-field input { flex: 1 1 0; width: 0; min-width: 0; font-size: 0.7rem;
+                                     padding: 0.15rem 0.25rem; }
+.so-picks { display: flex; flex-direction: column; gap: 0.3rem; }
+.so-zeile { display: grid; grid-template-columns: 3.6rem minmax(0, 1fr) 2.6rem; align-items: center;
+            gap: 0.4rem; padding: 0.25rem 0.35rem; border-radius: var(--radius-sm); }
+.so-zeile .champ-field { display: flex; align-items: center; gap: 0.3rem; min-width: 0; }
+.so-zeile input { width: 100%; min-width: 0; }
+.so-zeile.ich { background: color-mix(in srgb, var(--eigen) 14%, transparent);
+                box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--eigen) 55%, transparent); }
+.so-zeile.lane { background: color-mix(in srgb, var(--gegner) 12%, transparent);
+                 box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gegner) 45%, transparent); }
+.so-rolle { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--ink-faint); }
+.so-marke { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+            text-align: right; }
+.so-marke.ich { color: var(--eigen); }
+.so-marke.lane { color: var(--gegner); }
+.so-hinweis { font-size: 0.72rem; color: var(--warn); }
+.so-hinweis:empty { display: none; }
+
+.so-mitte { display: flex; flex-direction: column; gap: 0.7rem; min-width: 0; }
+.so-modus { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6rem; }
+.so-modus-text { font-size: 0.78rem; font-weight: 600; color: var(--ink-muted); }
+.so-modus.counter .so-modus-text { color: var(--good); }
+.so-rec { border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); }
+.so-rec[open] { border-color: var(--border-strong); }
+.so-rec-kopf { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center;
+               column-gap: 0.6rem; row-gap: 0.1rem; padding: 0.45rem 0.6rem; cursor: pointer;
+               list-style: none; }
+.so-rec-kopf::-webkit-details-marker { display: none; }
+.so-rec-kopf:hover { background: var(--surface-sunk); }
+.so-bild { width: 32px; height: 32px; border-radius: 3px; grid-row: span 3; align-self: start; }
+.so-rec-name { display: flex; align-items: baseline; gap: 0.45rem; min-width: 0; }
+.so-rec-name b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.so-pool { flex: none; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em;
+           text-transform: uppercase; color: var(--eigen); }
+.so-note { font-family: Rajdhani, Archivo, sans-serif; font-size: 1.25rem; font-weight: 700;
+           line-height: 1; font-variant-numeric: tabular-nums; color: var(--ink-muted); }
+.so-note.gut { color: var(--eigen); }
+.so-note.sehrgut { color: var(--good); }
+.so-grund, .so-gefahr { grid-column: 2 / -1; font-size: 0.74rem; line-height: 1.35; }
+.so-grund { color: var(--ink-muted); }
+.so-gefahr { color: var(--warn); }
+.so-rec.gross .so-rec-kopf { padding: 0.75rem 0.85rem; column-gap: 0.85rem; }
+.so-rec.gross .so-bild { width: 56px; height: 56px; }
+.so-rec.gross .so-rec-name b { font-family: Rajdhani, Archivo, sans-serif; font-size: 1.6rem;
+                               letter-spacing: 0.03em; text-transform: uppercase; }
+.so-rec.gross .so-note { font-size: 2.4rem; }
+.so-rec.gross .so-grund, .so-rec.gross .so-gefahr { font-size: 0.82rem; }
+.so-rec-mehr { display: flex; flex-direction: column; gap: 0.4rem; padding: 0 0.85rem 0.7rem 0.85rem; }
+.so-rec-mehr ul { margin: 0; padding-left: 1.1rem; font-size: 0.74rem; line-height: 1.4; }
+.so-liste-risiken { color: var(--warn); }
+.so-picken { align-self: flex-start; font: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer;
+             padding: 0.3rem 0.9rem; border-radius: var(--radius-sm); border: 1px solid var(--eigen);
+             background: var(--eigen); color: var(--ground); }
+.so-picken:hover { filter: brightness(1.08); }
+.so-spalten { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.8rem; }
+.so-spalte { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
+.so-spalte h4 { margin: 0 0 0.1rem; }
+.so-spalte .so-gefahr { display: none; }
+.so-spalte.pool .so-pool { display: none; }           /* die Ueberschrift sagt es schon */
+.so-spalte .so-rec[open] .so-gefahr { display: block; }
+.so-leer { margin: 0; font-size: 0.78rem; color: var(--ink-faint); }
+.so-anzahl { font-weight: 600; letter-spacing: 0.02em; color: var(--ink-faint); }
+.so-mehr { align-self: stretch; font: inherit; font-size: 0.76rem; font-weight: 600; cursor: pointer;
+           padding: 0.35rem 0.6rem; border-radius: var(--radius-sm);
+           border: 1px dashed var(--border-strong); background: transparent; color: var(--ink-muted); }
+.so-mehr:hover { color: var(--ink); border-style: solid; }
+.so-mehr:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.so-fertig { display: flex; flex-direction: column; gap: 0.2rem; padding: 0.9rem;
+             border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); }
+.so-fertig b { font-family: Rajdhani, Archivo, sans-serif; font-size: 1.8rem; text-transform: uppercase; }
+
+.so-lage { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.8rem;
+           padding: 0.7rem 0.85rem; border: 1px solid var(--border); border-radius: var(--radius-sm);
+           background: var(--surface-sunk); }
+.so-lage-feld { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+.so-lage-feld b { font-size: 0.92rem; }
+.so-lage-unter { font-size: 0.74rem; color: var(--ink-muted); }
+.so-fuss { margin: 0; font-size: 0.72rem; color: var(--ink-faint); }
+
+@media (max-width: 1100px) {
+  .so-buehne { grid-template-columns: repeat(2, minmax(0, 1fr));
+               grid-template-areas: "mitte mitte" "eigen gegner"; }
+  .so-mitte { grid-area: mitte; }
+  .so-team.eigen { grid-area: eigen; }
+  .so-team.gegner { grid-area: gegner; }
+}
+@media (max-width: 640px) {
+  .so-buehne { grid-template-columns: minmax(0, 1fr);
+               grid-template-areas: "mitte" "eigen" "gegner"; }
+  .so-spalten, .so-lage { grid-template-columns: minmax(0, 1fr); }
+  .so-kopf-rechts { margin-left: 0; }
+  .so-einst-inhalt { left: 0; right: auto; }
+  .so-rec.gross .so-rec-name b { font-size: 1.3rem; }
+  .so-rec.gross .so-note { font-size: 2rem; }
+}
+
 /* ------------------------------------------------ Reiter Einschätzung */
 .hz-leiste { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.8rem;
              margin: 0.4rem 0 0.6rem; }
@@ -597,8 +754,7 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
   .hz-zeile.hz-kopf { font-size: 0.56rem; letter-spacing: 0.02em; }
 }
 .ld-seite-zug { display: inline-flex; align-items: center; gap: 0.4rem; }
-.ld-art button { padding: 0.25rem 0.6rem; }
-.ld-solo-mich { color: var(--eigen); font-weight: 600; }
+
 /* Patchwarnung (Audit P2.5): dieselbe Warnfarbe wie .ld-warnung. */
 .ld-quelle.veraltet { color: var(--warn); font-weight: 600; }
 
@@ -2296,6 +2452,8 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
                 aria-controls="panel-heuristik">Einschätzung</button>
         <button class="tab" id="tab-draft" role="tab" aria-selected="false"
                 aria-controls="panel-draft">Live Draft</button>
+        <button class="tab" id="tab-solo" role="tab" aria-selected="false"
+                aria-controls="panel-solo">Solo Queue</button>
         <button class="tab" id="tab-liga" role="tab" aria-selected="false"
                 aria-controls="panel-liga">Liga</button>
         <button class="tab" id="tab-games" role="tab" aria-selected="false"
@@ -2371,6 +2529,10 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
 
   <section id="panel-draft" role="tabpanel" aria-labelledby="tab-draft" hidden>
     <div id="live-draft"></div>
+  </section>
+
+  <section id="panel-solo" role="tabpanel" aria-labelledby="tab-solo" hidden>
+    <div id="solo-draft"></div>
   </section>
 
   <section id="panel-liga" role="tabpanel" aria-labelledby="tab-liga" hidden>
@@ -7926,6 +8088,7 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
     renderPlayersScope();
     renderPlan();          // haengt an derselben Queue- und Season-Auswahl
     renderHeuristik();     // Filter "unsere Pools" haengt am Team
+    renderSolo();          // "ich" kommt aus dem Kader des Teams
     renderLiveDraft();     // Pool und Draftplan des Teams stecken darin
   }
 
@@ -8059,14 +8222,8 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
   };
   let liveAktiv = {seite: "eigen", rolle: 0};
   let liveFearless = false;
-  /* Turnier oder Solo Queue (12.10.2026). In Solo hat nur einer einen
-     Pool: ich, ein Spieler aus dem Kader, auf meiner festen Rolle.
-     Mitspieler und Gegner sind fremd. Je Mannschaft gemerkt, wer "ich"
-     bin: {Mannschaft: {label, rolle}}. */
-  let liveArt = (() => {
-    try { return window.localStorage.getItem("live-art") === "solo" ? "solo" : "turnier"; }
-    catch (e) { return "turnier"; }
-  })();
+  /* Solo Queue (eigener Reiter): wer "ich" bin, je Mannschaft gemerkt -
+     {Mannschaft: {label, rolle}}. Ich ist ein Spieler aus dem Kader. */
   let liveSolo = (() => {
     try {
       const d = JSON.parse(window.localStorage.getItem("live-solo") || "null");
@@ -8088,13 +8245,7 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
     const i = ich ? ROLES.findIndex(([w]) => w === ich.role) : -1;
     return i >= 0 ? i : 0;
   };
-  // Fearless gibt es nur im Turnier.
-  const liveFearlessAktiv = () => liveArt === "turnier" && liveFearless;
-  // Turnier- und Solo-Brett getrennt: ein Wechsel verliert nichts.
-  const liveStaende = {};
-  const liveProtokoll = () => liveArt === "solo" ? liveTeile.protokollSolo : liveTeile.protokoll;
-  // Solo beginnt auf meiner Rolle - nicht auf Top.
-  if (liveArt === "solo") liveAktiv = {seite: "eigen", rolle: liveSoloRolle()};
+
   // Welche Seite wir im Draft haben. Bestimmt die Pickfolge (wer wann
   // pickt), nicht die Rechnung je Champion. Pro Browser gemerkt.
   let liveSeite = (() => {
@@ -8185,7 +8336,7 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
       picks: liveStand.picks, bans: liveStand.bans,
       // Unsere Seite aus dem Kopf - vorher fest Blau (Audit P2.10).
       wirSind: liveSeite, patch: DRAFT.patch,
-      fearless: liveFearlessAktiv() ? fearlessVerbraucht() : null,
+      fearless: liveFearless ? fearlessVerbraucht() : null,
     });
     return z;
   }
@@ -8293,10 +8444,6 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
     (g.players || []).find((p) => !p.bench && p.role === rolleName) || null;
 
   function liveSpielerVon(seite, rolle) {
-    // Solo Queue: nur ich habe einen Pool - Mitspieler und Gegner sind fremd.
-    if (liveArt === "solo") {
-      return seite === "eigen" && rolle === liveSoloRolle() ? liveSoloIch() : null;
-    }
     const g = liveMannschaftVon(seite);
     if (!g) return null;
     const rolleName = ROLES[rolle][0];
@@ -8397,7 +8544,7 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
     }
     liveSucheLeeren();
     if (liveTeile && liveAktiv.seite === "eigen") {
-      liveProtokoll().nachtragen(
+      liveTeile.protokoll.nachtragen(
         ENGINE.schluessel(liveZustand(), ROLES[liveAktiv.rolle][0]), champ);
     }
     liveStand.picks[liveAktiv.seite][liveAktiv.rolle] = champ;
@@ -8454,7 +8601,7 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
     if (liveCache.size > 60) liveCache.clear();
     liveCache.set(k, ergebnis);
     if (liste.length && seite === "eigen") {
-      liveProtokoll().notiere(z, ROLES[rolle][0], liste,
+      liveTeile.protokoll.notiere(z, ROLES[rolle][0], liste,
         {risikoprofil: liveRisiko, dauerMs: Math.round(ergebnis.ms),
          kategorien, draft: liveDraftNr});
     }
@@ -8523,8 +8670,7 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
      der Sperrleiste, damit man sie auch wieder loswird - ein Fehlgriff
      beim Merken soll kein Neuanfang sein. */
   function serienLeiste() {
-    // Gemerkte Spiele gehoeren zum Turnier (Fearless), nicht zur Solo Queue.
-    if (!liveSerienSpiele.length || liveArt === "solo") return null;
+    if (!liveSerienSpiele.length) return null;
     const alles = el("button", {class: "ld-reset", type: "button"},
                      "Serie zurücksetzen");
     alles.addEventListener("click", () => {
@@ -8601,19 +8747,8 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
       .some(Boolean);
     merken.addEventListener("click", serieMerken);
 
-    // Solo Queue: keine Gegnermannschaft, kein Fearless, keine Serie.
-    if (liveArt === "solo") {
-      return el("div", {class: "ld-kopf"},
-        el("span", {class: "ld-titel"}, "Live Draft"),
-        liveArtSchalter(),
-        liveSoloWahl(),
-        liveSeitenWahl(),
-        zurueck,
-        liveDatenstand());
-    }
     return el("div", {class: "ld-kopf"},
       el("span", {class: "ld-titel"}, "Live Draft"),
-      liveArtSchalter(),
       el("span", {class: "ld-paarung"},
         el("b", {class: "eigen"}, team.team), " vs "),
       gegnerFeld,
@@ -8621,67 +8756,6 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
       el("label", {class: "ld-schalter"}, haken, " Fearless"),
       wahl, merken, zurueck,
       liveDatenstand());
-  }
-
-  /* Turnier oder Solo Queue - dieselbe Oberflaeche, angepasst. */
-  function liveArtSchalter() {
-    const box = el("div", {class: "switch ld-art", role: "group", "aria-label": "Art des Drafts"});
-    for (const [wert, wort] of [["turnier", "Turnier"], ["solo", "Solo Queue"]]) {
-      const k = el("button", {type: "button", "aria-pressed": String(liveArt === wert)}, wort);
-      k.addEventListener("click", () => liveArtWechseln(wert));
-      box.append(k);
-    }
-    return box;
-  }
-
-  function liveArtWechseln(neu) {
-    if (neu === liveArt) return;
-    liveStaende[liveArt] = JSON.parse(JSON.stringify(
-      {bans: liveStand.bans, picks: liveStand.picks}));
-    const dort = liveStaende[neu]
-      || {bans: {eigen: leer5(), gegner: leer5()}, picks: {eigen: leer5(), gegner: leer5()}};
-    liveStand.bans = dort.bans;
-    liveStand.picks = dort.picks;
-    liveArt = neu;
-    try { window.localStorage.setItem("live-art", neu); } catch (e) { /* egal */ }
-    liveAktiv = {seite: "eigen", rolle: neu === "solo" ? liveSoloRolle() : 0};
-    liveSucheLeeren();
-    liveCache.clear();
-    liveLageCache.clear();
-    neuerDraft();
-    renderLiveDraft();
-  }
-
-  /* Solo: wer bin ich, auf welcher Rolle. Ich kommt aus dem Kader der
-     gewaehlten Mannschaft (Pool und Blind Picks sind dort schon). */
-  function liveSoloWahl() {
-    const ich = liveSoloIch();
-    const wer = el("select", {class: "ld-serie ld-solo-ich", "aria-label": "Wer spielt (ich)"},
-      el("option", {value: ""}, "ich: \u2014 wählen \u2014"),
-      team.players.map((p) => el("option", {value: p.label},
-        "ich: " + p.label + (p.bench ? " \u00b7 Bank" : ""))));
-    wer.value = ich ? ich.label : "";
-    const rolle = el("select", {class: "ld-serie ld-solo-rolle", "aria-label": "Meine Rolle"},
-      ROLES.map(([, wort], i) => el("option", {value: String(i)}, "Rolle: " + wort)));
-    rolle.value = String(liveSoloRolle());
-    const setze = (eintrag) => {
-      liveSolo[team.team] = eintrag;
-      soloSichern();
-      liveAktiv = {seite: "eigen", rolle: liveSoloRolle()};
-      liveCache.clear();
-      liveLageCache.clear();
-      renderLiveDraft();
-    };
-    wer.addEventListener("change", () => {
-      // Ein neuer Spieler bringt seine Kaderrolle mit.
-      const p = team.players.find((x) => x.label === wer.value) || null;
-      const r = p ? ROLES.findIndex(([w]) => w === p.role) : -1;
-      setze({label: wer.value || null, rolle: r >= 0 ? r : liveSoloRolle()});
-    });
-    rolle.addEventListener("change", () => {
-      setze({label: ich ? ich.label : null, rolle: Number(rolle.value)});
-    });
-    return el("span", {class: "ld-seite-zug"}, wer, rolle);
   }
 
   /* Seite und Zug im Kopf (Audit P2.10). Die Pickfolge kommt aus der
@@ -8794,14 +8868,7 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
     return huelle;
   }
 
-  function liveSoloWer(seite, i) {
-    if (seite !== "eigen" || i !== liveSoloRolle()) return el("span", {class: "ld-wer"}, "");
-    const ich = liveSoloIch();
-    return el("span", {class: "ld-wer ld-solo-mich"}, "ich" + (ich ? " \u00b7 " + ich.label : ""));
-  }
-
   function liveBesetzungZurueck(seite) {
-    if (liveArt === "solo") return null;
     const g = liveMannschaftVon(seite);
     const besetzung = liveBesetzungVon(seite);
     const n = g ? Object.keys(besetzung[g.team] || {}).length : 0;
@@ -8825,7 +8892,7 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
    *  Ban-Felder gleich; das eigene Feld zaehlt nicht mit. */
   function liveSperre(champ, art, seite, i) {
     return ENGINE.feldSperre(liveStand, champ, {
-      art, seite, i, fearless: liveFearlessAktiv() ? fearlessVerbraucht() : []});
+      art, seite, i, fearless: liveFearless ? fearlessVerbraucht() : []});
   }
 
   /* Ein kurzer Hinweis unter den Bans der Seite, liest auch ein
@@ -8848,7 +8915,7 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
     if (!liste) return;
     const weg = new Set([...liveStand.picks.eigen, ...liveStand.picks.gegner,
                          ...liveStand.bans.eigen, ...liveStand.bans.gegner,
-                         ...(liveFearlessAktiv() ? fearlessVerbraucht() : [])].filter(Boolean));
+                         ...(liveFearless ? fearlessVerbraucht() : [])].filter(Boolean));
     liste.textContent = "";
     liste.append(...CHAMPIONS.filter((c) => !weg.has(c))
       .map((c) => el("option", {value: c})));
@@ -8856,8 +8923,7 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
 
   function liveBoard() {
     const spalte = (seite) => {
-      const name = liveArt === "solo" ? (seite === "eigen" ? "Mein Team" : "Gegner")
-        : seite === "eigen" ? team.team : (liveGegnerName() || "Gegner");
+      const name = seite === "eigen" ? team.team : (liveGegnerName() || "Gegner");
       return el("div", {class: "ld-seite " + seite},
         el("div", {class: "ld-seite-kopf"},
           el("span", {class: "ld-seite-name"}, name),
@@ -8873,8 +8939,7 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
             el("span", {class: "ld-rolle"}, wort),
             liveFeld(seite, "picks", i, null),
             // Auch bei uns waehlbar: ein Substitute bringt seinen Pool mit.
-            // In Solo steht nur bei mir jemand - die anderen sind fremd.
-            liveArt === "solo" ? liveSoloWer(seite, i) : liveWahl(seite, i)))));
+            liveWahl(seite, i)))));
     };
     return el("div", {class: "ld-board"}, spalte("eigen"), spalte("gegner"));
   }
@@ -8938,8 +9003,7 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
   function liveLage() {
     if (!liveTeile) return null;
     const z = liveZustand();
-    const k = ENGINE.schluessel(z, "lagebild|" + (liveGegner || "") + "|" + team.team
-      + "|" + liveArt);
+    const k = ENGINE.schluessel(z, "lagebild|" + (liveGegner || "") + "|" + team.team);
     if (!liveLageCache.has(k)) {
       if (liveLageCache.size > 40) liveLageCache.clear();
       liveLageCache.set(k, liveTeile.strategie.lagebild(z, {
@@ -9152,18 +9216,12 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
       bedarfZeile,
       gefahrZeile(),
       siegZeile(),
-      // Solo Queue: Rolle und Pickposition sind fest - "Naechste Rolle"
-      // und "Rolle aufheben" ergeben keinen Sinn.
-      liveArt === "solo" ? null : naechsteZeile(),
-      (() => {
-        const v = liveArt === "solo"
-          ? L.vermeiden.filter((x) => !(L.spaeterRolle && x.grund === L.spaeterRolle.text))
-          : L.vermeiden;
-        return zeile("Vermeiden", v.length ? v.map((x) => x.wort).join(" \u00b7 ") : null,
-                     v.length ? v.map((x) => x.grund).join(" \u00b7 ") : null,
-                     v.length ? v.map((x) => x.quelle).join(" ") : null,
-                     vorschlagU);
-      })()].filter(Boolean));
+      naechsteZeile(),
+      zeile("Vermeiden", L.vermeiden.length
+              ? L.vermeiden.map((v) => v.wort).join(" \u00b7 ") : null,
+            L.vermeiden.length ? L.vermeiden.map((v) => v.grund).join(" \u00b7 ") : null,
+            L.vermeiden.length ? L.vermeiden.map((v) => v.quelle).join(" ") : null,
+            vorschlagU)].filter(Boolean));
   }
 
   /* ---------------------------------------------------- Protokoll */
@@ -9173,7 +9231,7 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
     const host = document.querySelector("#live-draft .ld-protokoll");
     if (!host || !liveTeile) return;
     host.textContent = "";
-    const p = liveProtokoll();
+    const p = liveTeile.protokoll;
     const gesetzt = liveErgebnisse.get(liveDraftNr) || null;
     const knopf = (wort, wert) => {
       const k = el("button", {class: "ld-ergebnis" + (gesetzt === wert ? " an" : ""),
@@ -9539,8 +9597,7 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
                  + ")" : "") + "."
         : "Der offene Teil der Lane z\u00e4hlt zu "
           + Math.round(lage.unbekannt * 100) + " % \u00fcber Szenarien.";
-    // Warten gibt es in Solo nicht: die Pickposition ist fest.
-    const L = liveAktiv.seite === "eigen" && liveArt === "turnier" ? liveLage() : null;
+    const L = liveAktiv.seite === "eigen" ? liveLage() : null;
     const warten = L && L.spaeterRolle && L.spaeterRolle.rolle === ROLES[liveAktiv.rolle][0]
       ? L.spaeterRolle : null;
     // Pickt der Gegner vor unserem letzten Pick nicht mehr, zeigt Warten
@@ -10152,6 +10209,323 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
         pollScrape();
       }
     } catch (e) { /* aeltere Fassung ohne diesen Weg */ }
+  }
+
+  /* ================================================== Solo Queue
+     Getrennt vom Team-Live-Draft: eigener Zustand, eigene Oberflaeche.
+     Gebaut fuer den Champ Select neben dem Client - die Antwort auf
+     "was picke ich jetzt" muss in Sekunden ablesbar sein. Nur ich habe
+     einen Pool; Mitspieler und Gegner sind fremd. Rolle und Pickposition
+     sind fest: kein "Rolle aufheben", keine Seitenwahl. */
+  const soloStand = {bans: {eigen: leer5(), gegner: leer5()},
+                     picks: {eigen: leer5(), gegner: leer5()}};
+  let soloRisiko = (() => {
+    try {
+      const r = window.localStorage.getItem("solo-risiko");
+      return ["sicher", "ausgewogen", "aggressiv"].includes(r) ? r : "ausgewogen";
+    } catch (e) { return "ausgewogen"; }
+  })();
+  const soloCache = new Map();
+  const SOLO_KURZ = 5;                         // so viele je Spalte auf einen Blick
+  const soloMehr = {pool: false, ausser: false};
+  let soloLetzte = null;         // {z, liste} - die Empfehlung, die gerade steht
+
+  function soloZustand() {
+    return ENGINE.ausFeldern({picks: soloStand.picks, bans: soloStand.bans,
+                              wirSind: "blue", patch: DRAFT.patch});
+  }
+
+  // Wer spielt meine Rolle: ich. Alle anderen sind fremd.
+  const soloSpielerFuer = (rolleName) => {
+    const ich = liveSoloIch();
+    return ich && ROLES[liveSoloRolle()][0] === rolleName ? {team: ich.team, label: ich.label} : null;
+  };
+
+  function soloRangliste() {
+    const z = soloZustand();
+    const rolle = liveSoloRolle();
+    const ich = liveSoloIch();
+    const k = ENGINE.schluessel(z, "solo|" + rolle + "|" + soloRisiko + "|"
+                                + (ich ? ich.team + "/" + ich.label : ""));
+    if (!soloCache.has(k)) {
+      if (soloCache.size > 40) soloCache.clear();
+      soloCache.set(k, liveTeile.suche.rangliste(z, ROLES[rolle][0], {
+        spielerTeam: ich ? ich.team : null, spielerLabel: ich ? ich.label : null,
+        spielerFuer: soloSpielerFuer, risikoprofil: soloRisiko, gegnerFuer: () => null,
+      }));
+    }
+    return {z, liste: soloCache.get(k)};
+  }
+
+  // Mein Pool: gespielt (ab 3 Partien) oder im Draftplan.
+  function soloImPool(champ) {
+    const ich = liveSoloIch();
+    if (!ich) return false;
+    const k = liveTeile.mannschaft.komfort(ich.team, ich.label, champ);
+    const plan = planOf(ich);
+    return (k && k.sampleSize >= 3) || plan.blind.includes(champ) || plan.likes.includes(champ);
+  }
+
+  const soloStufe = (score) => score >= ENGINE.ANZEIGE.gruenAb ? "sehrgut"
+    : score >= ENGINE.ANZEIGE.orangeAb ? "gut" : "";
+
+  // Ein Grund, eine Gefahr - mehr steht beim Aufklappen.
+  function soloGrund(r) {
+    return r.reasons[0] || (r.components.lane ? r.components.lane.text : "")
+      || (r.components.komfort ? "Komfort: " + r.components.komfort.text : "");
+  }
+  // Der Risikotext der Engine nennt Stufe, Wahrscheinlichkeit und Quote
+  // ("sehr gefaehrlicher Counter noch verfuegbar: ...") - eine nackte
+  // Prozentzahl sagte nicht, wie schlimm es waere.
+  function soloGefahr(r) {
+    return r.risks[0] || "";
+  }
+
+  function soloPicken(champ) {
+    const rolle = liveSoloRolle();
+    const grund = ENGINE.feldSperre(soloStand, champ, {art: "picks", seite: "eigen", i: rolle});
+    if (grund) { soloHinweis("eigen", champ + " kann nicht gepickt werden: " + grund); return; }
+    soloStand.picks.eigen[rolle] = champ;
+    soloProtokoll(champ);
+    renderSolo();
+  }
+
+  // Ins Solo-Protokoll erst, wenn ich wirklich picke - mit der Empfehlung,
+  // die in dem Moment stand. So ist jeder Eintrag eine Entscheidung.
+  function soloProtokoll(champ) {
+    if (!soloLetzte || !soloLetzte.liste.length) return;
+    liveTeile.protokollSolo.notiere(soloLetzte.z, ROLES[liveSoloRolle()][0], soloLetzte.liste,
+                                    {gewaehlt: champ, risikoprofil: soloRisiko});
+  }
+
+  let soloHinweisUhr = null;
+  function soloHinweis(seite, text) {
+    const ziel = document.querySelector("#solo-draft .so-team." + seite + " .so-hinweis");
+    if (!ziel) return;
+    ziel.textContent = text;
+    clearTimeout(soloHinweisUhr);
+    soloHinweisUhr = setTimeout(() => { ziel.textContent = ""; }, 4500);
+  }
+
+  function soloFreiListe() {
+    const liste = document.getElementById("so-frei");
+    if (!liste) return;
+    const weg = new Set([...soloStand.picks.eigen, ...soloStand.picks.gegner,
+                         ...soloStand.bans.eigen, ...soloStand.bans.gegner].filter(Boolean));
+    liste.textContent = "";
+    liste.append(...CHAMPIONS.filter((c) => !weg.has(c)).map((c) => el("option", {value: c})));
+  }
+
+  function soloFeld(seite, art, i, beschriftung) {
+    const feld = champField("so-" + seite + "-" + art + "-" + i, beschriftung, () => {});
+    const eingabe = feld.querySelector("input");
+    eingabe.setAttribute("list", "so-frei");
+    eingabe.value = soloStand[art][seite][i] || "";
+    eingabe.dispatchEvent(new Event("input"));
+    eingabe.addEventListener("change", () => {
+      const champ = normaliseChamp(eingabe.value) || null;
+      const grund = champ ? ENGINE.feldSperre(soloStand, champ, {art, seite, i}) : null;
+      if (grund) {
+        eingabe.value = soloStand[art][seite][i] || "";
+        eingabe.dispatchEvent(new Event("input"));
+        soloHinweis(seite, champ + (art === "bans" ? " ist nicht bannbar: "
+                                    : " kann nicht gepickt werden: ") + grund);
+        return;
+      }
+      const meinPick = art === "picks" && seite === "eigen" && i === liveSoloRolle();
+      soloStand[art][seite][i] = champ;
+      if (meinPick && champ) soloProtokoll(champ);
+      soloAktualisieren();
+    });
+    return feld;
+  }
+
+  function soloTeam(seite) {
+    const meine = liveSoloRolle();
+    const lane = new Set(ENGINE.LANE_GEGNER[ROLES[meine][0]] || []);
+    return el("section", {class: "so-team " + seite, "aria-label": seite === "eigen" ? "Mein Team" : "Gegner"},
+      el("h3", {class: "so-team-name"}, seite === "eigen" ? "Mein Team" : "Gegner"),
+      el("div", {class: "so-bans"},
+        el("span", {class: "so-klein"}, "Bans"),
+        el("div", {class: "so-bans-felder"},
+          [0, 1, 2, 3, 4].map((i) => soloFeld(seite, "bans", i, "Ban " + (i + 1))))),
+      el("div", {class: "so-picks"}, ROLES.map(([wert, wort], i) => {
+        const ich = seite === "eigen" && i === meine;
+        const gegenueber = seite === "gegner" && lane.has(wert);
+        return el("div", {class: "so-zeile" + (ich ? " ich" : "") + (gegenueber ? " lane" : "")},
+          el("span", {class: "so-rolle"}, wort),
+          soloFeld(seite, "picks", i, wort),
+          ich ? el("span", {class: "so-marke ich"}, "du")
+            : gegenueber ? el("span", {class: "so-marke lane"}, "Lane") : el("span"));
+      })),
+      el("span", {class: "so-hinweis", role: "status", "aria-live": "polite"}));
+  }
+
+  function soloEmpfehlung(r, {gross = false} = {}) {
+    const src = iconUrl(r.champion);
+    const pool = soloImPool(r.champion);
+    const grund = soloGrund(r), gefahr = soloGefahr(r);
+    const knopf = el("button", {class: "so-picken", type: "button"}, "Picken");
+    knopf.addEventListener("click", (e) => { e.preventDefault(); soloPicken(r.champion); });
+    const kopf = el("summary", {class: "so-rec-kopf"},
+      src ? el("img", {class: "so-bild", src, alt: "", loading: "lazy"}) : null,
+      el("span", {class: "so-rec-name"},
+        el("b", {}, r.champion),
+        pool ? el("span", {class: "so-pool"}, "Pool") : null),
+      el("span", {class: "so-note " + soloStufe(r.score), title: "Note \u00b7 Entscheidungswert "
+                  + Math.round(r.entscheidung)}, String(r.score)),
+      grund ? el("span", {class: "so-grund"}, grund) : null,
+      gefahr ? el("span", {class: "so-gefahr"}, gefahr) : null);
+    const mehr = el("div", {class: "so-rec-mehr"},
+      r.reasons.length ? el("ul", {class: "so-liste-gruende"},
+        r.reasons.map((g) => el("li", {}, g))) : null,
+      r.risks.length ? el("ul", {class: "so-liste-risiken"},
+        r.risks.map((g) => el("li", {}, g))) : null,
+      knopf);
+    return el("details", {class: "so-rec" + (gross ? " gross" : "")}, kopf, mehr);
+  }
+
+  function soloMitte() {
+    const box = el("section", {class: "so-mitte", "aria-label": "Empfehlung"});
+    const {z, liste} = soloRangliste();
+    const rolle = liveSoloRolle();
+    const gepickt = soloStand.picks.eigen[rolle];
+    soloLetzte = gepickt ? null : {z, liste};
+    if (gepickt) {
+      box.append(el("div", {class: "so-fertig"},
+        el("span", {class: "so-klein"}, "Dein Pick"),
+        el("b", {}, gepickt),
+        el("span", {class: "sub"}, "Feld leeren, um wieder Empfehlungen zu sehen.")));
+      return box;
+    }
+    const erster = liste[0];
+    const lage = erster && erster.lage;
+    box.append(el("div", {class: "so-modus " + (lage ? lage.modus : "")},
+      el("span", {class: "so-klein"}, "Jetzt picken \u00b7 " + ROLES[rolle][1]),
+      lage ? el("span", {class: "so-modus-text"}, lage.modus === "counter" ? "Counterpick"
+        : lage.modus === "teilweise" ? "Lane teilweise bekannt" : "Blindpick") : null));
+    if (erster) box.append(soloEmpfehlung(erster, {gross: true}));
+    // Die Listen ergaenzen die grosse Empfehlung, statt sie zu wiederholen:
+    // links mein Pool, rechts das Beste ausserhalb - keine Zeile doppelt.
+    const ich = liveSoloIch();
+    const rest = liste.filter((r) => r !== erster);
+    const pool = ich ? rest.filter((r) => soloImPool(r.champion)) : [];
+    const ausser = ich ? rest.filter((r) => !soloImPool(r.champion)) : rest;
+    // Fuenf sind auf einen Blick lesbar; der Rest auf Wunsch, ganze Liste
+    // in derselben Reihenfolge. Aufgeklappt bleibt aufgeklappt.
+    const spalte = (titel, eintraege, leer, art) => {
+      const offen = soloMehr[art];
+      const sichtbar = offen ? eintraege : eintraege.slice(0, SOLO_KURZ);
+      const mehr = eintraege.length > SOLO_KURZ
+        ? el("button", {class: "so-mehr", type: "button", "aria-expanded": String(offen)},
+             offen ? "weniger zeigen" : "alle " + eintraege.length + " zeigen")
+        : null;
+      if (mehr) mehr.addEventListener("click", () => { soloMehr[art] = !offen; soloAktualisieren(); });
+      return el("div", {class: "so-spalte " + art},
+        el("h4", {class: "so-klein"}, titel,
+           eintraege.length ? el("span", {class: "so-anzahl"}, " · " + eintraege.length) : null),
+        sichtbar.length ? sichtbar.map((r) => soloEmpfehlung(r))
+          : el("p", {class: "so-leer"}, leer),
+        mehr);
+    };
+    box.append(el("div", {class: "so-spalten"},
+      spalte("Dein Pool", pool, ich ? "Kein Champion aus deinem Pool frei."
+                                    : "Oben wählen, wer du bist – dann steht hier dein Pool.", "pool"),
+      spalte(ich ? "Außerhalb deines Pools" : "Insgesamt", ausser, "Keine Kandidaten.", "ausser")));
+    return box;
+  }
+
+  function soloLage(z) {
+    const L = liveTeile.strategie.lagebild(z, {spielerFuer: soloSpielerFuer});
+    const g = L.groessteGefahr, b = L.groessterBedarf, s = L.siegbedingung;
+    const traeger = (x) => (x && x.traeger || []).map((t) => t.champ || t).filter(Boolean);
+    const feld = (wort, wert, unter) => el("div", {class: "so-lage-feld"},
+      el("span", {class: "so-klein"}, wort),
+      wert ? el("b", {}, wert) : el("span", {class: "so-leer"}, "ab den ersten Picks"),
+      unter ? el("span", {class: "so-lage-unter"}, unter) : null);
+    return el("section", {class: "so-lage", "aria-label": "Lagebild"},
+      feld("Bedarf", b ? b.wort : null, b ? b.grund : null),
+      feld("Größte Gefahr", g ? g.wort : null, g && traeger(g).length ? traeger(g).join(", ") : null),
+      feld("Siegbedingung", s ? s.wort : null, s && s.phase ? s.phase : null));
+  }
+
+  function soloKopf() {
+    const ich = liveSoloIch();
+    const wer = el("select", {class: "so-wahl", "aria-label": "Wer bist du"},
+      el("option", {value: ""}, "Wer bist du?"),
+      team.players.map((p) => el("option", {value: p.label}, p.label + (p.bench ? " \u00b7 Bank" : ""))));
+    wer.value = ich ? ich.label : "";
+    const rolle = el("select", {class: "so-wahl", "aria-label": "Deine Rolle"},
+      ROLES.map(([, wort], i) => el("option", {value: String(i)}, wort)));
+    rolle.value = String(liveSoloRolle());
+    const setze = (eintrag) => {
+      liveSolo[team.team] = eintrag;
+      soloSichern();
+      soloCache.clear();
+      renderSolo();
+    };
+    wer.addEventListener("change", () => {
+      const p = team.players.find((x) => x.label === wer.value) || null;
+      const r = p ? ROLES.findIndex(([w]) => w === p.role) : -1;
+      setze({label: wer.value || null, rolle: r >= 0 ? r : liveSoloRolle()});
+    });
+    rolle.addEventListener("change", () => setze({label: ich ? ich.label : null, rolle: Number(rolle.value)}));
+
+    const risiko = el("select", {class: "so-wahl", "aria-label": "Risikoprofil"},
+      [["sicher", "sicher"], ["ausgewogen", "ausgewogen"], ["aggressiv", "aggressiv"]]
+        .map(([w, t]) => el("option", {value: w}, t)));
+    risiko.value = soloRisiko;
+    risiko.addEventListener("change", () => {
+      soloRisiko = risiko.value;
+      try { window.localStorage.setItem("solo-risiko", soloRisiko); } catch (e) { /* egal */ }
+      renderSolo();
+    });
+    const leeren = el("button", {class: "so-leeren", type: "button"}, "Draft leeren");
+    leeren.addEventListener("click", () => {
+      soloStand.bans.eigen = leer5(); soloStand.bans.gegner = leer5();
+      soloStand.picks.eigen = leer5(); soloStand.picks.gegner = leer5();
+      renderSolo();
+    });
+    const einst = el("details", {class: "so-einst"},
+      el("summary", {}, "Einstellungen"),
+      el("div", {class: "so-einst-inhalt"},
+        el("label", {}, el("span", {class: "so-klein"}, "Risiko"), risiko),
+        el("p", {class: "sub"}, "Sicher: der schlechteste Ausgang zählt mehr. Aggressiv: der beste."),
+        el("p", {class: "sub"}, liveTeile.protokollSolo.anzahl() + " Picks im Solo-Protokoll.")));
+    return el("header", {class: "so-kopf"},
+      el("h2", {class: "so-titel"}, "Solo Queue"),
+      el("div", {class: "so-ich"}, el("span", {class: "so-klein"}, "Du"), wer,
+         el("span", {class: "so-klein"}, "auf"), rolle),
+      el("div", {class: "so-kopf-rechts"}, liveDatenstand(), leeren, einst));
+  }
+
+  // Nur Mitte und Lagebild neu - die Felder behalten Fokus und Eingabe.
+  function soloAktualisieren() {
+    const host = document.getElementById("solo-draft");
+    if (!host || !host.querySelector(".so-mitte")) { renderSolo(); return; }
+    const z = soloZustand();
+    host.querySelector(".so-mitte").replaceWith(soloMitte());
+    host.querySelector(".so-lage").replaceWith(soloLage(z));
+    soloFreiListe();
+  }
+
+  function renderSolo() {
+    const host = document.getElementById("solo-draft");
+    if (!host) return;
+    host.textContent = "";
+    if (!liveTeile || !DRAFT) {
+      host.append(el("p", {class: "hint"}, "Keine Draftdaten eingebettet."));
+      return;
+    }
+    const z = soloZustand();
+    host.append(
+      el("datalist", {id: "so-frei"}),
+      soloKopf(),
+      el("div", {class: "so-buehne"}, soloTeam("eigen"), soloMitte(), soloTeam("gegner")),
+      soloLage(z),
+      el("p", {class: "so-fuss"}, "Entscheidungshilfe, keine Prognose \u00b7 nur dein Pool zählt, "
+        + "Mitspieler und Gegner sind fremd \u00b7 Daten aus der Solo Queue (DraftGap)."));
+    soloFreiListe();
   }
 
   /* ================================================ Einschätzung prüfen
@@ -11617,6 +11991,7 @@ return {ACHSEN, ACHSEN_WORT, ANZEIGE, BLIND, COMP, COMP_REFERENZ, FASSUNG, GEMES
     [document.getElementById("tab-plan"), document.getElementById("panel-plan")],
     [document.getElementById("tab-heuristik"), document.getElementById("panel-heuristik")],
     [document.getElementById("tab-draft"), document.getElementById("panel-draft")],
+    [document.getElementById("tab-solo"), document.getElementById("panel-solo")],
     [document.getElementById("tab-liga"), document.getElementById("panel-liga")],
     [document.getElementById("tab-games"), document.getElementById("panel-games")],
   ];
