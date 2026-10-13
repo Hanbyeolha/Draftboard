@@ -2,7 +2,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { welt } from "./synthetisch.mjs";
-import { ladeDaten } from "./daten.mjs";
+import { ladeDaten, ladeOberflaeche } from "./daten.mjs";
 import { quelleAnlegen } from "../engine/data.js";
 import { heuristikAnlegen } from "../engine/heuristik.js";
 import { merkmaleAnlegen } from "../engine/features.js";
@@ -289,7 +289,7 @@ test("P2.10: ohne gegnerischen Pick vor unserem letzten wird keine Rolle aufgeho
 });
 
 test("P2.10: die Oberflaeche waehlt die Seite und rechnet mit ihr", () => {
-  const html = readFileSync("template.html", "utf8");
+  const html = ladeOberflaeche();
   // Der Team-Live-Draft rechnet mit der gewaehlten Seite. (Der Reiter Solo
   // Queue steht absichtlich fest auf Blau: dort hat die Seite keine Wirkung.)
   assert.match(html, /function liveZustand\(\) \{[\s\S]{0,400}wirSind: liveSeite/,
@@ -300,7 +300,7 @@ test("P2.10: die Oberflaeche waehlt die Seite und rechnet mit ihr", () => {
    Starter. Jetzt dieselbe Auswahl je Rolle wie beim Gegner - und kein
    Weg mehr am gewaehlten Spieler vorbei. */
 test("Live Draft: auch unsere Seite waehlt den Spieler je Rolle", () => {
-  const html = readFileSync("template.html", "utf8");
+  const html = ladeOberflaeche();
   assert.match(html, /liveWahl\(seite, i\)/, "Auswahl in beiden Spalten");
   assert.match(html, /live-eigen-besetzung/, "je Mannschaft gemerkt");
   assert.ok(!/const liveSpieler = /.test(html), "kein fester Starter mehr");

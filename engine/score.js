@@ -484,21 +484,26 @@ export const SCORE_GRUPPEN = {
   blind: {wort: "Blind-Sicherheit", teile: ["blindSicherheit"]},
 };
 
+/** Gewichtetes Mittel der Rohwerte einer Liste von Teilen, 0..100 - oder
+ *  null, wenn keiner der Teile in dieser Lage vorkommt. Eine Rechnung fuer
+ *  die Anzeigegruppen und das Ansichtsmodell (engine/ansicht.js). */
+export function teilWert(r, teile) {
+  let b = 0, w = 0;
+  for (const t of teile) {
+    const x = r.components && r.components[t];
+    if (!x || x.gewicht <= 0) continue;
+    // roh * gewicht statt beitrag: beim Lookahead ist der Beitrag eine
+    // Korrektur um 0,5 (P1.2), sein Wert fuer die Anzeige bleibt roh.
+    b += x.roh * x.gewicht; w += x.gewicht;
+  }
+  return w ? Math.round(100 * b / w) : null;
+}
+
 /** {draftgap, team, spieler, blind} -> 0..100 oder null, wenn die Gruppe
  *  in dieser Lage keinen Teil hat. */
 export function teilGruppen(r) {
   const out = {};
-  for (const [name, g] of Object.entries(SCORE_GRUPPEN)) {
-    let b = 0, w = 0;
-    for (const t of g.teile) {
-      const x = r.components && r.components[t];
-      if (!x || x.gewicht <= 0) continue;
-      // roh * gewicht statt beitrag: beim Lookahead ist der Beitrag eine
-      // Korrektur um 0,5 (P1.2), sein Wert fuer die Anzeige bleibt roh.
-      b += x.roh * x.gewicht; w += x.gewicht;
-    }
-    out[name] = w ? Math.round(100 * b / w) : null;
-  }
+  for (const [name, g] of Object.entries(SCORE_GRUPPEN)) out[name] = teilWert(r, g.teile);
   return out;
 }
 

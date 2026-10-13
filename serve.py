@@ -601,6 +601,10 @@ class Handler(BaseHTTPRequestHandler):
                 laeufe.append([sys.executable, str(ROOT / "liga.py"), "--spiele"])
             laeufe.append([sys.executable, str(ROOT / "liga.py"),
                            "--mannschaften", "--eintragen"])
+            # Namenswechsel: fuehrt die Liga einen Spieler unter neuer
+            # Riot-ID, stellt teams.json gleich um - sonst findet das
+            # naechste Profilholen ihn nicht mehr (namenswechsel.py).
+            laeufe.append([sys.executable, str(ROOT / "liga.py"), "--riotids"])
             laeufe.append([sys.executable, str(ROOT / "liga.py")])
             vorher = spiele_zahl()
             teams_vorher = mannschaften_zahl()

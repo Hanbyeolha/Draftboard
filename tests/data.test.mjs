@@ -1,7 +1,7 @@
 /* Datenschicht gegen die echten eingebetteten Daten. */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { ladeDaten } from "./daten.mjs";
+import { ladeDaten, ladeOberflaeche } from "./daten.mjs";
 import { quelleAnlegen, moeglicheRollen, istFlex, patchWarnung, datenstand }
   from "../engine/data.js";
 import { readFileSync } from "node:fs";
@@ -138,7 +138,7 @@ test("P2.5: der Datenstand nennt Abstand und warnt ab der Schwelle", () => {
 });
 
 test("P2.5: die Oberflaeche ruft den Datenstand wirklich auf", () => {
-  const html = readFileSync("template.html", "utf8");
+  const html = ladeOberflaeche();
   assert.match(html, /ENGINE\.datenstand\(/, "Kopf des Live Drafts");
   assert.match(html, /DATA\.patchLive/);
 });

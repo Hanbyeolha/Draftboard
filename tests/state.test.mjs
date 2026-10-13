@@ -1,6 +1,7 @@
 /* Zustandsmodell: Zugfolge, Sperren, Schluessel. */
 import test from "node:test";
 import assert from "node:assert/strict";
+import { ladeOberflaeche } from "./daten.mjs";
 import {
   leererDraft, zieh, zurueck, amZug, phase, fertig, gesperrt,
   offeneRollen, schluessel, ausFeldern, ZUGFOLGE,
@@ -119,7 +120,7 @@ test("P2.6: Pick- und Ban-Felder sperren dasselbe, das eigene Feld nicht", async
 
 test("P2.6: die Oberflaeche prueft Pick-Felder mit derselben Funktion", async () => {
   const { readFileSync } = await import("node:fs");
-  const html = readFileSync("template.html", "utf8");
+  const html = ladeOberflaeche();
   assert.ok(!/art === "bans" && champ \? liveBanSperre/.test(html),
             "die Pruefung haengt nicht mehr nur am Ban-Feld");
   assert.match(html, /ENGINE\.feldSperre\(/);

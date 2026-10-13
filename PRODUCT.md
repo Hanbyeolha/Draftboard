@@ -56,10 +56,11 @@ es am Laptop, gelegentlich am Handy.
 **Aus dem Bestand (technische Gegebenheiten, nicht vom Nutzer als bindend
 bestätigt):**
 
-- Die Oberfläche liegt vollständig in `template.html` (HTML, CSS, JS in einer
-  Datei); `build.py` baut daraus `index.html` und `out/*.html` mit eingebetteten
-  Daten, Icons, Rangemblemen und Schriften als base64 — rund 2,6 MB, läuft ohne
-  Server und ohne Netz.
+- Die Oberfläche liegt in `template.html` und Teilen unter `ui/` (seit
+  Draftboard 2.0, per `//@ui`-Zeile im selben Skript eingesetzt), die Rechnung
+  in `engine/` (ES-Module, unter Node getestet); `build.py` baut daraus
+  `index.html` und `out/*.html` mit eingebetteten Daten, Icons, Rangemblemen und
+  Schriften als base64 — läuft ohne Server und ohne Netz.
 - Eine Druckfassung existiert (`@media print`, erzwingt hellen Grund, blendet
   Bedienelemente aus).
 - Die Oberfläche ist durchgängig deutschsprachig; Spielbegriffe (Champion, Pick,
@@ -67,9 +68,10 @@ bestätigt):**
 - Daten: `teams.json` (Kader), `games.json` (Turnierpartien), `draftplan.json`
   (Blind Picks und Vorlieben), `data/raw/*.json` (op.gg-Scrape),
   `data/liga/*.json` (Liga).
-- Reiter: **Spieler** (Karten mit Rang, Championtabellen, Turnierrollen),
-  **Draftplan**, **Liga** (Meta nach Rollen, Seiten, Mannschaften, Rekorde),
-  **Turnierspiele** (Serien und Draftkarten mit Picks und Bans).
+- Drei Modi mit Reitern (seit Draftboard 2.0): **LIVE** — Briefing,
+  Team-Draft (Cockpit; klassische Ansicht per Schalter), Solo Queue ·
+  **SCOUT** — Spieler, Liga, Draftplan, Einschätzung · **REVIEW** —
+  Turnierspiele, Plan gegen Ist.
 - Eine Darstellung für die Spielerkarten. Der Umschalter „Ansicht: Liste" ist
   im Oktober-Umbau entfallen — der Nutzer hat ihn nie benutzt; die vier
   Zusatzspalten stehen seither je Karte unter „Details".
@@ -106,13 +108,47 @@ kostet 32 px und damit genau eine Zeile — bewusst in Kauf genommen.
 **Was aus dem Anordnungsumbau unverändert bindend bleibt** (gemessen am
 ausgelieferten Stand): Bedienwerk über den Daten ≤ 150 px bei 1440 px Breite
 (gemessen 146), keine intern scrollende Championtabelle (gemessen 0 bei 390,
-1280, 1366, 1440 und 1920 px), auf dem Handy die Reiter am unteren Rand. Eine
-neue Optik darf diese Werte nicht verschlechtern.
+1280, 1366, 1440 und 1920 px), auf dem Handy die Navigation am unteren Rand.
+Eine neue Optik darf diese Werte nicht verschlechtern. Seit Draftboard 2.0
+stehen dort die drei **Modi** (die Reiter des Modus darüber im Kopf); der Kopf
+misst 58 px bei 1440.
 
 **Technische Nebenbedingung aus demselben Umbau:** Die klebende Kopfleiste
 (`header.bar`) darf **kein** `transform`, `filter` oder `backdrop-filter`
-tragen — sonst hängt die auf dem Handy fest positionierte Reiterleiste
-still um. Eine Milchglas-Leiste ist damit ausgeschlossen.
+tragen — sonst hängt die auf dem Handy fest positionierte Modusleiste
+(`.modi`) still um. Eine Milchglas-Leiste ist damit ausgeschlossen.
+
+## Draftboard 2.0 (13. Oktober 2026)
+
+Umbau zum Draft-Cockpit nach einer Spezifikation des Nutzers („Draftboard 2.0 –
+UI/UX Redesign“), in sieben Phasen, jede für sich lauffähig. Entscheidungen
+des Nutzers:
+
+- **Kein Timer**, solange es keine Verbindung zum Spielclient gibt.
+- **Eingabe als Schrittfolge mit Korrektur**: ein zentrales Feld trägt dort
+  ein, wo der Schritt laut Turnierfolge es verlangt; jedes Feld bleibt
+  korrigierbar.
+- **Drei Modi** (LIVE · SCOUT · REVIEW) mit Reitern.
+- **Zahl plus kurzer Balken** statt Sterne — aus den vorhandenen
+  Gruppenwerten, keine neuen Schwellen.
+
+Was daraus gilt:
+
+- **Das Cockpit ist der Standard** des Team-Drafts; die klassische Ansicht
+  bleibt einen Klick entfernt (gemerkt als `live-ansicht`). Nichts wurde
+  entfernt.
+- **Ligapartien sind keine Entscheidungswerte.** „Gegner wählt
+  wahrscheinlich“ und das Briefing rechnen aus Patchdaten (DraftGap) und den
+  op.gg-Pools gescouteter Spieler und sagen das dazu.
+- **Ban- und Prioritätshinweise im Briefing sind Ableitungen** und so
+  gekennzeichnet — die Engine bewertet Bans nicht.
+- **Plan gegen Ist** vergleicht mit dem *heutigen* Draftplan; ein Plan von
+  damals ist nicht gespeichert, die Seite sagt das dazu.
+- **Rückgängig statt Rückfrage**, **Animation nur bei Zustandswechseln**,
+  **Leer- und Fehlerzustände mit Titel und Satz**.
+- Tests: `tests/ui_live.py` (Cockpit, 1440/768/390), `tests/ui_scout.py`
+  (Modi, Filter, Zahlenzeilen), `tests/ui_briefing.py` (Briefing, Plan gegen
+  Ist), dazu `ui_board.py` für die klassische Ansicht.
 
 **Neue Mannschaften kommen von selbst ins Board** (8. Oktober 2026): Der Knopf
 „Liga-Daten holen" gleicht bei jedem Lauf ab, welche Mannschaften die Liga

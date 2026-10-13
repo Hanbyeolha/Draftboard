@@ -28,6 +28,8 @@ import time
 import urllib.error
 import urllib.request
 
+import namenswechsel as nw
+
 ROOT = pathlib.Path(__file__).parent
 ZIEL = ROOT / "data" / "liga"
 API = "https://leagueofregions.com/api"
@@ -211,6 +213,26 @@ def stats_pfad(eintrag):
     return f"/matches/{eintrag['id']}/stats/"
 
 
+def abrufen(anfrage, timeout, versuche=3):
+    """Ein JSON-Abruf mit Wiederholung bei Verbindungsfehlern.
+
+    Am 13.10.2026 brach der Partienabruf zweimal mit "SSL: DECRYPTION_FAILED_
+    OR_BAD_RECORD_MAC" ab - eine abgerissene Verbindung, kein Fehler im
+    Zugang (die Riot-IDs kamen im selben Lauf an). Vorher beendete ein
+    einziger solcher Abriss die ganze Partienliste. HTTP-Fehler (401, 404)
+    werden NICHT wiederholt: die sagen etwas ueber den Zugang oder die Partie."""
+    for versuch in range(1, versuche + 1):
+        try:
+            with urllib.request.urlopen(anfrage, timeout=timeout) as antwort:
+                return json.loads(antwort.read().decode("utf-8"))
+        except urllib.error.HTTPError:
+            raise
+        except (urllib.error.URLError, OSError):
+            if versuch == versuche:
+                raise
+            time.sleep(2 * versuch)
+
+
 def spiele_liste(kopf):
     """Die Partienliste holen - alle Seiten, nur die eigene Liga.
 
@@ -230,8 +252,7 @@ def spiele_liste(kopf):
                 f"{API}{SPIELE_PFAD}?seite={seite}",
                 headers={"User-Agent": "Draftboard/1.0", **kopf})
             time.sleep(PAUSE)
-            with urllib.request.urlopen(anfrage, timeout=60) as antwort:
-                block = json.loads(antwort.read().decode("utf-8"))
+            block = abrufen(anfrage, 60)
         except urllib.error.HTTPError as fehler:
             print("Das Token wird abgelehnt (401). Abgelaufen? Neu kopieren."
                   if fehler.code == 401 else f"Fehlgeschlagen: {fehler}")
@@ -275,8 +296,7 @@ def hole_spiele(nur_uebernehmen=False):
                     API + stats_pfad(e),
                     headers={"User-Agent": "Draftboard/1.0", **kopf})
                 time.sleep(PAUSE)
-                with urllib.request.urlopen(anfrage, timeout=45) as antwort:
-                    roh = json.loads(antwort.read().decode("utf-8"))
+                roh = abrufen(anfrage, 45)
                 partien.append({"liste": ohne_wappen(e), "stats": ohne_wappen(roh)})
             except urllib.error.HTTPError as fehler:
                 # 404 heisst: zu dieser Partie wurden nie Riot-Daten hinterlegt.
@@ -952,7 +972,7 @@ def liganame_von(team, verzeichnis):
                  if m.get("ligaTeamId") == nummer and nummer), None)
 
 
-def kader_abgleichen(eintragen=False, nur=None):
+def kader_abgleichen(eintragen=False, nur=None, nur_riotid=False, nur_neu=False):
     """Die Kader gegen die Vereinsansicht der Liga pruefen.
 
     Leitsatz: Eine ausdrueckliche Angabe der Liga gewinnt, eine fehlende
@@ -971,9 +991,10 @@ def kader_abgleichen(eintragen=False, nur=None):
         except ValueError:
             verzeichnis = []
 
-    gesamt = {"umbenannt": 0, "neu": 0, "rolle": 0, "bank": 0}
+    gesamt = {"umbenannt": 0, "riotid": 0, "neu": 0, "rolle": 0, "bank": 0}
     uebrig = []
     geaendert = False
+    befunde = []                       # Riot-ID-Wechsel fuer namenswechsel.json
 
     for team in roster:
         if nur and team["team"].lower() not in nur:
@@ -988,11 +1009,37 @@ def kader_abgleichen(eintragen=False, nur=None):
             if rid:
                 nach_id[rid] = spieler
         meldungen = []
+        liga_ids = {(e.get("riotId") or "").strip().lower() for e in liga.values()}
+        gewechselt = set()             # alte IDs, die einen neuen Namen haben
 
         for anzeige, eintrag in liga.items():
             rid = (eintrag.get("riotId") or "").strip().lower()
             ziel = nach_id.get(rid)
             sollrolle, soll_bank = rolle_der_liga(eintrag.get("rolle"))
+            # Riot-ID geaendert: dasselbe Liga-Konto (Anzeigename = Label),
+            # die alte ID kennt die Liga nicht mehr. Vorher stand er hier als
+            # "+ fehlend" und zugleich als "? nicht in der Liga" - doppelt.
+            if ziel is None:
+                gleich = next((s for s in team.get("players") or []
+                               if (s.get("label") or "").strip().lower() == anzeige.strip().lower()
+                               and (s.get("riotId") or "").strip().lower() not in liga_ids), None)
+                if gleich is not None:
+                    alt = gleich.get("riotId")
+                    meldungen.append(f"    ~ {anzeige}: Riot-ID {alt} -> {eintrag.get('riotId')} "
+                                     f"(Namenswechsel laut Liga)")
+                    gesamt["riotid"] += 1
+                    gewechselt.add((alt or "").strip().lower())
+                    befunde.append(nw.eintrag(team["team"], gleich.get("label"), alt,
+                                              "uebernommen" if eintragen else "liga-hinweis",
+                                              eintrag.get("riotId")))
+                    if eintragen:
+                        gleich["riotId"] = eintrag.get("riotId")
+                        geaendert = True
+                    continue
+            # --riotids: nur Namenswechsel uebernehmen; neue Spieler, Rollen
+            # und Bank bleiben Entscheidung des Nutzers (python liga.py --kader).
+            if nur_riotid:
+                continue
             if ziel is None:
                 meldungen.append(f"    + {anzeige} ({eintrag.get('riotId')})"
                                  + (f" als {sollrolle}" if sollrolle else ""))
@@ -1004,6 +1051,11 @@ def kader_abgleichen(eintragen=False, nur=None):
                         neuer["bench"] = True
                     team.setdefault("players", []).append(neuer)
                     geaendert = True
+                continue
+
+            # --neue: nur fehlende Spieler eintragen; Umbenennung, Rolle und
+            # Bank bestehender Spieler bleiben unangetastet.
+            if nur_neu:
                 continue
 
             if ziel.get("label") != anzeige:
@@ -1033,9 +1085,8 @@ def kader_abgleichen(eintragen=False, nur=None):
                         ziel.pop("bench", None)
                     geaendert = True
 
-        liga_ids = {(e.get("riotId") or "").strip().lower() for e in liga.values()}
         for rid, spieler in nach_id.items():
-            if rid not in liga_ids:
+            if rid not in liga_ids and rid not in gewechselt:
                 uebrig.append((team["team"], spieler.get("label"),
                                spieler.get("riotId")))
 
@@ -1046,7 +1097,11 @@ def kader_abgleichen(eintragen=False, nur=None):
 
     print()
     print(f"{gesamt['neu']} fehlend, {gesamt['umbenannt']} umbenannt, "
+          f"{gesamt['riotid']} Riot-ID gewechselt, "
           f"{gesamt['rolle']} Rollen, {gesamt['bank']} Bank/Start")
+    if befunde:
+        # Fuers Board: steht als Hinweis, bis ein Scrape ihn bestaetigt.
+        nw.schreiben(nw.zusammenfuehren(nw.lesen(), befunde))
     if uebrig:
         print(f"{len(uebrig)} Spieler stehen im Roster, aber nicht in der Liga "
               f"(wird NIE automatisch geloescht):")
@@ -1058,6 +1113,8 @@ def kader_abgleichen(eintragen=False, nur=None):
             print()
             print("Zum Uebernehmen:  python liga.py --kader --eintragen")
         return 0
+    if nur_riotid and not gesamt["riotid"]:
+        print("Keine Riot-ID gewechselt.")
 
     if geaendert:
         pfad.write_text(json.dumps(roster, ensure_ascii=False, indent=2)
@@ -1109,6 +1166,13 @@ def main():
     parser.add_argument("--kader", action="store_true",
                         help="die Kader gegen die Liga pruefen: fehlende "
                              "Spieler, Umbenennungen, Rollen, Bank")
+    parser.add_argument("--riotids", action="store_true",
+                        help="nur Namenswechsel uebernehmen: fuehrt die Liga ein "
+                             "Liga-Konto unter neuer Riot-ID, wird sie in teams.json "
+                             "umgestellt (laeuft bei \"Liga-Daten holen\" mit)")
+    parser.add_argument("--neue", action="store_true",
+                        help="nur Spieler eintragen, die die Liga fuehrt und teams.json "
+                             "noch nicht kennt - ohne Rollen- oder Bankaenderungen")
     parser.add_argument("--eintragen", action="store_true",
                         help="zusammen mit --mannschaften oder --kader: die "
                              "Abweichungen in teams.json schreiben")
@@ -1120,6 +1184,14 @@ def main():
     if args.kader:
         nur = {t.lower() for t in args.teams} if args.teams else None
         return kader_abgleichen(eintragen=args.eintragen, nur=nur)
+
+    if args.neue:
+        nur = {t.lower() for t in args.teams} if args.teams else None
+        return kader_abgleichen(eintragen=True, nur=nur, nur_neu=True)
+
+    if args.riotids:
+        nur = {t.lower() for t in args.teams} if args.teams else None
+        return kader_abgleichen(eintragen=True, nur=nur, nur_riotid=True)
 
     if args.spiele or args.uebernehmen:
         return hole_spiele(nur_uebernehmen=args.uebernehmen)

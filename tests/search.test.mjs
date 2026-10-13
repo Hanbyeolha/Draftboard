@@ -305,3 +305,28 @@ test("P2.9: steht alles fest, zaehlt die Lane - und 'sicher' entfaellt", () => {
   assert.equal(K.find((k) => k.art === "sicher"), undefined,
                "ohne Streuung kein schlechtester Ausgang - Datenkonfidenz ist keine Sicherheit");
 });
+
+/* Draftboard 2.0, Phase 3: "Gegner waehlt wahrscheinlich" soll die Pools
+   gescouteter Gegner kennen. Optional - der Lookahead rechnet ohne. */
+test("gegnerAntworten: mit Gegnerspielern zaehlt ihr Pool, ohne bleibt alles gleich", () => {
+  const s = leererDraft({patch: quelle.patch, wirSind: "blue"});
+  s.picks.blue.push({champ: "Lee Sin", rolle: "JUNGLE"});
+  const vorrat = S.gegnerVorrat(s);
+  const ohne = S.gegnerAntworten(s, vorrat);
+  assert.deepEqual(S.gegnerAntworten(s, vorrat, {spielerFuer: null}), ohne, "ohne Spieler unveraendert");
+  // Echte Spieler als "Gegner": der meistgespielte Poolchampion, der im
+  // Vorrat liegt (ueber alle offenen Rollen).
+  const imVorrat = vorrat
+    .map((k) => {
+      const sp = team.aufRolle("AFC1", k.rolle);
+      return {...k, sp, kf: sp ? team.komfort("AFC1", sp.label, k.champ) : null};
+    })
+    .filter((k) => k.kf && k.kf.sampleSize >= 3)
+    .sort((a, b) => b.kf.sampleSize - a.kf.sampleSize)[0];
+  assert.ok(imVorrat, "ein Poolchampion im Vorrat");
+  const mit = S.gegnerAntworten(s, vorrat, {beite: 40,
+    spielerFuer: (r) => { const sp = team.aufRolle("AFC1", r); return sp ? {team: "AFC1", label: sp.label} : null; }});
+  const breit = S.gegnerAntworten(s, vorrat, {beite: 40});
+  const p = (liste) => (liste.find((x) => x.champ === imVorrat.champ) || {p: 0}).p;
+  assert.ok(p(mit) > p(breit), imVorrat.champ + ": " + p(breit) + " -> " + p(mit));
+});

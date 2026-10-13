@@ -126,6 +126,11 @@
         "label": "AFC Captain Hook",
         "riotId": "AFC Captain Hook#AFC",
         "role": "UTILITY"
+      },
+      {
+        "label": "Vermilion",
+        "riotId": "Vermilion#AFC",
+        "role": "MIDDLE"
       }
     ],
     "ligaTeamId": 5
@@ -345,6 +350,12 @@
         "riotId": "Rias Gremory#1337",
         "role": "BOTTOM",
         "bench": true
+      },
+      {
+        "label": "Du hast ne Lux",
+        "riotId": "Du hast ne Lux#Xayah",
+        "role": "TOP",
+        "bench": true
       }
     ],
     "ligaTeamId": 23
@@ -425,6 +436,11 @@
       {
         "label": "N0k0ri",
         "riotId": "N0k0ri#EUW",
+        "role": "UNKNOWN"
+      },
+      {
+        "label": "KINGREX",
+        "riotId": "KINGREX#ADN",
         "role": "UNKNOWN"
       }
     ],
@@ -534,6 +550,12 @@
         "riotId": "ChaosIVIaster#Chaos",
         "role": "BOTTOM",
         "bench": false
+      },
+      {
+        "label": "hefenBRO",
+        "riotId": "hefenBRO#3389",
+        "role": "TOP",
+        "bench": true
       }
     ],
     "ligaTeamId": 24

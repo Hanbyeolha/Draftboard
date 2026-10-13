@@ -60,8 +60,16 @@ def neu(browser, breite=1440):
 
 
 def live(p):
-    p.click("#tab-draft")
+    p.click("#modus-live"); p.click("#tab-draft")
     p.wait_for_timeout(700)
+    # Seit Draftboard 2.0, Phase 7 ist das Cockpit Standard - diese Tests
+    # pruefen die klassische Ansicht, also umschalten (am Handy steckt der
+    # Schalter in den eingeklappten Einstellungen).
+    if p.locator("#live-draft.cp").count():
+        if not p.evaluate("() => document.querySelector('.cp-einstellungen').open"):
+            p.click(".cp-einstellungen > summary")
+        p.click("#live-draft .cp-schalter")
+        p.wait_for_timeout(800)
 
 
 def main():
@@ -153,11 +161,69 @@ def main():
         pruefe(not p.seitenfehler, "keine Seitenfehler im Live Draft " + str(p.seitenfehler[:2]))
         ctx.close()
 
+        print("Schutz: Fearless, Gegnerbesetzung, Browserplan")
+        ctx, p = neu(b)
+        live(p)
+        # Fearless: ein gemerktes Spiel sperrt seine Picks.
+        p.evaluate(SETZE, ["eigen", "picks", 2, "Ahri"])
+        p.wait_for_timeout(300)
+        p.click("#live-draft .ld-merken")
+        p.wait_for_timeout(400)
+        haken = p.query_selector("#live-draft .ld-schalter input")
+        if haken and not haken.is_checked():
+            haken.click()
+            p.wait_for_timeout(300)
+        p.evaluate(SETZE, ["eigen", "picks", 2, "Ahri"])
+        p.wait_for_timeout(300)
+        pruefe(p.evaluate(WERT, ["eigen", 2]) == "", "Fearless: gespielter Ahri nicht pickbar")
+        # Gegnerbesetzung: gescoutete Mannschaft, Wechsel auf der Jungle.
+        gegner = p.evaluate("""() => [...document.querySelectorAll('#opponent-list option')]
+          .map((o) => o.value).find((v) => v && v !== 'AFC1') || null""")
+        if gegner:
+            p.evaluate("""(n) => { const i = document.querySelector('#live-draft .ld-gegner');
+              i.value = n; i.dispatchEvent(new Event('change', {bubbles: true})); }""", gegner)
+            p.wait_for_timeout(600)
+            w = p.evaluate(WAHLEN, "gegner")
+            optionen = p.evaluate("""() => [...document.querySelectorAll('#live-draft .ld-seite.gegner'
+              + ' .ld-wer-wahl')[1].options].map((o) => o.value).filter(Boolean)""")
+            anderer = next((o for o in optionen if o != w[1]), None)
+            if anderer:
+                p.evaluate(SETZE_WAHL, ["gegner", 1, anderer])
+                p.wait_for_timeout(400)
+                pruefe(p.evaluate(WAHLEN, "gegner")[1] == anderer, "Gegnerbesetzung umstellbar (" + gegner + ")")
+                p.click("#live-draft .ld-seite.gegner .ld-besetzung-zurueck")
+                p.wait_for_timeout(400)
+                pruefe(p.evaluate(WAHLEN, "gegner") == w, "Gegnerbesetzung zurueckgesetzt")
+        else:
+            pruefe(False, "keine gescoutete Gegnermannschaft fuer den Test")
+        ctx.close()
+        # Browserplan (P2.7): ein lokal eingetragener Blindpick zaehlt im Komfort.
+        ctx, p = neu(b)
+        p.evaluate("""() => { const d = JSON.parse(document.getElementById('scout-data').textContent);
+          const t = d.teams.find((x) => x.team === 'AFC1');
+          const team = {};
+          for (const q of t.players) { const pl = q.plan || {};
+            team[q.label] = {blind: [...(pl.first || []), ...(pl.blind || [])], likes: pl.likes || [], note: ''}; }
+          const mid = t.players.find((x) => x.role === 'MIDDLE' && !x.bench);
+          team[mid.label].blind.push('Lux');
+          localStorage.setItem('league-picks-plan-v1', JSON.stringify({AFC1: team})); }""")
+        p.reload()
+        p.wait_for_timeout(2500)
+        live(p)
+        p.evaluate(FOKUS, ["eigen", 2])
+        p.wait_for_timeout(1500)
+        lux = p.evaluate("""() => { const k = [...document.querySelectorAll('#live-draft .ld-karte')]
+          .find((x) => (x.querySelector('.ld-karte-name') || {}).textContent === 'Lux');
+          const t = k && [...k.querySelectorAll('.ld-spur-teil')].find((s) => s.title.startsWith('komfort'));
+          return t ? t.title : null; }""")
+        pruefe(bool(lux) and "blind pickbar" in lux, "Browserplan zaehlt im Komfort (Lux)")
+        ctx.close()
+
         print("Solo Queue (eigener Reiter)")
         ctx, p = neu(b)
         live(p)
         pruefe(not p.query_selector("#live-draft .ld-art"), "Team-Live-Draft ohne Solo-Schalter")
-        p.click("#tab-solo")
+        p.click("#modus-live"); p.click("#tab-solo")
         p.wait_for_timeout(700)
         ich = p.evaluate("""() => [...document.querySelectorAll('#solo-draft .so-ich select')[0].options]
           .map((o) => o.value).filter(Boolean)[2]""")
@@ -186,7 +252,7 @@ def main():
 
         print("Einschaetzung")
         ctx, p = neu(b)
-        p.click("#tab-heuristik")
+        p.click("#modus-scout"); p.click("#tab-heuristik")
         p.wait_for_timeout(500)
         zeilen = p.locator(".hz-zeile:not(.hz-kopf)")
         n = zeilen.count()
@@ -218,7 +284,7 @@ def main():
         ctx, p = neu(b, 390)
         live(p)
         pruefe(not p.evaluate(UEBERLAUF), "Live Draft ohne waagerechten Ueberlauf")
-        p.click("#tab-heuristik")
+        p.click("#modus-scout"); p.click("#tab-heuristik")
         p.wait_for_timeout(400)
         pruefe(not p.evaluate(UEBERLAUF), "Einschaetzung ohne waagerechten Ueberlauf")
         pruefe(p.evaluate("() => getComputedStyle(document.querySelector('.hz-kopf')).display !== 'none'"),

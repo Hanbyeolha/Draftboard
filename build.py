@@ -21,6 +21,8 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+import namenswechsel
+
 ROOT = pathlib.Path(__file__).parent
 RAW = ROOT / "data" / "raw"
 ICON_CACHE = ROOT / "data" / "icons"
@@ -188,11 +190,29 @@ def embed_icons(icons, version):
 # Reihenfolge ist Abhaengigkeitsreihenfolge - sie steht hier und nicht im
 # Dateinamen, damit man sie lesen kann.
 ENGINE_ORDNUNG = [
-    "config.js", "provenance.js", "state.js", "heuristik.js", "data.js",
-    "features.js", "team.js", "blind.js", "comp.js", "score.js", "search.js",
-    "strategie.js", "log.js",
+    "config.js", "provenance.js", "state.js", "ablauf.js", "heuristik.js", "data.js",
+    "features.js", "team.js", "blind.js", "comp.js", "score.js", "ansicht.js",
+    "search.js", "strategie.js", "log.js", "merkliste.js", "championsuche.js", "review.js",
 ]
 ENGINE_DIR = ROOT / "engine"
+
+# Die Oberflaeche liegt in Teilen unter ui/ (Draftboard 2.0, Phase 1). In
+# template.html steht an ihrer Stelle eine Zeile "  //@ui <pfad>"; hier wird
+# die Datei genau dort eingesetzt - im selben Skript, im selben
+# Gueltigkeitsbereich wie vorher. Keine Bündelung wie bei der Engine:
+# die Teile teilen sich noch Zustand und Helfer der Seite.
+UI_DIR = ROOT / "ui"
+UI_RE = re.compile(r"^[ \t]*//@ui ([\w./-]+)[ \t]*\n", re.M)
+
+
+def ui_einsetzen(text):
+    def ersetze(m):
+        pfad = UI_DIR / m.group(1)
+        if not pfad.exists():
+            raise SystemExit(f"Oberflaeche: {pfad} fehlt (//@ui in template.html)")
+        inhalt = pfad.read_text(encoding="utf-8")
+        return inhalt if inhalt.endswith("\n") else inhalt + "\n"
+    return UI_RE.sub(ersetze, text)
 IMPORT_RE = re.compile(r"^import\s[^;]*?;\s*$", re.M | re.S)
 EXPORT_RE = re.compile(r"^export\s+(?=(?:function|const|let|class)\s)", re.M)
 NAME_RE = re.compile(
@@ -1166,6 +1186,8 @@ def build(embed=False, pages=False, draftgap_neu=False):
         "liga": liga,
         "ligaGesamt": liga_gesamt(icons),
         "ownTeams": own_teams(teams),
+        # Erkannte Riot-ID-Wechsel (namenswechsel.py) - Hinweis im Board.
+        "namenswechsel": namenswechsel.lesen(),
     }
     if embed:
         data["iconData"] = embed_icons(icons, version)
@@ -1196,7 +1218,7 @@ def build(embed=False, pages=False, draftgap_neu=False):
     title = (teams[0]["team"] + " Draftboard") if teams else "Draftboard"
     # Die Standalone-Datei traegt den Namen, den die Mitspieler im Chat sehen.
     target = OUT.parent / (title.replace(" ", "-") + ".html") if embed else OUT
-    template = (ROOT / "template.html").read_text(encoding="utf-8")
+    template = ui_einsetzen((ROOT / "template.html").read_text(encoding="utf-8"))
     payload = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
     # Die Weitergabe-Datei traegt die Schriften selbst, die Arbeitsversion holt
     # sie wie bisher von Google.

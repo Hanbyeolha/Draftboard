@@ -132,6 +132,19 @@ export function protokollAnlegen({speicher = null, grenze = 2000,
     return null;
   }
 
+  /** Ein rueckgaengig gemachter Pick (Cockpit-Undo): der letzte Eintrag
+   *  mit diesem Schluessel und genau diesem Champion ist wieder offen. */
+  function zuruecknehmen(schluesselWert, champ) {
+    for (let i = eintraege.length - 1; i >= 0; i--) {
+      if (eintraege[i].schluessel === schluesselWert && eintraege[i].gewaehlt === champ) {
+        eintraege[i].gewaehlt = null;
+        sichern();
+        return eintraege[i];
+      }
+    }
+    return null;
+  }
+
   /** Das Ergebnis eines Drafts an alle seine Eintraege haengen. */
   function ergebnis(draft, gewonnen) {
     if (draft === null || draft === undefined) return 0;
@@ -179,11 +192,33 @@ export function protokollAnlegen({speicher = null, grenze = 2000,
   }
 
   return {
-    notiere, nachtragen, uebereinstimmung, ergebnis, auswertung,
+    notiere, nachtragen, zuruecknehmen, uebereinstimmung, ergebnis, auswertung,
     alle: () => eintraege.slice(),
     anzahl: () => eintraege.length,
     leeren: () => { eintraege = []; sichern(); },
     // Zum Herunterladen, damit die Eintraege das Geraet verlassen koennen.
     alsJson: () => JSON.stringify({fassung: FASSUNG, eintraege}, null, 1),
   };
+}
+
+/** Was hat sich zwischen zwei Staenden der Felder geaendert? Fuer das
+ *  Draft-Log des Cockpits (Draftboard 2.0, Phase 3). Felder im Format der
+ *  Oberflaeche: {bans: {eigen, gegner}, picks: {eigen, gegner}}, je Liste
+ *  ein Champion oder null. Reihenfolge: Bans vor Picks, eigen vor gegner,
+ *  dann nach Feld. Ohne Vorstand ist alles neu. */
+export function draftAenderungen(vorher, nachher) {
+  const raus = [];
+  for (const art of ["bans", "picks"]) {
+    for (const seite of ["eigen", "gegner"]) {
+      const a = (vorher && vorher[art] && vorher[art][seite]) || [];
+      const b = (nachher && nachher[art] && nachher[art][seite]) || [];
+      for (let i = 0; i < Math.max(a.length, b.length); i++) {
+        const alt = a[i] || null, champ = b[i] || null;
+        if (alt === champ) continue;
+        raus.push({typ: !alt ? "neu" : !champ ? "entfernt" : "geaendert",
+                   art, seite, index: i, champ, alt});
+      }
+    }
+  }
+  return raus;
 }

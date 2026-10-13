@@ -59,8 +59,12 @@ export function sucheAnlegen({quelle, merkmale, bewerter}) {
 
   /** Was antwortet der Gegner auf diese Lage? Verteilung, keine Gewissheit.
    *  Softmax ueber die Punkte aus SEINER Sicht. */
+  /* spielerFuer(rolle) -> {team, label} | null: die gegnerischen Spieler,
+     wenn die Mannschaft gescoutet ist - dann zaehlt ihr Komfort mit
+     (Cockpit "Gegner waehlt wahrscheinlich", Draftboard 2.0). Ohne bleibt
+     alles wie bisher; der Lookahead uebergibt nichts. */
   function gegnerAntworten(zustand, vorrat, {
-    beite = SUCHE.beiteGegner, temperatur = SUCHE.temperatur,
+    beite = SUCHE.beiteGegner, temperatur = SUCHE.temperatur, spielerFuer = null,
   } = {}) {
     const sie = gegenseite(zustand.wirSind);
     const ihreSicht = {...zustand, wirSind: sie};
@@ -68,7 +72,9 @@ export function sucheAnlegen({quelle, merkmale, bewerter}) {
     const bewertet = [];
     for (const k of vorrat) {
       if (weg.has(k.champ)) continue;
-      const r = bewerter.bewerte(ihreSicht, k.champ, k.rolle, {schnell: true});
+      const sp = spielerFuer ? spielerFuer(k.rolle) : null;
+      const r = bewerter.bewerte(ihreSicht, k.champ, k.rolle, {schnell: true,
+        spielerTeam: sp ? sp.team : null, spielerLabel: sp ? sp.label : null});
       if (r) bewertet.push({champ: k.champ, rolle: k.rolle, score: r.score});
     }
     if (!bewertet.length) return [];

@@ -26,6 +26,8 @@ import urllib.parse
 from playwright.sync_api import sync_playwright
 from playwright.sync_api import Error as PlaywrightError
 
+import namenswechsel as nw
+
 ROOT = pathlib.Path(__file__).parent
 RAW = ROOT / "data" / "raw"
 EXTRACT = ROOT / "extract.js"
@@ -109,17 +111,54 @@ class Scout:
         return result
 
 
-def scrape_player(scout, entry, team, region, do_update, warn):
-    """Alle drei Seiten eines Spielers. Gibt (player, queues, icons) zurück."""
+def scrape_player(scout, entry, team, region, do_update, warn,
+                  bisher=None, liga_kader=None, befunde=None, erledigt=None):
+    """Alle drei Seiten eines Spielers. Gibt (player, queues, icons) zurück.
+
+    Namenswechsel (namenswechsel.py): bisher ist sein Stand vom letzten
+    Lauf (mit meta.puuid), liga_kader der Kader seiner Mannschaft laut Liga.
+    Befunde landen in befunde, unauffaellige Spieler in erledigt."""
     label = entry["label"]
     base = profile_url(region, entry["riotId"])
     icons = {}
+    befunde = befunde if befunde is not None else []
+    alte_puuid = ((bisher or {}).get("meta") or {}).get("puuid")
 
     scout.open(base)
     summary = scout.summary()
     if not summary["ok"]:
-        warn.append(f"{team}/{label}: auf op.gg nicht gefunden ({entry['riotId']})")
+        # Unter dem bisherigen Namen gibt es niemanden mehr - umbenannt?
+        # Den neuen Namen kennt die Liga (Liga-Konto bleibt gleich), die
+        # PUUID bestaetigt, dass es derselbe Account ist.
+        kandidat = nw.liga_kandidat(label, entry["riotId"], liga_kader)
+        kandidat_summary = None
+        if kandidat:
+            scout.open(profile_url(region, kandidat))
+            kandidat_summary = scout.summary()
+        kandidat_puuid = (kandidat_summary or {}).get("puuid") if (kandidat_summary or {}).get("ok") else None
+        art = nw.urteil(gefunden=False, alte_puuid=alte_puuid, neue_puuid=None,
+                        kandidat=kandidat, kandidat_puuid=kandidat_puuid)
+        befund = nw.eintrag(team, label, entry["riotId"], art,
+                            kandidat if art in ("bestaetigt", "uebernommen", "liga-hinweis") else None)
+        befunde.append(befund)
+        if art not in nw.UEBERNEHMEN:
+            warn.append(nw.text(befund))
+            return None, None, icons
+        # Neuer Name uebernommen: gleich unter dem neuen weiter - sonst
+        # blieben seine Zahlen auf dem Stand vor der Umbenennung stehen.
+        print(f"      Namenswechsel ({art}): {entry['riotId']} -> {kandidat}", flush=True)
+        entry = {**entry, "riotId": kandidat}
+        base = profile_url(region, kandidat)
+        summary = kandidat_summary
+    elif nw.urteil(gefunden=True, alte_puuid=alte_puuid, neue_puuid=summary.get("puuid")):
+        # Der Name gehoert jetzt einem anderen Account: dessen Zahlen waeren
+        # falsch. Alten Stand behalten (write_team uebernimmt ihn) und melden.
+        befund = nw.eintrag(team, label, entry["riotId"], "anderer-account")
+        befunde.append(befund)
+        warn.append(nw.text(befund))
         return None, None, icons
+    elif erledigt is not None:
+        erledigt.append((team, label))
     if do_update and scout.refresh():
         summary = scout.summary()          # nach dem Update neu auslesen
 
@@ -151,6 +190,8 @@ def scrape_player(scout, entry, team, region, do_update, warn):
         "role": entry.get("role", "UNKNOWN"), "bench": bool(entry.get("bench")),
         "region": region, "opggUrl": base, "note": entry.get("note"),
         "lastUpdated": summary["lastUpdated"], "ladderRank": summary["ladderRank"],
+        # Feste Kennung des Accounts - Grundlage der Namenswechsel-Pruefung.
+        "puuid": summary.get("puuid") or alte_puuid,
     }
     player = {
         "meta": meta,
@@ -278,6 +319,57 @@ def write_team(team_name, players, queues, icons, season_names, keep_old, base=N
     return target, removed, behalten
 
 
+def liga_kader_laden():
+    """Kader und Mannschaftsverzeichnis der Liga (data/liga/), falls da -
+    Quelle des NEUEN Namens bei einem Namenswechsel. Ohne Ligadaten bleibt
+    nur die Meldung "nicht gefunden"."""
+    try:
+        import liga
+    except ImportError:
+        return {}, []
+    verzeichnis = []
+    pfad = liga.ZIEL / "mannschaften.json"
+    if pfad.exists():
+        try:
+            verzeichnis = json.loads(pfad.read_text(encoding="utf-8"))
+        except ValueError:
+            verzeichnis = []
+    return liga.riot_ids_je_mannschaft_voll(), verzeichnis
+
+
+def liga_name(team, verzeichnis):
+    try:
+        import liga
+        return liga.liganame_von(team, verzeichnis) or ""
+    except ImportError:
+        return ""
+
+
+def namenswechsel_festhalten(befunde, erledigt):
+    """Befunde nach data/namenswechsel.json (fuers Board), bestaetigte
+    Wechsel in teams.json - dort ist es sicher derselbe Account. Alles andere
+    entscheidet ein Mensch."""
+    if not befunde and not erledigt:
+        return
+    alle = nw.zusammenfuehren(nw.lesen(), befunde, erledigt)
+    nw.schreiben(alle)
+    if befunde:
+        print("\nNamenswechsel:")
+        for b in befunde:
+            print("  * " + nw.text(b))
+    pfad = ROOT / "teams.json"
+    roster = json.loads(pfad.read_text(encoding="utf-8"))
+    n = nw.uebernehmen(roster, befunde)
+    if n:
+        pfad.write_text(json.dumps(roster, ensure_ascii=False, indent=2)
+                        .replace(chr(13), "") + chr(10), encoding="utf-8")
+        print(f"  teams.json: {n} Riot-ID(s) auf den neuen Namen gesetzt.")
+    offen = [b for b in befunde if b["art"] not in nw.UEBERNEHMEN]
+    if offen:
+        print("  Offen: neuen Namen in teams.json eintragen - oder python liga.py --kader "
+              "zeigt, was die Liga fuehrt.")
+
+
 def main():
     parser = argparse.ArgumentParser(description="op.gg-Daten automatisch holen")
     parser.add_argument("teams", nargs="*", help="Teamnamen (leer = alle)")
@@ -310,6 +402,8 @@ def main():
     source = EXTRACT.read_text(encoding="utf-8")
     RAW.mkdir(parents=True, exist_ok=True)
     warn, written = [], []
+    befunde, erledigt = [], []
+    liga_kader_alle, liga_verzeichnis = liga_kader_laden()
     started = time.time()
 
     with sync_playwright() as pw:
@@ -344,7 +438,10 @@ def main():
                 print(f"[{i}/{len(roster)}] {entry['label']}", flush=True)
                 try:
                     player, per_queue, found = scrape_player(
-                        scout, entry, name, region, not args.no_update, warn)
+                        scout, entry, name, region, not args.no_update, warn,
+                        bisher=(base.get("players") or {}).get(key_for(entry["label"])) if base else None,
+                        liga_kader=liga_kader_alle.get(liga_name(team, liga_verzeichnis)) or {},
+                        befunde=befunde, erledigt=erledigt)
                 except PlaywrightError as exc:
                     warn.append(f"{name}/{entry['label']}: {type(exc).__name__} "
                                 f"{str(exc).splitlines()[0][:80]}")
@@ -371,6 +468,8 @@ def main():
                 warn.append(f"{name}: nichts geschrieben, kein Spieler erfolgreich")
 
         browser.close()
+
+    namenswechsel_festhalten(befunde, erledigt)
 
     print(f"\nFertig in {(time.time() - started) / 60:.1f} min, "
           f"{len(written)} Datei(en) geschrieben.")

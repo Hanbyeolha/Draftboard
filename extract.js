@@ -96,7 +96,17 @@ function scoutSummary() {
     ladderRank: ladder ? num(ladder[1]) : null,
     lastUpdated: updated ? updated[1].trim() : null,
     title: document.title,
+    puuid: scoutPuuid(),
   };
+}
+
+// Riots feste Kennung des Accounts - sie bleibt, wenn jemand seine Riot-ID
+// aendert (namenswechsel.py). Steht nicht im sichtbaren Text, sondern im
+// Quelltext der Seite, dort je nach Einbettung mit oder ohne Backslashes.
+function scoutPuuid() {
+  const m = document.documentElement.innerHTML
+    .match(/\\?"name\\?"\s*:\s*\\?"puuid\\?"\s*,\s*\\?"value\\?"\s*:\s*\\?"([A-Za-z0-9_-]{30,})/);
+  return m ? m[1] : null;
 }
 
 // ------------------------------------------------------------ Stil (/style)

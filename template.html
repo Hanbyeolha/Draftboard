@@ -164,6 +164,14 @@ details.umfang > summary:hover { border-color: var(--ink-faint); }
 details.umfang > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .umfang-inhalt { display: flex; align-items: center; gap: 0.4rem 0.6rem;
                  flex-wrap: wrap; padding: 0.5rem 0 0.2rem; }
+/* Queue | Season als Knopfreihen in der Umfangszeile - ohne eigene Zeile,
+   damit das Bedienwerk ueber den Daten unter 150 px bleibt. */
+.umfang-zeile { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.9rem; }
+.umfang-gruppe { display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; }
+#season-gruppe { padding-left: 0.9rem; border-left: 1px solid var(--border-strong); }
+.umfang-zeile .switch button { padding: 0.3rem 0.75rem; }
+.nur-druck { display: none; }
+#players-legende { margin-top: 0.6rem; }
 /* Ein kleiner Zaehler statt zweier Warnbalken ueber den Daten. */
 /* Das Warnsignal traegt die Flaeche und der Rand - die Schrift bleibt
    lesbar statt selbst warnfarben zu sein. */
@@ -173,6 +181,9 @@ details.umfang > summary:focus-visible { outline: 2px solid var(--accent); outli
                  background: var(--warn-soft); color: var(--ink);
                  white-space: nowrap; }
 .hinweis-marke:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* Namenswechsel: eine Zeile je Spieler, das Datum leise. */
+.nw-liste { flex-basis: 100%; margin: 0.3rem 0 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 0.2rem;
+            font-size: 0.84rem; }
 .footer { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
           padding-top: 1rem; border-top: 1px solid var(--border); }
 
@@ -185,14 +196,41 @@ details.umfang > summary:focus-visible { outline: 2px solid var(--accent); outli
 .switch button[aria-pressed="true"] { background: var(--ink); color: var(--ground); border-color: var(--ink); }
 .switch button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-.tabs { display: flex; gap: 2px; background: var(--border); border: 1px solid var(--border);
-        border-radius: var(--radius); padding: 2px; align-self: flex-start; }
+/* Draftboard 2.0: oben der Modus (laut, als Segment), daneben die Reiter
+   des Modus (leise, Unterstrich). Zwei Ebenen, zwei Formen. */
+.modi { display: flex; gap: 2px; background: var(--border); border: 1px solid var(--border);
+        border-radius: var(--radius); padding: 2px; }
+.modus { appearance: none; border: 0; cursor: pointer; font: inherit;
+         font-family: Rajdhani, Archivo, ui-sans-serif, system-ui, sans-serif; font-size: 0.92rem;
+         font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+         padding: 0.36rem 0.95rem; border-radius: 2px; background: var(--surface); color: var(--ink-muted); }
+.modus[aria-pressed="true"] { background: var(--ink); color: var(--ground);
+                              box-shadow: inset 0 -3px 0 var(--accent); }
+.modus:hover:not([aria-pressed="true"]) { color: var(--ink); }
+.modus:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tabs { display: flex; gap: 0.15rem; }
+.tabs[data-modus="live"] .tab:not([data-modus="live"]),
+.tabs[data-modus="scout"] .tab:not([data-modus="scout"]),
+.tabs[data-modus="review"] .tab:not([data-modus="review"]) { display: none; }
 .tab { appearance: none; border: 0; cursor: pointer; font: inherit; font-size: 0.84rem; font-weight: 600;
-       padding: 0.45rem 1.1rem; border-radius: 2px; background: var(--surface); color: var(--ink-muted); }
+       padding: 0.45rem 0.75rem; border-radius: 2px; background: transparent; color: var(--ink-muted); }
 .tab .sub { color: inherit; font-weight: 500; }
-.tab[aria-selected="true"] { background: var(--ink); color: var(--ground);
-                             box-shadow: inset 0 -3px 0 var(--accent); }
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { color: var(--ink); box-shadow: inset 0 -2px 0 var(--accent); }
 .tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* Im LIVE-Modus filtert der Championfilter nichts - der Live Draft sucht
+   selbst. */
+body[data-modus="live"] #filter { display: none; }
+/* Tablet und schmaler Laptop: Modus, Reiter, Team und Filter sollen in
+   eine Zeile neben den Namen passen - etwas weniger Luft, gleiche Formen. */
+@media (min-width: 681px) and (max-width: 1200px) {
+  /* .bar davor: die Grundregeln stehen weiter unten und gewinnen sonst. */
+  .bar .modus { padding: 0.36rem 0.6rem; }
+  .bar .tab { padding: 0.45rem 0.5rem; }
+  .bar .control-row { flex: 1 1 0; min-width: 0; }   /* neben dem Namen, bricht in sich um */
+  .bar .team-select { min-width: 8.5rem; flex: 0 1 13rem; }
+  .bar #filter { min-width: 7rem; flex: 0 1 11rem; }
+}
 [hidden] { display: none !important; }
 
 input[type="text"], input[type="date"], select {
@@ -588,6 +626,437 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
   .so-einst-inhalt { left: 0; right: auto; }
   .so-rec.gross .so-rec-name b { font-size: 1.3rem; }
   .so-rec.gross .so-note { font-size: 2rem; }
+}
+
+/* ------------------------------------------------- LIVE-Cockpit (2.0)
+   Ein Werkzeug, keine Sammlung schwebender Karten: Flaechen mit 1px-Rand,
+   keine Schatten, schaerfere Radien als die Spielerkarten (eigene Tokens,
+   die SCOUT-Welt bleibt bei --radius). Farbe nur, wo sie etwas sagt: die
+   aktive Rolle als Flaeche (--cp-rolle, Schrift --role-ink), Seite und
+   Warnung. */
+#live-draft.cp { --radius-live: 6px; --radius-live-sm: 3px;
+                 display: flex; flex-direction: column; gap: 0.8rem; }
+.cp-klein { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--ink-muted); }
+.cp-ico { display: inline-flex; flex: none; }
+.cp-ico svg { display: block; fill: currentColor; }
+.cp-schalter[aria-pressed="true"] { border-color: var(--accent); color: var(--ink); }
+
+.cp-status { display: grid; grid-template-columns: minmax(16rem, 1fr) auto; gap: 1rem;
+             align-items: center; padding: 0.7rem 0.9rem; border: 1px solid var(--border);
+             border-radius: var(--radius-live); background: var(--surface); }
+.cp-zustand { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+.cp-titel { font-family: Rajdhani, Archivo, sans-serif; font-size: 2rem; line-height: 1.05;
+            font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; }
+.cp-unter { font-size: 0.84rem; color: var(--ink-muted); }
+.cp.our-turn .cp-status { border-color: var(--eigen);
+                          background: color-mix(in srgb, var(--eigen) 9%, var(--surface)); }
+.cp.our-turn .cp-titel { color: var(--eigen); }
+.cp.opponent-turn .cp-titel { color: var(--gegner); }
+.cp-fortschritt { display: flex; flex-direction: column; gap: 0.35rem; }
+.cp-fortschritt-zeile { display: grid; align-items: center; column-gap: 0.5rem; justify-content: start;
+                        grid-template-columns: 7rem auto auto auto auto; }
+.cp-fortschritt-zeile > .cp-klein:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cp-fortschritt-zeile.eigen > .cp-klein:first-child { color: var(--eigen); }
+.cp-fortschritt-zeile.gegner > .cp-klein:first-child { color: var(--gegner); }
+.cp-art { color: var(--ink-faint); }
+.cp-marken { display: flex; gap: 3px; }
+.cp-marke { width: 26px; height: 26px; display: grid; place-items: center;
+            border: 1px solid var(--border-strong); border-radius: var(--radius-live-sm);
+            background: var(--surface-sunk); overflow: hidden; }
+.cp-marke img { width: 100%; height: 100%; object-fit: cover; }
+.cp-marke.cp-ban img { filter: grayscale(0.85) contrast(0.9); opacity: 0.75; }
+.cp-marke.uebersprungen { border-style: dashed; background: transparent; }
+.cp-marke.aktuell { border: 2px solid var(--accent); background: var(--surface);
+                    width: auto; min-width: 26px; padding: 0 4px; }
+.cp-jetzt { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+            white-space: nowrap; }
+
+.cp-buehne { display: grid; gap: 0.9rem; align-items: start;
+             grid-template-columns: minmax(15rem, 1fr) minmax(0, 2fr) minmax(15rem, 1fr); }
+.cp-team { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.7rem;
+           border: 1px solid var(--border); border-radius: var(--radius-live);
+           background: var(--surface); }
+.cp-team.am-zug.eigen { border-color: var(--eigen); }
+.cp-team.am-zug.gegner { border-color: var(--gegner); }
+.cp-team-name { margin: 0; font-family: Rajdhani, Archivo, sans-serif; font-size: 1.05rem;
+                letter-spacing: 0.06em; text-transform: uppercase; }
+.cp-team.eigen .cp-team-name { color: var(--eigen); }
+.cp-team.gegner .cp-team-name { color: var(--gegner); }
+.cp-picks { display: flex; flex-direction: column; gap: 0.25rem; }
+.cp-slot { display: grid; grid-template-columns: 3.3rem minmax(0, 1fr); align-items: center;
+           column-gap: 0.4rem; padding: 0.2rem 0.3rem; border-radius: var(--radius-live-sm); }
+.cp-slot .champ-field { display: flex; align-items: center; gap: 0.3rem; min-width: 0; }
+.cp-slot .champ-field input { min-width: 0; width: 100%; }
+.cp-rolle { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--ink-faint); }
+.cp-wer { grid-column: 2; font-size: 0.68rem; color: var(--ink-faint);
+          overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cp-wer:empty { display: none; }
+/* Die aktive Rolle: Rollenfarbe als Flaeche, nicht als Strich. */
+.cp-slot.aktiv { background: color-mix(in srgb, var(--cp-rolle) 18%, transparent); }
+.cp-slot.aktiv .cp-rolle { justify-self: start; padding: 0.1rem 0.3rem; border-radius: 2px;
+                           background: var(--cp-rolle); color: var(--role-ink); }
+.cp-bans { display: flex; flex-direction: column; gap: 0.25rem; padding-top: 0.4rem;
+           border-top: 1px solid var(--border); }
+.cp-bans-felder { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.2rem; }
+.cp-bans-felder .champ-field { display: flex; align-items: center; gap: 0.15rem; width: 100%; min-width: 0; }
+.cp-bans-felder .preview:empty { display: none; }
+.cp-bans-felder .preview img { width: 18px; height: 18px; }
+.cp-bans-felder .champ-field input { flex: 1 1 0; width: 0; min-width: 0; font-size: 0.7rem;
+                                     padding: 0.15rem 0.25rem; }
+
+.cp-mitte { display: flex; flex-direction: column; gap: 0.7rem; min-width: 0; }
+.cp-eingabe { display: flex; flex-direction: column; gap: 0.25rem; }
+.cp-eingabe .champ-field input { font-size: 1rem; padding: 0.45rem 0.6rem; }
+.cp-hinweis { font-size: 0.74rem; color: var(--warn); }
+.cp-hinweis:empty { display: none; }
+.cp-entscheidung-kopf { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.cp-rollen { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+.cp-rollen-knopf { font: inherit; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.06em;
+                   text-transform: uppercase; cursor: pointer; padding: 0.2rem 0.55rem;
+                   border: 1px solid var(--border-strong); border-radius: var(--radius-live-sm);
+                   background: transparent; color: var(--ink-muted); }
+.cp-rollen-knopf.an { background: var(--cp-rolle); border-color: var(--cp-rolle); color: var(--role-ink); }
+
+.cp-tier1 { display: flex; flex-direction: column; gap: 0.55rem; padding: 0.85rem 0.95rem;
+            border: 1px solid var(--border-strong); border-radius: var(--radius-live);
+            background: var(--surface); }
+.cp-tier1.gemerkt { border-color: var(--accent); }
+.cp-tier1-kopf { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 0.8rem;
+                 align-items: center; }
+.cp-bild-gross { width: 56px; height: 56px; border-radius: var(--radius-live-sm); }
+.cp-tier1-name { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+.cp-tier1-name strong { font-family: Rajdhani, Archivo, sans-serif; font-size: 1.75rem; line-height: 1;
+                        letter-spacing: 0.03em; text-transform: uppercase; }
+.cp-marken-zeile { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+.cp-plan { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+           padding: 0.05rem 0.35rem; border: 1px solid var(--eigen); border-radius: 2px; color: var(--eigen); }
+.cp-score { font-family: Rajdhani, Archivo, sans-serif; font-size: 2.6rem; font-weight: 700;
+            line-height: 1; font-variant-numeric: tabular-nums; }
+.cp-score.klein { font-size: 1.25rem; }
+.cp-gruende { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.2rem; }
+.cp-gruende li { display: flex; gap: 0.4rem; align-items: baseline; font-size: 0.84rem; }
+.cp-gruende .cp-ico { color: var(--good); transform: translateY(2px); }
+.cp-risiko { margin: 0; font-size: 0.8rem; color: var(--warn); }
+.cp-werte { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.6rem;
+            padding-top: 0.45rem; border-top: 1px solid var(--border); }
+.cp-wert { display: grid; grid-template-columns: 1fr auto; row-gap: 0.2rem; align-items: baseline; }
+.cp-wert b { font-variant-numeric: tabular-nums; }
+.cp-balken { grid-column: 1 / -1; height: 4px; border-radius: 2px; background: var(--surface-sunk);
+             overflow: hidden; }
+.cp-balken > span { display: block; height: 100%; background: var(--ink-muted); }
+.cp-aktionen { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.cp-picken { font: inherit; font-size: 0.86rem; font-weight: 700; cursor: pointer;
+             padding: 0.4rem 1.1rem; border-radius: var(--radius-live-sm);
+             border: 1px solid var(--eigen); background: var(--eigen); color: var(--ground); }
+.cp-picken.klein { font-size: 0.72rem; padding: 0.2rem 0.55rem; }
+.cp-picken:hover { filter: brightness(1.08); }
+.cp-merk-knoepfe { display: inline-flex; gap: 0.25rem; }
+.cp-merk { font: inherit; font-size: 0.72rem; cursor: pointer; display: inline-flex; align-items: center;
+           gap: 0.25rem; padding: 0.2rem 0.45rem; border-radius: var(--radius-live-sm);
+           border: 1px solid var(--border-strong); background: transparent; color: var(--ink-muted); }
+.cp-merk .cp-ico-stern svg { fill: none; stroke: currentColor; stroke-width: 1.4; }
+.cp-merk.shortlisted.an { border-color: var(--accent); color: var(--ink); }
+.cp-merk.shortlisted.an .cp-ico-stern svg { fill: var(--accent); stroke: var(--accent); }
+.cp-merk.rejected.an { border-color: var(--red); color: var(--red); }
+.cp-picken:focus-visible, .cp-merk:focus-visible, .cp-rollen-knopf:focus-visible,
+.cp-tier3 summary:focus-visible, .cp-schalter:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.cp-tier2, .cp-vorschau { display: flex; flex-direction: column; gap: 0.3rem; }
+.cp-zeile { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto auto auto; gap: 0.5rem;
+            align-items: center; padding: 0.35rem 0.5rem; border-bottom: 1px solid var(--border); }
+.cp-zeile.kompakt { grid-template-columns: 24px minmax(0, 1fr) auto auto auto; padding: 0.2rem 0.4rem; }
+.cp-zeile .cp-merk-wort { display: none; }
+.cp-bild { width: 32px; height: 32px; border-radius: var(--radius-live-sm); }
+.cp-zeile.kompakt .cp-bild { width: 24px; height: 24px; }
+.cp-zeile-text { display: flex; flex-direction: column; min-width: 0; }
+.cp-zeile-text b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cp-zeile-grund { font-size: 0.74rem; color: var(--ink-muted); overflow: hidden;
+                  text-overflow: ellipsis; white-space: nowrap; }
+/* Verworfen bleibt sichtbar, tritt aber zurueck - Strich UND Blaesse,
+   nicht nur Farbe. */
+.cp-zeile.rejected { opacity: 0.55; }
+.cp-zeile.rejected b { text-decoration: line-through; }
+.cp-zeile.shortlisted b::after { content: " \2605"; color: var(--accent); }
+.cp-tier3 summary { cursor: pointer; font-size: 0.78rem; color: var(--ink-muted); padding: 0.2rem 0; }
+.cp.opponent-turn .cp-vorschau { opacity: 0.8; }
+
+.cp-shortlist { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.55rem;
+                border-top: 1px solid var(--border); }
+.cp-shortlist-kopf { display: flex; justify-content: space-between; }
+.cp-shortlist-liste { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.cp-sl { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.3rem 0.2rem 0.45rem;
+         border: 1px solid var(--border-strong); border-radius: var(--radius-live-sm); background: var(--surface); }
+.cp-sl .cp-ico-stern { color: var(--accent); }
+.cp-sl img { width: 20px; height: 20px; border-radius: 2px; }
+.cp-sl.vergeben { opacity: 0.6; }
+.cp-sl.vergeben b { text-decoration: line-through; }
+.cp-sl.gepickt { border-color: var(--eigen); }
+.cp-meldung { margin: 0; padding: 0.35rem 0.55rem; font-size: 0.8rem; font-weight: 600;
+              border: 1px solid var(--warn); border-radius: var(--radius-live-sm);
+              background: var(--warn-soft); color: var(--ink); }
+.cp-leer, .cp-verworfen { margin: 0; font-size: 0.76rem; color: var(--ink-faint); }
+.cp-leerzustand { display: flex; flex-direction: column; gap: 0.3rem; padding: 1rem;
+                  border: 1px solid var(--border); border-radius: var(--radius-live); }
+.cp-leerzustand strong { font-family: Rajdhani, Archivo, sans-serif; font-size: 1.6rem; text-transform: uppercase; }
+
+/* Phase 3: Plan bei der Rolle, "Wenn wir das picken", Gegner
+   wahrscheinlich, Draft-Log, Rueckgaengig. */
+.cp-planzeile { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.7rem; }
+.cp-plan-gruppe { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; }
+.cp-plan-chip { font: inherit; font-size: 0.78rem; font-weight: 600; display: inline-flex; align-items: center;
+                gap: 0.3rem; padding: 0.15rem 0.45rem 0.15rem 0.2rem; cursor: pointer;
+                border: 1px solid var(--eigen); border-radius: var(--radius-live-sm);
+                background: transparent; color: var(--ink); }
+.cp-plan-chip img { width: 20px; height: 20px; border-radius: 2px; }
+.cp-plan-chip.likes { border-style: dashed; }
+.cp-plan-chip.vergeben { cursor: default; opacity: 0.55; text-decoration: line-through;
+                         border-color: var(--border-strong); }
+.cp-plan-chip:focus-visible, .cp-undo-knopf:focus-visible, .cp-log summary:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px; }
+.cp-danach { display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.8rem; color: var(--ink-muted); }
+.cp-ast b { color: var(--ink); }
+.cp-wahrscheinlich, .cp-antwort { display: flex; flex-direction: column; gap: 0.3rem; }
+.cp-antwort { padding: 0.5rem 0.6rem; border: 1px solid var(--border); border-radius: var(--radius-live-sm);
+              background: var(--surface); }
+.cp-antwort-zeile { display: flex; justify-content: space-between; gap: 0.5rem; }
+.cp-log summary { cursor: pointer; font-size: 0.78rem; color: var(--ink-muted); padding: 0.2rem 0; }
+.cp-log-liste { margin: 0.3rem 0 0; padding: 0; list-style: none; display: flex; flex-direction: column;
+                gap: 0.15rem; font-size: 0.78rem; }
+.cp-log-liste li { display: grid; grid-template-columns: 4.6rem 2.6rem minmax(0, 1fr) auto; gap: 0.4rem;
+                   align-items: baseline; }
+.cp-log-zeit { font-variant-numeric: tabular-nums; color: var(--ink-faint); }
+.cp-log-entfernt b, .cp-log-geaendert b { color: var(--warn); }
+.cp-undo { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem;
+           padding: 0.45rem 0.7rem; border: 1px solid var(--border-strong); border-radius: var(--radius-live-sm);
+           background: var(--surface); font-size: 0.86rem; font-weight: 600; }
+.cp-undo-knopf { font: inherit; font-size: 0.8rem; font-weight: 700; cursor: pointer; padding: 0.2rem 0.7rem;
+                 border-radius: var(--radius-live-sm); border: 1px solid var(--accent);
+                 background: transparent; color: var(--ink); }
+
+/* Phase 4: Suche und Tastatur. Die Trefferliste liegt ueber dem Inhalt,
+   damit beim Tippen nichts springt. */
+.cp-eingabe-kopf { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.cp-suche { position: relative; }
+.cp-treffer { position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 2px); margin: 0;
+              padding: 0.2rem 0; list-style: none; max-height: 18rem; overflow-y: auto;
+              border: 1px solid var(--border-strong); border-radius: var(--radius-live-sm);
+              background: var(--surface); }
+.cp-treffer-zeile { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 0.5rem;
+                    align-items: center; padding: 0.3rem 0.55rem; cursor: pointer; font-size: 0.88rem; }
+.cp-treffer-zeile img { width: 24px; height: 24px; border-radius: 2px; }
+.cp-treffer-zeile[aria-selected="true"] { background: var(--surface-sunk); box-shadow: inset 3px 0 0 var(--accent); }
+.cp-treffer-zeile.gesperrt { cursor: not-allowed; color: var(--ink-faint); }
+.cp-treffer-zeile.gesperrt b { text-decoration: line-through; }
+.cp-treffer-zeile .cp-klein { text-align: right; }
+.cp-treffer-leer { padding: 0.4rem 0.6rem; font-size: 0.84rem; color: var(--ink-muted); }
+.cp-kbd, .cp-tasten kbd, .cp-hilfe-knopf kbd {
+  font: inherit; font-size: 0.68rem; font-weight: 700; font-variant-numeric: tabular-nums;
+  display: inline-block; min-width: 1.1rem; padding: 0 0.25rem; margin-left: 0.35rem; text-align: center;
+  border: 1px solid currentColor; border-radius: 2px; opacity: 0.8; line-height: 1.35; }
+.cp-tasten kbd { margin-left: 0; }
+.cp-hilfe-knopf { font: inherit; font-size: 0.72rem; cursor: pointer; padding: 0.1rem 0.4rem;
+                  border: 1px solid var(--border); border-radius: var(--radius-live-sm);
+                  background: transparent; color: var(--ink-muted); }
+.cp-hilfe-knopf:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cp-tasten { padding: 0.55rem 0.7rem; border: 1px solid var(--border-strong);
+             border-radius: var(--radius-live-sm); background: var(--surface); }
+.cp-tasten dl { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.25rem 0.8rem;
+                font-size: 0.82rem; align-items: baseline; }
+.cp-tasten dd { margin: 0; }
+.cp-tasten .cp-leer { margin: 0.45rem 0 0; }
+.cp-gegner-zeile { grid-template-columns: 24px minmax(0, 1fr) auto auto; }
+/* Die Suche ist kein Formularfeld: halbe Eingaben sind dort normal, nicht
+   falsch - also kein Rot (ueberschreibt .champ-field input.bad). */
+.cp-suche .champ-field input.bad { border-color: var(--border-strong); color: var(--ink); }
+/* Im Gegnerzug traegt "Eintragen" nur nach - leiser als unser Picken. */
+.cp-picken.cp-gegner-knopf { background: transparent; color: var(--ink); border-color: var(--border-strong); }
+.cp-picken.cp-gegner-knopf:focus-visible { border-color: var(--accent); }
+/* Ohne Maus und Tastatur (Handy) helfen die Ziffern nicht. */
+@media (hover: none) { .cp-kbd, .cp-hilfe-knopf { display: none; } }
+
+@media (max-width: 1100px) {
+  .cp-buehne { grid-template-columns: repeat(2, minmax(0, 1fr));
+               grid-template-areas: "mitte mitte" "eigen gegner"; }
+  .cp-mitte { grid-area: mitte; }
+  .cp-team.eigen { grid-area: eigen; }
+  .cp-team.gegner { grid-area: gegner; }
+}
+/* Bis 900 px: Fortschritt unter den Titel - nebeneinander braucht er
+   rund 750 px (bei 768 lief er vorher seitlich hinaus). Darunter passt
+   seine Zeile (rund 500 px) unveraendert; unter 640 px verdichtet ihn die
+   Handy-Regel auf eine Zeile je Seite ohne Beschriftung. */
+@media (max-width: 900px) {
+  .cp-status { grid-template-columns: minmax(0, 1fr); }
+  .cp-titel { font-size: 1.6rem; }
+}
+/* Phase 7: Team-Kopf mit "Wechsel zuruecksetzen", Spielerwahl im Slot. */
+.cp-team-kopf { display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; flex-wrap: wrap; }
+.cp-wer select { font: inherit; font-size: 0.7rem; width: 100%; padding: 0.05rem 0.25rem;
+                 color: var(--ink-muted); background: transparent; border: 1px solid transparent;
+                 border-radius: var(--radius-live-sm); }
+.cp-wer select:hover, .cp-wer select:focus-visible { border-color: var(--border-strong); color: var(--ink); }
+.cp-wer select.geaendert { color: var(--ink); border-color: var(--accent); }
+.cp-wer { overflow: visible; }
+
+/* Zustaende (ui/zustaende.js): Titel + Satz, nie nur "Keine Daten". */
+.zh { display: flex; flex-direction: column; gap: 0.3rem; padding: 0.8rem 0.95rem;
+      border: 1px dashed var(--border-strong); border-radius: var(--radius-live, 6px); background: var(--surface); }
+.zh-titel { font-family: Rajdhani, Archivo, sans-serif; font-size: 1.05rem; letter-spacing: 0.06em;
+            text-transform: uppercase; }
+.zh-text { margin: 0; font-size: 0.86rem; color: var(--ink-muted); max-width: 64ch; }
+.zh-aktionen { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.zh-fertig { border-style: solid; border-color: var(--good); }
+.zh-fertig .zh-titel { color: var(--good); }
+.zh-fehler { border-style: solid; border-color: var(--red); }
+.zh-fehler .zh-titel { color: var(--red); }
+
+/* Animation nur bei Zustandswechseln (Spezifikation 28) - und nie fuer
+   Menschen, die weniger Bewegung eingestellt haben. */
+@media (prefers-reduced-motion: no-preference) {
+  .cp-marke.neu, .cp-sl.neu, .cp-meldung.neu { animation: cp-auftauchen 220ms ease-out; }
+  .cp-status.wechsel .cp-titel { animation: cp-wechsel 260ms ease-out; }
+}
+@keyframes cp-auftauchen { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: none; } }
+@keyframes cp-wechsel { from { opacity: 0.25; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+/* ------------------------------------------------ Briefing (LIVE, Phase 7) */
+#briefing { --radius-live: 6px; --radius-live-sm: 3px; display: flex; flex-direction: column; gap: 0.9rem; }
+.bf-kopf { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 0.6rem 1rem;
+           padding-bottom: 0.7rem; border-bottom: 1px solid var(--border); }
+.bf-titel { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.6rem; }
+.bf-titel .cp-klein { flex-basis: 100%; }
+.bf-titel strong { font-family: Rajdhani, Archivo, sans-serif; font-size: 2rem; line-height: 1;
+                   letter-spacing: 0.02em; text-transform: uppercase; }
+.bf-gegner { font-size: 1.1rem !important; font-weight: 700; min-width: 12rem; }
+.bf-raster-aussen { display: grid; gap: 1rem 1.4rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.bf-teil { display: flex; flex-direction: column; gap: 0.45rem; min-width: 0; }
+.bf-teil h3 { margin: 0; font-family: Rajdhani, Archivo, sans-serif; font-size: 1.05rem; letter-spacing: 0.08em;
+              text-transform: uppercase; }
+.bf-breit { grid-column: 1 / -1; }
+.bf-quelle { margin: 0; font-size: 0.74rem; color: var(--ink-muted); }
+.bf-ableitung { font-family: Archivo, ui-sans-serif, system-ui, sans-serif; font-size: 0.6rem; font-weight: 700;
+                letter-spacing: 0.1em; padding: 0.05rem 0.35rem; border: 1px dashed var(--border-strong);
+                border-radius: 2px; color: var(--ink-muted); vertical-align: middle; }
+.bf-liste { margin: 0; padding: 0; list-style: none; counter-reset: bf; display: flex; flex-direction: column; }
+.bf-liste li { counter-increment: bf; display: grid; grid-template-columns: 1.4rem minmax(0, 1fr) auto auto;
+               gap: 0.6rem; align-items: center; padding: 0.3rem 0; border-bottom: 1px solid var(--border); }
+.bf-liste li::before { content: counter(bf) "."; font-weight: 700; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+.bf-champ { display: inline-flex; align-items: center; gap: 0.35rem; min-width: 0; }
+.bf-champ img { width: 24px; height: 24px; border-radius: 3px; }
+.bf-champ small { font-size: 0.72rem; color: var(--ink-muted); font-weight: 600; }
+.bf-neben { font-size: 0.78rem; color: var(--ink-muted); }
+.bf-zahl { font-family: Rajdhani, Archivo, sans-serif; font-size: 1.15rem; font-weight: 700;
+           font-variant-numeric: tabular-nums; }
+.bf-chips { display: flex; flex-wrap: wrap; gap: 0.3rem 0.7rem; align-items: center; min-width: 0; }
+.bf-prio { display: flex; flex-direction: column; gap: 0.3rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+.bf-raster { display: flex; flex-direction: column; }
+.bf-zeile { display: grid; grid-template-columns: 4.2rem 7rem minmax(0, 1fr); gap: 0.6rem; align-items: center;
+            padding: 0.3rem 0; border-bottom: 1px solid var(--border); }
+.bf-wer { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bf-plan-raster { display: flex; flex-direction: column; }
+.bf-plan-zeile { display: grid; grid-template-columns: 4.2rem 7rem minmax(0, 1.4fr) minmax(0, 1.4fr) minmax(0, 1fr);
+                 gap: 0.6rem; align-items: center; padding: 0.35rem 0; border-bottom: 1px solid var(--border); }
+.bf-plan.weg { opacity: 0.5; text-decoration: line-through; }
+.bf-start { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 0.9rem; padding-top: 0.4rem; }
+.bf-los { font-size: 1rem !important; padding: 0.55rem 1.4rem !important; }
+@media (max-width: 900px) {
+  .bf-raster-aussen { grid-template-columns: minmax(0, 1fr); }
+  .bf-plan-kopf { display: none; }
+  .bf-plan-zeile { grid-template-columns: 4.2rem minmax(0, 1fr); }
+  .bf-plan-zeile > :nth-child(n+3) { grid-column: 2; }
+  .bf-plan-zeile > :nth-child(3)::before { content: "blind "; }
+  .bf-plan-zeile > :nth-child(4)::before { content: "gerne "; }
+  .bf-plan-zeile > :nth-child(5)::before { content: "Modell "; }
+  .bf-plan-zeile > :nth-child(n+3)::before { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em;
+                                              text-transform: uppercase; color: var(--ink-faint); margin-right: 0.3rem; }
+  .bf-zeile { grid-template-columns: 4.2rem minmax(0, 1fr); }
+  .bf-zeile > .bf-chips { grid-column: 2; }
+  .bf-titel strong { font-size: 1.6rem; }
+}
+
+/* ----------------------------------------- Plan gegen Ist (REVIEW, Phase 7) */
+#plan-ist { display: flex; flex-direction: column; gap: 0.8rem; }
+.pi-titel { margin: 0.4rem 0 0; font-family: Rajdhani, Archivo, sans-serif; font-size: 1.05rem;
+            letter-spacing: 0.08em; text-transform: uppercase; }
+.pi-tabelle-huelle { overflow-x: auto; }
+.pi-tabelle { border-collapse: collapse; min-width: 34rem; width: 100%; font-size: 0.86rem; }
+.pi-tabelle th { font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-muted);
+                 text-align: left; padding: 0.3rem 0.5rem; border-bottom: 1px solid var(--border-strong); }
+.pi-tabelle td { padding: 0.35rem 0.5rem; border-bottom: 1px solid var(--border); }
+.pi-tabelle .num { text-align: right; font-variant-numeric: tabular-nums; }
+.pi-tabelle .dim { color: var(--ink-faint); }
+.pi-spiele { display: flex; flex-direction: column; gap: 0.6rem; }
+.pi-spiel { display: flex; flex-direction: column; gap: 0.4rem; padding: 0.6rem 0.75rem;
+            border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }
+.pi-spiel-kopf { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.8rem; }
+.pi-ergebnis { margin-left: auto; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.pi-ergebnis.sieg { color: var(--good); }
+.pi-ergebnis.niederlage { color: var(--red); }
+.pi-picks { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.5rem; }
+.pi-pick { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; padding-left: 0.5rem;
+           border-left: 3px solid var(--border); }
+.pi-status { font-size: 0.72rem; font-weight: 700; }
+/* Status mit Wort UND Strich - nie nur Farbe. */
+.pi-pick.blind { border-left-color: var(--good); }
+.pi-pick.blind .pi-status { color: var(--good); }
+.pi-pick.gerne { border-left-color: var(--blue); }
+.pi-pick.ausserhalb { border-left-color: var(--warn); border-left-style: dashed; }
+.pi-pick.ausserhalb .pi-status { color: var(--ink); }
+.pi-pick.ohnePlan .pi-status { color: var(--ink-faint); font-weight: 600; }
+@media (max-width: 760px) { .pi-picks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Phase 6: die Draft-Einstellungen. Am Bildschirm offen und ohne Kopfzeile,
+   am Handy eine Zeile mit dem Stand. */
+.cp-einstellungen > summary { cursor: pointer; list-style: none; display: flex; align-items: baseline;
+  gap: 0.5rem; padding: 0.45rem 0.65rem; font-size: 0.84rem; font-weight: 600;
+  border: 1px solid var(--border); border-radius: var(--radius-live-sm); background: var(--surface); }
+.cp-einstellungen > summary::-webkit-details-marker { display: none; }
+.cp-einstellungen > summary > span:last-child { flex: 1 1 auto; min-width: 0; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap; }
+.cp-einstellungen > summary::after { content: ""; flex: none; align-self: center; width: 0.42rem; height: 0.42rem;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg);
+  opacity: 0.6; margin: -0.2rem 0.1rem 0 0; }
+.cp-einstellungen[open] > summary::after { transform: rotate(-135deg); margin-top: 0.15rem; }
+.cp-einstellungen[open] > summary { margin-bottom: 0.55rem; }
+.cp-einstellungen > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (min-width: 681px) { .cp-einstellungen > summary { display: none; } }
+
+@media (max-width: 640px) {
+  /* Reihenfolge laut Spezifikation (Punkt 26): Aktion, Empfehlungen, unser
+     Team, Gegner, Suche. Die Mitte gibt ihre Teile dafuer an die Buehne ab
+     (display: contents) - ohne zweites Markup. Bei Ban und Gegnerzug ist
+     das Eintragen selbst die Aktion und bleibt oben. */
+  .cp-buehne { display: flex; flex-direction: column; gap: 0.8rem; }
+  .cp-mitte { display: contents; }
+  .cp-mitte > * { order: 2; }
+  .cp-mitte > .cp-eingabe { order: 1; }
+  .cp.our-turn.schritt-pick .cp-mitte > .cp-eingabe { order: 6; }
+  .cp-mitte > .cp-shortlist { order: 3; }
+  .cp-team.eigen { order: 4; }
+  .cp-team.gegner { order: 5; }
+  .cp-mitte > .cp-log { order: 7; }
+  /* Fortschritt: eine Zeile je Seite, Bans | Picks (Beschriftung fuer
+     Hilfsmittel am group-Element, sichtbar trennt ein Strich). */
+  .cp-status { padding: 0.55rem 0.7rem; gap: 0.5rem; }
+  .cp-fortschritt-zeile { grid-template-columns: 3.4rem auto auto; column-gap: 0.4rem; }
+  .cp-fortschritt-zeile > .cp-klein:first-child { grid-column: auto; }
+  .cp-art { display: none; }
+  .cp-marke { width: 22px; height: 22px; }
+  .cp-marken:last-child { padding-left: 0.4rem; border-left: 1px solid var(--border-strong); }
+  /* Teams: der Spieler steht neben dem Feld statt darunter. */
+  /* .cp-zeile doppelt: die allgemeine Handy-Regel fuer .cp-zeile steht
+     weiter unten und gewinnt sonst (siehe Fallen). */
+  .cp-zeile.cp-gegner-zeile { grid-template-columns: 24px minmax(0, 1fr) auto auto; }
+  .cp-zeile.cp-gegner-zeile .cp-picken { grid-column: auto; }
+  .cp-slot { grid-template-columns: 3.1rem minmax(0, 1fr) auto; }
+  .cp-wer { grid-column: 3; max-width: 5.5rem; }
+  .cp-werte { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cp-zeile { grid-template-columns: 28px minmax(0, 1fr) auto auto; }
+  .cp-zeile .cp-picken { grid-column: 2 / -1; justify-self: start; }
+  .cp-tier1-name strong { font-size: 1.35rem; }
+  .cp-score { font-size: 2.1rem; }
 }
 
 /* ------------------------------------------------ Reiter Einschätzung */
@@ -1247,15 +1716,10 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
 .ld-sperr-grund { margin: 0; font-size: 0.68rem; color: var(--ink-muted); }
 
 /* ------------------------------------- Mannschaftswerte ueber den Karten */
-/* Dieselben Felder wie auf der Spielerkarte, nur in einer Reihe - eine
-   zweite Formensprache fuer dieselbe Art Zahl waere eine zu viel. */
-#team-stats { margin-bottom: 0.4rem; }
+/* Dieselbe Zahlenzeile wie auf der Spielerkarte (ui/scout/zahlen.js) -
+   eine zweite Formensprache fuer dieselbe Art Zahl waere eine zu viel. */
+#team-stats { margin: 0.5rem 0 0.4rem; }
 #team-stats[hidden] { display: none; }
-.ts-zeile { gap: 0.3rem 0.4rem; }
-.ts-titel { font-family: Rajdhani, Archivo, ui-sans-serif, system-ui, sans-serif;
-            font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em;
-            text-transform: uppercase; color: var(--ink-faint);
-            margin-right: 0.15rem; }
 
 /* Rangzeile: Solo und Flex nebeneinander, die Quote traegt die Farbe. */
 .rang-zeile { display: flex; align-items: flex-start; gap: 0.4rem 0.9rem;
@@ -1282,30 +1746,46 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
 .rz-quote.schwach { color: var(--red); }
 .rz-link { flex: none; align-self: center; }
 
-/* Drei kleine Statistikfelder statt zweier Chips. */
-.kennzahlen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.4rem; }
-.kz { display: flex; flex-direction: column; gap: 0.02rem; min-width: 0;
-  padding: 0.16rem 0.5rem; border: 1px solid var(--border);
-  border-left: 3px solid var(--role, var(--accent));
-  border-radius: var(--radius-sm); background: var(--surface-sunk);
-  text-align: left; font: inherit; color: var(--ink); }
-.kz-klick { cursor: pointer; }
-.kz-klick:hover { border-color: var(--ink-faint);
-                  border-left-color: var(--role, var(--accent)); }
-.kz-klick:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.kz-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--ink-faint); }
-.kz-wert { font-family: Rajdhani, Archivo, sans-serif; font-size: 1.25rem;
-  font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
-.kz-wert small { font-family: inherit; font-size: 0.66rem;
-  font-weight: 600; color: var(--ink-muted); }
-.kz-fuss { font-size: 0.66rem; color: var(--ink-muted); min-width: 0;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Draftboard 2.0, Phase 5: Kennzahlen als Zahlenzeile (ui/scout/zahlen.js)
+   - die Zahl gross, darunter die Beschriftung, darunter die Einordnung.
+   Kein Kaestchen: nicht jede Zahl braucht einen Rahmen (Spezifikation 20/24). */
+.zahlen { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0.45rem 1.5rem; }
+.zahlen-titel { font-family: Rajdhani, Archivo, ui-sans-serif, system-ui, sans-serif;
+                font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+                color: var(--ink-faint); align-self: center; margin-right: -0.4rem; }
+.zahl { display: flex; flex-direction: column; min-width: 0; gap: 0.05rem; }
+.zahl-wert { order: -1; font-family: Rajdhani, Archivo, sans-serif; font-size: 1.35rem; font-weight: 700;
+             line-height: 1; font-variant-numeric: tabular-nums; color: var(--ink); white-space: nowrap; }
+.zahl-wert small { font-family: Archivo, ui-sans-serif, system-ui, sans-serif; font-size: 0.66rem;
+                   font-weight: 600; color: var(--ink-muted); }
+.zahl-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+              color: var(--ink-faint); }
+.zahl-fuss { font-size: 0.66rem; color: var(--ink-muted); min-width: 0;
+             overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+button.zahl { appearance: none; border: 0; background: none; padding: 0; margin: 0; cursor: pointer;
+              font: inherit; text-align: left; color: inherit; }
+button.zahl:hover .zahl-wert { text-decoration: underline; text-decoration-thickness: 2px;
+                               text-underline-offset: 3px; }
+button.zahl:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+/* Auf der Spielerkarte stehen drei Zahlen in festen Spalten - Karten
+   nebeneinander bleiben so vergleichbar. */
+.zahlen.kennzahlen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.4rem 1rem; }
+#liga-zahlen { margin: 0.2rem 0 0.4rem; }
+#liga-zahlen .zahl-wert { font-size: 1.6rem; }
+
+/* SCOUT-Filter (ui/scout/filter.js): Rolle und Spieler mit einem Klick. */
+.scout-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.75rem; margin: 0.2rem 0 0.6rem; }
+.scout-filter:empty { display: none; }
+.scout-rollen button { padding: 0.3rem 0.7rem; }
+.scout-filter input[type="search"] { font: inherit; font-size: 0.84rem; padding: 0.35rem 0.6rem; min-width: 12rem;
+  color: var(--ink); background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius); }
+.scout-filter input[type="search"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.scout-filter-zahl { font-size: 0.78rem; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+.scout-leer { margin: 0 0 0.6rem; }
 
 @container (max-width: 359px) {
-  .kennzahlen { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .kz:last-child { grid-column: 1 / -1; }
+  .zahlen.kennzahlen { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .zahlen.kennzahlen .zahl:last-child { grid-column: 1 / -1; }
   .spieler-hero { padding-left: 0.7rem; padding-right: 0.7rem; }
   /* Unten teilen sich Championname, Rang und Pool eine Zeile - dort ist das
      Emblem der entbehrlichste Teil, die Stufe steht daneben im Text. */
@@ -2300,17 +2780,33 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   /* Teamauswahl und Filter teilen sich die Zeile - beide duerfen schrumpfen. */
   .team-select { min-width: 0; flex: 1 1 55%; }
   #filter { min-width: 0; flex: 1 1 45%; margin-left: 0; }
-  /* Die Reiter wandern an den unteren Rand: dort ist der Daumen.
+  /* Die Modi wandern an den unteren Rand: dort ist der Daumen. Drei
+     statt sieben - jeder Knopf bleibt lesbar.
      Achtung: das traegt nur, solange .bar kein transform/filter bekommt. */
-  .tabs { position: fixed; inset: auto 0 0 0; z-index: 30; border-radius: 0;
+  .modi { position: fixed; inset: auto 0 0 0; z-index: 30; border-radius: 0;
           border-left: 0; border-right: 0; border-bottom: 0;
           background: var(--surface); padding: 0; }
-  .tab { flex: 1 1 0; min-width: 0; border-radius: 0; padding: 0.7rem 0.2rem;
-         font-size: 0.72rem; white-space: nowrap; }
+  .modus { flex: 1 1 0; min-width: 0; border-radius: 0; padding: 0.75rem 0.2rem; }
+  .modus[aria-pressed="true"] { box-shadow: inset 0 3px 0 var(--accent); }
+  /* Die Reiter des Modus: eigene Zeile im Kopf. Teamauswahl und Filter
+     teilen sich die erste Zeile (Basis 0, sonst bricht der Filter um). */
+  .bar { align-items: flex-start; }
+  .bar h1 { padding-top: 0.45rem; }
+  .control-row { flex-wrap: wrap; }
+  .team-select { flex: 1.25 1 0; }
+  #filter { flex: 1 1 0; }
+  .tabs { order: 9; flex: 1 1 100%; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  .tab { flex: 0 0 auto; padding: 0.35rem 0.6rem; font-size: 0.8rem; white-space: nowrap; }
   .tab .sub { display: none; }
-  .tab[aria-selected="true"] { box-shadow: inset 0 3px 0 var(--accent); }
+  .scout-filter input[type="search"] { min-width: 0; flex: 1 1 10rem; }
+  .zahlen { gap: 0.45rem 1.1rem; }
   .switch button { padding: 0.3rem 0.5rem; }
   .scope-row { gap: 0.35rem 0.6rem; }
+  /* Am Handy: Queue und Season je eine Zeile, Beschriftung gleich breit. */
+  .umfang-zeile { flex-direction: column; align-items: stretch; gap: 0.35rem; }
+  .umfang-gruppe .label { min-width: 3.8rem; }
+  #season-gruppe { padding-left: 0; border-left: 0; }
+  .umfang-zeile .switch button { padding: 0.3rem 0.55rem; }
 }
 
 /* Gedruckt wird, was gerade auf dem Schirm steht - ohne Bedienelemente und
@@ -2329,7 +2825,8 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   .bar { position: static; border: 0; padding: 0; }
   .controls, .footer, .hinweis-marke, details.umfang > summary,
   details.entry, .more, .actions,
-  #unsaved, #liga-zugang, .opgg, #tools { display: none !important; }
+  #unsaved, #liga-zugang, .opgg, #tools, .umfang-zeile, .scout-filter { display: none !important; }
+  .nur-druck { display: inline; }
   .panel, .game-card, .series, .game-note, .plan-champ, tr { break-inside: avoid; }
   .cards.columns { grid-template-columns: repeat(3, 1fr) !important; }
   .cards.columns .champ-cell > span { overflow: visible; text-overflow: clip;
@@ -2344,21 +2841,32 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     <h1 id="page-title">Draft-Scouting</h1>
     <nav class="controls" aria-label="Bereiche und Filter">
       <div class="control-row">
-      <div class="tabs" role="tablist">
-        <button class="tab" id="tab-players" role="tab" aria-selected="true"
-                aria-controls="panel-players">Spieler</button>
-        <button class="tab" id="tab-plan" role="tab" aria-selected="false"
-                aria-controls="panel-plan">Draftplan</button>
-        <button class="tab" id="tab-heuristik" role="tab" aria-selected="false"
-                aria-controls="panel-heuristik">Einschätzung</button>
-        <button class="tab" id="tab-draft" role="tab" aria-selected="false"
-                aria-controls="panel-draft">Live Draft</button>
-        <button class="tab" id="tab-solo" role="tab" aria-selected="false"
+      <!-- Draftboard 2.0: drei Modi, darunter die Reiter des Modus.
+           LIVE entscheidet, SCOUT bereitet vor, REVIEW schaut zurueck. -->
+      <div class="modi" role="group" aria-label="Modus">
+        <button class="modus" id="modus-live" type="button" data-modus="live" aria-pressed="false">Live</button>
+        <button class="modus" id="modus-scout" type="button" data-modus="scout" aria-pressed="true">Scout</button>
+        <button class="modus" id="modus-review" type="button" data-modus="review" aria-pressed="false">Review</button>
+      </div>
+      <div class="tabs" role="tablist" data-modus="scout">
+        <button class="tab" id="tab-briefing" role="tab" aria-selected="false" data-modus="live"
+                aria-controls="panel-briefing">Briefing</button>
+        <button class="tab" id="tab-draft" role="tab" aria-selected="false" data-modus="live"
+                aria-controls="panel-draft">Team-Draft</button>
+        <button class="tab" id="tab-solo" role="tab" aria-selected="false" data-modus="live"
                 aria-controls="panel-solo">Solo Queue</button>
-        <button class="tab" id="tab-liga" role="tab" aria-selected="false"
+        <button class="tab" id="tab-players" role="tab" aria-selected="true" data-modus="scout"
+                aria-controls="panel-players">Spieler</button>
+        <button class="tab" id="tab-liga" role="tab" aria-selected="false" data-modus="scout"
                 aria-controls="panel-liga">Liga</button>
-        <button class="tab" id="tab-games" role="tab" aria-selected="false"
+        <button class="tab" id="tab-plan" role="tab" aria-selected="false" data-modus="scout"
+                aria-controls="panel-plan">Draftplan</button>
+        <button class="tab" id="tab-heuristik" role="tab" aria-selected="false" data-modus="scout"
+                aria-controls="panel-heuristik">Einschätzung</button>
+        <button class="tab" id="tab-games" role="tab" aria-selected="false" data-modus="review"
                 aria-controls="panel-games">Turnierspiele <span class="sub" id="game-count"></span></button>
+        <button class="tab" id="tab-planist" role="tab" aria-selected="false" data-modus="review"
+                aria-controls="panel-planist">Plan gegen Ist</button>
       </div>
       <select id="team-select" class="team-select" aria-label="Team wählen" title="Team wählen"></select>
       <button class="hinweis-marke" type="button" id="hinweis-marke" hidden></button>
@@ -2370,28 +2878,42 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
 
 
   <main id="board">
+  <section id="panel-briefing" role="tabpanel" aria-labelledby="tab-briefing" hidden>
+    <div id="briefing"></div>
+  </section>
+
+  <section id="panel-planist" role="tabpanel" aria-labelledby="tab-planist" hidden>
+    <div id="plan-ist"></div>
+  </section>
+
   <section id="panel-players" role="tabpanel" aria-labelledby="tab-players">
+    <!-- Queue und Season immer sichtbar, ein Klick wechselt (vorher in einem
+         Aufklappfeld "Ranked · Season 2026" versteckt). -->
     <div class="scope-row">
-      <details class="umfang" id="player-controls">
-        <summary id="umfang-summary">Ranked</summary>
-        <div class="umfang-inhalt">
-          <span class="label">Queue</span>
-          <div class="switch" id="queue-switch"></div>
-          <span class="label" id="season-label">Season</span>
-          <div class="switch" id="season-switch"></div>
+      <div class="umfang-zeile">
+        <div class="umfang-gruppe">
+          <span class="label" id="queue-label">Queue</span>
+          <div class="switch" id="queue-switch" role="group" aria-labelledby="queue-label"></div>
         </div>
-      </details>
+        <div class="umfang-gruppe" id="season-gruppe">
+          <span class="label" id="season-label">Season</span>
+          <div class="switch" id="season-switch" role="group" aria-labelledby="season-label"></div>
+        </div>
+      </div>
       <p class="hint" id="players-scope"></p>
-      <p class="legende" id="players-legende"></p>
       <a id="team-opgg" class="opgg-team opgg-all" target="_blank" rel="noopener" hidden>
         Alle Profile auf op.gg öffnen</a>
     </div>
     <div id="team-stats"></div>
+    <div class="scout-filter"></div>
     <div class="cards" id="player-cards"></div>
+    <!-- Die Marken aus den Tabellenzeilen, am Fuss aufgeloest. -->
+    <p class="legende" id="players-legende"></p>
   </section>
 
   <section id="panel-plan" role="tabpanel" aria-labelledby="tab-plan" hidden>
     <p class="hint" id="plan-hint"></p>
+    <div class="scout-filter"></div>
     <div class="cards columns nach-inhalt" id="plan-cards"></div>
     <details class="entry" id="plan-entry" style="margin-top:1rem">
       <summary>Draftplan bearbeiten</summary>
@@ -2438,7 +2960,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
 
   <section id="panel-liga" role="tabpanel" aria-labelledby="tab-liga" hidden>
     <p class="hint" id="liga-stand"></p>
-    <div class="chips" id="liga-zahlen"></div>
+    <div id="liga-zahlen"></div>
     <!-- Steckbrief der oben gewaehlten Mannschaft: was sie pickt, was sie
          bannt, und was sie gegen uns tut. -->
     <div class="panel" id="steckbrief"></div>
@@ -2564,6 +3086,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
 
   <div class="unsaved" id="unsaved" hidden></div>
   <div class="unsaved" id="liga-zugang" hidden></div>
+  <div class="unsaved" id="namenswechsel" hidden></div>
 
   <footer class="footer">
     <span class="label">Darstellung</span>
@@ -2693,6 +3216,9 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   // Der Championfilter gehoert ausdruecklich NICHT dazu: ein vorgefiltertes
   // Board sieht beim Oeffnen kaputt aus.
   const VIEW_KEY = "league-picks-view-v1";
+  // Draftboard 2.0: zuletzt offener Reiter je Modus (live/scout/review).
+  // Hier oben, weil saveView schon beim ersten Zeichnen laeuft.
+  const REITER_JE_MODUS = {};
 
   function readView() {
     if (!STORAGE_OK) return {};
@@ -2704,7 +3230,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     if (!STORAGE_OK) return;
     try {
       localStorage.setItem(VIEW_KEY, JSON.stringify({
-        tab: aktiverReiter(), team: team.team, queue,
+        tab: aktiverReiter(), letzte: REITER_JE_MODUS, team: team.team, queue,
         season: season === null ? "alle" : season,
       }));
     } catch (e) { /* voll oder gesperrt - dann eben nicht */ }
@@ -3422,35 +3948,21 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     const schnitt = form ? rollenSchnitt(form.rolle) : null;
     const ligaKda = schnitt && schnitt.tode
       ? (schnitt.kills + schnitt.assists) / schnitt.tode : null;
-    const feld = (label, wert, einheit, fuss, extra) =>
-      el("div", {class: "kz" + (extra || "")},
-        el("span", {class: "kz-label"}, label),
-        el("span", {class: "kz-wert"}, String(wert),
-           einheit ? el("small", {}, " " + einheit) : null),
-        el("span", {class: "kz-fuss"}, fuss));
-    const turnierfeld = form
-      ? (() => {
-          const knopf = el("button", {class: "kz kz-klick", type: "button",
-              title: "Turnier: " + form.n + " Partien, "
-                     + pct(form.siege, form.n) + " gewonnen, KDA "
-                     + form.kda.toFixed(2)
-                     + (ligaKda ? " (Ligaschnitt " + ligaKda.toFixed(2) + ")" : "")
-                     + " — anklicken für die Partien"},
-            el("span", {class: "kz-label"}, "Turnier"),
-            el("span", {class: "kz-wert"}, pct(form.siege, form.n),
-               el("small", {}, " WR")),
-            el("span", {class: "kz-fuss"}, "KDA " + form.kda.toFixed(2)
-               + (ligaKda ? " · Liga " + ligaKda.toFixed(2) : "")));
-          knopf.addEventListener("click", () => zeigeSpielerPartien(player));
-          return knopf;
-        })()
-      : feld("Turnier", "—", null, "keine Partien");
-    return el("div", {class: "kennzahlen"},
-      feld("Spiele", played || "—", played ? "Ranked" : null,
-           rows.length ? "Top: " + rows[0].champ : "keine Daten", " hervor"),
-      feld("Winrate", pct(won, decided), null,
-           "über " + rows.length + " Champions"),
-      turnierfeld);
+    // Draftboard 2.0, Phase 5: eine Zahlenzeile statt dreier Kaestchen.
+    const turnier = form
+      ? {label: "Turnier", wert: pct(form.siege, form.n), einheit: "WR",
+         fuss: "KDA " + form.kda.toFixed(2) + (ligaKda ? " · Liga " + ligaKda.toFixed(2) : ""),
+         titel: "Turnier: " + form.n + " Partien, " + pct(form.siege, form.n) + " gewonnen, KDA "
+                + form.kda.toFixed(2) + (ligaKda ? " (Ligaschnitt " + ligaKda.toFixed(2) + ")" : "")
+                + " — anklicken für die Partien",
+         klick: () => zeigeSpielerPartien(player)}
+      : {label: "Turnier", wert: "—", fuss: "keine Partien"};
+    return zahlenZeile([
+      {label: "Spiele", wert: played || "—", einheit: played ? "Ranked" : null,
+       fuss: rows.length ? "Top: " + rows[0].champ : "keine Daten"},
+      {label: "Winrate", wert: pct(won, decided), fuss: "über " + rows.length + " Champions"},
+      turnier,
+    ], {klasse: "kennzahlen"});
   }
 
 
@@ -3750,7 +4262,8 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
           : "Keine Spiele in dieser Queue und Season.")));
 
     return el("div", {class: "panel", "data-role": player.role,
-                      "data-bench": player.bench || null},
+                      "data-bench": player.bench || null,
+                      "data-spieler": player.label + " " + (player.riotId || "")},
       kartenKopf(player, rows),
       rangZeile(player),
       kennzahlen(player, played, won, decided, rows),
@@ -3923,12 +4436,9 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       ["\u00d8 Drachen", schnitt(w.drachen, w.mitStats, 1), w.drachen + " gesamt"],
       ["\u00d8 Barone", schnitt(w.barone, w.mitStats, 1), w.barone + " gesamt"],
     ];
-    ziel.append(el("div", {class: "chips ts-zeile"},
-      el("span", {class: "ts-titel"}, "Mannschaft"),
-      felder.map(([wort, wert, fuss]) =>
-        el("span", {class: "chip", title: wort + ": " + wert
-                    + (fuss ? " (" + fuss + ")" : "")},
-          el("b", {}, wert), " " + wort))));
+    ziel.append(zahlenZeile(felder.map(([wort, wert, fuss]) => ({
+      label: wort, wert, titel: wort + ": " + wert + (fuss ? " (" + fuss + ")" : "")})),
+      {klasse: "ts-zeile", titel: "Mannschaft"}));
   }
 
   function renderPlayers() {
@@ -3939,12 +4449,14 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     host.textContent = "";
     const turnier = tournamentIndex();
     for (const player of team.players) host.append(playerCard(player, turnier));
+    scoutFilterAnwenden();
     document.getElementById("page-title").textContent = team.team;
     renderPlayersScope();
     renderPlan();          // haengt an derselben Queue- und Season-Auswahl
     renderHeuristik();     // Filter "unsere Pools" haengt am Team
     renderSolo();          // "ich" kommt aus dem Kader des Teams
     renderLiveDraft();     // Pool und Draftplan des Teams stecken darin
+    renderPlanIst();       // Plan gegen Ist der gewaehlten Mannschaft (nur wenn offen)
   }
 
   // Der Spieler-Reiter sagt selbst, worueber er spricht: wie viele Spieler,
@@ -3969,7 +4481,11 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       teile.push("op.gg-Stand " + deDate(DATA.scrapedAt));
       teile.push("Patch " + VERSION);
     }
-    ziel.textContent = teile.join(" · ");
+    // Queue und Season stehen als Knoepfe daneben - im Text nur fuer den
+    // Druck, dort fehlen die Knoepfe.
+    ziel.textContent = "";
+    ziel.append(teile[0], el("span", {class: "nur-druck"}, " · " + teile[1]),
+                teile.length > 2 ? " · " + teile.slice(2).join(" · ") : "");
 
     // Das Legendenband: was die Marken in den Zeilen bedeuten.
     const legende = document.getElementById("players-legende");
@@ -4015,7 +4531,8 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     const plan = planOf(player);
     const rows = championRows(player, turnier, false);
     return el("div", {class: "panel", "data-role": player.role,
-                      "data-bench": player.bench || null},
+                      "data-bench": player.bench || null,
+                      "data-spieler": player.label + " " + (player.riotId || "")},
       el("div", {class: "card-head"},
         el("span", {class: "role-pill" + (player.bench ? " bench" : "")},
            rolePillText(player)),
@@ -4025,1695 +4542,12 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       plan.note ? el("p", {class: "note ruhig"}, plan.note) : null);
   }
 
-  // =================================================== Live Draft
-  // Gerechnet wird in engine/ - siehe engine/README.md. Diese Datei
-  // zeigt nur noch an. Vorher stand dieselbe Logik hier drin und war
-  // ausserhalb eines Browsers nicht pruefbar; jetzt laeuft sie unter
-  // Node mit ueber hundert Tests und wird beim Bauen eingefuegt.
-  const ENGINE = typeof DraftEngine === "undefined" ? null : DraftEngine;
-
-  const liveTeile = (() => {
-    if (!ENGINE || !DATA.draft) return null;
-    const quelle = ENGINE.quelleAnlegen(DATA.draft);
-    // Mit den im Browser geprüften Einträgen (Reiter "Einschätzung").
-    const heuristik = ENGINE.heuristikAnlegen(heuristikWirksam());
-    const merkmale = ENGINE.merkmaleAnlegen(quelle, heuristik);
-    const comp = ENGINE.compAnlegen(merkmale, heuristik);
-    // Mit dem Draftplan aus dem Browser - derselbe, den die BLIND-Marke
-    // zeigt (Audit P2.7). Nach einer Planaenderung legt livePlanNeu()
-    // Mannschaft, Bewerter, Suche und Lagebild neu an.
-    const mannschaft = ENGINE.teamAnlegen(ENGINE.planEinsetzen(DATA.teams, localPlan));
-    const bewerter = ENGINE.bewerterAnlegen(
-      {quelle, merkmale, comp, team: mannschaft, heuristik});
-    const suche = ENGINE.sucheAnlegen({quelle, merkmale, bewerter});
-    const protokoll = ENGINE.protokollAnlegen({
-      speicher: (() => { try { return window.localStorage; }
-                         catch (e) { return null; } })(),
-    });
-    // Solo-Queue-Drafts getrennt - sonst verfaelschten sie die Auswertung
-    // der Mannschaft.
-    const protokollSolo = ENGINE.protokollAnlegen({
-      speicher: (() => { try { return window.localStorage; }
-                         catch (e) { return null; } })(),
-      speicherName: "draft-protokoll-solo",
-    });
-    // Das Lagebild nutzt dasselbe Blindmodell wie die Bewertung - ein
-    // Feldcache, eine Wahrheit.
-    const strategie = ENGINE.strategieAnlegen({quelle, merkmale, comp,
-      heuristik, blind: bewerter.blindModell});
-    return {quelle, heuristik, merkmale, comp, mannschaft, bewerter,
-            suche, protokoll, protokollSolo, strategie};
-  })();
-
-  const DRAFT = liveTeile ? liveTeile.quelle : null;
-
-  /* Zustand der Oberflaeche. Der Draftzustand selbst wird daraus gebaut -
-     eine Wahrheit, siehe engine/state.js. */
-  const SEITEN = [["eigen", "wir"], ["gegner", "gegner"]];
-  const leer5 = () => [null, null, null, null, null];
-  const liveStand = {
-    bans: {eigen: leer5(), gegner: leer5()},
-    picks: {eigen: leer5(), gegner: leer5()},
-  };
-  let liveAktiv = {seite: "eigen", rolle: 0};
-  let liveFearless = false;
-  /* Solo Queue (eigener Reiter): wer "ich" bin, je Mannschaft gemerkt -
-     {Mannschaft: {label, rolle}}. Ich ist ein Spieler aus dem Kader. */
-  let liveSolo = (() => {
-    try {
-      const d = JSON.parse(window.localStorage.getItem("live-solo") || "null");
-      return d && typeof d === "object" ? d : {};
-    } catch (e) { return {}; }
-  })();
-  const soloSichern = () => {
-    try { window.localStorage.setItem("live-solo", JSON.stringify(liveSolo)); }
-    catch (e) { /* dann nur fuer diese Sitzung */ }
-  };
-  const liveSoloIch = () => {
-    const e = liveSolo[team.team];
-    return e && e.label ? team.players.find((p) => p.label === e.label) || null : null;
-  };
-  const liveSoloRolle = () => {
-    const e = liveSolo[team.team];
-    if (e && Number.isInteger(e.rolle)) return e.rolle;
-    const ich = liveSoloIch();
-    const i = ich ? ROLES.findIndex(([w]) => w === ich.role) : -1;
-    return i >= 0 ? i : 0;
-  };
-
-  // Welche Seite wir im Draft haben. Bestimmt die Pickfolge (wer wann
-  // pickt), nicht die Rechnung je Champion. Pro Browser gemerkt.
-  let liveSeite = (() => {
-    try { return window.localStorage.getItem("live-seite") === "red" ? "red" : "blue"; }
-    catch (e) { return "blue"; }
-  })();
-  // Keine Vorauswahl: eine eingetragene Serie ist eine bewusste Wahl.
-  // Vorher stand hier die zuletzt gespielte, und wer ein Spiel merkte,
-  // sperrte sich ungewollt auch deren zehn Champions.
-  let liveSerie = null;
-  let liveFilter = "alle";
-  let liveSuche = "";
-  let liveGegner = "";
-  // Risikoprofil (config.js RISIKOPROFILE): sicher gewichtet den
-  // schlechtesten Ausgang mit, aggressiv den besten. Vorher fest
-  // "ausgewogen" - die Engine konnte es, die Oberflaeche nicht.
-  let liveRisiko = (() => {
-    try {
-      const r = window.localStorage.getItem("live-risiko");
-      return ["sicher", "ausgewogen", "aggressiv"].includes(r) ? r : "ausgewogen";
-    } catch (e) { return "ausgewogen"; }
-  })();
-
-  /* Jeder Draft bekommt eine Nummer. An ihr haengt im Protokoll das
-     Ergebnis - erst damit laesst sich spaeter fragen, welche
-     Empfehlungen gut waren. Neu gezaehlt wird bei "Draft leeren" und
-     "Spiel merken". */
-  let liveDraftNr = (() => {
-    try { return Number(window.localStorage.getItem("live-draft-nr")) || 1; }
-    catch (e) { return 1; }
-  })();
-  const liveErgebnisse = new Map();       // Draftnummer -> "sieg" | "niederlage"
-  function neuerDraft() {
-    liveDraftNr += 1;
-    try { window.localStorage.setItem("live-draft-nr", String(liveDraftNr)); }
-    catch (e) { /* dann zaehlt es eben nur in dieser Sitzung */ }
-  }
-
-  /* Spiele der laufenden Serie, die noch nicht in games.json stehen.
-     Je Eintrag die zehn gepickten Champions. Bleibt im Browser - das ist
-     ein Zwischenstand fuer den Abend, kein Ergebnis. */
-  let liveSerienSpiele = (() => {
-    try {
-      const roh = window.localStorage.getItem("live-serie");
-      const d = roh ? JSON.parse(roh) : null;
-      return Array.isArray(d) ? d : [];
-    } catch (e) { return []; }
-  })();
-
-  // Wer Spiele gemerkt hat, meinte Fearless - sonst waeren sie nach dem
-  // Neuladen zwar noch da, aber wirkungslos.
-  if (liveSerienSpiele.length) liveFearless = true;
-
-  function serieSichern() {
-    try {
-      window.localStorage.setItem("live-serie", JSON.stringify(liveSerienSpiele));
-    } catch (e) { /* voll oder gesperrt - dann eben nur fuer diese Sitzung */ }
-  }
-
-  /** Den aktuellen Draft als gespieltes Spiel merken und das Brett
-   *  leeren. Bans zaehlen nicht: Fearless sperrt Picks. */
-  function serieMerken() {
-    const champs = [...liveStand.picks.eigen, ...liveStand.picks.gegner]
-      .filter(Boolean);
-    if (!champs.length) return;
-    liveSerienSpiele.push(champs);
-    serieSichern();
-    neuerDraft();
-    liveStand.picks.eigen = leer5();
-    liveStand.picks.gegner = leer5();
-    liveStand.bans.eigen = leer5();
-    liveStand.bans.gegner = leer5();
-    liveFearless = true;        // wer ein Spiel merkt, meint Fearless
-    liveCache.clear();
-    renderLiveDraft();
-  }
-
-  function serieVergessen(i) {
-    liveSerienSpiele.splice(i, 1);
-    serieSichern();
-    liveCache.clear();
-    renderLiveDraft();
-  }
-
-  /** Aus den Feldern der Oberflaeche den Draftzustand bauen. */
-  function liveZustand() {
-    const z = ENGINE.ausFeldern({
-      picks: liveStand.picks, bans: liveStand.bans,
-      // Unsere Seite aus dem Kopf - vorher fest Blau (Audit P2.10).
-      wirSind: liveSeite, patch: DRAFT.patch,
-      fearless: liveFearless ? fearlessVerbraucht() : null,
-    });
-    return z;
-  }
-
-  /** Welche Champions diese Fearless-Serie schon verbraucht hat. Die
-     einzige Stelle, die auf vergangene Partien schaut - und das ist die
-     Spielregel, kein Staerkeurteil. */
-  function fearlessVerbraucht() {
-    const raus = [];
-    // Eingetragene Partien der gewaehlten Serie ...
-    if (liveSerie) {
-      for (const g of games) {
-        if (g.series !== liveSerie) continue;
-        for (const p of g.picks || []) if (p.champ) raus.push(p.champ);
-      }
-    }
-    // ... und die heute Abend gemerkten.
-    for (const spiel of liveSerienSpiele) raus.push(...spiel);
-    return [...new Set(raus)];
-  }
-
-  /** Gesperrte Champions mit Grund - fuer die Sperrleiste. */
-  function liveGesperrt() {
-    const z = liveZustand();
-    const roh = ENGINE.gesperrt(z);
-    const raus = new Map();
-    for (const [champ, v] of roh) {
-      raus.set(champ, {
-        art: v.art,
-        text: v.art === "fearless" ? "in dieser Serie schon gespielt"
-            : v.text.replace("uns", team.team)
-                    .replace("dem Gegner", liveGegnerName() || "dem Gegner"),
-      });
-    }
-    return raus;
-  }
-
-  const liveGegnerName = () => liveGegner.trim() || null;
-
-  function liveSerienGegner() {
-    for (const block of gameBlocks()) {
-      if (block.series === liveSerie) return block.games[0].opponent;
-    }
-    return null;
-  }
-
-  function liveSerien() {
-    return gameBlocks().map((b) => b.series).filter(Boolean);
-  }
-
-  /* Die im Gegnerfeld genannte Mannschaft, sofern wir sie gescoutet
-     haben. Frei getippte Namen ergeben null - dann wissen wir ueber den
-     Gegner nichts und der Komfort faellt aus. */
-  const liveGegnerTeam = () => {
-    const n = (liveGegner || "").trim();
-    return n ? TEAMS.find((t) => t.team === n) || null : null;
-  };
-
-  /* Zu welchem Slot gehoert welcher Spieler. Vorher nahm die Liste
-     immer den Starter der EIGENEN Mannschaft, auch auf einem
-     Gegnerslot - die Gegnerempfehlung war damit nach unserem Pool
-     gefaerbt. Kennen wir die gegnerische Mannschaft, gehoeren ihre
-     Spieler dorthin; kennen wir sie nicht, faellt der Komfort aus. */
-  /* Wer beim Gegner auf welcher Rolle spielt, wenn es vom Scouting
-     abweicht: {Mannschaft: {TOP: "Label" | "" (unbekannt)}}. Fehlt ein
-     Eintrag, gilt der Starter. Im Browser gemerkt - ein Wechsel haelt
-     meist die ganze Serie. */
-  let liveGegnerBesetzung = (() => {
-    try {
-      const d = JSON.parse(window.localStorage.getItem("live-gegner-besetzung") || "null");
-      return d && typeof d === "object" ? d : {};
-    } catch (e) { return {}; }
-  })();
-  function gegnerBesetzungSichern() {
-    try {
-      window.localStorage.setItem("live-gegner-besetzung",
-                                  JSON.stringify(liveGegnerBesetzung));
-    } catch (e) { /* dann eben nur fuer diese Sitzung */ }
-  }
-  /* Dasselbe fuer UNS: wer heute auf welcher Rolle spielt, wenn ein
-     Substitute einspringt. {Mannschaft: {TOP: "Label" | "" (jemand
-     ausserhalb des Kaders)}}. Vorher war unsere Seite fest der Starter -
-     Komfort, Pool und BLIND-Marke blieben bei ihm, auch wenn er nicht
-     spielte. */
-  let liveEigenBesetzung = (() => {
-    try {
-      const d = JSON.parse(window.localStorage.getItem("live-eigen-besetzung") || "null");
-      return d && typeof d === "object" ? d : {};
-    } catch (e) { return {}; }
-  })();
-  function eigenBesetzungSichern() {
-    try {
-      window.localStorage.setItem("live-eigen-besetzung",
-                                  JSON.stringify(liveEigenBesetzung));
-    } catch (e) { /* dann eben nur fuer diese Sitzung */ }
-  }
-  // Eine Mechanik fuer beide Seiten: welche Mannschaft, welcher Speicher.
-  const liveMannschaftVon = (seite) => seite === "eigen" ? team : liveGegnerTeam();
-  const liveBesetzungVon = (seite) =>
-    seite === "eigen" ? liveEigenBesetzung : liveGegnerBesetzung;
-  const liveBesetzungSichern = (seite) =>
-    seite === "eigen" ? eigenBesetzungSichern() : gegnerBesetzungSichern();
-
-  const gegnerStarter = (g, rolleName) =>
-    (g.players || []).find((p) => !p.bench && p.role === rolleName) || null;
-
-  function liveSpielerVon(seite, rolle) {
-    const g = liveMannschaftVon(seite);
-    if (!g) return null;
-    const rolleName = ROLES[rolle][0];
-    const wahl = (liveBesetzungVon(seite)[g.team] || {})[rolleName];
-    if (wahl !== undefined) {
-      // "" heisst: von Hand auf unbekannt gesetzt - kein Pool, kein Raten.
-      if (wahl === "") return null;
-      const p = (g.players || []).find((x) => x.label === wahl);
-      if (p) return p;
-    }
-    return gegnerStarter(g, rolleName);
-  }
-
-  /* Die Auswahl je Rolle: wer spielt diese Rolle? Fuer beide Seiten. */
-  function liveWahl(seite, i) {
-    const g = liveMannschaftVon(seite);
-    if (!g) return el("span", {class: "ld-wer"}, "");
-    const besetzung = liveBesetzungVon(seite);
-    const eigen = seite === "eigen";
-    const rolleName = ROLES[i][0];
-    const starter = gegnerStarter(g, rolleName);
-    const aktuell = liveSpielerVon(seite, i);
-    const geaendert = (besetzung[g.team] || {})[rolleName] !== undefined;
-    // Erst wer laut Scouting auf dieser Rolle steht, dann die uebrigen
-    // Starter, dann die Bank.
-    const rang = (p) => (!p.bench && p.role === rolleName) ? 0 : !p.bench ? 1 : 2;
-    const spieler = (g.players || []).slice()
-      .sort((a, b) => rang(a) - rang(b) || (a.label < b.label ? -1 : 1));
-    const quelle = eigen ? "Kader" : "Scouting";
-    const wahl = el("select", {
-        class: "ld-wer ld-wer-wahl" + (geaendert ? " geaendert" : ""),
-        "aria-label": (eigen ? "Unser Spieler auf " : "Gegnerischer Spieler auf ") + ROLES[i][1],
-        title: geaendert
-          ? "Von Hand gesetzt" + (starter ? " - laut " + quelle + ": " + starter.label : "")
-          : "Laut " + quelle + " - bei einem Wechsel hier umstellen"},
-      el("option", {value: ""}, eigen ? "\u2014 nicht im Kader \u2014" : "\u2014 unbekannt \u2014"),
-      spieler.map((p) => el("option", {value: p.label},
-        p.label + (p.bench ? " \u00b7 Bank"
-          : p.role !== rolleName ? " \u00b7 " + (ENGINE.ROLLEN_WORT[p.role] || p.role) : ""))));
-    wahl.value = aktuell ? aktuell.label : "";
-    wahl.addEventListener("change", () => {
-      const eintrag = besetzung[g.team] || (besetzung[g.team] = {});
-      const setze = (rn, label) => {
-        const st = gegnerStarter(g, rn);
-        // Wer wieder den Starter waehlt, ist zurueck beim Standard.
-        if (st && label === st.label) delete eintrag[rn];
-        else eintrag[rn] = label;
-      };
-      // Steht der Gewaehlte schon auf einer anderen Rolle, ist es ein
-      // Rollentausch: der bisherige Spieler dieser Rolle wandert dorthin.
-      // Sonst stuende derselbe Spieler auf zwei Rollen.
-      if (wahl.value) {
-        ROLES.forEach(([rn], j) => {
-          if (j === i) return;
-          const dort = liveSpielerVon(seite, j);
-          if (dort && dort.label === wahl.value) setze(rn, aktuell ? aktuell.label : "");
-        });
-      }
-      setze(rolleName, wahl.value);
-      if (!Object.keys(eintrag).length) delete besetzung[g.team];
-      liveBesetzungSichern(seite);
-      // Komfort und Blindszenarien haengen am Spieler - alles neu.
-      liveCache.clear();
-      liveLageCache.clear();
-      renderLiveDraft();
-    });
-    return wahl;
-  }
-  const liveSpielerAktiv = (rolle) => liveSpielerVon(liveAktiv.seite, rolle);
-
-  /* Die Spieler der ANDEREN Seite - fuer die Blindszenarien. Auf unserem
-     Slot sind das die gegnerischen (sofern gescoutet): ihre Pools machen
-     ihre Picks wahrscheinlicher. Auf einem Gegnerslot sind es unsere. */
-  function liveGegnerFuer(rolleName, seite = liveAktiv.seite) {
-    const andere = seite === "eigen" ? "gegner" : "eigen";
-    const i = ROLES.findIndex(([w]) => w === rolleName);
-    const sp = i >= 0 ? liveSpielerVon(andere, i) : null;
-    return sp ? {team: sp.team, label: sp.label} : null;
-  }
-
-  /* Die Suche gilt fuer die Liste, die man gerade ansieht - nicht ueber
-     einen Rollenwechsel hinweg. Sonst filtert "naut" (fuer Support
-     gesucht) danach die Mid-Liste auf null Treffer. */
-  function liveSucheLeeren() {
-    liveSuche = "";
-    const feld = document.querySelector("#live-draft .ld-suche");
-    if (feld) feld.value = "";
-  }
-
-  /** Einen Champion auf den aktiven Slot setzen - und, wenn es unser
-   *  Slot ist, im Protokoll nachtragen, was wirklich gepickt wurde. */
-  function livePicken(champ) {
-    // Derselbe Riegel wie beim Eintippen (Audit P2.6).
-    const grund = liveSperre(champ, "picks", liveAktiv.seite, liveAktiv.rolle);
-    if (grund) {
-      liveBanHinweis(liveAktiv.seite, champ + " kann nicht gepickt werden: " + grund);
-      return;
-    }
-    liveSucheLeeren();
-    if (liveTeile && liveAktiv.seite === "eigen") {
-      liveTeile.protokoll.nachtragen(
-        ENGINE.schluessel(liveZustand(), ROLES[liveAktiv.rolle][0]), champ);
-    }
-    liveStand.picks[liveAktiv.seite][liveAktiv.rolle] = champ;
-    renderLiveDraft();
-  }
-
-  /* --------------------------------------------------- Die Rangliste */
-  /* Gleiche Lage, gleiches Ergebnis - und beim zweiten Mal ohne Rechnen.
-     Der Schluessel kommt aus der Engine und enthaelt alles, was zaehlt. */
-  const liveCache = new Map();
-
-  /* Aus wessen Sicht wird bewertet? Auf einem Gegnerslot aus der des
-     GEGNERS. Vorher lief die Rangliste dort aus unserer Sicht: "mit"
-     hiess dann "mit unseren Picks" und "gegen" hiess "gegen ihre" - ein
-     gegnerischer Kandidat galt als gut, wenn er zu UNSEREM Team passte.
-     Derselbe Zustand, nur die Seite gewechselt; der Cacheschluessel
-     enthaelt wirSind und trennt beide Sichten. */
-  function liveSicht(seite = liveAktiv.seite) {
-    const z = liveZustand();
-    return seite === "eigen" ? z
-      : {...z, wirSind: z.wirSind === "blue" ? "red" : "blue"};
-  }
-
-  /* seite: fuer welche Seite gerechnet wird - der aktive Slot, wenn
-     nichts anderes gesagt ist. Das Lagebild fragt so den besten Pick fuer
-     UNSERE naechste Rolle ab, auch wenn gerade ein anderer Slot aktiv ist. */
-  function liveRangliste(rolle, seite = liveAktiv.seite) {
-    if (!liveTeile) return {liste: [], ms: 0, ausCache: false};
-    const z = liveSicht(seite);
-    const spieler = liveSpielerVon(seite, rolle);
-    // Der Gegner gehoert in den Schluessel: sein Pool aendert die
-    // Blindszenarien.
-    const k = ENGINE.schluessel(z, rolle + "|" + liveRisiko
-      + "|" + seite + "|" + (liveGegner || "")
-      + "|" + (spieler ? spieler.team + "/" + spieler.label : ""));
-    if (liveCache.has(k)) return {...liveCache.get(k), ausCache: true};
-
-    const t0 = performance.now();
-    const liste = liveTeile.suche.rangliste(z, ROLES[rolle][0], {
-      // spieler.team statt team.team: auf einem Gegnerslot ist das die
-      // gegnerische Mannschaft.
-      spielerTeam: spieler ? spieler.team : null,
-      spielerLabel: spieler ? spieler.label : null,
-      spielerFuer: (r) => {
-        const sp = liveSpielerVon(seite, ROLES.findIndex(([w]) => w === r));
-        return sp ? {team: sp.team, label: sp.label} : null;
-      },
-      risikoprofil: liveRisiko,
-      gegnerFuer: (r) => liveGegnerFuer(r, seite),
-    });
-    const kategorien = liveTeile.suche.kategorien(liste);
-    const ergebnis = {liste, kategorien, ms: performance.now() - t0};
-    // Der Cache darf nicht unbegrenzt wachsen; ein Draft hat zwanzig Zuege.
-    if (liveCache.size > 60) liveCache.clear();
-    liveCache.set(k, ergebnis);
-    if (liste.length && seite === "eigen") {
-      liveTeile.protokoll.notiere(z, ROLES[rolle][0], liste,
-        {risikoprofil: liveRisiko, dauerMs: Math.round(ergebnis.ms),
-         kategorien, draft: liveDraftNr});
-    }
-    return {...ergebnis, ausCache: false};
-  }
-
-  /** In welche Schublade gehoert ein Kandidat? Die Kategorien richten
-     sich nach der Erfahrung des Spielers, nicht nach der Note. */
-  function liveKategorie(r, spieler) {
-    // Aus den Daten, nicht aus dem Komforttext: Partien als Stichprobe des
-    // Komforts, Plan aus planOf (derselbe Plan wie die BLIND-Marke).
-    const k = spieler && liveTeile
-      ? liveTeile.mannschaft.komfort(spieler.team, spieler.label, r.champion) : null;
-    const partien = k && Number.isFinite(k.sampleSize) ? k.sampleSize : 0;
-    const plan = spieler ? planOf(spieler) : null;
-    const imPlan = !!plan && (plan.blind.includes(r.champion) || plan.likes.includes(r.champion));
-    return partien >= 20 ? "pool"
-         : (partien >= 3 || imPlan) ? "alternativen" : "selten";
-  }
-
-  /** Beide Aufstellungen im Ueberblick. */
-  function liveComp() {
-    if (!liveTeile) return null;
-    const z = liveZustand();
-    const unser = liveTeile.comp.profil(z.picks.blue);
-    const ihr = liveTeile.comp.profil(z.picks.red);
-    return {
-      wir: z.picks.blue, sie: z.picks.red,
-      unser, ihr,
-      quote: liveTeile.suche.compQuote(z),
-      phasen: liveTeile.comp.phasenVorteil(unser, ihr),
-    };
-  }
-
-  // ------------------------------------------------ Darstellung
-  // Das Geruest steht einmal; bei jeder Aenderung werden nur Sperrleiste
-  // und Championliste neu gezeichnet - sonst entstehen die Eingabefelder
-  // unter dem Tippenden neu und der Fokus ist weg.
-  function renderLiveDraft() {
-    const ziel = document.getElementById("live-draft");
-    if (!ziel) return;
-    ziel.textContent = "";
-    if (!DRAFT) {
-      ziel.append(el("p", {class: "hint"},
-        "Keine Draftdaten eingebettet \u2014 build.py konnte die Datens\u00e4tze "
-        + "nicht laden."));
-      return;
-    }
-    const serien = liveSerien();
-
-    /* .filter(Boolean) ist Pflicht: serienLeiste() liefert null, wenn
-       nichts gemerkt ist, und Element.append(null) haengt den TEXT "null"
-       an. el() filtert Nullwerte selbst, append tut das nicht. */
-    ziel.append(...[el("datalist", {id: "ld-ban-liste"}),
-                    liveKopf(serien), serienLeiste(), liveBoard(),
-                    el("div", {class: "ld-lage"}),
-                    el("div", {class: "ld-comp"}),
-                    el("div", {class: "ld-sperren"}),
-                    liveFilterLeiste(),
-                    el("div", {class: "ld-liste"}),
-                    el("div", {class: "ld-protokoll"})].filter(Boolean));
-    liveAktualisieren();
-  }
-
-  /* Die heute Abend gemerkten Spiele. Sie stehen hier und nicht nur in
-     der Sperrleiste, damit man sie auch wieder loswird - ein Fehlgriff
-     beim Merken soll kein Neuanfang sein. */
-  function serienLeiste() {
-    if (!liveSerienSpiele.length) return null;
-    const alles = el("button", {class: "ld-reset", type: "button"},
-                     "Serie zurücksetzen");
-    alles.addEventListener("click", () => {
-      liveSerienSpiele = [];
-      serieSichern();
-      liveCache.clear();
-      renderLiveDraft();
-    });
-    return el("div", {class: "ld-serie-leiste"},
-      el("span", {class: "ld-serie-wort"}, "Gemerkte Spiele"),
-      el("div", {class: "ld-serie-liste"}, liveSerienSpiele.map((spiel, i) => {
-        const weg = el("button", {class: "ld-serie-weg", type: "button",
-            "aria-label": "Spiel " + (i + 1) + " vergessen",
-            title: spiel.join(", ")}, "×");
-        weg.addEventListener("click", () => serieVergessen(i));
-        return el("span", {class: "ld-serie-spiel"},
-          el("b", {}, "Spiel " + (i + 1)),
-          el("span", {class: "sub"}, spiel.length + " Champions"),
-          weg);
-      })),
-      alles);
-  }
-
-  function liveKopf(serien) {
-    const haken = el("input", {type: "checkbox"});
-    haken.checked = liveFearless;
-    const wahl = el("select", {class: "ld-serie",
-        "aria-label": "Eingetragene Serie, deren Picks zusaetzlich gesperrt sind"},
-      el("option", {value: ""}, serien.length
-         ? "— nur gemerkte Spiele —" : "keine Serie erfasst"),
-      serien.map((n) => el("option", {value: n}, n)));
-    wahl.value = liveSerie || "";
-    wahl.disabled = !liveFearless;
-    // Der Gegner ist frei waehlbar - er haengt nicht an der Serie. Vorher
-    // stand dort dauerhaft der Gegner der zuletzt gespielten Serie.
-    const gegnerFeld = el("input", {type: "text", class: "ld-gegner",
-      list: "opponent-list", placeholder: "Gegner", autocomplete: "off",
-      "aria-label": "Gegnerische Mannschaft"});
-    gegnerFeld.value = liveGegner;
-    gegnerFeld.addEventListener("change", () => {
-      liveGegner = gegnerFeld.value;
-      renderLiveDraft();
-    });
-    const vorschlagen = () => {
-      if (liveGegner.trim()) return;
-      const g = liveSerienGegner();
-      if (g) { liveGegner = g; gegnerFeld.value = g; }
-    };
-    haken.addEventListener("change", () => {
-      liveFearless = haken.checked;
-      wahl.disabled = !liveFearless;
-      if (liveFearless) vorschlagen();
-      renderLiveDraft();
-    });
-    wahl.addEventListener("change", () => {
-      liveSerie = wahl.value || null;
-      vorschlagen();
-      renderLiveDraft();
-    });
-    const zurueck = el("button", {class: "ld-reset", type: "button"}, "Draft leeren");
-    zurueck.addEventListener("click", () => {
-      liveStand.bans.eigen = leer5(); liveStand.bans.gegner = leer5();
-      liveStand.picks.eigen = leer5(); liveStand.picks.gegner = leer5();
-      neuerDraft();
-      renderLiveDraft();
-    });
-    // Ein abgeschlossenes Spiel merken: die zehn Picks wandern in die
-    // Serie, das Brett wird frei fuers naechste. Nur sinnvoll, wenn auch
-    // etwas steht.
-    const merken = el("button", {class: "ld-merken", type: "button",
-        title: "Die zehn Picks dieses Spiels sperren und das Brett leeren"},
-      "Spiel merken");
-    merken.disabled = ![...liveStand.picks.eigen, ...liveStand.picks.gegner]
-      .some(Boolean);
-    merken.addEventListener("click", serieMerken);
-
-    return el("div", {class: "ld-kopf"},
-      el("span", {class: "ld-titel"}, "Live Draft"),
-      el("span", {class: "ld-paarung"},
-        el("b", {class: "eigen"}, team.team), " vs "),
-      gegnerFeld,
-      liveSeitenWahl(),
-      el("label", {class: "ld-schalter"}, haken, " Fearless"),
-      wahl, merken, zurueck,
-      liveDatenstand());
-  }
-
-  /* Seite und Zug im Kopf (Audit P2.10). Die Pickfolge kommt aus der
-     Zahl der Picks je Seite; "am Zug" nimmt an, dass in Turnierfolge
-     gepickt wurde. */
-  function liveSeitenWahl() {
-    const wahl = el("select", {class: "ld-serie ld-seitenwahl",
-        "aria-label": "Unsere Seite im Draft"},
-      el("option", {value: "blue"}, "wir: Blau"),
-      el("option", {value: "red"}, "wir: Rot"));
-    wahl.value = liveSeite;
-    wahl.addEventListener("change", () => {
-      liveSeite = wahl.value === "red" ? "red" : "blue";
-      try { window.localStorage.setItem("live-seite", liveSeite); } catch (e) { /* egal */ }
-      liveLageCache.clear();
-      renderLiveDraft();
-    });
-    const pf = ENGINE.pickfolge(liveZustand());
-    const zug = pf.naechster
-      ? el("span", {class: "sub ld-zug",
-                    title: "Aus der Zahl der Picks je Seite, Turnierfolge B R R B B R | R B B R"},
-           "am Zug: " + (pf.naechster.wir ? team.team : (liveGegnerName() || "Gegner")))
-      : null;
-    const risiko = el("select", {class: "ld-serie ld-risikowahl",
-        "aria-label": "Risikoprofil",
-        title: "Sicher: der schlechteste Ausgang zählt mehr. Aggressiv: der beste. "
-               + "Wirkt im Blindwert und im Lookahead."},
-      el("option", {value: "sicher"}, "Risiko: sicher"),
-      el("option", {value: "ausgewogen"}, "Risiko: ausgewogen"),
-      el("option", {value: "aggressiv"}, "Risiko: aggressiv"));
-    risiko.value = liveRisiko;
-    risiko.addEventListener("change", () => {
-      liveRisiko = risiko.value;
-      try { window.localStorage.setItem("live-risiko", liveRisiko); } catch (e) { /* egal */ }
-      renderLiveDraft();              // der Ranglisten-Cache hat das Profil im Schluessel
-    });
-    return el("span", {class: "ld-seite-zug"}, wahl, risiko, zug);
-  }
-
-  /* Datenstand im Kopf (Audit P2.5): Staerke aus dem Patch, Paarungen
-     aus einem Zeitfenster - beide genannt. Dazu der laufende Patch laut
-     Data Dragon, sobald er abweicht; ab der Schwelle der Engine
-     (KONFIDENZ.veraltetAbPatches) als Warnung. */
-  function liveDatenstand() {
-    const d = ENGINE.datenstand(DRAFT, DATA.patchLive || null);
-    const teile = ["St\u00e4rke Patch " + (d.patch || "?")];
-    if (d.paareTage) teile.push("Paarungen " + d.paareTage + " Tage");
-    if (d.stand) teile.push(deDate(d.stand));
-    if (d.abstand) teile.push("aktuell " + d.aktuell);
-    const titel = "St\u00e4rke, Schaden und Kurve aus Patch " + (d.patch || "?")
-      + (d.paareTage ? "; Matchups und Synergien aus den letzten "
-         + d.paareTage + " Tagen bis " + deDate(d.paareStand) : "")
-      + (d.abstand ? ". Laufender Patch laut Data Dragon: " + d.aktuell
-         + " (" + d.abstand + (d.abstand === 1 ? " Patch" : " Patches")
-         + " Abstand)" : "")
-      // Ein blosses Neubauen nimmt den alten Stand - neu geholt wird nur
-      // ausdruecklich. Beide Wege nennen, immer.
-      + (d.warnung ? ". Die Daten sind veraltet" : "")
-      + ". Aktualisieren: im Programm unter \u201eProgramm \u2192 DraftGap: Patchdaten"
-      + " neu holen\u201c, sonst python build.py --pages --draftgap.";
-    return el("span", {class: "sub ld-quelle" + (d.warnung ? " veraltet" : ""),
-                       title: titel},
-      (d.warnung ? "Veraltet: " : "") + teile.join(" \u00b7 "));
-  }
-
-  // Ein Feld im Draftboard. Tippen traegt ein, Klick macht es zum Ziel des
-  // Pick-Knopfs in der Championliste.
-  function liveFeld(seite, art, i, beschriftung) {
-    const speicher = liveStand[art][seite];
-    const feld = champField("ld-" + seite + "-" + art + "-" + i, beschriftung, () => {});
-    const eingabe = feld.querySelector("input");
-    eingabe.value = speicher[i] || "";
-    // champField zeichnet seine Vorschau nur auf input/change. Wer den Wert
-    // setzt - etwa der Picken-Knopf - muss das selbst anstossen, sonst
-    // bleibt das Feld ohne Icon.
-    eingabe.dispatchEvent(new Event("input"));
-    // Pick- und Ban-Felder schlagen dieselben freien Champions vor.
-    eingabe.setAttribute("list", "ld-ban-liste");
-    eingabe.addEventListener("change", () => {
-      const champ = normaliseChamp(eingabe.value) || null;
-      // Wer schon gepickt, gebannt oder durch Fearless gesperrt ist, kann
-      // weder gepickt noch gebannt werden - das Feld nimmt ihn nicht an
-      // und sagt warum. Vorher galt das nur fuer Bans (Audit P2.6).
-      const grund = liveSperre(champ, art, seite, i);
-      if (grund) {
-        eingabe.value = speicher[i] || "";
-        eingabe.dispatchEvent(new Event("input"));
-        liveBanHinweis(seite, champ + (art === "bans" ? " ist nicht bannbar: "
-                                       : " kann nicht gepickt werden: ") + grund);
-        return;
-      }
-      liveBanHinweis(seite, "");
-      speicher[i] = champ;
-      liveAktualisieren();
-    });
-    const aktiv = art === "picks" && liveAktiv.seite === seite && liveAktiv.rolle === i;
-    const huelle = el("div", {class: "ld-feld " + art + (aktiv ? " aktiv" : "")},
-      beschriftung ? el("span", {class: "ld-feld-wort"}, beschriftung) : null, feld);
-    if (art === "picks") {
-      eingabe.addEventListener("focus", () => {
-        if (liveAktiv.seite !== seite || liveAktiv.rolle !== i) liveSucheLeeren();
-        liveAktiv = {seite, rolle: i};
-        for (const k of document.querySelectorAll(".ld-feld.picks")) {
-          k.classList.remove("aktiv");
-        }
-        huelle.classList.add("aktiv");
-        liveAktualisieren();
-      });
-    }
-    return huelle;
-  }
-
-  function liveBesetzungZurueck(seite) {
-    const g = liveMannschaftVon(seite);
-    const besetzung = liveBesetzungVon(seite);
-    const n = g ? Object.keys(besetzung[g.team] || {}).length : 0;
-    if (!n) return null;
-    const k = el("button", {class: "ld-reset ld-besetzung-zurueck", type: "button",
-                            title: "Alle Rollen wieder auf die Starter laut "
-                                   + (seite === "eigen" ? "Kader" : "Scouting")},
-                 n + (n === 1 ? " Wechsel" : " Wechsel") + " \u00b7 zur\u00fccksetzen");
-    k.addEventListener("click", () => {
-      delete besetzung[g.team];
-      liveBesetzungSichern(seite);
-      liveCache.clear();
-      liveLageCache.clear();
-      renderLiveDraft();
-    });
-    return k;
-  }
-
-  /** Warum ein Champion in dieses Feld nicht passt - oder null. Die
-   *  Pruefung steht in der Engine (feldSperre) und gilt fuer Pick- und
-   *  Ban-Felder gleich; das eigene Feld zaehlt nicht mit. */
-  function liveSperre(champ, art, seite, i) {
-    return ENGINE.feldSperre(liveStand, champ, {
-      art, seite, i, fearless: liveFearless ? fearlessVerbraucht() : []});
-  }
-
-  /* Ein kurzer Hinweis unter den Bans der Seite, liest auch ein
-     Screenreader vor. Verschwindet nach ein paar Sekunden. */
-  let liveBanHinweisUhr = null;
-  function liveBanHinweis(seite, text) {
-    const ziel = document.querySelector("#live-draft .ld-seite." + seite + " .ld-ban-hinweis");
-    if (!ziel) return;
-    ziel.textContent = text;
-    clearTimeout(liveBanHinweisUhr);
-    liveBanHinweisUhr = setTimeout(() => { ziel.textContent = ""; }, 4500);
-  }
-
-  /* Die Vorschlagsliste der Pick- und Ban-Felder: alle Champions ohne die
-     gesperrten.
-     Nach jeder Aenderung neu, damit ein gerade gepickter Champion sofort
-     verschwindet. */
-  function liveBanListeZeichnen() {
-    const liste = document.getElementById("ld-ban-liste");
-    if (!liste) return;
-    const weg = new Set([...liveStand.picks.eigen, ...liveStand.picks.gegner,
-                         ...liveStand.bans.eigen, ...liveStand.bans.gegner,
-                         ...(liveFearless ? fearlessVerbraucht() : [])].filter(Boolean));
-    liste.textContent = "";
-    liste.append(...CHAMPIONS.filter((c) => !weg.has(c))
-      .map((c) => el("option", {value: c})));
-  }
-
-  function liveBoard() {
-    const spalte = (seite) => {
-      const name = seite === "eigen" ? team.team : (liveGegnerName() || "Gegner");
-      return el("div", {class: "ld-seite " + seite},
-        el("div", {class: "ld-seite-kopf"},
-          el("span", {class: "ld-seite-name"}, name),
-          liveBesetzungZurueck(seite),
-          el("span", {class: "ld-seite-wort"}, seite === "eigen" ? "wir" : "Gegner")),
-        el("div", {class: "ld-bans"},
-          el("span", {class: "ld-bans-wort"}, "Bans"),
-          el("div", {class: "ld-bans-felder"},
-            [0, 1, 2, 3, 4].map((i) => liveFeld(seite, "bans", i, null))),
-          el("span", {class: "ld-ban-hinweis", role: "status", "aria-live": "polite"})),
-        el("div", {class: "ld-picks"}, ROLES.map(([wert, wort], i) =>
-          el("div", {class: "ld-pickzeile"},
-            el("span", {class: "ld-rolle"}, wort),
-            liveFeld(seite, "picks", i, null),
-            // Auch bei uns waehlbar: ein Substitute bringt seinen Pool mit.
-            liveWahl(seite, i)))));
-    };
-    return el("div", {class: "ld-board"}, spalte("eigen"), spalte("gegner"));
-  }
-
-  function liveFilterLeiste() {
-    const rollen = el("div", {class: "ld-rollen", role: "tablist"},
-      ROLES.map(([, wort], i) => {
-        const k = el("button", {class: "ld-rolle-knopf" + (liveAktiv.rolle === i ? " an" : ""),
-                                type: "button"}, wort);
-        k.addEventListener("click", () => {
-          if (liveAktiv.rolle !== i) liveSucheLeeren();
-          liveAktiv = {seite: "eigen", rolle: i};
-          renderLiveDraft();
-        });
-        return k;
-      }));
-    const arten = [["alle", "Alle"], ["blind", "Blind pickbar"],
-                   ["pool", "Dein Pool"],
-                   ["alternativen", "Alternativen"], ["selten", "Selten gespielt"],
-                   ["gesperrt", "Gesperrt"]];
-    const kategorien = el("div", {class: "ld-kategorien"}, arten.map(([wert, wort]) => {
-      const k = el("button", {class: "ld-kat" + (liveFilter === wert ? " an" : ""),
-                              type: "button"}, wort);
-      k.addEventListener("click", () => { liveFilter = wert; renderLiveDraft(); });
-      return k;
-    }));
-    const suche = el("input", {type: "search", class: "ld-suche",
-      placeholder: "Champion suchen \u2026", "aria-label": "Champion suchen"});
-    suche.value = liveSuche;
-    suche.addEventListener("input", () => {
-      liveSuche = suche.value.trim().toLowerCase();
-      liveListeZeichnen();
-    });
-    return el("div", {class: "ld-filter"}, rollen, kategorien, suche);
-  }
-
-  // Nur Sperrleiste und Liste - das Board bleibt stehen.
-  function liveAktualisieren() {
-    const knoepfe = document.querySelectorAll("#live-draft .ld-rolle-knopf");
-    knoepfe.forEach((k, i) => k.classList.toggle("an", i === liveAktiv.rolle));
-    // Der Kopf wird beim Tippen nicht neu gebaut - der Merken-Knopf muss
-    // seinen Zustand trotzdem mitbekommen, sonst bleibt er ewig grau.
-    const merken = document.querySelector("#live-draft .ld-merken");
-    if (merken) {
-      merken.disabled = ![...liveStand.picks.eigen, ...liveStand.picks.gegner]
-        .some(Boolean);
-    }
-    liveBanListeZeichnen();
-    liveLageZeichnen();
-    liveCompZeichnen();
-    liveSperrleiste();
-    liveListeZeichnen();
-    liveProtokollZeichnen();
-  }
-
-  /* ---------------------------------------------------- Lagebild */
-  /* Ueber dem Draft, nicht ueber einem Kandidaten: was fehlt uns, was
-     droht, wie gewinnen wir, welche Rolle jetzt. Jede Zeile sagt, woher
-     sie kommt - gemessen oder eingeschaetzt. */
-  const liveLageCache = new Map();
-  function liveLage() {
-    if (!liveTeile) return null;
-    const z = liveZustand();
-    const k = ENGINE.schluessel(z, "lagebild|" + (liveGegner || "") + "|" + team.team);
-    if (!liveLageCache.has(k)) {
-      if (liveLageCache.size > 40) liveLageCache.clear();
-      liveLageCache.set(k, liveTeile.strategie.lagebild(z, {
-        spielerFuer: (rolleName) => {
-          const sp = liveSpielerVon("eigen", ROLES.findIndex(([w]) => w === rolleName));
-          return sp ? {team: sp.team, label: sp.label} : null;
-        },
-      }));
-    }
-    return liveLageCache.get(k);
-  }
-
-  function liveLageZeichnen() {
-    const host = document.querySelector("#live-draft .ld-lage");
-    if (!host) return;
-    host.textContent = "";
-    const L = liveLage();
-    if (!L) { host.hidden = true; return; }
-    host.hidden = false;
-
-    const herkunft = (q, vorschlag) => {
-      const gem = /draftgap/.test(q || ""), heur = /heuristik/.test(q || "");
-      const wort = gem && heur ? "gemessen + Einsch\u00e4tzung"
-        : gem ? "gemessen" : "Einsch\u00e4tzung" + (vorschlag ? ", ungepr\u00fcft" : "");
-      return el("span", {class: "ld-herkunft" + (heur ? " geschaetzt" : ""),
-                         title: gem && !heur ? "aus DraftGap-Daten berechnet"
-                           : "aus der Heuristiktabelle - keine Messung"
-                             + (vorschlag ? "; enth\u00e4lt die ungepr\u00fcfte Ersteinsch\u00e4tzung" : "")},
-        wort);
-    };
-    const vorschlagU = L.abdeckung.unser.vorschlag > 0;
-    const vorschlagI = L.abdeckung.ihr.vorschlag > 0;
-    const zeile = (wort, inhalt, nebensatz, quelle, vorschlag) =>
-      el("div", {class: "ld-lage-zeile"},
-        el("span", {class: "ld-lage-wort"}, wort),
-        el("span", {class: "ld-lage-wert"},
-          inhalt ? el("b", {}, inhalt) : el("span", {class: "ld-lage-leer"}, "\u2014"),
-          nebensatz ? el("span", {class: "ld-lage-grund"}, nebensatz) : null),
-        quelle ? herkunft(quelle, vorschlag) : el("span"));
-
-    const b = L.groessterBedarf, g = L.groessteGefahr, s = L.siegbedingung;
-    const n = L.naechsteRolle, sp = L.spaeterRolle;
-    const keinePicks = (seite) => seite.gesamt === 0 ? "ab dem ersten Pick"
-      : seite.belegt === 0 ? "f\u00fcr diese Picks keine Einsch\u00e4tzung" : null;
-
-    /* Ein Klick auf einen Bringer springt auf seine Rolle und filtert die
-       Liste auf ihn - dort steht seine Karte mit allen Gruenden. */
-    const bringerChip = (x, br) => {
-      const src = iconUrl(br.champ);
-      const rolleWort = ENGINE.ROLLEN_WORT[br.rolle] || br.rolle;
-      const wie = x.achse === "magisch" || x.achse === "physisch"
-        ? Math.round(br.stufe * 100) + " % " + (x.achse === "magisch" ? "magisch" : "physisch")
-          + " (gemessen)"
-        : br.stufe >= 1 ? "ausgepr\u00e4gt" : "teilweise";
-      const k = el("button", {class: "ld-bringer-chip" + (br.pool ? " pool" : ""),
-          type: "button",
-          title: br.champ + " \u00b7 " + rolleWort + " \u00b7 " + wie
-                 + (br.pool ? " \u00b7 im Pool von " + br.spieler : "")
-                 + " \u2014 Klick zeigt die Karte"},
-        src ? el("img", {src, alt: "", loading: "lazy"}) : null,
-        el("b", {}, br.champ),
-        el("i", {}, rolleWort),
-        br.pool ? el("em", {}, "Pool") : null);
-      k.addEventListener("click", () => {
-        liveAktiv = {seite: "eigen", rolle: ROLES.findIndex(([w]) => w === br.rolle)};
-        liveFilter = "alle";
-        liveSuche = br.champ.toLowerCase();
-        renderLiveDraft();
-      });
-      return k;
-    };
-    const bedarfBlock = (x, i) => el("div", {class: "ld-bedarf" + (i === 0 ? " erster" : "")},
-      el("div", {class: "ld-bedarf-kopf"},
-        el(i === 0 ? "b" : "span", {class: "ld-bedarf-wort"}, x.wort),
-        el("span", {class: "ld-lage-grund"}, x.grund
-          + " \u00b7 bisher: " + (x.bisher && x.bisher.length ? x.bisher.join(", ") : "niemand"))),
-      x.bringer && x.bringer.length
-        ? el("div", {class: "ld-bringer"},
-            el("span", {class: "ld-bringer-wort"}, "bringen das mit"),
-            x.bringer.map((br) => bringerChip(x, br)))
-        : el("span", {class: "ld-lage-leer"},
-             "kein verf\u00fcgbarer Champion auf unseren offenen Rollen"));
-    /* Naechste Rolle: die Lane, warum jetzt - und der beste Pick dafuer
-       mit seinem staerksten Grund. Ein Klick wechselt auf die Rolle. */
-    const naechsteZeile = () => {
-      if (!n) return zeile("N\u00e4chste Rolle", null, null, null, false);
-      const idx = ROLES.findIndex(([w]) => w === n.rolle);
-      const {liste: nl} = liveRangliste(idx, "eigen");
-      const best = nl[0] || null;
-      const src = best ? iconUrl(best.champion) : null;
-      // Steht der Lanegegner, ist der Grund gegen IHN der wichtigste -
-      // nicht der erste beste gegen irgendwen.
-      const laneGegner = (ENGINE.LANE_GEGNER[n.rolle] || [])
-        .map((r) => liveStand.picks.gegner[ROLES.findIndex(([w]) => w === r)])
-        .filter(Boolean);
-      const grund = !best ? null
-        : best.reasons.find((t) => laneGegner.some((c) => t.includes(c)))
-          || best.reasons[0] || best.risks[0] || null;
-      // Die gemessene Lane-Paarung steht immer da, auch wenn sie unauffaellig
-      // ist - bei einem Counterpick ist sie die erste Frage.
-      const lanePaare = best && best.components.lane
-        ? (best.components.lane.paare || []).filter((x) => laneGegner.includes(x.wer)) : [];
-      const laneZeile = lanePaare.length
-        ? "Lane: " + lanePaare.map((x) => "gegen " + x.wer + " " + dbQuote(x.quote)
-            + " (sonst " + dbQuote(x.erwartet) + ")").join(" · ")
-        : null;
-      const knopf = el("button", {class: "ld-naechste-pick", type: "button",
-          title: "Zur Rolle " + ROLES[idx][1] + " wechseln"},
-        el("span", {class: "ld-bringer-wort"}, "bester Pick"),
-        src ? el("img", {src, alt: "", loading: "lazy"}) : null,
-        best ? el("b", {}, best.champion) : null,
-        best ? el("span", {class: "ld-punkte"}, String(best.score)) : null,
-        el("span", {class: "ld-naechste-pfeil"}, "\u2192 " + ROLES[idx][1]));
-      knopf.addEventListener("click", () => {
-        liveSucheLeeren();
-        liveAktiv = {seite: "eigen", rolle: idx};
-        renderLiveDraft();
-      });
-      return el("div", {class: "ld-lage-zeile"},
-        el("span", {class: "ld-lage-wort"}, "N\u00e4chste Rolle"),
-        el("div", {class: "ld-lage-wert ld-naechste"},
-          el("div", {class: "ld-bedarf-kopf"},
-            el("b", {class: "ld-bedarf-wort"}, n.wort),
-            el("span", {class: "ld-lage-grund"}, n.text)),
-          best ? knopf : null,
-          laneZeile ? el("span", {class: "ld-lage-grund"}, laneZeile) : null,
-          grund ? el("span", {class: "ld-lage-grund"}, "Warum " + best.champion
-                     + ": " + grund) : null),
-        herkunft("draftgap", false));
-    };
-
-    /* Wer traegt etwas? "Amumu, Leona (\u00fcber Frontline)". */
-    const traegerText = (namen) => namen && namen.length ? namen.join(", ") : "niemand";
-    const pct = (v) => v === null || v === undefined ? "\u2014" : String(Math.round(v * 100));
-
-    /* Groesste Gefahr: bis zu drei, jede mit Traegern, unserer Antwort und
-       wer die duennste Antwort mitbringen wuerde. */
-    const gefahrBlock = (x, i) => {
-      const kopf = el("div", {class: "ld-bedarf-kopf"},
-        el(i === 0 ? "b" : "span", {class: "ld-bedarf-wort"}, x.wort),
-        x.stufe !== null && x.stufe !== undefined
-          ? el("span", {class: "ld-lage-grund"}, "St\u00e4rke " + pct(x.stufe)
-               + (x.traeger && x.traeger.length ? " \u00b7 durch " + x.traeger.join(", ") : ""))
-          : el("span", {class: "ld-lage-grund"}, x.grund || ""));
-      if (!x.antworten) return el("div", {class: "ld-bedarf" + (i === 0 ? " erster" : "")}, kopf);
-      const antwort = x.antworten.length
-        ? el("span", {class: "ld-lage-grund"}, "unsere Antwort: " + x.antworten.map((a) =>
-            a.wort + " " + pct(a.stufe) + ": " + traegerText(a.bisher)).join(" \u00b7 "))
-        : el("span", {class: "ld-lage-leer"},
-             "f\u00fcr " + x.wort + " ist keine Gegenachse hinterlegt");
-      const bringer = x.antwortBringer && x.antwortBringer.length
-        ? el("div", {class: "ld-bringer"},
-            el("span", {class: "ld-bringer-wort"},
-               ENGINE.ACHSEN_WORT[x.antwortAchse] + " bringen mit"),
-            x.antwortBringer.map((br) => bringerChip({achse: x.antwortAchse}, br)))
-        : null;
-      return el("div", {class: "ld-bedarf" + (i === 0 ? " erster" : "")}, kopf, antwort, bringer);
-    };
-    const gefahrZeile = () => L.gefahr.length
-      ? el("div", {class: "ld-lage-zeile"},
-          el("span", {class: "ld-lage-wort"}, "Gr\u00f6\u00dfte Gefahr"),
-          el("div", {class: "ld-lage-wert ld-bedarfe"}, L.gefahr.map(gefahrBlock)),
-          herkunft([...new Set(L.gefahr.map((x) => x.quelle))].join(" "), vorschlagI))
-      : zeile("Gr\u00f6\u00dfte Gefahr", null, keinePicks(L.abdeckung.ihr), null, false);
-
-    /* Siegbedingung: wer sie traegt, wie man sie spielt, Phasen, was sie
-       gefaehrdet, und die zweitbeste. */
-    const PHASE_WORT = {frueh: "fr\u00fch", mittel: "Mitte", spaet: "sp\u00e4t"};
-    const siegZeile = () => {
-      if (!s) return zeile("Siegbedingung", null, "ab zwei eigenen Picks", null, false);
-      const zeilen = [
-        el("div", {class: "ld-bedarf-kopf"},
-          el("b", {class: "ld-bedarf-wort"}, s.wort),
-          s.phase ? el("span", {class: "ld-lage-grund"}, s.phase) : null),
-        s.idee ? el("span", {class: "ld-lage-grund"}, "Spielidee: " + s.idee) : null,
-        el("span", {class: "ld-lage-grund"}, "Getragen von: " + s.achsen.map((a) =>
-          a.wort + " " + pct(a.stufe) + ": " + traegerText(a.traeger)).join(" \u00b7 ")),
-        s.phasen ? el("span", {class: "ld-lage-grund"}, "Phasen (gemessen, wir minus sie): "
-          + Object.entries(s.phasen).map(([ph, d]) => PHASE_WORT[ph] + " "
-              + (d >= 0 ? "+" : "\u2212") + Math.abs(d * 100).toFixed(1).replace(".", ",")).join(" \u00b7 ")
-          + " Punkte") : null,
-        s.gefaehrdet.length
-          ? el("span", {class: "ld-lage-grund ld-gefaehrdet"}, "Gef\u00e4hrdet durch: "
-              + s.gefaehrdet.map((x) => "ihr " + x.wort + " " + pct(x.stufe) + " von "
-                + traegerText(x.traeger) + " \u2013 gegen unseren " + x.gegen).join(" \u00b7 "))
-          : el("span", {class: "ld-lage-grund"}, "Gef\u00e4hrdet durch: nichts Ausgepr\u00e4gtes auf ihrer Seite"),
-        s.alternative ? el("span", {class: "ld-lage-grund"}, "Alternative: "
-          + s.alternative.wort + " (" + pct(s.alternative.traegt) + ")") : null,
-      ];
-      return el("div", {class: "ld-lage-zeile"},
-        el("span", {class: "ld-lage-wort"}, "Siegbedingung"),
-        el("div", {class: "ld-lage-wert ld-naechste"}, zeilen),
-        herkunft(s.quelle, vorschlagU));
-    };
-
-    const bedarfQuelle = [...new Set(L.bedarf.map((x) => x.quelle))].join(" ");
-    const bedarfZeile = L.bedarf.length
-      ? el("div", {class: "ld-lage-zeile"},
-          el("span", {class: "ld-lage-wort"}, "Unser Bedarf"),
-          el("div", {class: "ld-lage-wert ld-bedarfe"}, L.bedarf.map(bedarfBlock)),
-          herkunft(bedarfQuelle, vorschlagU))
-      : zeile("Unser Bedarf", null, keinePicks(L.abdeckung.unser), null, false);
-
-    // .filter(Boolean): in Solo faellt "Naechste Rolle" weg, und
-    // append(null) haengt sonst den TEXT "null" an.
-    host.append(...[
-      el("div", {class: "ld-lage-kopf"},
-        el("span", {class: "ld-comp-wort"}, "Lagebild"),
-        el("span", {class: "sub"}, "nach jedem Pick und Ban neu")),
-      bedarfZeile,
-      gefahrZeile(),
-      siegZeile(),
-      naechsteZeile(),
-      zeile("Vermeiden", L.vermeiden.length
-              ? L.vermeiden.map((v) => v.wort).join(" \u00b7 ") : null,
-            L.vermeiden.length ? L.vermeiden.map((v) => v.grund).join(" \u00b7 ") : null,
-            L.vermeiden.length ? L.vermeiden.map((v) => v.quelle).join(" ") : null,
-            vorschlagU)].filter(Boolean));
-  }
-
-  /* ---------------------------------------------------- Protokoll */
-  /* Was empfohlen und gepickt wurde, bleibt im Browser. Hier kommt das
-     Ergebnis dazu - und der Weg, die Eintraege herauszubekommen. */
-  function liveProtokollZeichnen() {
-    const host = document.querySelector("#live-draft .ld-protokoll");
-    if (!host || !liveTeile) return;
-    host.textContent = "";
-    const p = liveTeile.protokoll;
-    const gesetzt = liveErgebnisse.get(liveDraftNr) || null;
-    const knopf = (wort, wert) => {
-      const k = el("button", {class: "ld-ergebnis" + (gesetzt === wert ? " an" : ""),
-                              type: "button", "aria-pressed": String(gesetzt === wert)},
-                   wort);
-      k.addEventListener("click", () => {
-        p.ergebnis(liveDraftNr, wert === "sieg");
-        liveErgebnisse.set(liveDraftNr, wert);
-        liveProtokollZeichnen();
-      });
-      return k;
-    };
-    const laden = el("button", {class: "ld-reset", type: "button"},
-                     "Protokoll herunterladen");
-    laden.addEventListener("click", () => {
-      const blob = new Blob([p.alsJson()], {type: "application/json"});
-      const a = el("a", {href: URL.createObjectURL(blob),
-                         download: "draft-protokoll.json"});
-      document.body.append(a);
-      a.click();
-      setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
-    });
-    const a = p.auswertung();
-    host.append(
-      el("span", {class: "ld-comp-wort"}, "Protokoll"),
-      el("span", {class: "sub"}, p.anzahl() + " Empfehlungen \u00b7 Draft " + liveDraftNr),
-      el("span", {class: "ld-ergebnis-wort"}, "Ergebnis dieses Drafts:"),
-      knopf("Sieg", "sieg"), knopf("Niederlage", "niederlage"),
-      laden,
-      el("span", {class: "sub ld-protokoll-stand"}, a.hinweis));
-  }
-
-  function liveCompZeichnen() {
-    const host = document.querySelector("#live-draft .ld-comp");
-    if (!host) return;
-    host.textContent = "";
-    const c = liveComp();
-    if (!c || (!c.wir.length && !c.sie.length)) { host.hidden = true; return; }
-    host.hidden = false;
-
-    const balken = (profil) => {
-      if (!profil || !profil.schaden) {
-        return el("span", {class: "ld-comp-leer"}, "kein Schadensprofil");
-      }
-      const m = Math.round(profil.schaden.magisch.value * 100);
-      return el("span", {class: "ld-mix"},
-        el("span", {class: "ld-mix-balken", title: profil.schaden.magisch.note},
-          el("i", {class: "magisch", style: "width:" + m + "%"})),
-        el("span", {class: "ld-mix-wort"},
-           m + " % magisch \u00b7 " + (100 - m) + " % physisch"));
-    };
-
-    const zeile = (seite, wort, picks, profil) =>
-      el("div", {class: "ld-comp-zeile " + seite},
-        el("span", {class: "ld-comp-name"}, wort),
-        el("span", {class: "ld-comp-zahl"}, picks.length + "/5"),
-        balken(profil));
-
-    /* Der Massstab kommt aus dem Patch, nicht aus unseren Ligapartien:
-       2.000 Aufstellungen, gezogen nach der gemessenen Spielhaeufigkeit.
-       Eingeordnet wird erst bei fuenf gegen fuenf - mit weniger Picks
-       schwankt die Quote viel staerker, der Vergleich waere schief. */
-    const ref = liveTeile.suche.compReferenzGlobal();
-    const voll = c.wir.length === 5 && c.sie.length === 5;
-    const perz = voll ? liveTeile.suche.compPerzentil(c.quote, ref) : null;
-
-    const kopf = el("div", {class: "ld-comp-kopf"},
-      el("span", {class: "ld-comp-wort"}, "Aufstellungen"));
-    if (c.quote !== null && c.quote !== undefined) {
-      kopf.append(
-        el("span", {class: "ld-comp-quote " + (perz === null ? ""
-             : perz >= 0.8 ? "gut" : perz <= 0.2 ? "schwach" : ""),
-           title: "Nach Partien gewichteter Schnitt \u00fcber die gemessenen "
-                  + "Paarungen beider Aufstellungen"},
-          el("b", {}, dbQuote(c.quote)), " f\u00fcr " + team.team),
-        el("span", {class: "sub"}, perz !== null
-          ? "besser als " + Math.round(perz * 100) + " % von "
-            + GANZZAHL.format(ref.n) + " Aufstellungen im Patch"
-          : "Einordnung ab f\u00fcnf gegen f\u00fcnf"));
-    } else {
-      kopf.append(el("span", {class: "sub"},
-        "Quote erst, wenn auf beiden Seiten etwas steht"));
-    }
-    if (c.phasen) {
-      kopf.append(el("span", {class: "sub"}, "stark: "
-        + {frueh: "fr\u00fch", mittel: "mittel", spaet: "sp\u00e4t"}[c.phasen.stark]));
-    }
-
-    host.append(kopf,
-      zeile("eigen", team.team, c.wir, c.unser),
-      zeile("gegner", liveGegnerName() || "Gegner", c.sie, c.ihr));
-    const profil = liveProfil();
-    if (profil) host.append(profil);
-    if (c.quote !== null && c.quote !== undefined) host.append(liveQuoteErklaerung(ref));
-  }
-
-  /* Das Achsenprofil beider Aufstellungen: wie viel Engage, Peel, Catch,
-     Poke ... und wer es traegt. Einschaetzung, keine Messung. */
-  const liveProfilOffen = {wert: true};
-  function liveProfil() {
-    const L = liveLage();
-    if (!L || !L.profil) return null;
-    const {unser, ihr} = L.profil;
-    if (!unser.belegt && !ihr.belegt) return null;
-    const zelle = (seite, x, belegt) => {
-      if (!belegt) return el("span", {class: "ld-pf-zelle leer"}, "\u2014");
-      const v = Math.round((x.stufe || 0) * 100);
-      const wer = x.traeger.map((t) => t.champ + (t.ueber
-        ? " (\u00fcber " + (ENGINE.ACHSEN_WORT[t.ueber] || t.ueber) + ")" : "")).join(", ");
-      return el("span", {class: "ld-pf-zelle " + seite, title: x.wort + " " + v
-                          + (wer ? " \u2014 " + wer : " \u2014 niemand")},
-        el("span", {class: "ld-pf-balken"}, el("i", {style: "width:" + v + "%"})),
-        el("b", {}, String(v)),
-        el("span", {class: "ld-pf-wer"}, wer || "\u2014"));
-    };
-    const zeilen = Object.values(unser.achsen).map((x) => [
-      el("span", {class: "ld-pf-wort"}, x.wort),
-      zelle("eigen", x, unser.belegt),
-      zelle("gegner", ihr.achsen[x.achse], ihr.belegt)]).flat();
-    const vorschlag = unser.vorschlag || ihr.vorschlag;
-    const d = el("details", {class: "ld-profil"},
-      el("summary", {}, "Achsenprofil",
-        el("span", {class: "ld-herkunft geschaetzt"},
-           "Einsch\u00e4tzung" + (vorschlag ? ", ungepr\u00fcft" : ""))),
-      el("div", {class: "ld-pf-raster"},
-        el("span", {}),
-        el("span", {class: "ld-pf-kopf eigen"}, team.team),
-        el("span", {class: "ld-pf-kopf gegner"}, liveGegnerName() || "Gegner"),
-        zeilen),
-      el("p", {class: "sub"}, "100 = die Achse ist gedeckt (ges\u00e4ttigt). "
-        + "Frontline tr\u00e4gt Peel zur H\u00e4lfte mit. Schaden und Spieldauer "
-        + "stehen oben und sind gemessen."));
-    d.open = liveProfilOffen.wert;
-    d.addEventListener("toggle", () => { liveProfilOffen.wert = d.open; });
-    return d;
-  }
-
-  /* Wie die Quote entsteht: jede Paarung einzeln, Lane umrandet. Die Zahl
-     liegt fast immer nahe 50 % - das soll man nicht glauben muessen,
-     sondern sehen. */
-  const liveQuoteOffen = {wert: false};
-  function liveQuoteErklaerung(ref) {
-    const z = liveZustand();
-    const x = liveTeile.suche.compAufschluesselung(z);
-    const wir = z.picks[z.wirSind];
-    const sie = z.picks[z.wirSind === "blue" ? "red" : "blue"];
-    const pz = (v) => dbQuote(v).replace(" %", "");
-    const zelle = (p) => {
-      if (!p) return el("span", {class: "ld-mx-zelle leer"}, "");
-      if (p.quote === null) {
-        return el("span", {class: "ld-mx-zelle ohne" + (p.lane ? " lane" : ""),
-                           title: p.wir + " gegen " + p.sie + ": keine Daten"}, "\u2014");
-      }
-      const d = p.quote - 0.5;
-      return el("span", {class: "ld-mx-zelle" + (p.lane ? " lane" : "")
-                          + (d >= 0.015 ? " gut" : d <= -0.015 ? " schwach" : ""),
-          title: p.wir + " (" + ENGINE.ROLLEN_WORT[p.wirRolle] + ") gegen " + p.sie
-                 + " (" + ENGINE.ROLLEN_WORT[p.sieRolle] + "): " + dbQuote(p.quote)
-                 + " aus " + tausend(p.spiele) + " Partien"
-                 + (p.lane ? " \u00b7 Lane" : "")},
-        pz(p.quote));
-    };
-    const kopfZelle = (p) => {
-      const src = iconUrl(p.champ);
-      return el("span", {class: "ld-mx-kopf", title: p.champ},
-        src ? el("img", {src, alt: "", loading: "lazy"}) : null,
-        el("span", {}, p.champ));
-    };
-    const matrix = el("div", {class: "ld-matrix",
-        style: "grid-template-columns: minmax(5.5rem, 8rem) repeat(" + sie.length
-               + ", minmax(2.8rem, 1fr))"},
-      el("span", {class: "ld-mx-ecke"}, "wir \u2193 \u00b7 sie \u2192"),
-      sie.map(kopfZelle),
-      wir.map((a) => [kopfZelle(a), sie.map((b) =>
-        zelle(x.paare.find((p) => p.wir === a.champ && p.sie === b.champ)))]).flat(2));
-
-    const teil = (wort, t) => t ? wort + " " + dbQuote(t.quote) + " ("
-      + Math.round(t.anteil * 100) + " % des Gewichts)" : null;
-    const details = el("details", {class: "ld-quote-erklaerung"},
-      el("summary", {}, "Wie entsteht diese Quote?"),
-      el("p", {},
-        "Sie ist der nach Partien gewichtete Schnitt aller " + x.mitDaten
-        + " gemessenen Paarungen zwischen beiden Aufstellungen \u2014 auch quer "
-        + "\u00fcber die Karte, etwa euer Top gegen ihren Support. Eine einzelne "
-        + "Paarung liegt meist zwischen " + pz(ref.paarP5) + " und " + pz(ref.paarP95)
-        + " %; im Schnitt \u00fcber alle gleichen sich St\u00e4rken und Schw\u00e4chen "
-        + "weitgehend aus. Darum liegt die Quote fast immer nahe 50 %: bei "
-        + GANZZAHL.format(ref.n) + " Aufstellungen, gezogen nach der Spielh\u00e4ufigkeit "
-        + "im Patch, in 90 % der F\u00e4lle zwischen " + pz(ref.p5) + " und "
-        + pz(ref.p95) + " %. Aussagekr\u00e4ftig ist deshalb die Einordnung, "
-        + "nicht der Abstand zu 50."),
-      el("p", {class: "sub"}, [teil("Lane-Paarungen (umrandet):", x.lane),
-                                teil("\u00fcbrige Paarungen:", x.rest)]
-        .filter(Boolean).join(" \u00b7 ")),
-      el("div", {class: "ld-matrix-huelle"}, matrix));
-    // Offen bleibt offen, wenn sich die Lage aendert.
-    details.open = liveQuoteOffen.wert;
-    details.addEventListener("toggle", () => { liveQuoteOffen.wert = details.open; });
-    return details;
-  }
-
-  function liveSperrleiste() {
-    const host = document.querySelector("#live-draft .ld-sperren");
-    if (!host) return;
-    host.textContent = "";
-    const gesperrt = liveGesperrt();
-    if (!gesperrt.size) { host.hidden = true; return; }
-    host.hidden = false;
-    // Keine Emoji: sie sehen auf jedem System anders aus und passen nicht
-    // zu den uebrigen Marken des Boards, die gezeichnet sind.
-    const gruppen = [["fearless", "Fearless gesperrt"],
-                     ["ban", "Gebannt"], ["pick", "Schon gepickt"]];
-    for (const [art, wort] of gruppen) {
-      const liste = [...gesperrt.entries()].filter(([, v]) => v.art === art);
-      if (!liste.length) continue;
-      host.append(el("div", {class: "ld-sperr-gruppe ld-" + art},
-        el("span", {class: "ld-sperr-wort"}, wort + " (" + liste.length + ")"),
-        el("div", {class: "ld-sperr-liste"}, liste.map(([champ, v]) => {
-          const src = iconUrl(champ);
-          return el("span", {class: "ld-sperr ld-" + art,
-                             title: champ + " \u2014 " + v.text},
-            src ? el("img", {src, alt: "", loading: "lazy"}) : null,
-            el("span", {}, champ));
-        }))));
-    }
-  }
-
-  function liveListeZeichnen() {
-    const host = document.querySelector("#live-draft .ld-liste");
-    if (!host) return;
-    host.textContent = "";
-    if (!liveTeile) {
-      host.append(el("p", {class: "hint"},
-        "Keine Draftdaten eingebettet \u2014 build.py konnte die Datens\u00e4tze "
-        + "nicht laden."));
-      return;
-    }
-    const rolle = liveAktiv.rolle;
-    const spieler = liveSpielerAktiv(rolle);
-    const gesperrt = liveGesperrt();
-
-    if (liveFilter === "gesperrt") {
-      host.append(el("p", {class: "hint"}, gesperrt.size
-        ? "Alle " + gesperrt.size + " Champions, die in diesem Draft nicht "
-          + "mehr gehen \u2014 mit Grund."
-        : "Noch nichts gebannt, gepickt oder durch Fearless gesperrt."));
-      host.append(el("div", {class: "ld-karten"},
-        [...gesperrt.entries()].map(([champ, v]) => liveKarteGesperrt(champ, v))));
-      return;
-    }
-
-    /* Aus dem Draftplan, nicht aus dem Komforttext: der Plan kann im
-       Browser eingetragen sein und noch in keiner Datei stehen. */
-    const blindbar = new Set(spieler ? planOf(spieler).blind : []);
-
-    /* SICHER kommt aus den Blindszenarien dieser Lage (Bans und Picks
-       eingerechnet), PRIO aus der gemessenen Spielhaeufigkeit auf der
-       Rolle. Beides haengt nicht am Spieler und gilt auch auf dem
-       Gegnerslot. */
-    const B = ENGINE.BLIND;
-    const sicher = (r) => r.blindDetail && r.blindDetail.wert >= B.sicherAb
-      ? r.blindDetail : null;
-    const prio = (r) => {
-      const p = liveTeile.bewerter.blindModell.prio(r.champion, ROLES[rolle][0]);
-      return p && p.prio ? p : null;
-    };
-
-    const {liste, kategorien, ms, ausCache} = liveRangliste(rolle);
-    const gefiltert = (liveSuche
-        ? liste.filter((r) => r.champion.toLowerCase().includes(liveSuche))
-        : liste)
-      .map((r) => ({r, kat: liveKategorie(r, spieler),
-                    blind: blindbar.has(r.champion),
-                    sicher: sicher(r), prio: prio(r)}))
-      .filter((x) => liveFilter === "alle" ? true
-                   // Der Filter meint die Frage "was kann ich frueh
-                   // setzen" - beide Begruendungen zaehlen, die Marken
-                   // auf der Karte sagen welche.
-                   : liveFilter === "blind" ? (x.blind || x.sicher)
-                   : x.kat === liveFilter);
-
-    if (liveSuche) {
-      const leeren = el("button", {class: "ld-reset", type: "button"}, "Suche leeren");
-      leeren.addEventListener("click", () => { liveSucheLeeren(); liveListeZeichnen(); });
-      host.append(el("p", {class: "ld-suchhinweis" + (gefiltert.length ? "" : " leer"),
-                           role: "status"},
-        gefiltert.length
-          ? "Suche \u201e" + liveSuche + "\u201c filtert die Liste \u2014 die "
-            + "Empfehlung oben erscheint wieder ohne Suche. "
-          : "Keine Treffer f\u00fcr \u201e" + liveSuche + "\u201c auf "
-            + ROLES[rolle][1] + ". ",
-        leeren));
-    }
-
-    // Der Modus der Rolle: steht der Lanegegner schon?
-    const erster = liste[0];
-    if (erster && erster.lage) host.append(liveModus(erster.lage, erster));
-
-    host.append(el("p", {class: "hint"},
-      (liveAktiv.seite === "eigen" ? "" : "Gegnerslot \u00b7 ")
-      + (spieler ? spieler.label + " \u00b7 " : "")
-      + gefiltert.length + " w\u00e4hlbar auf " + ROLES[rolle][1]
-      + (gesperrt.size ? " \u00b7 " + gesperrt.size + " gesperrt" : "")
-      + " \u00b7 sortiert nach Entscheidungswert"
-      + " \u00b7 " + Math.round(ms) + " ms" + (ausCache ? " (gemerkt)" : "")));
-
-    /* Der Backtest ueber 68 Partien kann nicht zeigen, dass das Modell
-       den Muenzwurf schlaegt. Das gehoert an die Empfehlung, nicht ins
-       Kleingedruckte. */
-    host.append(el("p", {class: "hint ld-warnung"},
-      "Entscheidungshilfe, keine Prognose: im Backtest \u00fcber 68 Partien "
-      + "l\u00e4sst sich nicht zeigen, dass das Modell besser trifft als ein "
-      + "M\u00fcnzwurf. Die Begr\u00fcndungen unter jeder Karte sind gemessen \u2014 "
-      + "die Rangfolge ist ein Vorschlag."));
-
-    if (liveFilter === "alle" && !liveSuche && gefiltert.length) {
-      host.append(liveJetzt(gefiltert[0]));
-      if (kategorien && kategorien.length > 1) host.append(liveTop5(kategorien));
-    }
-
-    if (liveFilter === "alle" && gefiltert.length) {
-      host.append(liveAbschnitt("Beste Treffer", gefiltert.slice(0, 6), true));
-      /* Auf einem Gegnerslot ist es nicht "dein" Pool, sondern der des
-         gegnerischen Spielers - und ohne gescoutete Mannschaft gibt es
-         gar keinen. */
-      const poolWort = liveAktiv.seite === "eigen" ? "Dein Pool"
-        : spieler ? spieler.label + " spielt oft" : "Viel gespielt";
-      for (const [art, wort, deckel] of [["pool", poolWort, 0],
-                                         ["alternativen", "Alternativen", 0],
-                                         ["selten", "Selten gespielt", 24]]) {
-        const teil = gefiltert.filter((x) => x.kat === art);
-        if (!teil.length) continue;
-        host.append(liveAbschnitt(wort, deckel ? teil.slice(0, deckel) : teil,
-                                  false, teil.length));
-      }
-    } else {
-      host.append(liveAbschnitt(null, gefiltert, false));
-    }
-  }
-
-  function liveAbschnitt(titel, eintraege, hervor, gesamt) {
-    const zahl = gesamt && gesamt > eintraege.length
-      ? eintraege.length + " von " + gesamt : String(eintraege.length);
-    return el("div", {class: "ld-abschnitt"},
-      titel ? el("h3", {class: "ld-abschnitt-wort"}, titel,
-                 el("span", {class: "sub"}, " " + zahl)) : null,
-      el("div", {class: "ld-karten"},
-         eintraege.map((x) => liveKarte(x.r, x.kat, hervor, x.blind,
-                                        x.sicher, x.prio))));
-  }
-
-  /* ------------------------------------------------- Modus der Rolle */
-  function liveModus(lage, r) {
-    const wort = {blind: "Blind Pick", teilweise: "Teilweise Info",
-                  counter: "Counter Pick"}[lage.modus] || lage.modus;
-    const d = r.blindDetail;
-    const zusatz = lage.modus === "counter"
-      ? "Die gemessene Lane-Paarung tr\u00e4gt das volle Lane-Gewicht, Blindszenarien entfallen."
-      : lage.modus === "blind"
-        ? "Bewertet \u00fcber die wahrscheinlichen Lanegegner"
-          + (d ? " (" + d.szenarien + " Szenarien"
-                 + (d.poolWort && d.poolWort.length ? ", gewichtet mit " + d.poolWort.join(", ") : "")
-                 + ")" : "") + "."
-        : "Der offene Teil der Lane z\u00e4hlt zu "
-          + Math.round(lage.unbekannt * 100) + " % \u00fcber Szenarien.";
-    const L = liveAktiv.seite === "eigen" ? liveLage() : null;
-    const warten = L && L.spaeterRolle && L.spaeterRolle.rolle === ROLES[liveAktiv.rolle][0]
-      ? L.spaeterRolle : null;
-    // Pickt der Gegner vor unserem letzten Pick nicht mehr, zeigt Warten
-    // nichts - das sagen, statt still keine Empfehlung zu geben (P2.10).
-    const keinWarten = L && lage.modus !== "counter" && L.pickfolge
-      && L.pickfolge.unsereOffen > 1 && L.pickfolge.gegnerVorUnseremLetzten === 0;
-    return el("div", {class: "ld-modus " + lage.modus},
-      el("span", {class: "ld-modus-marke"}, wort),
-      el("span", {class: "ld-modus-text"}, lage.text),
-      el("span", {class: "sub"}, zusatz),
-      warten ? el("span", {class: "ld-modus-warten"},
-        "Lagebild: " + warten.wort + " lieber sp\u00e4ter \u2013 " + warten.text) : null,
-      keinWarten ? el("span", {class: "ld-modus-warten"},
-        "Der Gegner pickt erst nach eurem letzten Pick \u2013 Warten bringt hier keinen Counterpick.")
-        : null);
-  }
-
-  /* --------------------------------------------- Jetzt picken */
-  /* Die eine Empfehlung, gross: Final, die vier Gruppen, warum, Risiko,
-     und was danach wahrscheinlich kommt. Die Gruppen sind keine eigene
-     Rechnung - sie fassen die Teile der Bewertung zusammen. */
-  function liveJetzt(x) {
-    const r = x.r;
-    const src = iconUrl(r.champion);
-    const g = ENGINE.teilGruppen(r);
-    const A = ENGINE.ANZEIGE;
-    const stufe = r.score >= A.gruenAb ? "sehrgut" : r.score >= A.orangeAb ? "gut" : "normal";
-    const zahl = (wort, wert, titel) => el("div", {class: "ld-gruppe", title: titel},
-      el("span", {class: "ld-gruppe-wort"}, wort),
-      el("b", {class: wert === null ? "leer" : ""}, wert === null ? "\u2014" : String(wert)));
-    const knopf = el("button", {class: "ld-picken ld-picken-gross", type: "button"},
-                     r.champion + " picken");
-    knopf.addEventListener("click", () => livePicken(r.champion));
-
-    const aeste = r.lookahead && r.lookahead.aeste
-      ? r.lookahead.aeste.slice().sort((a, b) => b.p - a.p).slice(0, 3) : [];
-    // Bleibt unsere beste Erwiderung in jedem Ast dieselbe, steht sie
-    // einmal darunter - dreimal "dann Jinx" liest sich wie ein Fehler.
-    const erwiderungen = new Set(aeste.map((a) => a.erwiderung).filter(Boolean));
-    const eineErwiderung = aeste.length > 1 && erwiderungen.size === 1
-      ? [...erwiderungen][0] : null;
-    const k = Number.isFinite(r.confidence) ? Math.round(r.confidence * 100) : null;
-    const geschrumpft = Number.isFinite(r.entscheidung)
-      && Math.abs(r.entscheidung - r.score) >= 1;
-
-    return el("section", {class: "ld-jetzt " + stufe, "aria-label": "Empfehlung"},
-      el("div", {class: "ld-jetzt-kopf"},
-        el("span", {class: "ld-jetzt-wort"}, "Jetzt picken \u00b7 " + ROLES[liveAktiv.rolle][1]),
-        x.blind ? el("span", {class: "ld-blind-chip", title: "Draftplan: blind pickbar"}, "blind") : null,
-        x.sicher ? el("span", {class: "ld-sicher-chip",
-          title: "Blindsicher \u00fcber die Szenarien: " + x.sicher.text}, "sicher") : null,
-        x.prio ? el("span", {class: "ld-prio-chip",
-          title: "Prio: Platz " + x.prio.rang + " der meistgespielten auf der Rolle"}, "prio") : null),
-      el("div", {class: "ld-jetzt-haupt"},
-        src ? el("img", {class: "ld-jetzt-bild", src, alt: "", loading: "lazy"}) : null,
-        el("div", {class: "ld-jetzt-name"},
-          el("b", {}, r.champion),
-          el("span", {class: "sub"},
-            (k !== null ? "Konfidenz " + k + " % (" + r.confidenceWort + ")" : "Konfidenz unbekannt")
-            + (geschrumpft ? " \u00b7 Entscheidungswert " + Math.round(r.entscheidung) : ""))),
-        el("div", {class: "ld-jetzt-final", title: "Final: die Note aus allen Teilen"},
-          el("span", {class: "ld-gruppe-wort"}, "Final"),
-          el("b", {class: "ld-punkte " + stufe}, String(r.score)))),
-      el("div", {class: "ld-gruppen"},
-        zahl("DraftGap", g.draftgap, "Patchst\u00e4rke, Matchups, Synergien - gemessen"),
-        zahl("Team-Fit", g.team, "Comp-Marginalwert, St\u00f6rung, Flex, Vorschau"),
-        zahl("Spieler-Fit", g.spieler, "Komfort des Spielers - Ranked und Draftplan"),
-        zahl("Blind-Sicherheit", g.blind,
-             g.blind === null ? "Lanegegner steht - keine Blindszenarien"
-                              : "\u00fcber die wahrscheinlichen Lanegegner")),
-      el("div", {class: "ld-jetzt-teile"},
-        r.reasons.length ? el("div", {class: "ld-jetzt-block"},
-          el("span", {class: "ld-jetzt-titel plus"}, "Warum"),
-          el("ul", {}, r.reasons.slice(0, 3).map((t) => el("li", {}, t)))) : null,
-        r.risks.length ? el("div", {class: "ld-jetzt-block"},
-          el("span", {class: "ld-jetzt-titel minus"}, "Risiko"),
-          el("ul", {}, r.risks.slice(0, 3).map((t) => el("li", {}, t)))) : null,
-        aeste.length ? el("div", {class: "ld-jetzt-block"},
-          el("span", {class: "ld-jetzt-titel"}, "Wenn wir das picken"),
-          el("ul", {}, aeste.map((a) => el("li", {},
-            el("b", {}, a.antwort), " (" + (ENGINE.ROLLEN_WORT[a.rolle] || a.rolle) + ") "
-            + Math.round(a.p * 100) + " % wahrscheinlich",
-            !eineErwiderung && a.erwiderung ? " \u2192 dann " : "",
-            !eineErwiderung && a.erwiderung ? el("b", {}, a.erwiderung) : null))),
-          eineErwiderung ? el("span", {class: "ld-jetzt-danach"},
-            "Unser bester n\u00e4chster Pick in jedem Fall: ",
-            el("b", {}, eineErwiderung)) : null) : null),
-      knopf);
-  }
-
-
-  /* ---------------------------------------------------------- Top 5 */
-  function liveTop5(kategorien) {
-    return el("div", {class: "ld-top5"}, kategorien.map((k, i) => {
-      const r = k.r;
-      const src = iconUrl(r.champion);
-      const knopf = el("button", {class: "ld-picken", type: "button",
-                                  "aria-label": r.champion + " picken"}, "Picken");
-      knopf.addEventListener("click", () => livePicken(r.champion));
-      return el("div", {class: "ld-top5-kachel" + (i === 0 ? " erste" : "")},
-        el("span", {class: "ld-top5-wort"}, "#" + (i + 1) + " " + k.wort),
-        el("div", {class: "ld-top5-kopf"},
-          src ? el("img", {class: "ld-bild", src, alt: "", loading: "lazy"}) : null,
-          el("b", {class: "ld-karte-name"}, r.champion),
-          el("span", {class: "ld-punkte"}, String(r.score))),
-        el("span", {class: "ld-top5-grund"}, k.grund),
-        knopf);
-    }));
-  }
-
-  /* Die Karte zeigt die Spur, die die Engine mitliefert: jeder Teil mit
-     seinem Beitrag, dazu Konfidenz und - wo gerechnet - Robustheit. */
-  function liveKarte(r, kategorie, hervor, blind, sicher, prio) {
-    const src = iconUrl(r.champion);
-    const A = ENGINE.ANZEIGE;
-    const stufe = r.score >= A.gruenAb ? "sehrgut"
-                : r.score >= A.orangeAb ? "gut" : "normal";
-    const sterne = A.sterne.filter((x) => r.score >= x).length + 1;
-    const knopf = el("button", {class: "ld-picken", type: "button"}, "Picken");
-    knopf.addEventListener("click", () => livePicken(r.champion));
-
-    const k = r.components.komfort;
-    return el("div", {class: "ld-karte " + stufe + (hervor ? " hervor" : "")
-                             + (blind ? " ld-blind" : "")
-                             + (sicher ? " ld-sicher" : ""),
-                      "data-kat": kategorie},
-      el("div", {class: "ld-karte-kopf"},
-        src ? el("img", {class: "ld-bild", src, alt: "", loading: "lazy"}) : null,
-        el("span", {class: "ld-karte-name"}, r.champion),
-        // Sortiert wird nach dem Entscheidungswert: die Note, bei duennen
-        // Daten zur Mitte gezogen. Weicht er ab, steht er daneben - sonst
-        // wirkte eine 61 ueber einer 64 wie ein Fehler.
-        Number.isFinite(r.entscheidung) && Math.abs(r.entscheidung - r.score) >= 1
-          ? el("span", {class: "ld-entscheidung",
-                        title: "Entscheidungswert " + Math.round(r.entscheidung)
-                               + " - danach ist sortiert: die Note, bei unsicheren "
-                               + "Daten zur Mitte gezogen"},
-               "\u2192 " + Math.round(r.entscheidung))
-          : null,
-        el("span", {class: "ld-punkte " + stufe,
-                    title: "Note" + (Number.isFinite(r.entscheidung)
-                      ? " \u00b7 Entscheidungswert " + Math.round(r.entscheidung) : "")},
-           r.score)),
-      /* Die Marken in einer eigenen Zeile: mit drei davon (Plan, Szenarien,
-         Prio) reichte der Kopf einer 216px-Karte nicht mehr, und der Name
-         wurde abgeschnitten. */
-      (blind || sicher || prio) ? el("div", {class: "ld-marken"},
-        blind ? el("span", {class: "ld-blind-chip",
-                            title: "Draftplan: blind pickbar"}, "blind") : null,
-        sicher ? el("span", {class: "ld-sicher-chip",
-                             title: "Blindsicher \u00fcber die Szenarien: "
-                                    + sicher.text}, "sicher") : null,
-        prio ? el("span", {class: "ld-prio-chip",
-                           title: "Prio: Platz " + prio.rang + " der meistgespielten "
-                                  + "auf der Rolle (" + Math.round(prio.anteil * 1000) / 10
-                                  + " % der Partien)"}, "prio") : null) : null,
-      el("div", {class: "ld-karte-zeile"},
-        el("span", {class: "ld-sterne", "aria-label": sterne + " von 5"},
-           "\u2605".repeat(sterne) + "\u2606".repeat(5 - sterne)),
-        el("span", {class: "ld-karte-zahlen"},
-           k ? k.text : "kein Komfortbeleg"),
-        el("span", {class: "ld-konfidenz " + r.confidenceWort,
-                    title: "Konfidenz " + (r.confidence ?? "?")},
-           r.confidenceWort)),
-      r.lookahead ? el("div", {class: "ld-vorschau"},
-        el("span", {class: "ld-vorschau-wort"}, "Vorausschau"),
-        el("span", {}, r.lookahead.text),
-        el("span", {class: "ld-robust " + r.lookahead.robustheit},
-           "robust: " + r.lookahead.robustheit)) : null,
-      livePaarungen(r),
-      liveSpur(r),
-      r.reasons.length ? el("ul", {class: "ld-gruende"},
-        r.reasons.slice(0, 3).map((g) => el("li", {class: "ld-grund plus"}, g)))
-        : null,
-      r.risks.length ? el("ul", {class: "ld-gruende"},
-        r.risks.slice(0, 2).map((g) => el("li", {class: "ld-grund minus"}, g)))
-        : null,
-      knopf);
-  }
-
-  /* Jede eingetragene Paarung einzeln - nicht nur die auffaelligen.
-     Vorher nannte die Karte nur, was mehr als zwei Punkte von der
-     Erwartung abwich; Wukong gegen Jarvan lag bei +1,9 und fehlte
-     darum, obwohl er mitgerechnet wurde. "Nicht gezaehlt" sah damit
-     genauso aus wie "unauffaellig". Jetzt steht jede Paarung da, und
-     eine ohne Daten sagt das auch. */
-  function livePaarungen(r) {
-    const reihe = (wort, teil, klasse) => {
-      if (!teil || (!teil.paare && !teil.ohneDaten)) return null;
-      const chips = (teil.paare || []).map((t) => {
-        const d = t.quote - t.erwartet;
-        const ton = d >= 0.015 ? "gut" : d <= -0.015 ? "schwach" : "neutral";
-        const src = iconUrl(t.wer);
-        return el("span", {class: "ld-paar " + ton,
-            title: t.wer + ": " + dbQuote(t.quote) + ", sonst "
-                   + dbQuote(t.erwartet) + " · "
-                   + tausend(t.spiele) + " Partien"},
-          src ? el("img", {src, alt: "", loading: "lazy"}) : null,
-          el("b", {}, dbQuote(t.quote).replace(" %", "")),
-          el("i", {}, (d >= 0 ? "+" : "") + (d * 100).toFixed(1)));
-      });
-      for (const wer of teil.ohneDaten || []) {
-        const src = iconUrl(wer);
-        chips.push(el("span", {class: "ld-paar ohne",
-            title: wer + ": keine Paarung mit genug Partien"},
-          src ? el("img", {src, alt: "", loading: "lazy"}) : null,
-          el("b", {}, "—")));
-      }
-      if (!chips.length) return null;
-      return el("div", {class: "ld-paare " + klasse},
-        el("span", {class: "ld-paare-wort"}, wort),
-        el("span", {class: "ld-paare-liste"}, chips));
-    };
-    // Seit Audit P1.1 steht der Lanegegner in "lane", die uebrigen in
-    // "matchup" - beide Reihen, sonst fehlte die Lane auf der Karte.
-    const lane = reihe("Lane", r.components.lane, "gegen");
-    const gegen = reihe("gegen", r.components.matchup, "gegen");
-    const mit = reihe("mit", r.components.synergie, "mit");
-    if (!lane && !gegen && !mit) return null;
-    return el("div", {class: "ld-paarungen"}, lane, gegen, mit);
-  }
-
-  /* Die Erklaerungsspur: jeder Teil mit seinem Beitrag. Ohne sie waere
-     die Zahl ein Orakel. */
-  function liveSpur(r) {
-    const teile = Object.entries(r.components)
-      .filter(([, t]) => Math.abs(t.beitrag) >= 0.5)
-      .sort((a, b) => Math.abs(b[1].beitrag) - Math.abs(a[1].beitrag));
-    if (!teile.length) return null;
-    return el("div", {class: "ld-spur"}, teile.map(([name, t]) =>
-      el("span", {class: "ld-spur-teil " + (t.beitrag >= 0 ? "plus" : "minus")
-                         + (t.quelle === "heuristik" ? " geschaetzt" : ""),
-          title: name + ": " + t.text + "  (" + t.quelle
-                 + (t.konfidenz !== null && t.konfidenz !== undefined
-                    ? ", Konfidenz " + t.konfidenz.toFixed(2) : "") + ")"},
-        el("b", {}, SPUR_WORT[name] || name),
-        el("i", {}, (t.beitrag >= 0 ? "+" : "") + t.beitrag.toFixed(0)))));
-  }
-
-  const SPUR_WORT = {
-    meta: "Patch", matchup: "gegen", synergie: "mit", compFit: "Comp",
-    gegnerStoerung: "st\u00f6rt", flex: "Flex", komfort: "Komfort",
-    blindSicherheit: "blind", lane: "Lane", lookahead: "Vorschau",
-  };
-
-  const DB_QUOTE = new Intl.NumberFormat("de-DE", {minimumFractionDigits: 1});
-  // "2.000", nicht "2k" - tausend() kuerzt fuer Partienzahlen ab.
-  const GANZZAHL = new Intl.NumberFormat("de-DE");
-  const dbQuote = (q) => DB_QUOTE.format(Math.round(q * 1000) / 10) + " %";
-
-  function liveKarteGesperrt(champ, v) {
-    const src = iconUrl(champ);
-    return el("div", {class: "ld-karte gesperrt ld-" + v.art},
-      el("div", {class: "ld-karte-kopf"},
-        src ? el("img", {class: "ld-bild", src, alt: "", loading: "lazy"}) : null,
-        el("span", {class: "ld-karte-name"}, champ),
-        el("span", {class: "ld-marke ld-" + v.art},
-           v.art === "fearless" ? "Fearless" : v.art === "ban" ? "Ban" : "Pick")),
-      el("p", {class: "ld-sperr-grund"}, v.text));
-  }
-
+  //@ui zustand.js
+  //@ui live/draft.js
+  //@ui zustaende.js
+  //@ui live/cockpit.js
+  //@ui live/briefing.js
+  //@ui review/plan-ist.js
   function renderPlan() {
     const host = document.getElementById("plan-cards");
     host.className = mitEinlauf("cards columns nach-inhalt");
@@ -5722,6 +4556,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     // Die Bank nur zeigen, wenn dort etwas steht - sonst nur Leerkarten.
     const shown = team.players.filter((p) => !p.bench || hasPlan(planOf(p)));
     for (const player of shown) host.append(planCard(player, turnier));
+    scoutFilterAnwenden();
 
     const any = team.players.some((p) => hasPlan(planOf(p)));
     const scope = SEASONLESS.has(queue) ? queueLabel()
@@ -5794,13 +4629,47 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   function renderHinweisMarke() {
     const marke = document.getElementById("hinweis-marke");
     if (!marke) return;
-    const offen = ["unsaved", "liga-zugang"]
+    const offen = ["unsaved", "liga-zugang", "namenswechsel"]
       .map((id) => document.getElementById(id))
       .filter((e) => e && !e.hidden);
     marke.hidden = !offen.length;
     if (!offen.length) return;
     marke.textContent = offen.length === 1 ? "1 Hinweis" : offen.length + " Hinweise";
     marke.title = offen.map((e) => (e.textContent || "").trim().slice(0, 80)).join(" — ");
+  }
+
+  /* Riot-ID-Wechsel, die beim letzten Profilholen oder Kaderabgleich
+     aufgefallen sind (namenswechsel.py). Nur erkannt, nie geraten: was
+     die PUUID bestaetigt, ist in teams.json schon umgestellt; alles andere
+     muss ein Mensch eintragen. Die eigenen Mannschaften zuerst. */
+  function renderNamenswechsel() {
+    const host = document.getElementById("namenswechsel");
+    if (!host) return;
+    host.textContent = "";
+    const eigene = new Set(DATA.ownTeams || []);
+    const liste = (DATA.namenswechsel || []).slice()
+      .sort((a, b) => (eigene.has(b.team) - eigene.has(a.team)) || a.team.localeCompare(b.team));
+    if (!liste.length) { host.hidden = true; renderHinweisMarke(); return; }
+    const satz = (e) => {
+      const wer = e.team + " · " + e.label + ": ";
+      if (e.art === "bestaetigt") return wer + "heißt jetzt " + e.neu + " (vorher " + e.alt
+        + ") – derselbe Account, in teams.json umgestellt.";
+      if (e.art === "uebernommen") return wer + "heißt laut Liga jetzt " + e.neu + " (vorher " + e.alt
+        + ") – in teams.json übernommen, die Zahlen kommen ab jetzt unter dem neuen Namen.";
+      if (e.art === "liga-hinweis") return wer + "die Liga führt " + e.neu + " statt " + e.alt
+        + ", dort steht aber ein anderer Account als bisher – nicht übernommen. Bitte prüfen.";
+      if (e.art === "anderer-account") return wer + "unter " + e.alt + " steht jetzt ein anderer Account. "
+        + "Die alten Zahlen bleiben; den neuen Namen in teams.json eintragen.";
+      return wer + e.alt + " gibt es auf op.gg nicht mehr – vermutlich umbenannt. "
+        + "Den neuen Namen in teams.json eintragen.";
+    };
+    host.className = "unsaved info";
+    host.hidden = false;
+    host.append(el("span", {class: "what"}, liste.length === 1 ? "Ein Namenswechsel erkannt"
+                                                              : liste.length + " Namenswechsel erkannt"),
+      el("ul", {class: "nw-liste"}, liste.map((e) => el("li", {class: "nw-" + e.art},
+        satz(e), el("span", {class: "sub"}, " (" + deDate(e.datum) + ")")))));
+    renderHinweisMarke();
   }
 
   // Eine Stelle fuer "das steht noch in keiner Datei" - auf jedem Reiter.
@@ -5899,7 +4768,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
 
   // Die Marke springt zu den Hinweisen am Seitenende.
   document.getElementById("hinweis-marke").addEventListener("click", () => {
-    const ziel = ["unsaved", "liga-zugang"]
+    const ziel = ["unsaved", "liga-zugang", "namenswechsel"]
       .map((id) => document.getElementById(id))
       .find((e) => e && !e.hidden);
     if (ziel) ziel.scrollIntoView({block: "center", behavior: "smooth"});
@@ -6066,507 +4935,10 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     } catch (e) { /* aeltere Fassung ohne diesen Weg */ }
   }
 
-  /* ================================================== Solo Queue
-     Getrennt vom Team-Live-Draft: eigener Zustand, eigene Oberflaeche.
-     Gebaut fuer den Champ Select neben dem Client - die Antwort auf
-     "was picke ich jetzt" muss in Sekunden ablesbar sein. Nur ich habe
-     einen Pool; Mitspieler und Gegner sind fremd. Rolle und Pickposition
-     sind fest: kein "Rolle aufheben", keine Seitenwahl. */
-  const soloStand = {bans: {eigen: leer5(), gegner: leer5()},
-                     picks: {eigen: leer5(), gegner: leer5()}};
-  let soloRisiko = (() => {
-    try {
-      const r = window.localStorage.getItem("solo-risiko");
-      return ["sicher", "ausgewogen", "aggressiv"].includes(r) ? r : "ausgewogen";
-    } catch (e) { return "ausgewogen"; }
-  })();
-  const soloCache = new Map();
-  const SOLO_KURZ = 5;                         // so viele je Spalte auf einen Blick
-  const soloMehr = {pool: false, ausser: false};
-  let soloLetzte = null;         // {z, liste} - die Empfehlung, die gerade steht
-
-  function soloZustand() {
-    return ENGINE.ausFeldern({picks: soloStand.picks, bans: soloStand.bans,
-                              wirSind: "blue", patch: DRAFT.patch});
-  }
-
-  // Wer spielt meine Rolle: ich. Alle anderen sind fremd.
-  const soloSpielerFuer = (rolleName) => {
-    const ich = liveSoloIch();
-    return ich && ROLES[liveSoloRolle()][0] === rolleName ? {team: ich.team, label: ich.label} : null;
-  };
-
-  function soloRangliste() {
-    const z = soloZustand();
-    const rolle = liveSoloRolle();
-    const ich = liveSoloIch();
-    const k = ENGINE.schluessel(z, "solo|" + rolle + "|" + soloRisiko + "|"
-                                + (ich ? ich.team + "/" + ich.label : ""));
-    if (!soloCache.has(k)) {
-      if (soloCache.size > 40) soloCache.clear();
-      soloCache.set(k, liveTeile.suche.rangliste(z, ROLES[rolle][0], {
-        spielerTeam: ich ? ich.team : null, spielerLabel: ich ? ich.label : null,
-        spielerFuer: soloSpielerFuer, risikoprofil: soloRisiko, gegnerFuer: () => null,
-      }));
-    }
-    return {z, liste: soloCache.get(k)};
-  }
-
-  // Mein Pool: gespielt (ab 3 Partien) oder im Draftplan.
-  function soloImPool(champ) {
-    const ich = liveSoloIch();
-    if (!ich) return false;
-    const k = liveTeile.mannschaft.komfort(ich.team, ich.label, champ);
-    const plan = planOf(ich);
-    return (k && k.sampleSize >= 3) || plan.blind.includes(champ) || plan.likes.includes(champ);
-  }
-
-  const soloStufe = (score) => score >= ENGINE.ANZEIGE.gruenAb ? "sehrgut"
-    : score >= ENGINE.ANZEIGE.orangeAb ? "gut" : "";
-
-  // Ein Grund, eine Gefahr - mehr steht beim Aufklappen.
-  function soloGrund(r) {
-    return r.reasons[0] || (r.components.lane ? r.components.lane.text : "")
-      || (r.components.komfort ? "Komfort: " + r.components.komfort.text : "");
-  }
-  // Der Risikotext der Engine nennt Stufe, Wahrscheinlichkeit und Quote
-  // ("sehr gefaehrlicher Counter noch verfuegbar: ...") - eine nackte
-  // Prozentzahl sagte nicht, wie schlimm es waere.
-  function soloGefahr(r) {
-    return r.risks[0] || "";
-  }
-
-  function soloPicken(champ) {
-    const rolle = liveSoloRolle();
-    const grund = ENGINE.feldSperre(soloStand, champ, {art: "picks", seite: "eigen", i: rolle});
-    if (grund) { soloHinweis("eigen", champ + " kann nicht gepickt werden: " + grund); return; }
-    soloStand.picks.eigen[rolle] = champ;
-    soloProtokoll(champ);
-    renderSolo();
-  }
-
-  // Ins Solo-Protokoll erst, wenn ich wirklich picke - mit der Empfehlung,
-  // die in dem Moment stand. So ist jeder Eintrag eine Entscheidung.
-  function soloProtokoll(champ) {
-    if (!soloLetzte || !soloLetzte.liste.length) return;
-    liveTeile.protokollSolo.notiere(soloLetzte.z, ROLES[liveSoloRolle()][0], soloLetzte.liste,
-                                    {gewaehlt: champ, risikoprofil: soloRisiko});
-  }
-
-  let soloHinweisUhr = null;
-  function soloHinweis(seite, text) {
-    const ziel = document.querySelector("#solo-draft .so-team." + seite + " .so-hinweis");
-    if (!ziel) return;
-    ziel.textContent = text;
-    clearTimeout(soloHinweisUhr);
-    soloHinweisUhr = setTimeout(() => { ziel.textContent = ""; }, 4500);
-  }
-
-  function soloFreiListe() {
-    const liste = document.getElementById("so-frei");
-    if (!liste) return;
-    const weg = new Set([...soloStand.picks.eigen, ...soloStand.picks.gegner,
-                         ...soloStand.bans.eigen, ...soloStand.bans.gegner].filter(Boolean));
-    liste.textContent = "";
-    liste.append(...CHAMPIONS.filter((c) => !weg.has(c)).map((c) => el("option", {value: c})));
-  }
-
-  function soloFeld(seite, art, i, beschriftung) {
-    const feld = champField("so-" + seite + "-" + art + "-" + i, beschriftung, () => {});
-    const eingabe = feld.querySelector("input");
-    eingabe.setAttribute("list", "so-frei");
-    eingabe.value = soloStand[art][seite][i] || "";
-    eingabe.dispatchEvent(new Event("input"));
-    eingabe.addEventListener("change", () => {
-      const champ = normaliseChamp(eingabe.value) || null;
-      const grund = champ ? ENGINE.feldSperre(soloStand, champ, {art, seite, i}) : null;
-      if (grund) {
-        eingabe.value = soloStand[art][seite][i] || "";
-        eingabe.dispatchEvent(new Event("input"));
-        soloHinweis(seite, champ + (art === "bans" ? " ist nicht bannbar: "
-                                    : " kann nicht gepickt werden: ") + grund);
-        return;
-      }
-      const meinPick = art === "picks" && seite === "eigen" && i === liveSoloRolle();
-      soloStand[art][seite][i] = champ;
-      if (meinPick && champ) soloProtokoll(champ);
-      soloAktualisieren();
-    });
-    return feld;
-  }
-
-  function soloTeam(seite) {
-    const meine = liveSoloRolle();
-    const lane = new Set(ENGINE.LANE_GEGNER[ROLES[meine][0]] || []);
-    return el("section", {class: "so-team " + seite, "aria-label": seite === "eigen" ? "Mein Team" : "Gegner"},
-      el("h3", {class: "so-team-name"}, seite === "eigen" ? "Mein Team" : "Gegner"),
-      el("div", {class: "so-bans"},
-        el("span", {class: "so-klein"}, "Bans"),
-        el("div", {class: "so-bans-felder"},
-          [0, 1, 2, 3, 4].map((i) => soloFeld(seite, "bans", i, "Ban " + (i + 1))))),
-      el("div", {class: "so-picks"}, ROLES.map(([wert, wort], i) => {
-        const ich = seite === "eigen" && i === meine;
-        const gegenueber = seite === "gegner" && lane.has(wert);
-        return el("div", {class: "so-zeile" + (ich ? " ich" : "") + (gegenueber ? " lane" : "")},
-          el("span", {class: "so-rolle"}, wort),
-          soloFeld(seite, "picks", i, wort),
-          ich ? el("span", {class: "so-marke ich"}, "du")
-            : gegenueber ? el("span", {class: "so-marke lane"}, "Lane") : el("span"));
-      })),
-      el("span", {class: "so-hinweis", role: "status", "aria-live": "polite"}));
-  }
-
-  function soloEmpfehlung(r, {gross = false} = {}) {
-    const src = iconUrl(r.champion);
-    const pool = soloImPool(r.champion);
-    const grund = soloGrund(r), gefahr = soloGefahr(r);
-    const knopf = el("button", {class: "so-picken", type: "button"}, "Picken");
-    knopf.addEventListener("click", (e) => { e.preventDefault(); soloPicken(r.champion); });
-    const kopf = el("summary", {class: "so-rec-kopf"},
-      src ? el("img", {class: "so-bild", src, alt: "", loading: "lazy"}) : null,
-      el("span", {class: "so-rec-name"},
-        el("b", {}, r.champion),
-        pool ? el("span", {class: "so-pool"}, "Pool") : null),
-      el("span", {class: "so-note " + soloStufe(r.score), title: "Note \u00b7 Entscheidungswert "
-                  + Math.round(r.entscheidung)}, String(r.score)),
-      grund ? el("span", {class: "so-grund"}, grund) : null,
-      gefahr ? el("span", {class: "so-gefahr"}, gefahr) : null);
-    const mehr = el("div", {class: "so-rec-mehr"},
-      r.reasons.length ? el("ul", {class: "so-liste-gruende"},
-        r.reasons.map((g) => el("li", {}, g))) : null,
-      r.risks.length ? el("ul", {class: "so-liste-risiken"},
-        r.risks.map((g) => el("li", {}, g))) : null,
-      knopf);
-    return el("details", {class: "so-rec" + (gross ? " gross" : "")}, kopf, mehr);
-  }
-
-  function soloMitte() {
-    const box = el("section", {class: "so-mitte", "aria-label": "Empfehlung"});
-    const {z, liste} = soloRangliste();
-    const rolle = liveSoloRolle();
-    const gepickt = soloStand.picks.eigen[rolle];
-    soloLetzte = gepickt ? null : {z, liste};
-    if (gepickt) {
-      box.append(el("div", {class: "so-fertig"},
-        el("span", {class: "so-klein"}, "Dein Pick"),
-        el("b", {}, gepickt),
-        el("span", {class: "sub"}, "Feld leeren, um wieder Empfehlungen zu sehen.")));
-      return box;
-    }
-    const erster = liste[0];
-    const lage = erster && erster.lage;
-    box.append(el("div", {class: "so-modus " + (lage ? lage.modus : "")},
-      el("span", {class: "so-klein"}, "Jetzt picken \u00b7 " + ROLES[rolle][1]),
-      lage ? el("span", {class: "so-modus-text"}, lage.modus === "counter" ? "Counterpick"
-        : lage.modus === "teilweise" ? "Lane teilweise bekannt" : "Blindpick") : null));
-    if (erster) box.append(soloEmpfehlung(erster, {gross: true}));
-    // Die Listen ergaenzen die grosse Empfehlung, statt sie zu wiederholen:
-    // links mein Pool, rechts das Beste ausserhalb - keine Zeile doppelt.
-    const ich = liveSoloIch();
-    const rest = liste.filter((r) => r !== erster);
-    const pool = ich ? rest.filter((r) => soloImPool(r.champion)) : [];
-    const ausser = ich ? rest.filter((r) => !soloImPool(r.champion)) : rest;
-    // Fuenf sind auf einen Blick lesbar; der Rest auf Wunsch, ganze Liste
-    // in derselben Reihenfolge. Aufgeklappt bleibt aufgeklappt.
-    const spalte = (titel, eintraege, leer, art) => {
-      const offen = soloMehr[art];
-      const sichtbar = offen ? eintraege : eintraege.slice(0, SOLO_KURZ);
-      const mehr = eintraege.length > SOLO_KURZ
-        ? el("button", {class: "so-mehr", type: "button", "aria-expanded": String(offen)},
-             offen ? "weniger zeigen" : "alle " + eintraege.length + " zeigen")
-        : null;
-      if (mehr) mehr.addEventListener("click", () => { soloMehr[art] = !offen; soloAktualisieren(); });
-      return el("div", {class: "so-spalte " + art},
-        el("h4", {class: "so-klein"}, titel,
-           eintraege.length ? el("span", {class: "so-anzahl"}, " · " + eintraege.length) : null),
-        sichtbar.length ? sichtbar.map((r) => soloEmpfehlung(r))
-          : el("p", {class: "so-leer"}, leer),
-        mehr);
-    };
-    box.append(el("div", {class: "so-spalten"},
-      spalte("Dein Pool", pool, ich ? "Kein Champion aus deinem Pool frei."
-                                    : "Oben wählen, wer du bist – dann steht hier dein Pool.", "pool"),
-      spalte(ich ? "Außerhalb deines Pools" : "Insgesamt", ausser, "Keine Kandidaten.", "ausser")));
-    return box;
-  }
-
-  function soloLage(z) {
-    const L = liveTeile.strategie.lagebild(z, {spielerFuer: soloSpielerFuer});
-    const g = L.groessteGefahr, b = L.groessterBedarf, s = L.siegbedingung;
-    const traeger = (x) => (x && x.traeger || []).map((t) => t.champ || t).filter(Boolean);
-    const feld = (wort, wert, unter) => el("div", {class: "so-lage-feld"},
-      el("span", {class: "so-klein"}, wort),
-      wert ? el("b", {}, wert) : el("span", {class: "so-leer"}, "ab den ersten Picks"),
-      unter ? el("span", {class: "so-lage-unter"}, unter) : null);
-    return el("section", {class: "so-lage", "aria-label": "Lagebild"},
-      feld("Bedarf", b ? b.wort : null, b ? b.grund : null),
-      feld("Größte Gefahr", g ? g.wort : null, g && traeger(g).length ? traeger(g).join(", ") : null),
-      feld("Siegbedingung", s ? s.wort : null, s && s.phase ? s.phase : null));
-  }
-
-  function soloKopf() {
-    const ich = liveSoloIch();
-    const wer = el("select", {class: "so-wahl", "aria-label": "Wer bist du"},
-      el("option", {value: ""}, "Wer bist du?"),
-      team.players.map((p) => el("option", {value: p.label}, p.label + (p.bench ? " \u00b7 Bank" : ""))));
-    wer.value = ich ? ich.label : "";
-    const rolle = el("select", {class: "so-wahl", "aria-label": "Deine Rolle"},
-      ROLES.map(([, wort], i) => el("option", {value: String(i)}, wort)));
-    rolle.value = String(liveSoloRolle());
-    const setze = (eintrag) => {
-      liveSolo[team.team] = eintrag;
-      soloSichern();
-      soloCache.clear();
-      renderSolo();
-    };
-    wer.addEventListener("change", () => {
-      const p = team.players.find((x) => x.label === wer.value) || null;
-      const r = p ? ROLES.findIndex(([w]) => w === p.role) : -1;
-      setze({label: wer.value || null, rolle: r >= 0 ? r : liveSoloRolle()});
-    });
-    rolle.addEventListener("change", () => setze({label: ich ? ich.label : null, rolle: Number(rolle.value)}));
-
-    const risiko = el("select", {class: "so-wahl", "aria-label": "Risikoprofil"},
-      [["sicher", "sicher"], ["ausgewogen", "ausgewogen"], ["aggressiv", "aggressiv"]]
-        .map(([w, t]) => el("option", {value: w}, t)));
-    risiko.value = soloRisiko;
-    risiko.addEventListener("change", () => {
-      soloRisiko = risiko.value;
-      try { window.localStorage.setItem("solo-risiko", soloRisiko); } catch (e) { /* egal */ }
-      renderSolo();
-    });
-    const leeren = el("button", {class: "so-leeren", type: "button"}, "Draft leeren");
-    leeren.addEventListener("click", () => {
-      soloStand.bans.eigen = leer5(); soloStand.bans.gegner = leer5();
-      soloStand.picks.eigen = leer5(); soloStand.picks.gegner = leer5();
-      renderSolo();
-    });
-    const einst = el("details", {class: "so-einst"},
-      el("summary", {}, "Einstellungen"),
-      el("div", {class: "so-einst-inhalt"},
-        el("label", {}, el("span", {class: "so-klein"}, "Risiko"), risiko),
-        el("p", {class: "sub"}, "Sicher: der schlechteste Ausgang zählt mehr. Aggressiv: der beste."),
-        el("p", {class: "sub"}, liveTeile.protokollSolo.anzahl() + " Picks im Solo-Protokoll.")));
-    return el("header", {class: "so-kopf"},
-      el("h2", {class: "so-titel"}, "Solo Queue"),
-      el("div", {class: "so-ich"}, el("span", {class: "so-klein"}, "Du"), wer,
-         el("span", {class: "so-klein"}, "auf"), rolle),
-      el("div", {class: "so-kopf-rechts"}, liveDatenstand(), leeren, einst));
-  }
-
-  // Nur Mitte und Lagebild neu - die Felder behalten Fokus und Eingabe.
-  function soloAktualisieren() {
-    const host = document.getElementById("solo-draft");
-    if (!host || !host.querySelector(".so-mitte")) { renderSolo(); return; }
-    const z = soloZustand();
-    host.querySelector(".so-mitte").replaceWith(soloMitte());
-    host.querySelector(".so-lage").replaceWith(soloLage(z));
-    soloFreiListe();
-  }
-
-  function renderSolo() {
-    const host = document.getElementById("solo-draft");
-    if (!host) return;
-    host.textContent = "";
-    if (!liveTeile || !DRAFT) {
-      host.append(el("p", {class: "hint"}, "Keine Draftdaten eingebettet."));
-      return;
-    }
-    const z = soloZustand();
-    host.append(
-      el("datalist", {id: "so-frei"}),
-      soloKopf(),
-      el("div", {class: "so-buehne"}, soloTeam("eigen"), soloMitte(), soloTeam("gegner")),
-      soloLage(z),
-      el("p", {class: "so-fuss"}, "Entscheidungshilfe, keine Prognose \u00b7 nur dein Pool zählt, "
-        + "Mitspieler und Gegner sind fremd \u00b7 Daten aus der Solo Queue (DraftGap)."));
-    soloFreiListe();
-  }
-
-  /* ================================================ Einschätzung prüfen
-     Die Ersteinschätzung (Vorschlag, ungeprüft) zählt nach Entscheidung A
-     nicht in der Note. Hier wird sie geprüft: so lassen und übernehmen,
-     oder Achsen umstellen - beides macht daraus einen geprüften Eintrag.
-     Reihenfolge nach Spielhäufigkeit im Patch: die ersten Zeilen decken
-     die meisten Drafts ab. */
-  const HZ_ACHSEN = ENGINE.ACHSEN.filter((a) => !ENGINE.GEMESSEN_VORHANDEN.has(a));
-  const HZ_KURZ = {engage: "Eng", disengage: "Dis", peel: "Peel", frontline: "Front",
-                   dive: "Dive", catch: "Catch", poke: "Poke", siege: "Siege",
-                   splitpush: "Split", teamfight: "TF", objective: "Obj"};
-  const HZ_LANG = {objective: "Objective"};   // "Objective Control" passt nicht
-  const HZ_FILTER = [["alle", "Alle"], ["offen", "Ungeprüft"], ["geprueft", "Geprüft"],
-                     ["unsere", "Unsere Pools"]];
-  let hzFilter = "alle";
-  let hzSuche = "";
-
-  function hzChampions() {
-    const roh = heuristikRoh();
-    const namen = new Set([...Object.keys(roh.vorschlag || {}),
-                           ...Object.keys(roh.champions || {}),
-                           ...Object.keys(geprueftWirksam())]);
-    const haeufig = (c) => {
-      const w = DRAFT && DRAFT.prioritaet ? DRAFT.prioritaet(c) : null;
-      return w ? w.value : 0;
-    };
-    return [...namen].sort((a, b) => haeufig(b) - haeufig(a) || (a < b ? -1 : 1));
-  }
-
-  // Champions in den Pools und im Draftplan des gewählten Teams.
-  function hzUnsere() {
-    const raus = new Set();
-    for (const p of team.players) {
-      // Ranked und Liga, jede Season: ab 3 Partien gilt er als Pool.
-      for (const q of ["RANKED", "LIGA"]) {
-        for (const s of (p.queues || {})[q] || []) for (const c of s.champions || []) {
-          if ((c.win || 0) + (c.lose || 0) >= 3) raus.add(c.champ);
-        }
-      }
-      const pl = planOf(p);
-      for (const c of [...pl.blind, ...pl.likes]) raus.add(c);
-    }
-    return raus;
-  }
-
-  function hzWerte(champ) {
-    const g = geprueftWirksam()[champ];
-    if (g) return {werte: g, art: "geprueft"};
-    return {werte: (heuristikRoh().vorschlag || {})[champ] || {}, art: "vorschlag"};
-  }
-
-  function hzSetze(champ, werte) {
-    const neu = {...geprueftWirksam()};
-    if (werte) neu[champ] = werte; else delete neu[champ];
-    // Gleich der Datei? Dann gibt es nichts Lokales mehr.
-    const gleich = JSON.stringify(Object.keys(neu).sort().map((k) => [k, neu[k]]))
-      === JSON.stringify(Object.keys(geprueftDatei()).sort().map((k) => [k, geprueftDatei()[k]]));
-    lokaleHeuristik = gleich ? null : neu;
-    heuristikSichern();
-    liveHeuristikNeu();
-    renderHeuristik();
-    renderLiveDraft();
-  }
-
-  function hzZeile(champ) {
-    const {werte, art} = hzWerte(champ);
-    const src = iconUrl(champ);
-    const rollen = ENGINE.moeglicheRollen(DRAFT, champ)
-      .map((r) => ENGINE.ROLLEN_WORT[r.rolle] || r.rolle).join(" · ");
-    const achsen = HZ_ACHSEN.map((a) => {
-      const v = Math.max(0, Math.min(2, Number(werte[a]) || 0));
-      const k = el("button", {class: "hz-achse s" + v, type: "button",
-          "aria-label": champ + ", " + (ENGINE.ACHSEN_WORT[a] || a) + ": " + v,
-          title: (ENGINE.ACHSEN_WORT[a] || a) + " — "
-                 + (((heuristikRoh()._achsen || {})[a]) || "")
-                 + "\nKlick: 0 → 1 → 2 → 0. Ändern macht den Eintrag zu eurem."},
-        v ? String(v) : "\u00b7");
-      k.addEventListener("click", () => {
-        hzSetze(champ, {...werte, [a]: (v + 1) % 3});
-      });
-      return k;
-    });
-    const knopf = art === "geprueft"
-      ? el("button", {class: "del hz-knopf", type: "button",
-                      title: "Euren Eintrag entfernen - es gilt wieder die ungeprüfte Ersteinschätzung"},
-           "Zurück zum Vorschlag")
-      : el("button", {class: "more hz-knopf", type: "button",
-                      title: "So übernehmen - zählt dann in der Note"}, "Übernehmen");
-    knopf.addEventListener("click", () => hzSetze(champ, art === "geprueft" ? null : {...werte}));
-    return el("div", {class: "hz-zeile " + art},
-      el("span", {class: "hz-champ"},
-        src ? el("img", {src, alt: "", loading: "lazy"}) : null,
-        el("b", {}, champ),
-        el("span", {class: "sub"}, rollen),
-        el("span", {class: "hz-art " + art}, art === "geprueft" ? "geprüft" : "Vorschlag")),
-      el("span", {class: "hz-achsen"}, achsen),
-      knopf);
-  }
-
-  /* Wie weit der Kopf der Liste von oben klebt: so hoch, wie die Leiste
-     oben gerade ist - gemessen, sie bricht je nach Breite um. Ist sie
-     nicht klebend (Handy), dann 0. */
-  function hzKopfVersatz() {
-    const bar = document.querySelector(".bar");
-    const h = bar && getComputedStyle(bar).position === "sticky"
-      ? Math.round(bar.getBoundingClientRect().height) : 0;
-    document.documentElement.style.setProperty("--bar-hoehe", h + "px");
-  }
-  window.addEventListener("resize", hzKopfVersatz);
-
-  function renderHeuristik() {
-    const host = document.getElementById("hz-liste");
-    if (!host) return;
-    hzKopfVersatz();
-    const geprueft = geprueftWirksam();
-    const alle = hzChampions();
-    const unsere = hzFilter === "unsere" ? hzUnsere() : null;
-    const liste = alle.filter((c) =>
-      (!hzSuche || c.toLowerCase().includes(hzSuche))
-      && (hzFilter === "alle" ? true
-          : hzFilter === "offen" ? !geprueft[c]
-          : hzFilter === "geprueft" ? !!geprueft[c]
-          : unsere.has(c)));
-    const nGeprueft = alle.filter((c) => geprueft[c]).length;
-    document.getElementById("hz-hint").textContent =
-      nGeprueft + " von " + alle.length + " Champions geprüft. Nur geprüfte Einträge "
-      + "zählen in der Note (Störung, Comp-Achsen); die übrigen sind Kontext im "
-      + "Lagebild. Sortiert nach Spielhäufigkeit im Patch."
-      + (lokaleHeuristik ? " Geändert in diesem Browser - zum Speichern unten." : "");
-    document.getElementById("hz-zahl").textContent = liste.length + " angezeigt";
-    const filter = document.getElementById("hz-filter");
-    filter.textContent = "";
-    for (const [wert, wort] of HZ_FILTER) {
-      const k = el("button", {type: "button", "aria-pressed": String(hzFilter === wert)}, wort);
-      k.addEventListener("click", () => { hzFilter = wert; renderHeuristik(); });
-      filter.append(k);
-    }
-    host.textContent = "";
-    host.append(el("div", {class: "hz-zeile hz-kopf", "aria-hidden": "true"},
-      el("span", {class: "hz-champ"}, "Champion"),
-      el("span", {class: "hz-achsen"}, HZ_ACHSEN.map((a) =>
-        el("span", {class: "hz-achse-wort", title: ENGINE.ACHSEN_WORT[a] || a},
-          el("span", {class: "lang"}, HZ_LANG[a] || ENGINE.ACHSEN_WORT[a] || a),
-          el("span", {class: "kurz"}, HZ_KURZ[a] || a)))),
-      el("span", {})));
-    host.append(...liste.map(hzZeile));
-    const ohne = document.getElementById("hz-verwerfen");
-    ohne.disabled = !lokaleHeuristik;
-  }
-
-  function hzDateiText() {
-    return ENGINE.heuristikDatei(heuristikRoh(), geprueftWirksam(),
-                                 new Date().toISOString().slice(0, 10));
-  }
-  const hzNote = (t) => { document.getElementById("hz-note").textContent = t || ""; };
-
-  document.getElementById("hz-suche").addEventListener("input", (e) => {
-    hzSuche = e.target.value.trim().toLowerCase();
-    renderHeuristik();
-  });
-  document.getElementById("hz-speichern").addEventListener("click", () => {
-    if (!SERVER) {
-      downloadFile("champion-heuristik.json", hzDateiText(), "application/json");
-      hzNote("Ohne laufendes Programm nur als Datei: nach data/ legen (die alte "
-           + "ersetzen) und python build.py --pages laufen lassen.");
-      return;
-    }
-    hzNote("Speichere ...");
-    saveToServer("heuristik", hzDateiText())
-      .then(() => afterServerSave([HZ_KEY]))
-      .catch((err) => hzNote("Nicht gespeichert: " + err.message));
-  });
-  document.getElementById("hz-download").addEventListener("click", () => {
-    downloadFile("champion-heuristik.json", hzDateiText(), "application/json");
-    hzNote("Heruntergeladen. Nach data/ legen (die alte ersetzen) und neu bauen.");
-  });
-  document.getElementById("hz-verwerfen").addEventListener("click", () => {
-    lokaleHeuristik = null;
-    heuristikSichern();
-    liveHeuristikNeu();
-    renderHeuristik();
-    renderLiveDraft();
-    hzNote("Verworfen - es gilt wieder der Stand aus der Datei.");
-  });
-
+  //@ui live/solo.js
+  //@ui scout/einschaetzung.js
+  //@ui scout/zahlen.js
+  //@ui scout/filter.js
   async function saveToServer(what, text) {
     const answer = await fetch("api/save/" + what, {method: "POST", body: text});
     const info = await answer.json().catch(() => ({}));
@@ -6782,6 +5154,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     const seasonless = SEASONLESS.has(queue);
     document.getElementById("season-switch").hidden = seasonless;
     document.getElementById("season-label").hidden = seasonless;
+    document.getElementById("season-gruppe").hidden = seasonless;
     renderPlayersScope();
     if (seasonless) return;
     const options = SEASONS.map((s) => [s, seasonLabel(s), seasonFull(s)]);
@@ -7615,13 +5988,14 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     }
 
     const b = s.bilanz;
-    host.append(el("div", {class: "chips"},
-      el("span", {class: "chip main"}, b.n + (b.n === 1 ? " Partie" : " Partien")),
-      el("span", {class: "chip main"}, b.siege + " Siege · " + pct(b.siege, b.n)),
-      b.blau ? el("span", {class: "chip"}, el("b", {}, "Blau"), " " + b.blau
-                 + " · " + pct(b.blauSiege, b.blau)) : null,
-      b.rot ? el("span", {class: "chip"}, el("b", {}, "Rot"), " " + b.rot
-                + " · " + pct(b.rotSiege, b.rot)) : null));
+    host.append(zahlenZeile([
+      {label: b.n === 1 ? "Partie" : "Partien", wert: b.n},
+      {label: "Winrate", wert: pct(b.siege, b.n), fuss: b.siege + (b.siege === 1 ? " Sieg" : " Siege")},
+      b.blau ? {label: "Blau", wert: pct(b.blauSiege, b.blau),
+                fuss: b.blau + (b.blau === 1 ? " Partie" : " Partien")} : null,
+      b.rot ? {label: "Rot", wert: pct(b.rotSiege, b.rot),
+               fuss: b.rot + (b.rot === 1 ? " Partie" : " Partien")} : null,
+    ]));
 
     // Die Blickrichtung "gegen uns" ist je nach gewaehlter Mannschaft eine
     // andere Frage - die Beschriftung sagt, welche.
@@ -7665,13 +6039,12 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
 
     const zahlen = document.getElementById("liga-zahlen");
     zahlen.textContent = "";
-    for (const [wert, name] of [[u.partien, "Partien"], [u.mannschaften, "Mannschaften"],
-                                [u.spieler, "Spieler"], [u.champions, "Champions"],
-                                [u.dauer_schnitt_sek ? dauer(u.dauer_schnitt_sek) : null,
-                                 "Ø Spieldauer"]]) {
-      if (wert === null || wert === undefined) continue;
-      zahlen.append(el("span", {class: "chip"}, el("b", {}, String(wert)), " " + name));
-    }
+    zahlen.append(zahlenZeile([[u.partien, "Partien"], [u.mannschaften, "Mannschaften"],
+                               [u.spieler, "Spieler"], [u.champions, "Champions"],
+                               [u.dauer_schnitt_sek ? dauer(u.dauer_schnitt_sek) : null,
+                                "Ø Spieldauer"]]
+      .filter(([wert]) => wert !== null && wert !== undefined)
+      .map(([wert, label]) => ({label, wert})), {titel: "Liga"}));
 
     // Blau gegen Rot - erste Frage vor jedem Draft: lohnt sich die Seitenwahl?
     const s = LIGA.seiten || {};
@@ -7841,28 +6214,57 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
 
   if (!DATA.ligaGesamt) document.getElementById("tab-liga").hidden = true;
 
+  // Reihenfolge wie im Kopf: LIVE, SCOUT, REVIEW.
   const tabs = [
-    [document.getElementById("tab-players"), document.getElementById("panel-players")],
-    [document.getElementById("tab-plan"), document.getElementById("panel-plan")],
-    [document.getElementById("tab-heuristik"), document.getElementById("panel-heuristik")],
+    [document.getElementById("tab-briefing"), document.getElementById("panel-briefing")],
     [document.getElementById("tab-draft"), document.getElementById("panel-draft")],
     [document.getElementById("tab-solo"), document.getElementById("panel-solo")],
+    [document.getElementById("tab-players"), document.getElementById("panel-players")],
     [document.getElementById("tab-liga"), document.getElementById("panel-liga")],
+    [document.getElementById("tab-plan"), document.getElementById("panel-plan")],
+    [document.getElementById("tab-heuristik"), document.getElementById("panel-heuristik")],
     [document.getElementById("tab-games"), document.getElementById("panel-games")],
+    [document.getElementById("tab-planist"), document.getElementById("panel-planist")],
   ];
+  const modusKnoepfe = [...document.querySelectorAll(".modi .modus")];
+  const reiterLeiste = document.querySelector(".tabs");
+  const aktiverModus = () => reiterLeiste.dataset.modus;
+  // Die Reiter des aktuellen Modus - nur sie sind sichtbar und erreichbar.
+  const reiterImModus = () => tabs.filter(([t]) => !t.hidden && t.dataset.modus === aktiverModus());
+
+  function zeigeModus(modus) {
+    reiterLeiste.dataset.modus = modus;
+    document.body.dataset.modus = modus;
+    for (const k of modusKnoepfe) k.setAttribute("aria-pressed", String(k.dataset.modus === modus));
+  }
   function aktiverReiter() {
     const treffer = tabs.find(([t]) => t.getAttribute("aria-selected") === "true");
     return treffer ? treffer[0].id : "tab-players";
   }
 
   function zeigeReiter(ziel) {
+    zeigeModus(ziel.dataset.modus);
+    REITER_JE_MODUS[ziel.dataset.modus] = ziel.id;
     for (const [t, p] of tabs) {
       const active = t === ziel;
       t.setAttribute("aria-selected", String(active));
       t.tabIndex = active ? 0 : -1;      // rovierender Fokus, wie bei ARIA-Reitern
       p.hidden = !active;
     }
+    // Briefing und Plan gegen Ist rechnen erst, wenn sie offen sind.
+    if (ziel.id === "tab-briefing") renderBriefing();
+    if (ziel.id === "tab-planist") renderPlanIst();
     saveView();
+  }
+
+  // Ein Modus oeffnet den Reiter, der dort zuletzt offen war.
+  for (const k of modusKnoepfe) {
+    k.addEventListener("click", () => {
+      const m = k.dataset.modus;
+      const ziel = tabs.find(([t]) => t.id === REITER_JE_MODUS[m] && !t.hidden)
+                || tabs.find(([t]) => t.dataset.modus === m && !t.hidden);
+      if (ziel) zeigeReiter(ziel[0]);
+    });
   }
 
   for (const [tab] of tabs) {
@@ -7873,7 +6275,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
       const richtung = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
       if (!richtung) return;
       e.preventDefault();
-      const sichtbar = tabs.filter(([t]) => !t.hidden).map(([t]) => t);
+      const sichtbar = reiterImModus().map(([t]) => t);
       const stelle = sichtbar.indexOf(tab);
       const naechste = sichtbar[(stelle + richtung + sichtbar.length) % sichtbar.length];
       zeigeReiter(naechste);
@@ -7898,12 +6300,19 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     }
     if (imFeld) return;
 
+    // Im LIVE-Cockpit gelten eigene Kuerzel (ui/live/cockpit.js, cpTaste).
+    if (cpTaste(e)) { e.preventDefault(); return; }
+
     if (e.key === "/") {                       // suchen, ohne hinzuzielen
-      if (feld && !feld.closest("[hidden]")) { e.preventDefault(); feld.focus(); feld.select(); }
+      // Im LIVE-Modus gibt es den Championfilter nicht - dort sucht der
+      // Live Draft selbst.
+      const ziel = feld && feld.offsetParent ? feld
+        : document.querySelector("#live-draft .ld-suche");
+      if (ziel && ziel.offsetParent) { e.preventDefault(); ziel.focus(); ziel.select(); }
       return;
     }
-    if (e.key >= "1" && e.key <= "9") {
-      const sichtbar = tabs.filter(([t]) => !t.hidden);
+    if (e.key >= "1" && e.key <= "9") {        // die Reiter des Modus
+      const sichtbar = reiterImModus();
       const gewaehlt = sichtbar[Number(e.key) - 1];
       if (gewaehlt) { e.preventDefault(); zeigeReiter(gewaehlt[0]); gewaehlt[0].focus(); }
     }
@@ -8647,9 +7056,11 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
   renderPlayers();
   renderGames();
   renderLiga();
+  renderNamenswechsel();
   // Zuletzt der Reiter: die Panels muessen erst gefuellt sein.
+  if (blick.letzte && typeof blick.letzte === "object") Object.assign(REITER_JE_MODUS, blick.letzte);
   const starterReiter = tabs.find(([t]) => t.id === blick.tab && !t.hidden);
-  zeigeReiter(starterReiter ? starterReiter[0] : tabs[0][0]);
+  zeigeReiter(starterReiter ? starterReiter[0] : document.getElementById("tab-players"));
   detectServer();          // laeuft die Seite unter serve.py?
   if (!STORAGE_OK) {
     setNote("Achtung: Dieser Browser erlaubt hier kein localStorage – eingetragene Spiele "

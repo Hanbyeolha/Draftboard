@@ -16951,5 +16951,701 @@
         "champ": "Jhin"
       }
     ]
+  },
+  {
+    "series": "MTV Lichtenberg vs SSV Remlingen 2 - Best-of-3 (12.10.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-10-12",
+    "matchId": "EUW1_8011623307",
+    "blue": "MTV Lichtenberg",
+    "red": "SSV Remlingen 2",
+    "winner": "SSV Remlingen 2",
+    "picks": {
+      "MTV Lichtenberg": [
+        {
+          "role": "TOP",
+          "champ": "Fiora",
+          "player": "xSPEXx",
+          "k": 1,
+          "d": 8,
+          "a": 0,
+          "cs": 181,
+          "gold": 9154,
+          "dmg": 16185,
+          "taken": 34518,
+          "vs": 27,
+          "lvl": 14
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Viego",
+          "player": "UIMAnsumke",
+          "k": 2,
+          "d": 6,
+          "a": 4,
+          "cs": 152,
+          "gold": 9238,
+          "dmg": 7250,
+          "taken": 20082,
+          "vs": 24,
+          "lvl": 12
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Ryze",
+          "player": "Zoom",
+          "k": 2,
+          "d": 5,
+          "a": 4,
+          "cs": 213,
+          "gold": 10420,
+          "dmg": 12604,
+          "taken": 18216,
+          "vs": 17,
+          "lvl": 15
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Tristana",
+          "player": "Lightníngs",
+          "k": 7,
+          "d": 6,
+          "a": 1,
+          "cs": 207,
+          "gold": 12647,
+          "dmg": 15721,
+          "taken": 18519,
+          "vs": 17,
+          "lvl": 13
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rakan",
+          "player": "I am Mayham",
+          "k": 0,
+          "d": 6,
+          "a": 7,
+          "cs": 21,
+          "gold": 6575,
+          "dmg": 2647,
+          "taken": 13836,
+          "vs": 78,
+          "lvl": 11
+        }
+      ],
+      "SSV Remlingen 2": [
+        {
+          "role": "TOP",
+          "champ": "Malphite",
+          "player": "hefenBRO",
+          "k": 2,
+          "d": 1,
+          "a": 4,
+          "cs": 176,
+          "gold": 10416,
+          "dmg": 12260,
+          "taken": 10981,
+          "vs": 33,
+          "lvl": 16
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Shyvana",
+          "player": "KOOOOAHLLLL",
+          "k": 4,
+          "d": 1,
+          "a": 10,
+          "cs": 183,
+          "gold": 10938,
+          "dmg": 13634,
+          "taken": 17631,
+          "vs": 24,
+          "lvl": 16
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Diana",
+          "player": "Meister FiTTi",
+          "k": 6,
+          "d": 4,
+          "a": 4,
+          "cs": 184,
+          "gold": 11287,
+          "dmg": 18508,
+          "taken": 18599,
+          "vs": 29,
+          "lvl": 15
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Xayah",
+          "player": "ChaosIVIaster",
+          "k": 17,
+          "d": 3,
+          "a": 2,
+          "cs": 264,
+          "gold": 17251,
+          "dmg": 30611,
+          "taken": 13367,
+          "vs": 16,
+          "lvl": 15
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Leona",
+          "player": "ziggler10",
+          "k": 2,
+          "d": 3,
+          "a": 14,
+          "cs": 25,
+          "gold": 8926,
+          "dmg": 7003,
+          "taken": 17375,
+          "vs": 66,
+          "lvl": 13
+        }
+      ]
+    },
+    "bans": {
+      "MTV Lichtenberg": [
+        "Malzahar",
+        "Braum",
+        "Jarvan IV",
+        "Amumu",
+        "Wukong"
+      ],
+      "SSV Remlingen 2": [
+        "Kayn",
+        "Camille",
+        "Swain",
+        "Viktor",
+        "Sylas"
+      ]
+    },
+    "time": "2026-10-12T18:00:00+00:00",
+    "dauer": 1624,
+    "teamStats": {
+      "MTV Lichtenberg": {
+        "tuerme": 3,
+        "drachen": 0,
+        "barone": 0,
+        "herolde": 1,
+        "inhibitoren": 0,
+        "firstBlood": true,
+        "firstTower": false
+      },
+      "SSV Remlingen 2": {
+        "tuerme": 9,
+        "drachen": 4,
+        "barone": 1,
+        "herolde": 0,
+        "inhibitoren": 1,
+        "firstBlood": false,
+        "firstTower": true
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "ChaosIVIaster",
+        "champ": "Xayah"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "ziggler10",
+        "champ": "Leona"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "I am Mayham",
+        "champ": "Rakan"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "ChaosIVIaster",
+        "champ": "Xayah"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "ChaosIVIaster",
+        "champ": "Xayah"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "Lightníngs",
+        "champ": "Tristana"
+      }
+    ]
+  },
+  {
+    "series": "MTV Lichtenberg vs SSV Remlingen 2 - Best-of-3 (12.10.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-10-12",
+    "matchId": "EUW1_8011684966",
+    "blue": "SSV Remlingen 2",
+    "red": "MTV Lichtenberg",
+    "winner": "MTV Lichtenberg",
+    "picks": {
+      "SSV Remlingen 2": [
+        {
+          "role": "TOP",
+          "champ": "Tahm Kench",
+          "player": "hefenBRO",
+          "k": 0,
+          "d": 5,
+          "a": 3,
+          "cs": 190,
+          "gold": 9028,
+          "dmg": 7630,
+          "taken": 36475,
+          "vs": 23,
+          "lvl": 17
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "KOOOOAHLLLL",
+          "k": 3,
+          "d": 7,
+          "a": 4,
+          "cs": 206,
+          "gold": 11593,
+          "dmg": 10149,
+          "taken": 36030,
+          "vs": 29,
+          "lvl": 15
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Annie",
+          "player": "Meister FiTTi",
+          "k": 1,
+          "d": 8,
+          "a": 4,
+          "cs": 198,
+          "gold": 9972,
+          "dmg": 18691,
+          "taken": 25958,
+          "vs": 22,
+          "lvl": 15
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Kai'Sa",
+          "player": "ChaosIVIaster",
+          "k": 4,
+          "d": 6,
+          "a": 4,
+          "cs": 310,
+          "gold": 16250,
+          "dmg": 20106,
+          "taken": 23449,
+          "vs": 28,
+          "lvl": 15
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Karma",
+          "player": "ziggler10",
+          "k": 3,
+          "d": 4,
+          "a": 5,
+          "cs": 36,
+          "gold": 9042,
+          "dmg": 8691,
+          "taken": 14352,
+          "vs": 94,
+          "lvl": 13
+        }
+      ],
+      "MTV Lichtenberg": [
+        {
+          "role": "TOP",
+          "champ": "Yone",
+          "player": "xSPEXx",
+          "k": 17,
+          "d": 2,
+          "a": 5,
+          "cs": 297,
+          "gold": 20750,
+          "dmg": 52615,
+          "taken": 30611,
+          "vs": 18,
+          "lvl": 20
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "FiddleSticks",
+          "player": "UIMAnsumke",
+          "k": 4,
+          "d": 2,
+          "a": 14,
+          "cs": 200,
+          "gold": 12730,
+          "dmg": 22112,
+          "taken": 25970,
+          "vs": 107,
+          "lvl": 17
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Galio",
+          "player": "Zoom",
+          "k": 4,
+          "d": 2,
+          "a": 8,
+          "cs": 190,
+          "gold": 11127,
+          "dmg": 12468,
+          "taken": 14098,
+          "vs": 27,
+          "lvl": 17
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Sivir",
+          "player": "Lightníngs",
+          "k": 4,
+          "d": 3,
+          "a": 6,
+          "cs": 269,
+          "gold": 14116,
+          "dmg": 17792,
+          "taken": 22670,
+          "vs": 25,
+          "lvl": 16
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lulu",
+          "player": "I am Mayham",
+          "k": 1,
+          "d": 2,
+          "a": 10,
+          "cs": 18,
+          "gold": 8453,
+          "dmg": 3740,
+          "taken": 12263,
+          "vs": 93,
+          "lvl": 13
+        }
+      ]
+    },
+    "bans": {
+      "SSV Remlingen 2": [
+        "Kayn",
+        "Camille",
+        "Swain",
+        "Sylas",
+        "Viktor"
+      ],
+      "MTV Lichtenberg": [
+        "Malzahar",
+        "Jarvan IV",
+        "Amumu",
+        "Ornn",
+        "Syndra"
+      ]
+    },
+    "time": "2026-10-12T18:35:42.232676+00:00",
+    "dauer": 1896,
+    "teamStats": {
+      "SSV Remlingen 2": {
+        "tuerme": 3,
+        "drachen": 0,
+        "barone": 0,
+        "herolde": 1,
+        "inhibitoren": 0,
+        "firstBlood": false,
+        "firstTower": false
+      },
+      "MTV Lichtenberg": {
+        "tuerme": 11,
+        "drachen": 4,
+        "barone": 2,
+        "herolde": 0,
+        "inhibitoren": 3,
+        "firstBlood": true,
+        "firstTower": true
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "xSPEXx",
+        "champ": "Yone"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "UIMAnsumke",
+        "champ": "FiddleSticks"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "UIMAnsumke",
+        "champ": "FiddleSticks"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "ChaosIVIaster",
+        "champ": "Kai'Sa"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "xSPEXx",
+        "champ": "Yone"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "xSPEXx",
+        "champ": "Yone"
+      }
+    ]
+  },
+  {
+    "series": "MTV Lichtenberg vs SSV Remlingen 2 - Best-of-3 (12.10.2026)",
+    "game": 3,
+    "format": "fearless",
+    "date": "2026-10-12",
+    "matchId": "EUW1_8011756287",
+    "blue": "MTV Lichtenberg",
+    "red": "SSV Remlingen 2",
+    "winner": "SSV Remlingen 2",
+    "picks": {
+      "MTV Lichtenberg": [
+        {
+          "role": "TOP",
+          "champ": "Jax",
+          "player": "xSPEXx",
+          "k": 9,
+          "d": 8,
+          "a": 1,
+          "cs": 257,
+          "gold": 14856,
+          "dmg": 30848,
+          "taken": 47085,
+          "vs": 27,
+          "lvl": 17
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Vi",
+          "player": "UIMAnsumke",
+          "k": 1,
+          "d": 7,
+          "a": 4,
+          "cs": 186,
+          "gold": 9960,
+          "dmg": 6916,
+          "taken": 28440,
+          "vs": 38,
+          "lvl": 14
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Viktor",
+          "player": "Zoom",
+          "k": 2,
+          "d": 6,
+          "a": 12,
+          "cs": 228,
+          "gold": 11792,
+          "dmg": 28882,
+          "taken": 18440,
+          "vs": 29,
+          "lvl": 16
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jhin",
+          "player": "Lightníngs",
+          "k": 4,
+          "d": 7,
+          "a": 6,
+          "cs": 234,
+          "gold": 14573,
+          "dmg": 14818,
+          "taken": 19447,
+          "vs": 17,
+          "lvl": 14
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Nautilus",
+          "player": "I am Mayham",
+          "k": 1,
+          "d": 8,
+          "a": 4,
+          "cs": 43,
+          "gold": 9107,
+          "dmg": 9140,
+          "taken": 24111,
+          "vs": 123,
+          "lvl": 13
+        }
+      ],
+      "SSV Remlingen 2": [
+        {
+          "role": "TOP",
+          "champ": "Garen",
+          "player": "hefenBRO",
+          "k": 7,
+          "d": 2,
+          "a": 11,
+          "cs": 185,
+          "gold": 12959,
+          "dmg": 17900,
+          "taken": 28699,
+          "vs": 35,
+          "lvl": 18
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Nocturne",
+          "player": "KOOOOAHLLLL",
+          "k": 10,
+          "d": 4,
+          "a": 13,
+          "cs": 212,
+          "gold": 15165,
+          "dmg": 14897,
+          "taken": 36729,
+          "vs": 33,
+          "lvl": 17
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Mel",
+          "player": "Meister FiTTi",
+          "k": 6,
+          "d": 6,
+          "a": 10,
+          "cs": 203,
+          "gold": 12821,
+          "dmg": 28610,
+          "taken": 20918,
+          "vs": 33,
+          "lvl": 17
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jinx",
+          "player": "ChaosIVIaster",
+          "k": 12,
+          "d": 2,
+          "a": 15,
+          "cs": 293,
+          "gold": 18618,
+          "dmg": 43117,
+          "taken": 20456,
+          "vs": 18,
+          "lvl": 17
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Thresh",
+          "player": "ziggler10",
+          "k": 1,
+          "d": 3,
+          "a": 26,
+          "cs": 27,
+          "gold": 9807,
+          "dmg": 9732,
+          "taken": 19714,
+          "vs": 102,
+          "lvl": 14
+        }
+      ]
+    },
+    "bans": {
+      "MTV Lichtenberg": [
+        "Malzahar",
+        "Jarvan IV",
+        "Amumu",
+        "Ornn",
+        "Shen"
+      ],
+      "SSV Remlingen 2": [
+        "Camille",
+        "Kayn",
+        "Swain",
+        "Sylas",
+        "Mordekaiser"
+      ]
+    },
+    "time": "2026-10-12T19:23:16.493678+00:00",
+    "dauer": 2034,
+    "teamStats": {
+      "MTV Lichtenberg": {
+        "tuerme": 4,
+        "drachen": 1,
+        "barone": 0,
+        "herolde": 0,
+        "inhibitoren": 0,
+        "firstBlood": false,
+        "firstTower": true
+      },
+      "SSV Remlingen 2": {
+        "tuerme": 9,
+        "drachen": 4,
+        "barone": 1,
+        "herolde": 1,
+        "inhibitoren": 1,
+        "firstBlood": true,
+        "firstTower": false
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "ChaosIVIaster",
+        "champ": "Jinx"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "ziggler10",
+        "champ": "Thresh"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "I am Mayham",
+        "champ": "Nautilus"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "ChaosIVIaster",
+        "champ": "Jinx"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "ChaosIVIaster",
+        "champ": "Jinx"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "KOOOOAHLLLL",
+        "champ": "Nocturne"
+      }
+    ]
   }
 ]

@@ -167,3 +167,38 @@ test("ein zweites Protokoll mit eigenem Schluessel mischt sich nicht ein", () =>
   assert.equal(protokollAnlegen({speicher: sp, speicherName: "draft-protokoll-solo"}).anzahl(), 2);
   assert.ok(sp._daten.has("draft-protokoll") && sp._daten.has("draft-protokoll-solo"));
 });
+
+/* Draftboard 2.0, Phase 3: das Draft-Log vergleicht zwei Staende der
+   Felder - wer hat was eingetragen, entfernt, geaendert. */
+test("draftAenderungen: neu, entfernt, geaendert - je Seite, Art und Feld", async () => {
+  const { draftAenderungen } = await import("../engine/log.js");
+  const leer = () => ({bans: {eigen: [null, null], gegner: [null, null]},
+                       picks: {eigen: [null, null], gegner: [null, null]}});
+  const a = leer();
+  const b = leer();
+  b.bans.gegner[0] = "Ahri";
+  b.picks.eigen[1] = "Lee Sin";
+  assert.deepEqual(draftAenderungen(a, b), [
+    {typ: "neu", art: "bans", seite: "gegner", index: 0, champ: "Ahri", alt: null},
+    {typ: "neu", art: "picks", seite: "eigen", index: 1, champ: "Lee Sin", alt: null},
+  ]);
+  const c = JSON.parse(JSON.stringify(b));
+  c.picks.eigen[1] = "Viego";
+  c.bans.gegner[0] = null;
+  assert.deepEqual(draftAenderungen(b, c).map((x) => [x.typ, x.champ, x.alt]),
+                   [["entfernt", null, "Ahri"], ["geaendert", "Viego", "Lee Sin"]]);
+  assert.deepEqual(draftAenderungen(c, c), []);
+  assert.deepEqual(draftAenderungen(null, c).length, 1, "ohne Vorstand: alles ist neu");
+});
+
+test("zuruecknehmen: ein rueckgaengig gemachter Pick ist im Protokoll wieder offen", () => {
+  const p = protokollAnlegen();
+  const s = lage();
+  p.notiere(s, "TOP", EMPFEHLUNGEN);
+  const k = schluessel(s, "TOP");
+  p.nachtragen(k, "Jax");
+  assert.equal(p.alle()[0].gewaehlt, "Jax");
+  assert.equal(p.zuruecknehmen(k, "Gnar"), null, "nur der Champion, der eingetragen ist");
+  assert.equal(p.zuruecknehmen(k, "Jax").gewaehlt, null);
+  assert.equal(p.nachtragen(k, "Ornn").gewaehlt, "Ornn", "danach wieder nachtragbar");
+});

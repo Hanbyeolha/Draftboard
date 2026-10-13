@@ -1,7 +1,7 @@
 /* Merkmalsschicht und Komfort, gegen die echten eingebetteten Daten. */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { ladeDaten } from "./daten.mjs";
+import { ladeDaten, ladeOberflaeche } from "./daten.mjs";
 import { quelleAnlegen } from "../engine/data.js";
 import { heuristikAnlegen } from "../engine/heuristik.js";
 import {
@@ -187,7 +187,7 @@ test("P2.7: ein im Browser eingetragener Blindpick zaehlt im Komfort", async () 
 
 test("P2.7: die Oberflaeche baut die Engine-Mannschaft aus dem Browserplan", async () => {
   const { readFileSync } = await import("node:fs");
-  const html = readFileSync("template.html", "utf8");
+  const html = ladeOberflaeche();
   assert.match(html, /ENGINE\.teamAnlegen\(ENGINE\.planEinsetzen\(DATA\.teams, localPlan\)\)/);
   assert.match(html, /function writePlan\(\)[\s\S]{0,400}livePlanNeu\(\)/,
                "nach jeder Planaenderung neu angelegt");

@@ -416,8 +416,12 @@ es ohne den gekürzten Rand darüber gehoben.
 
 Der Kopf ist **eine Zeile** (`header.bar`, sticky, `z-index: 20`,
 1px-Unterkante): Teamname, Reiter, Teamauswahl, Championfilter. Darunter die
-Umfangszeile je Reiter (`.scope-row`) mit Geltungsbereich, Legendenband und
-Hinweis-Marke. Mehr steht nicht zwischen dem Öffnen und der ersten Championzeile.
+Umfangszeile je Reiter (`.scope-row`): im Spieler-Reiter **Queue und Season als
+sichtbare Knopfreihen** (`.umfang-zeile`, seit 13.10.2026 — vorher in einem
+Aufklappfeld), daneben der Geltungsbereich ohne Dopplung (Queue/Season nur im
+Druck, `.nur-druck`) und der op.gg-Link; das Legendenband T/B/G steht unter den
+Karten. Erste Daten bei 1440 px: **141 px**. Mehr steht nicht zwischen dem
+Öffnen und der ersten Championzeile.
 `header.bar` trägt **kein** `transform`, `filter` oder `backdrop-filter` — sonst
 hängt die am Handy fest positionierte Reiterleiste still um.
 
@@ -497,6 +501,10 @@ zweiteiliger Schlagschatten aus Kontakt- und Streuanteil.
 Fehler aus, der Schatten ohne das Licht nach Kategorie-Default. Wer eine neue
 erhobene Fläche baut, nimmt das Paar oder gar nichts.
 
+**Die LIVE-Regel.** Das Cockpit und das Briefing tragen **keine** Schatten:
+Grund, Fläche, 1px-Rand. Unter Zeitdruck soll nichts schweben. Die Paar-Regel
+gilt für SCOUT und REVIEW.
+
 **Die Ruhe-Regel.** Flächen heben bei Hover nicht an. Die einzige Zustandstiefe
 ist der Anlaufstrich der Tabellenzeile; alles andere bleibt, wo es liegt.
 
@@ -515,6 +523,8 @@ kleine Staffel: `2px` für Chips, Pillen, Badges, Plan-Marker und den aktiven
 Reiter, `--radius-sm: 4px` für Hinweis-Marke, Warnbalken, Ban-Kacheln und
 Vorschaubilder, `3px` für die Winrate-Schiene, `6px` für Pick- und Plan-Kacheln,
 `50%` für Champion-Icons in Tabellenzeilen, `99px` für den Scrollbalken.
+Im LIVE-Modus eine schärfere eigene Staffel: `--radius-live: 6px` für Flächen,
+`--radius-live-sm: 3px` für Knöpfe, Felder und Marken.
 
 Die wiederkehrende Silhouette ist die Karte mit 1px-Rand und **vollflächigem
 Kopffeld**: `border-radius: var(--radius) var(--radius) 0 0`, über negative
@@ -575,17 +585,50 @@ der Champion erkennbar bleibt.
   `input.dup` — Warnrand, Warnfläche, Warnschrift.
 
 ### Navigation
-- **Reiterleiste** (`.tabs`): Gruppe mit `--border`-Grund, 1px-Rand, 10px und 2px
-  Innenabstand; Reiter `2px`-Radius, Archivo 600, `0.84rem`. Inaktiv `--surface`
-  auf `--ink-muted`; aktiv invertiert auf `--ink` mit
-  `inset 0 -3px 0 var(--accent)`.
+Seit Draftboard 2.0 (Oktober 2026) zwei Ebenen in zwei Formen:
+- **Modi** (`.modi`, `.modus`): LIVE · SCOUT · REVIEW als Segment — Gruppe mit
+  `--border`-Grund, 1px-Rand, 2px Innenabstand; Knopf Rajdhani 700, `0.92rem`,
+  Versalien, `0.08em` Laufweite. Inaktiv `--surface` auf `--ink-muted`; aktiv
+  invertiert auf `--ink` mit `inset 0 -3px 0 var(--accent)`, `aria-pressed`.
+  LIVE entscheidet (Briefing, Team-Draft, Solo Queue), SCOUT bereitet vor
+  (Spieler, Liga, Draftplan, Einschätzung), REVIEW schaut zurück
+  (Turnierspiele, Plan gegen Ist).
+- **Reiterleiste** (`.tabs`): nur die Reiter des aktiven Modus
+  (`data-modus` an Leiste und Reiter). Leise: transparent, Archivo 600,
+  `0.84rem`, `--ink-muted`; aktiv `--ink` mit `inset 0 -2px 0 var(--accent)`.
+  ARIA-Reiter mit rovierendem Tabindex; 1–9 und Pfeile bleiben im Modus. Jeder
+  Modus merkt sich seinen letzten Reiter.
+- Im LIVE-Modus ist der Championfilter ausgeblendet (`body[data-modus="live"]`);
+  `/` springt dort in die Suche des Live Drafts.
 - **Segmentierte Schalter** (`.switch`): dieselbe Logik in groß — 10px-Radius,
   starker Rand, `aria-pressed="true"` invertiert auf `--ink`/`--ground`. Trägt
   Theme, Queue und Season.
-- **Mobil (≤680px):** die Reiterleiste wird `position: fixed` am unteren Rand,
-  randlos über die volle Breite, Reiter `flex: 1` in `0.72rem` ohne Unterzeile;
-  die Akzentmarke wandert auf `inset 0 3px 0`. Der Seiteninhalt bekommt dafür
-  `4.5rem` unteren Rand.
+- **Mobil (≤680px):** die **Modi** werden `position: fixed` am unteren Rand,
+  randlos über die volle Breite, drei Knöpfe `flex: 1`; die Akzentmarke wandert
+  auf `inset 0 3px 0`. Die Reiter des Modus stehen als eigene Zeile im Kopf
+  (`order: 9`, waagerecht scrollbar, falls sie nicht passen). Der Seiteninhalt
+  bekommt `4.5rem` unteren Rand. Vorher standen hier sieben gequetschte Reiter
+  („Einschätzu“, „Solo Queu“).
+- **Kopfhöhe** (gemessen): 58 px ab 1024 px in allen Modi, 101 px bei 768, 85 px
+  am Handy. Zwischen 681 und 1200 px rücken Modus, Reiter, Teamwahl und Filter
+  enger (Regeln mit `.bar` davor — die Grundregeln stehen weiter unten).
+
+### SCOUT-Filter
+`.scout-filter` über den Spielerkarten und im Draftplan: `.switch` mit
+[Alle] [Top] [Jungle] [Mid] [Bot] [Support] und „Spieler suchen …“, Zähler
+„2 von 10“, Leerzustand mit „Filter zurücksetzen“. Ein Stand für beide
+Reiter; blendet nur aus (`hidden`), rechnet nichts.
+
+### Zahlenzeile
+`zahlenZeile()` (`ui/scout/zahlen.js`, `.zahlen`/`.zahl`): Kennzahlen als
+Zeile statt als Kästchen — Wert Rajdhani 700 `1.35rem` (`tabular-nums`), darunter
+die Beschriftung `0.6rem` versal in `--ink-faint`, darunter die Einordnung
+`0.66rem`. Kein Rahmen, keine Fläche. Im DOM steht die Beschriftung zuerst
+(Screenreader: „Winrate 51 %“), sichtbar die Zahl oben (`order: -1`). Ein Feld
+mit Aktion ist ein `button.zahl` (Hover unterstreicht die Zahl). Trägt die
+Spielerkarte, die Mannschaftswerte, die Liga-Kennzahlen, die Steckbrief-Bilanz
+und „Plan gegen Ist“. Champion-Chips bleiben Chips — das sind Dinge, keine
+Kennzahlen.
 
 ### Spielerkarte (Signature)
 Die tragende Karte des Boards. Von oben:
@@ -632,18 +675,54 @@ aber an einer einzigen Lage — in Hell lag darunter Fast-Weiß.
 damit beide untereinander vergleichbar stehen. Sie trägt als Einzige Farbe:
 grün ab 52 %, rot unter 48 %, sonst neutral.
 
-**Die Kennzahlen** (`.kennzahlen`, 58 px): drei Felder mit 3-px-Kante links in
-der Rollenfarbe — Spiele, Winrate, Turnier. Das Turnierfeld ist ein `button`
-und öffnet die Turnierpartien; ohne Turnierpartien steht dort „—". Unter
-359 px Containerbreite bricht es auf zwei Spalten, das dritte Feld über die
-volle Breite.
+**Die Kennzahlen** (`.zahlen.kennzahlen`): eine Zahlenzeile in drei festen
+Spalten — Spiele, Winrate, Turnier —, damit Karten nebeneinander vergleichbar
+bleiben. Das Turnierfeld ist ein `button.zahl` und öffnet die Turnierpartien;
+ohne Turnierpartien steht dort „—". Unter 359 px Containerbreite bricht es auf
+zwei Spalten, das dritte Feld über die volle Breite. (Bis Oktober 2026 drei
+Kästchen mit Rollenkante — Draftboard 2.0 hat sie abgelöst.)
 
 Dann die Championtabelle, der Aufklapp-Knopf, die Turnierrollen und zuletzt
 „Details". Bankkarten behalten den Aufbau; ihre Rollen-Pille wird weiß auf
 22 % Weiß statt dunkel auf der Rollenfarbe.
 
-### Live Draft (Signature)
-Eigener Reiter, bewusst eine andere Sprache als die Spielerkarte: dort darf
+### LIVE-Cockpit (Signature)
+Seit Draftboard 2.0 die Standardansicht des Team-Drafts (`ui/live/cockpit.js`,
+Klassen `cp-`). Ein Werkzeug, keine Sammlung schwebender Karten:
+**Flächen mit 1px-Rand, keine Schatten**, eigene Radien `--radius-live: 6px`
+(Flächen) und `--radius-live-sm: 3px` (Knöpfe, Felder) — die SCOUT-Welt bleibt
+bei `--radius` und dem Schattenpaar.
+
+- **Zustandskopf** (`.cp-status`): „Wir picken / Gegner bannt“ in Rajdhani
+  `2rem`, darunter „Pick 1 von 5 · 1. Pickrunde · Blau“; bei unserem Zug Rand
+  und 9 % Tönung in `--eigen`. Rechts der **Fortschritt**: je Seite 5 Bans und
+  5 Picks als 26-px-Marken — fertig mit Icon, aktueller Schritt umrandet mit
+  „jetzt“, übersprungen gestrichelt. Nie nur Farbe. Bis 900 px steht der
+  Fortschritt unter dem Titel, unter 640 px eine Zeile je Seite (Bans | Picks).
+- **Bühne**: unser Team | Mitte | Gegner. Slots mit Rolle, Feld und
+  **Spielerwahl** (Wechsel, Rollentausch); die aktive Rolle als Fläche in der
+  Rollenfarbe (18 %), die Rollenmarke darin in `--role-ink`.
+- **Mitte**: zentrales Suchfeld (Schrittfolge: trägt ein, wo der Schritt es
+  verlangt), Rollenwahl, Plan der Rolle als Kärtchen, **Tier 1** groß (Name
+  Rajdhani `1.75rem`, Note `2.6rem`, bis vier Gründe mit Häkchen, ein Risiko,
+  „Wenn wir das picken“, Komfort/Matchup/Comp/Meta als Zahl + 4-px-Balken),
+  **Tier 2** drei Zeilen, **Tier 3** eingeklappt. Im Gegnerzug: „Gegner wählt
+  wahrscheinlich“ (mit „Modell, keine Gewissheit“) und „Antwort vorbereiten“.
+  Darunter Shortlist und eingeklapptes Draft-Log.
+- **Rückgängig statt Rückfrage**: 6 s eine Leiste „Thresh gepickt (Support) ·
+  Rückgängig“.
+- **Tastatur**: Ziffer auf dem Knopf (`.cp-kbd`, am Touch-Gerät ausgeblendet).
+- **Handy (≤640 px)**: die Mitte gibt ihre Teile per `display: contents` an die
+  Bühne ab; Reihenfolge Aktion → Empfehlungen → Shortlist → wir → Gegner →
+  Suche (bei Ban und Gegnerzug bleibt die Suche oben, dort ist sie die Aktion).
+  Die Draft-Einstellungen klappen in eine Zeile mit dem Stand.
+- Neue Ausnahmen im Cockpit-CSS mit **doppelter Klasse**
+  (`.cp-zeile.cp-gegner-zeile`): die allgemeinen Handy-Regeln stehen weiter
+  unten und gewinnen sonst still.
+
+### Team-Draft, klassische Ansicht (Signature)
+Per „Klassische Ansicht“ einen Klick entfernt: alle Rollen, Lagebild, Filter,
+Matchkarten. Bewusst eine andere Sprache als die Spielerkarte: dort darf
 der Splash-Hero stehen, hier zählt Dichte. Keine großen Bilder, 30-px-Icons,
 klare Statusfarben, keine Animation.
 
@@ -667,6 +746,28 @@ Ab 55 Punkten Rahmen in `--eigen`, ab 70 in `--good` mit 7 % Tönung.
 Die Klassen sind durchgängig `ld-` präfixiert, auch die Modifier
 (`ld-ban`, `ld-pick`, `ld-fearless`) — `ban` und `pick` waren im Board schon
 vergeben und schlugen sonst durch.
+
+### Briefing (LIVE)
+`ui/live/briefing.js`, Klassen `bf-`. Kopf „AFC1 vs [Gegner]“ in Rajdhani
+`2rem` (bei Fearless „Spiel n“), Seite und Risiko. Zwei Spalten: wahrscheinliche
+Picks des Gegners (nummerierte Liste mit Rolle, Spieler, Prozent) |
+**Unsere Prioritäten** mit der gestrichelten Marke **ABLEITUNG** (Bannen
+erwägen, Umkämpft); darunter Gegner je Rolle mit Pools und der Draftplan über
+die volle Breite (Rolle | Spieler | Blind | Gerne | Modell). Jeder Teil nennt
+seine Quelle in `0.74rem` darunter. Unten „Zum Team-Draft“ als Primärknopf.
+
+### Plan gegen Ist (REVIEW)
+`ui/review/plan-ist.js`, Klassen `pi-`. Zahlenzeile „Gesamt“, Tabelle je
+Spieler, dann je Partie fünf Zellen mit 3-px-Kante links: **blind** (Kante und
+Wort in `--good`, „★ blind“), **gerne** (`--blue`), **außerhalb** (Kante
+`--warn` *gestrichelt*, Wort in `--ink`), **kein Plan** (`--ink-faint`). Wort,
+Strichart und Farbe — nie nur Farbe.
+
+### Zustandshinweis
+`zustandsHinweis(art, titel, text, …aktionen)` (`ui/zustaende.js`, `.zh`):
+Titel Rajdhani versal, darunter ein Satz, was fehlt und was hilft — nie „Keine
+Daten.“. Gestrichelter Rand für leer/fehlt, durchgezogen in `--good` für
+fertig, in `--red` für Fehler (dann `role="alert"`).
 
 ### Matchkarte (Signature)
 Ein Turnierspiel, kompakt. Von oben: **Kopf** mit Spielnummer (Rajdhani,
@@ -735,6 +836,14 @@ beim Queuewechsel, 113 beim Teamwechsel, **0 bei jedem Filteranschlag**. Die
 einer einzigen Spalte eine Reihenfolge behaupten würde, die es dort nicht gibt.
 Alles liegt in `@media (prefers-reduced-motion: no-preference)`.
 
+**Die Zustands-Regel (LIVE).** Im Cockpit bewegt sich nur, was sich am Draft
+geändert hat: eine neu eingetragene Marke (`cp-auftauchen`, 220 ms), der Titel
+bei einem neuen Schritt (`cp-wechsel`, 260 ms), ein neu gemerkter Shortlist-
+Eintrag und die Meldung „… vergeben“. Das Cockpit merkt sich, was es beim
+letzten Zeichnen gezeigt hat; Neuzeichnen ohne Änderung (Risiko, Rolle,
+Teamwechsel) bewegt nichts. Kein Pulsieren, keine Hover-Effekte, ebenfalls nur
+unter `prefers-reduced-motion: no-preference`.
+
 ## Do's and Don'ts
 
 ### Do:
@@ -760,6 +869,12 @@ Alles liegt in `@media (prefers-reduced-motion: no-preference)`.
   `einlauf`-Fahne binden, damit sie beim Filtern stumm bleibt.
 - **Do** eine Zustandsmarkierung dreifach absichern, wenn sie im Druck überleben
   muss — Form, Muster und Farbe, wie beim Ban.
+- **Do** Kennzahlen als Zahlenzeile setzen (`zahlenZeile`), nicht als Kästchen.
+- **Do** Abgeleitetes als Ableitung kennzeichnen (Marke **ABLEITUNG**, Quelle
+  darunter) und Modellwerte mit „Modell, keine Gewissheit“ — das Board
+  behauptet nie mehr, als die Daten hergeben.
+- **Do** jeden Leer-, Fehl- und Fertigzustand mit `zustandsHinweis` setzen:
+  Titel plus ein Satz, was hilft.
 
 ### Don't:
 - **Don't** die Rollenfarbe auf einen Haarstrich zurücknehmen oder sie als
@@ -780,8 +895,10 @@ Alles liegt in `@media (prefers-reduced-motion: no-preference)`.
 - **Don't** IBM Plex Mono für Werte verwenden, die verglichen werden — Mono ist
   dem Maschinenwert vorbehalten.
 - **Don't** `header.bar` ein `transform`, `filter` oder `backdrop-filter` geben.
-  Eine Milchglas-Leiste hängt die am Handy fest positionierte Reiterleiste still
-  um.
+  Eine Milchglas-Leiste hängt die am Handy fest positionierten Modi (`.modi`)
+  still um.
+- **Don't** im LIVE-Modus Schatten oder das große `--radius` verwenden, und
+  **don't** dort etwas animieren, das sich nicht gerade am Draft geändert hat.
 - **Don't** die Signaturbewegung an einen zweiten Auslöser hängen (Hover,
   Reiterwechsel, Tastenanschlag im Filter). Sie läuft beim Einlauf, sonst nie.
 - **Don't** Karten mit stark unterschiedlicher Höhe in ein Raster setzen —
