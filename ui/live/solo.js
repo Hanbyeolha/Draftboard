@@ -150,6 +150,9 @@
 
   function soloEmpfehlung(r, {gross = false} = {}) {
     const src = iconUrl(r.champion);
+    const rolle = liveSoloRolle();
+    const z = soloZustand();
+    const w = liveWinraten(z, r.champion, rolle);
     const pool = soloImPool(r.champion);
     const grund = soloGrund(r), gefahr = soloGefahr(r);
     const knopf = el("button", {class: "so-picken", type: "button"}, "Picken");
@@ -162,14 +165,16 @@
       el("span", {class: "so-note " + soloStufe(r.score), title: "Note \u00b7 Entscheidungswert "
                   + Math.round(r.entscheidung)}, String(r.score)),
       grund ? el("span", {class: "so-grund"}, grund) : null,
-      gefahr ? el("span", {class: "so-gefahr"}, gefahr) : null);
+      gefahr ? el("span", {class: "so-gefahr"}, gefahr) : null,
+      // Winrate allgemein und gegen den Lanegegner - immer sichtbar.
+      el("span", {class: "so-wr"}, wrKurz(w), " ",
+         chanceNach(liveChanceMit(z, r.champion, rolle), liveDraftChance(z))));
     const mehr = el("div", {class: "so-rec-mehr"},
-      r.reasons.length ? el("ul", {class: "so-liste-gruende"},
-        r.reasons.map((g) => el("li", {}, g))) : null,
-      r.risks.length ? el("ul", {class: "so-liste-risiken"},
-        r.risks.map((g) => el("li", {}, g))) : null,
+      wrBegruendung(r.reasons, r.risks),
+      wrBlock(w, ROLES[rolle][1]),
       knopf);
-    return el("details", {class: "so-rec" + (gross ? " gross" : "")}, kopf, mehr);
+    // Die grosse Empfehlung steht offen: Begruendung und Winraten sofort.
+    return el("details", {class: "so-rec" + (gross ? " gross" : ""), open: gross}, kopf, mehr);
   }
 
   function soloMitte() {
@@ -192,6 +197,13 @@
       lage ? el("span", {class: "so-modus-text"}, lage.modus === "counter" ? "Counterpick"
         : lage.modus === "teilweise" ? "Lane teilweise bekannt" : "Blindpick") : null));
     if (erster) box.append(soloEmpfehlung(erster, {gross: true}));
+    // Alle Kandidaten meiner Rolle: gegen meine Lanegegner, mit meinem
+    // Lanepartner, Team -> - filterbar (ui/live/winrate.js laneTabelle).
+    const ich0 = liveSoloIch();
+    box.append(laneTabelle({z, rolle,
+      gesperrt: new Map([...ENGINE.gesperrt(z)].map(([c, v]) => [c, v.text || "vergeben"])),
+      pool: {has: soloImPool}, plan: ich0 ? planOf(ich0) : null, wer: ich0 ? ich0.label : null,
+      picken: soloPicken, neuZeichnen: soloAktualisieren}));
     // Die Listen ergaenzen die grosse Empfehlung, statt sie zu wiederholen:
     // links mein Pool, rechts das Beste ausserhalb - keine Zeile doppelt.
     const ich = liveSoloIch();
@@ -293,6 +305,8 @@
     const z = soloZustand();
     host.querySelector(".so-mitte").replaceWith(soloMitte());
     host.querySelector(".so-lage").replaceWith(soloLage(z));
+    const leiste = host.querySelector(".ch-leiste");
+    if (leiste) leiste.replaceWith(chanceLeiste(liveDraftChance(z), {gegnerName: "Gegner"}));
     soloFreiListe();
   }
 
@@ -308,6 +322,7 @@
     host.append(
       el("datalist", {id: "so-frei"}),
       soloKopf(),
+      chanceLeiste(liveDraftChance(z), {gegnerName: "Gegner"}),
       el("div", {class: "so-buehne"}, soloTeam("eigen"), soloMitte(), soloTeam("gegner")),
       soloLage(z),
       el("p", {class: "so-fuss"}, "Entscheidungshilfe, keine Prognose \u00b7 nur dein Pool zählt, "

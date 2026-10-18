@@ -9,7 +9,7 @@ import { merkmaleAnlegen } from "../engine/features.js";
 import { compAnlegen } from "../engine/comp.js";
 import { teamAnlegen } from "../engine/team.js";
 import { bewerterAnlegen, teilGruppen, teilWert, SCORE_GRUPPEN } from "../engine/score.js";
-import { empfehlungAnsicht } from "../engine/ansicht.js";
+import { empfehlungAnsicht, winraten, konter } from "../engine/ansicht.js";
 import { leererDraft } from "../engine/state.js";
 
 const DATA = ladeDaten();
@@ -81,4 +81,39 @@ test("fehlt ein Teil, ist der Wert null - nicht 0", () => {
   assert.equal(a.werte.spieler, null);
   assert.equal(a.plan, null);
   assert.equal(a.pool, null);
+});
+
+test("Winraten: allgemein und je gepicktem Gegner, roh aus DraftGap, Lane zuerst", () => {
+  const z = leererDraft({patch: quelle.patch});
+  z.picks.red.push({champ: "Lee Sin", rolle: "JUNGLE"}, {champ: "Syndra", rolle: "MIDDLE"});
+  const w = winraten(quelle, z, "Ahri", "MIDDLE");
+  assert.deepEqual(w.allgemein, quelle.staerke("Ahri", "MIDDLE"), "allgemein = Patchstaerke, unveraendert");
+  assert.ok(w.allgemein.value > 0.3 && w.allgemein.value < 0.7 && w.allgemein.sampleSize > 0);
+  assert.deepEqual(w.matchups.map((m) => [m.gegner, m.lane]), [["Syndra", true], ["Lee Sin", false]],
+                   "Lanegegner zuerst, dann die uebrigen");
+  assert.deepEqual(w.matchups[0].wert, quelle.matchup("Ahri", "MIDDLE", "Syndra", "MIDDLE"));
+  assert.equal(w.matchups[0].schnitt, 1 - quelle.paarMittel("Syndra", "MIDDLE", "m").value,
+               "Schnitt gegen Syndra = dieselbe Erwartung wie 'sonst' in der Begruendung");
+  // Unsere eigenen Picks sind keine Matchups.
+  z.picks.blue.push({champ: "Thresh", rolle: "UTILITY"});
+  assert.equal(winraten(quelle, z, "Ahri", "MIDDLE").matchups.length, 2);
+  // Ohne Gegnerpick: keine Matchups. Nebenrolle: keine allgemeine Winrate.
+  assert.deepEqual(winraten(quelle, leererDraft({patch: quelle.patch}), "Ahri", "MIDDLE").matchups, []);
+  assert.equal(winraten(quelle, z, "Ahri", "TOP").allgemein, null);
+  // Mit unseren Picks: Duo-Winrate je Mitspieler, Schnitt wie "sonst" in der Begruendung.
+  const m = winraten(quelle, z, "Ahri", "MIDDLE").mit;
+  assert.deepEqual(m.map((x) => x.partner), ["Thresh"]);
+  assert.deepEqual(m[0].wert, quelle.synergie("Ahri", "MIDDLE", "Thresh", "UTILITY"));
+  assert.equal(m[0].schnitt, quelle.paarMittel("Thresh", "UTILITY", "s").value);
+});
+
+test("Konter gegen einen Lanegegner: nur Champions der Rolle, nach bereinigter Quote", () => {
+  const k = konter(quelle, "Syndra", "MIDDLE", "MIDDLE", {max: 15});
+  assert.equal(k.length, 15);
+  assert.ok(k.every((x) => x.champ !== "Syndra" && quelle.staerke(x.champ, "MIDDLE")), "nur echte Midlaner, nicht Syndra selbst");
+  for (let i = 1; i < k.length; i++) assert.ok(k[i - 1].bereinigt >= k[i].bereinigt, "absteigend bereinigt");
+  assert.equal(k[0].schnitt, 1 - quelle.paarMittel("Syndra", "MIDDLE", "m").value);
+  assert.deepEqual(k[0].wert, quelle.matchup(k[0].champ, "MIDDLE", "Syndra", "MIDDLE"), "angezeigt wird die gemessene Quote");
+  // Bereinigung zieht zum Schnitt: nie weiter weg als die gemessene Quote.
+  assert.ok(k.every((x) => Math.abs(x.bereinigt - x.schnitt) <= Math.abs(x.wert.value - x.schnitt) + 1e-12));
 });

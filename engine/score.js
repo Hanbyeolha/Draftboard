@@ -40,6 +40,12 @@ import { ROLLEN_FOLGE, ROLLEN_WORT, gegenseite, offeneRollen } from "./state.js"
 import { moeglicheRollen } from "./data.js";
 import { blindAnlegen, LANE_GEGNER } from "./blind.js";
 
+/* Ab welcher Abweichung vom Schnitt die Begruendung "stark gegen" /
+   "schwach gegen" bzw. "passt zu" / "harmoniert nicht mit" sagt. Benannt,
+   damit die Oberflaeche dieselben Grenzen fuer ihre Farben nimmt
+   (ui/live/winrate.js) - vorher standen sie nur als Zahlen im Code. */
+export const BEGRUENDUNG = {matchup: 0.02, synergie: 0.015};
+
 export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik,
                                  blind = null}) {
   // Ein Blindmodell fuer alle Bewertungen - sein Feldcache gilt ueber
@@ -133,9 +139,9 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik,
     for (const t of [...(gegenLane ? gegenLane.teile : []),
                      ...(gegen ? gegen.teile : [])]) {
       const d = t.quote - t.erwartet;
-      if (d >= 0.02) gruende.push("stark gegen " + t.wer
+      if (d >= BEGRUENDUNG.matchup) gruende.push("stark gegen " + t.wer
         + " (" + prozent(t.quote) + ", sonst " + prozent(t.erwartet) + ")");
-      if (d <= -0.02) risiken.push("schwach gegen " + t.wer
+      if (d <= -BEGRUENDUNG.matchup) risiken.push("schwach gegen " + t.wer
         + " (" + prozent(t.quote) + ", sonst " + prozent(t.erwartet) + ")");
     }
 
@@ -149,9 +155,9 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik,
       });
       for (const t of mit.teile) {
         const d = t.quote - t.erwartet;
-        if (d >= 0.015) gruende.push("passt zu " + t.wer
+        if (d >= BEGRUENDUNG.synergie) gruende.push("passt zu " + t.wer
           + " (" + prozent(t.quote) + ", sonst " + prozent(t.erwartet) + ")");
-        if (d <= -0.015) risiken.push("harmoniert nicht mit " + t.wer
+        if (d <= -BEGRUENDUNG.synergie) risiken.push("harmoniert nicht mit " + t.wer
           + " (" + prozent(t.quote) + ", sonst " + prozent(t.erwartet) + ")");
       }
     }

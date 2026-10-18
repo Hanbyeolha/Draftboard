@@ -133,7 +133,7 @@ def lage(p):
       unter: (document.querySelector('.cp-unter') || {}).textContent || '',
       hinweis: (document.querySelector('.cp-hinweis') || {}).textContent || '',
       t1: (document.querySelector('.cp-tier1-name strong') || {}).textContent || null,
-      t2: [...document.querySelectorAll('.cp-tier2 .cp-zeile b')].map((b) => b.textContent),
+      t2: [...document.querySelectorAll('.cp-tier2 .cp-zeile-text > b')].map((b) => b.textContent),
       t3: document.querySelectorAll('.cp-tier3 .cp-zeile').length,
       shortlist: [...document.querySelectorAll('.cp-sl b')].map((b) => b.textContent),
       meldung: (document.querySelector('.cp-meldung') || {}).textContent || null,
@@ -178,6 +178,38 @@ def main():
             pruefe(sum(1 for m in l["marken"] if "fertig" in m) == 6, "Fortschritt: 6 Bans fertig")
             if breite <= 640:
                 handy_reihenfolge(p, True)
+            # Winraten (18.10.2026): ohne Gegnerpick nur die allgemeine, dazu der Hinweis
+            wr = p.evaluate("""() => ({zeilen: document.querySelectorAll('.cp-tier1 .wr-zeile').length,
+              text: (document.querySelector('.cp-tier1 .wr-block') || {}).textContent || '',
+              kurz: document.querySelectorAll('.cp-tier2 .wr-kurz').length,
+              warum: document.querySelectorAll('.cp-tier2 .cp-warum').length})""")
+            pruefe(wr["zeilen"] == 1 and "allgemein auf" in wr["text"] and "noch kein Gegnerpick" in wr["text"]
+                   and "%" in wr["text"], "Tier 1: allgemeine Winrate, Matchups noch offen")
+            pruefe(wr["kurz"] == 3 and wr["warum"] == 3, "Tier 2: Winrate-Zeile und 'Warum?' je Alternative")
+            # Draft laut Patchdaten (18.10.2026): Leiste mit Trefferquote; ohne Lanegegner der Hinweis
+            ch = p.evaluate("""() => ({text: (document.querySelector('#live-draft .ch-leiste') || {}).textContent || '',
+              nach: document.querySelectorAll('.cp-tier1 .ch-nach, .cp-tier2 .ch-nach').length,
+              offen: ((document.querySelector('#live-draft .lt .ko-kopf') || {}).textContent || '').includes('Lanegegner noch offen')})""")
+            pruefe("Draft laut Patchdaten".lower() in ch["text"].lower() and "Turnierspielen" in ch["text"],
+                   "Draft-Leiste mit Trefferquote")
+            pruefe(ch["nach"] == 4, "Team -> % bei Top-Empfehlung und den drei Alternativen")
+            pruefe(ch["offen"], "Lane-Tabelle: Lanegegner noch offen, Tabelle trotzdem da")
+            # Filter und Sortierung der Lane-Tabelle
+            p.locator("#live-draft .lt-filter button", has_text="Pool").click()
+            p.wait_for_timeout(700)
+            pool = p.evaluate("""() => [...document.querySelectorAll('#live-draft .lt .lt-zeile:not(.lt-kopfzeile)')]
+              .map((z) => [...z.querySelectorAll('.cp-plan')].some((m) => m.textContent === 'Pool'))""")
+            pruefe(pool and all(pool), f"Filter Pool: nur Pool-Champions ({len(pool)})")
+            p.locator("#live-draft .lt-filter button", has_text="Alle").click()
+            p.wait_for_timeout(500)
+            p.locator("#live-draft .lt-sort button", has_text="allgemein").click()
+            p.wait_for_timeout(700)
+            werte = p.evaluate("""() => [...document.querySelectorAll('#live-draft .lt .lt-zeile:not(.lt-kopfzeile)')]
+              .map((z) => parseFloat([...z.querySelectorAll('.lt-wert b')].pop().textContent.replace(',', '.')))""")
+            pruefe(werte == sorted(werte, reverse=True), "Sortieren nach allgemein: absteigend")
+            p.locator("#live-draft .lt-sort button", has_text="Team").click()
+            p.wait_for_timeout(500)
+            chance_vorher = ch["text"]
             tastatur(p, l)
 
             # Merken (Tier 2), Verwerfen (Tier 1), den neuen ersten auch merken
@@ -241,6 +273,34 @@ def main():
             l = lage(p)
             pruefe(l["meldung"] is not None and gemerkt in l["meldung"] and t1 not in l["meldung"]
                    and "noch 0" in l["meldung"], "Meldung: " + str(l["meldung"]))
+            jetzt = p.evaluate("() => (document.querySelector('#live-draft .ch-leiste') || {}).textContent || ''")
+            pruefe(jetzt != chance_vorher and "Matchups" in jetzt, "Draft-Leiste geht live mit den Picks mit")
+            # Gegner hat jetzt Picks: unsere naechste Empfehlung zeigt Matchups gegen sie
+            gegner_picks = p.evaluate("""() => [...document.querySelectorAll('.cp-team.gegner .cp-picks input')]
+              .filter((i) => i.value).length""")
+            eigene_picks = p.evaluate("""() => [...document.querySelectorAll('.cp-team.eigen .cp-picks input')]
+              .filter((i) => i.value).length""")
+            if p.locator(".cp-tier1").count():
+                mz = p.locator(".cp-tier1 .wr-zeile").count()
+                pruefe(mz == 1 + gegner_picks + eigene_picks,
+                       f"Tier 1: allgemein + {gegner_picks} Matchups + {eigene_picks} Duo ({mz} Zeilen)")
+            # Konter: fuer eine Rolle, deren Lanegegner steht, kommt die Liste
+            belegt = p.evaluate("""() => { const r = ['Top','Jungle','Mid','Bot','Support'];
+              return [...document.querySelectorAll('.cp-team.gegner .cp-slot')].map((s, i) => s.querySelector('input').value ? r[i] : null).filter(Boolean); }""")
+            knopf = next((r for r in belegt if p.locator(".cp-rollen-knopf", has_text=r).count()), None)
+            if knopf and p.locator(".cp-rollen").count():
+                p.locator(".cp-rollen-knopf", has_text=knopf).first.click()
+                p.wait_for_timeout(900)
+                kopf = p.evaluate("() => [...document.querySelectorAll('#live-draft .lt-kopfzeile .lt-wert')].map((s) => s.textContent)")
+                pruefe(p.locator("#live-draft .lt .ko-zeile").count() >= 1 and any(k.startswith("vs ") for k in kopf),
+                       f"Lane-Tabelle auf {knopf}: Spalten {kopf}")
+            # Bot mit eigenem Support: Spalte "mit <Support>"
+            eigener_sup = p.evaluate("() => (document.querySelectorAll('.cp-team.eigen .cp-picks input')[4] || {}).value || ''")
+            if eigener_sup and p.locator(".cp-rollen-knopf", has_text="Bot").count():
+                p.locator(".cp-rollen-knopf", has_text="Bot").first.click()
+                p.wait_for_timeout(900)
+                kopf = p.evaluate("() => [...document.querySelectorAll('#live-draft .lt-kopfzeile .lt-wert')].map((s) => s.textContent)")
+                pruefe(("mit " + eigener_sup) in kopf, f"Bot: Spalte 'mit {eigener_sup}' ({kopf})")
 
             # Rest des Drafts: abwechselnd eintragen, bis er komplett ist
             frei = ["Ornn", "Jinx", "Thresh", "Lee Sin", "Viego", "Caitlyn", "Lulu", "Jax",
@@ -258,6 +318,16 @@ def main():
             pruefe("complete" in l["klasse"] and "komplett" in l["titel"].lower(), "Draft komplett")
             pruefe(p.locator("#live-draft .zh-fertig").count() == 1, "Zustand 'Draft komplett' mit naechstem Schritt")
             pruefe(not p.evaluate(UEBERLAUF), "kein waagerechter Ueberlauf")
+
+            # Solo Queue: Winrate und Begruendung bei der grossen Empfehlung offen
+            p.click("#tab-solo")
+            p.wait_for_timeout(1200)
+            so = p.evaluate("""() => ({wr: document.querySelectorAll('.so-wr .wr-kurz').length,
+              offen: !!document.querySelector('.so-rec.gross[open] .wr-block'),
+              grund: !!document.querySelector('.so-rec.gross[open] .wr-begruendung')})""")
+            pruefe(so["wr"] > 0 and so["offen"] and so["grund"], "Solo: Winrate je Vorschlag, Begruendung offen " + str(so))
+            p.click("#tab-draft")
+            p.wait_for_timeout(800)
 
             # Am Handy steckt der Schalter in den eingeklappten Einstellungen.
             if breite <= 680:

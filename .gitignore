@@ -19,3 +19,6 @@ out/
 # 15 MB Bildschirmfotos, jederzeit neu aufnehmbar.
 .impeccable/review/
 .impeccable/questions/
+
+# Zwischenablage: Liga-Benutzernummer -> Riot-ID (liga.py riot_ids_aus_partien) - nur lokal
+data/liga/profil-riot-ids.json

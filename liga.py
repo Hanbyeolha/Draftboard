@@ -193,15 +193,110 @@ def riot_ids_holen(kopf):
     return gesammelt
 
 
+PROFILE = "profil-riot-ids.json"          # user_id -> Riot-ID, nur das
+POSITION_LIGA = {"TOP": "Top", "JUNGLE": "Jungle", "MIDDLE": "Mid",
+                 "BOTTOM": "ADC", "UTILITY": "Support"}
+
+
+def riot_ids_aus_partien(kopf, partien):
+    """Riot-IDs der Spieler, die in Partien gespielt haben, aber in keinem
+    Vereinskader der Liga stehen (19.10.2026).
+
+    Mit der Saison kamen Mannschaften, deren Vereinsansicht keine Spieler
+    herausgibt - ohne Riot-ID kein op.gg, und der Kader blieb leer. Die
+    Partien nennen jeden Teilnehmer mit Anzeigename und user_id, aber ohne
+    Riot-ID; die steht im Ligaprofil /auth/users/<id>/ (riot_summoner_name,
+    riot_tag_line). Abgefragt wird je Profil nur einmal, gespeichert wird
+    NUR die Riot-ID (data/liga/profil-riot-ids.json) - keine anderen
+    Profildaten. Die Rolle kommt aus den Partien (haeufigste Position).
+    Ergaenzt wird riot-ids.json: nur Spieler, die dort fehlen, als
+    "quelle": "partie"; die Vereinsangaben bleiben unangetastet."""
+    if not kopf:
+        return
+    pfad = ZIEL / "riot-ids.json"
+    try:
+        kader = json.loads(pfad.read_text(encoding="utf-8")) if pfad.exists() else {}
+    except ValueError:
+        kader = {}
+    ppfad = ZIEL / PROFILE
+    try:
+        profile = json.loads(ppfad.read_text(encoding="utf-8")) if ppfad.exists() else {}
+    except ValueError:
+        profile = {}
+
+    # Wer hat fuer welche Mannschaft gespielt, auf welcher Position?
+    gesehen = {}                       # (mannschaft, anzeige) -> {user_id, positionen}
+    for p in partien:
+        stats = p.get("stats") or {}
+        teams = {}
+        for t in stats.get("game_match_team") or []:
+            roh = t.get("team")
+            name = (t.get("lor_team_name") or t.get("team_name")
+                    or (roh.get("name") if isinstance(roh, dict) else None))
+            teams[t.get("red_or_blue_team")] = name
+        for m in stats.get("game_match_participant") or []:
+            team, anzeige, uid = teams.get(m.get("team_id")), m.get("anzeige_name"), m.get("user_id")
+            if not team or not anzeige or not uid:
+                continue
+            if anzeige in (kader.get(team) or {}):
+                continue
+            e = gesehen.setdefault((team, anzeige), {"uid": uid, "pos": {}})
+            pos = m.get("team_position") or m.get("individual_position")
+            if pos:
+                e["pos"][pos] = e["pos"].get(pos, 0) + 1
+    if not gesehen:
+        return
+
+    neu = 0
+    for (team, anzeige), e in sorted(gesehen.items()):
+        uid = str(e["uid"])
+        if uid not in profile:
+            try:
+                anfrage = urllib.request.Request(API + f"/auth/users/{uid}/",
+                                                 headers={"User-Agent": "Draftboard/1.0", **kopf})
+                time.sleep(PAUSE)
+                d = abrufen(anfrage, 30)
+            except (urllib.error.URLError, OSError, ValueError):
+                continue
+            name, tag = d.get("riot_summoner_name"), d.get("riot_tag_line")
+            profile[uid] = f"{name}#{tag}" if name and tag else None
+        riot = profile.get(uid)
+        if not riot:
+            continue
+        haeufigste = max(e["pos"], key=e["pos"].get) if e["pos"] else None
+        kader.setdefault(team, {})[anzeige] = {
+            "riotId": riot, "rolle": POSITION_LIGA.get(haeufigste, ""),
+            "verifiziert": False, "quelle": "partie"}
+        neu += 1
+        print(f"    + {team}: {anzeige} ({riot}) aus den Partien")
+    ppfad.write_text(json.dumps(profile, ensure_ascii=False, indent=1), encoding="utf-8")
+    if neu:
+        pfad.write_text(json.dumps(kader, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"  Riot-IDs aus Partien: {neu} Spieler ohne Vereinsangabe ergaenzt -> data/liga/riot-ids.json")
+
+
 def stats_pfad(eintrag):
     """Wo die Spieldaten einer Partie liegen.
 
-    Liga- und Freundschaftsspiele stehen unter /matches/<id>/stats/. Turniere
+    Freundschaftsspiele stehen unter /matches/<id>/stats/, Ligaspiele unter
+    /saisons/matches/<begegnung>/stats/?partie=N. Turniere
     laufen ueber einen eigenen Zweig: dort zeigt ziel_stats auf die Frontend-
     Adresse /tournaments/<nr>/matches/<schedule>/stats?partie=N, die API dazu
     heisst /tournaments/schedules/<schedule>/stats/. Eine Serie teilt sich
     dabei eine schedule-Nummer, die einzelnen Spiele unterscheidet partie."""
     ziel = eintrag.get("ziel_stats") or ""
+    # Ligaspiele (seit Saisonstart Herbst 2026, modus "liga"): die Seite
+    # verlinkt /ligen/begegnungen/<begegnung>/stats?partie=N, die API dazu
+    # heisst /saisons/matches/<begegnung>/stats/?partie=N (gefunden im
+    # Frontend-Modul seasons-*.js, 18.10.2026). Vorher fragte das Skript
+    # /matches/<id>/stats/ ab - die Liga antwortete "Match nicht gefunden",
+    # und die drei ersten Ligaspiele galten als "ohne Spieldaten".
+    if "/ligen/begegnungen/" in ziel:
+        pfad, _, abfrage = ziel.partition("?")
+        teile = [t for t in pfad.split("/") if t]
+        begegnung = teile[teile.index("begegnungen") + 1]
+        return (f"/saisons/matches/{begegnung}/stats/"
+                + (f"?{abfrage}" if abfrage else ""))
     if "/tournaments/" in ziel:
         pfad, _, abfrage = ziel.partition("?")
         teile = [t for t in pfad.split("/") if t]
@@ -308,6 +403,7 @@ def hole_spiele(nur_uebernehmen=False):
             cache.write_text(json.dumps(partien, ensure_ascii=False), encoding="utf-8")
             print(f"{len(partien)} von {len(liste)} Partien geholt "
                   f"({ohne_daten} ohne hinterlegte Spieldaten) -> {cache.relative_to(ROOT)}")
+            riot_ids_aus_partien(kopf, partien)
     elif not kopf and not nur_uebernehmen:
         print("Keine Anmeldung gefunden. So kommst du daran - ohne Riot-Passwort:")
         print("  1. Auf leagueofregions.com anmelden (wie immer ueber Riot).")
@@ -397,11 +493,16 @@ def partie_umbauen(eintrag, nummern, icons, teams):
 
     def name_von(seite):
         t = seiten[seite]
-        # Turnierpartien haengen die Mannschaft als eigenes Objekt an, Liga-
-        # und Freundschaftsspiele nennen sie flach als lor_team_*.
-        verschachtelt = t.get("team") or {}
-        nummer = t.get("lor_team_id") or verschachtelt.get("id")
-        return (teams.get(nummer) or t.get("lor_team_name")
+        # Drei Formen: Turnierpartien haengen die Mannschaft als Objekt an
+        # (team = {id, name}), Freundschaftsspiele nennen sie flach als
+        # lor_team_*, Ligaspiele (seit 18.10.2026) als team = Nummer plus
+        # team_name. Vorher brach der Umbau bei Ligaspielen ab ("'int' object
+        # has no attribute 'get'").
+        roh = t.get("team")
+        verschachtelt = roh if isinstance(roh, dict) else {}
+        nummer = (t.get("lor_team_id") or verschachtelt.get("id")
+                  or (roh if isinstance(roh, int) else None))
+        return (teams.get(nummer) or t.get("lor_team_name") or t.get("team_name")
                 or verschachtelt.get("name") or "?")
 
     blau, rot = name_von(100), name_von(200)

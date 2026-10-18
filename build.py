@@ -192,7 +192,7 @@ def embed_icons(icons, version):
 ENGINE_ORDNUNG = [
     "config.js", "provenance.js", "state.js", "ablauf.js", "heuristik.js", "data.js",
     "features.js", "team.js", "blind.js", "comp.js", "score.js", "ansicht.js",
-    "search.js", "strategie.js", "log.js", "merkliste.js", "championsuche.js", "review.js",
+    "search.js", "strategie.js", "log.js", "merkliste.js", "championsuche.js", "review.js", "chance.js",
 ]
 ENGINE_DIR = ROOT / "engine"
 

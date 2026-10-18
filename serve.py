@@ -605,6 +605,11 @@ class Handler(BaseHTTPRequestHandler):
             # Riot-ID, stellt teams.json gleich um - sonst findet das
             # naechste Profilholen ihn nicht mehr (namenswechsel.py).
             laeufe.append([sys.executable, str(ROOT / "liga.py"), "--riotids"])
+            # Fehlende Spieler eintragen (19.10.2026): wer in der Liga - auch
+            # nur aus den Partien - mit Riot-ID bekannt ist, aber nicht im
+            # Kader steht, kommt dazu. Nur neue Spieler; Rollen und Bank
+            # bestehender bleiben unangetastet (liga.py --neue).
+            laeufe.append([sys.executable, str(ROOT / "liga.py"), "--neue"])
             laeufe.append([sys.executable, str(ROOT / "liga.py")])
             vorher = spiele_zahl()
             teams_vorher = mannschaften_zahl()

@@ -144,6 +144,11 @@ Was daraus gilt:
   gekennzeichnet — die Engine bewertet Bans nicht.
 - **Plan gegen Ist** vergleicht mit dem *heutigen* Draftplan; ein Plan von
   damals ist nicht gespeichert, die Seite sagt das dazu.
+- **Draft laut Patchdaten statt „Siegchance“** (18.10.2026, Entscheidung
+  des Nutzers nach dem Backtest): die Gesamtrechnung nach DraftGap-Prinzip
+  traf in 75 Turnierspielen der Liga 39-mal (Brier 0,272, Münzwurf 0,250).
+  Sie steht darum als „Draft laut Patchdaten“ mit Trefferquote daneben und
+  fließt in keine Empfehlung ein.
 - **Rückgängig statt Rückfrage**, **Animation nur bei Zustandswechseln**,
   **Leer- und Fehlerzustände mit Titel und Satz**.
 - Tests: `tests/ui_live.py` (Cockpit, 1440/768/390), `tests/ui_scout.py`

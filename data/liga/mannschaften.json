@@ -15,7 +15,19 @@
     "name": "Braunschweig eSports e.V. I",
     "ligaTeamId": 2,
     "verein": "Braunschweig eSports e.V.",
-    "spieler": 6
+    "spieler": 8
+  },
+  {
+    "name": "Hub Braunschweig I",
+    "ligaTeamId": 34,
+    "verein": "Hub Braunschweig",
+    "spieler": 0
+  },
+  {
+    "name": "Hub Goslar I",
+    "ligaTeamId": 33,
+    "verein": "Hub Goslar",
+    "spieler": 0
   },
   {
     "name": "Hub Hannover I",
@@ -33,13 +45,43 @@
     "name": "Hub Hannover III",
     "ligaTeamId": 29,
     "verein": "Hub Hannover",
-    "spieler": 2
+    "spieler": 0
   },
   {
     "name": "Hub Hannover IV",
     "ligaTeamId": 30,
     "verein": "Hub Hannover",
     "spieler": 1
+  },
+  {
+    "name": "Hub Helmstedt I",
+    "ligaTeamId": 35,
+    "verein": "Hub Helmstedt",
+    "spieler": 0
+  },
+  {
+    "name": "Hub Peine I",
+    "ligaTeamId": 36,
+    "verein": "Hub Peine",
+    "spieler": 0
+  },
+  {
+    "name": "Hub Salzgitter I",
+    "ligaTeamId": 32,
+    "verein": "Hub Salzgitter",
+    "spieler": 1
+  },
+  {
+    "name": "Hub Wolfenbüttel I",
+    "ligaTeamId": 37,
+    "verein": "Hub Wolfenbüttel",
+    "spieler": 0
+  },
+  {
+    "name": "Hub Wolfsburg I",
+    "ligaTeamId": 38,
+    "verein": "Hub Wolfsburg",
+    "spieler": 0
   },
   {
     "name": "MTV Hattorf I",
@@ -52,6 +94,12 @@
     "ligaTeamId": 1,
     "verein": "MTV Lichtenberg",
     "spieler": 10
+  },
+  {
+    "name": "SC Langenhagen I",
+    "ligaTeamId": 31,
+    "verein": "SC Langenhagen",
+    "spieler": 4
   },
   {
     "name": "SC Victoria Braunschweig I",

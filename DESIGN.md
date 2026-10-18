@@ -711,6 +711,29 @@ bei `--radius` und dem Schattenpaar.
   Darunter Shortlist und eingeklapptes Draft-Log.
 - **Rückgängig statt Rückfrage**: 6 s eine Leiste „Thresh gepickt (Support) ·
   Rückgängig“.
+- **Winraten** (`ui/live/winrate.js`, seit 18.10.2026, auch in der Solo Queue):
+  Tier 1 zeigt den Block „Winrate · alle Spieler“ – allgemein auf der Rolle
+  (Patch) und je gepicktem Gegner (Lane zuerst) mit „Ø aller“ (was alle
+  Champions im Schnitt gegen ihn schaffen – dieselbe Zahl wie „sonst“ in der
+  Begründung) und Spielen; Tier 2 eine Kurzzeile „52,9 % allgemein · 56,8 % vs
+  Syndra +1“ und „Warum?“ zum Aufklappen (ganze Begründung, alle Matchups).
+  Farbe wie die Rangzeile (grün ab 52 %, rot unter 48 %), Zahl immer dabei.
+- **Draft laut Patchdaten** (`.ch-leiste`, seit 18.10.2026, auch Solo): unter dem
+  Zustandskopf, bei jedem Zeichnen neu – Zahl in Rajdhani `1.9rem`, „für uns
+  (+2,3 Punkte)“, Balken (unser Anteil in `--eigen`, Mitte markiert),
+  Aufschlüsselung Champions · Matchups · Synergien in Punkten und **immer**
+  die Trefferquote an unseren Turnierspielen („traf in unseren 75
+  Turnierspielen 39-mal – Spieler entscheiden mehr als der Draft“). Je
+  Vorschlag „Team → 53 % (+0,7)“ (`.ch-nach`).
+- **Lane-Tabelle** (`.lt`, ui/live/winrate.js `laneTabelle`, seit 18.10.2026,
+  auch Solo): bei unserem Pick alle Champions der Rolle mit den Spalten
+  Team → · vs je Lanegegner · mit Lanepartner (Bot ↔ Support, Duo-Winrate) ·
+  allgemein; Filter Alle/Pool/Plan + „vergebene zeigen“, Sortieren nach jeder
+  Spalte (Winraten rauschbereinigt), 10 Zeilen, aufklappbar. Jede Zeile ist
+  ein eigenes Raster mit **festen** Spaltenbreiten (eine auto-Spalte ließ die
+  Köpfe versetzt stehen). Matchups und Duos sind **am Schnitt** gefärbt, mit
+  den Grenzen der Begründung (`BEGRUENDUNG`: ±2 bzw. ±1,5 Punkte); allgemein
+  52/48 wie die Rangzeile. Am Handy zweizeilig mit beschrifteten Werten.
 - **Tastatur**: Ziffer auf dem Knopf (`.cp-kbd`, am Touch-Gerät ausgeblendet).
 - **Handy (≤640 px)**: die Mitte gibt ihre Teile per `display: contents` an die
   Bühne ab; Reihenfolge Aktion → Empfehlungen → Shortlist → wir → Gegner →

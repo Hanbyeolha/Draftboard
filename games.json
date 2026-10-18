@@ -17647,5 +17647,2808 @@
         "champ": "Nocturne"
       }
     ]
+  },
+  {
+    "series": "SC Victoria Braunschweig vs TSV Salzgitter - Best-of-3 (13.10.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-10-13",
+    "matchId": "EUW1_8012552452",
+    "blue": "SC Victoria Braunschweig",
+    "red": "TSV Salzgitter",
+    "winner": "SC Victoria Braunschweig",
+    "picks": {
+      "SC Victoria Braunschweig": [
+        {
+          "role": "TOP",
+          "champ": "Gwen",
+          "player": "Xen",
+          "k": 3,
+          "d": 2,
+          "a": 5,
+          "cs": 210,
+          "gold": 11167,
+          "dmg": 19230,
+          "taken": 21304,
+          "vs": 22,
+          "lvl": 16
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "ShendNoods",
+          "k": 4,
+          "d": 3,
+          "a": 10,
+          "cs": 147,
+          "gold": 9625,
+          "dmg": 9389,
+          "taken": 19230,
+          "vs": 11,
+          "lvl": 14
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Viktor",
+          "player": "Hyro",
+          "k": 6,
+          "d": 2,
+          "a": 5,
+          "cs": 185,
+          "gold": 10631,
+          "dmg": 20402,
+          "taken": 10249,
+          "vs": 10,
+          "lvl": 15
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Xayah",
+          "player": "Salzu",
+          "k": 12,
+          "d": 1,
+          "a": 4,
+          "cs": 228,
+          "gold": 15260,
+          "dmg": 23029,
+          "taken": 10754,
+          "vs": 18,
+          "lvl": 14
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Leona",
+          "player": "Kneu",
+          "k": 1,
+          "d": 3,
+          "a": 15,
+          "cs": 15,
+          "gold": 7299,
+          "dmg": 6622,
+          "taken": 13567,
+          "vs": 53,
+          "lvl": 12
+        }
+      ],
+      "TSV Salzgitter": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "snakegerman",
+          "k": 1,
+          "d": 4,
+          "a": 1,
+          "cs": 151,
+          "gold": 6616,
+          "dmg": 12473,
+          "taken": 21778,
+          "vs": 10,
+          "lvl": 14
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Xin Zhao",
+          "player": "Du hast ne Lux",
+          "k": 1,
+          "d": 6,
+          "a": 6,
+          "cs": 124,
+          "gold": 7718,
+          "dmg": 10007,
+          "taken": 28183,
+          "vs": 17,
+          "lvl": 12
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Aurelion Sol",
+          "player": "mazl",
+          "k": 5,
+          "d": 6,
+          "a": 0,
+          "cs": 150,
+          "gold": 8226,
+          "dmg": 12601,
+          "taken": 18979,
+          "vs": 9,
+          "lvl": 13
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Kai'Sa",
+          "player": "xHydralisk",
+          "k": 4,
+          "d": 5,
+          "a": 1,
+          "cs": 193,
+          "gold": 9032,
+          "dmg": 9105,
+          "taken": 10576,
+          "vs": 22,
+          "lvl": 12
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rell",
+          "player": "Triplos",
+          "k": 0,
+          "d": 5,
+          "a": 3,
+          "cs": 30,
+          "gold": 5313,
+          "dmg": 4241,
+          "taken": 12051,
+          "vs": 40,
+          "lvl": 10
+        }
+      ]
+    },
+    "bans": {
+      "SC Victoria Braunschweig": [
+        "Vladimir",
+        "Yone",
+        "Braum",
+        "Yasuo",
+        "Tristana"
+      ],
+      "TSV Salzgitter": [
+        "Viego",
+        "Yunara",
+        "Thresh",
+        "Galio",
+        "Anivia"
+      ]
+    },
+    "time": "2026-10-13T18:00:00+00:00",
+    "dauer": 1330,
+    "teamStats": {
+      "SC Victoria Braunschweig": {
+        "tuerme": 9,
+        "drachen": 2,
+        "barone": 1,
+        "herolde": 1,
+        "inhibitoren": 1,
+        "firstBlood": true,
+        "firstTower": true
+      },
+      "TSV Salzgitter": {
+        "tuerme": 0,
+        "drachen": 1,
+        "barone": 0,
+        "herolde": 0,
+        "inhibitoren": 0,
+        "firstBlood": false,
+        "firstTower": false
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "Salzu",
+        "champ": "Xayah"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "Kneu",
+        "champ": "Leona"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "Kneu",
+        "champ": "Leona"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "Salzu",
+        "champ": "Xayah"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "Salzu",
+        "champ": "Xayah"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "Xen",
+        "champ": "Gwen"
+      }
+    ]
+  },
+  {
+    "series": "AFC1 vs Hub Hannover I - Best-of-3 (13.10.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-10-13",
+    "matchId": "EUW1_8012617159",
+    "blue": "Hub Hannover I",
+    "red": "AFC1",
+    "winner": "Hub Hannover I",
+    "picks": {
+      "Hub Hannover I": [
+        {
+          "role": "TOP",
+          "champ": "Olaf",
+          "player": "Facking Luigi",
+          "k": 4,
+          "d": 0,
+          "a": 1,
+          "cs": 258,
+          "gold": 11188,
+          "dmg": 12872,
+          "taken": 20457,
+          "vs": 21,
+          "lvl": 17
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Lee Sin",
+          "player": "ZEN Preacher",
+          "k": 3,
+          "d": 2,
+          "a": 9,
+          "cs": 189,
+          "gold": 11309,
+          "dmg": 10981,
+          "taken": 20909,
+          "vs": 38,
+          "lvl": 15
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Ahri",
+          "player": "Arisé",
+          "k": 6,
+          "d": 1,
+          "a": 6,
+          "cs": 234,
+          "gold": 11802,
+          "dmg": 12553,
+          "taken": 11536,
+          "vs": 18,
+          "lvl": 15
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Ashe",
+          "player": "TooLateForMercy",
+          "k": 1,
+          "d": 0,
+          "a": 9,
+          "cs": 226,
+          "gold": 11419,
+          "dmg": 7948,
+          "taken": 3213,
+          "vs": 14,
+          "lvl": 14
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Zyra",
+          "player": "midnight rain",
+          "k": 1,
+          "d": 2,
+          "a": 6,
+          "cs": 33,
+          "gold": 6915,
+          "dmg": 10010,
+          "taken": 8388,
+          "vs": 48,
+          "lvl": 12
+        }
+      ],
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "jasxnbrg",
+          "k": 0,
+          "d": 2,
+          "a": 0,
+          "cs": 196,
+          "gold": 7177,
+          "dmg": 9521,
+          "taken": 17403,
+          "vs": 21,
+          "lvl": 15
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Amumu",
+          "player": "HartzFor",
+          "k": 0,
+          "d": 3,
+          "a": 3,
+          "cs": 133,
+          "gold": 6836,
+          "dmg": 6798,
+          "taken": 13543,
+          "vs": 13,
+          "lvl": 12
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Vex",
+          "player": "Køstja",
+          "k": 3,
+          "d": 5,
+          "a": 0,
+          "cs": 216,
+          "gold": 8656,
+          "dmg": 8758,
+          "taken": 11700,
+          "vs": 23,
+          "lvl": 14
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jinx",
+          "player": "smiling",
+          "k": 2,
+          "d": 2,
+          "a": 2,
+          "cs": 219,
+          "gold": 10128,
+          "dmg": 11868,
+          "taken": 9452,
+          "vs": 14,
+          "lvl": 12
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "Aaghn",
+          "k": 0,
+          "d": 3,
+          "a": 3,
+          "cs": 23,
+          "gold": 5261,
+          "dmg": 2874,
+          "taken": 14363,
+          "vs": 42,
+          "lvl": 11
+        }
+      ]
+    },
+    "bans": {
+      "Hub Hannover I": [
+        "Thresh",
+        "Jarvan IV",
+        "Seraphine",
+        "Milio",
+        "Bard"
+      ],
+      "AFC1": [
+        "Ambessa",
+        "Syndra",
+        "Jayce",
+        "Nami",
+        "Aatrox"
+      ]
+    },
+    "time": "2026-10-13T18:30:00+00:00",
+    "dauer": 1420,
+    "teamStats": {
+      "Hub Hannover I": {
+        "tuerme": 9,
+        "drachen": 2,
+        "barone": 1,
+        "herolde": 1,
+        "inhibitoren": 1,
+        "firstBlood": false,
+        "firstTower": true
+      },
+      "AFC1": {
+        "tuerme": 0,
+        "drachen": 1,
+        "barone": 0,
+        "herolde": 0,
+        "inhibitoren": 0,
+        "firstBlood": true,
+        "firstTower": false
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Der Unsterbliche",
+        "was": "Gewonnen, ohne ein einziges Mal zu sterben.",
+        "wer": "Facking Luigi",
+        "champ": "Olaf"
+      },
+      {
+        "name": "Der Unsterbliche",
+        "was": "Gewonnen, ohne ein einziges Mal zu sterben.",
+        "wer": "TooLateForMercy",
+        "champ": "Ashe"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "midnight rain",
+        "champ": "Zyra"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "Facking Luigi",
+        "champ": "Olaf"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "Køstja",
+        "champ": "Vex"
+      }
+    ]
+  },
+  {
+    "series": "SC Victoria Braunschweig vs TSV Salzgitter - Best-of-3 (13.10.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-10-13",
+    "matchId": "EUW1_8012629652",
+    "blue": "TSV Salzgitter",
+    "red": "SC Victoria Braunschweig",
+    "winner": "SC Victoria Braunschweig",
+    "picks": {
+      "TSV Salzgitter": [
+        {
+          "role": "TOP",
+          "champ": "Aatrox",
+          "player": "snakegerman",
+          "k": 1,
+          "d": 5,
+          "a": 4,
+          "cs": 182,
+          "gold": 7946,
+          "dmg": 15572,
+          "taken": 31245,
+          "vs": 14,
+          "lvl": 16
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Amumu",
+          "player": "Would love Some",
+          "k": 3,
+          "d": 8,
+          "a": 6,
+          "cs": 147,
+          "gold": 10001,
+          "dmg": 14834,
+          "taken": 28172,
+          "vs": 22,
+          "lvl": 13
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Veigar",
+          "player": "mazl",
+          "k": 3,
+          "d": 5,
+          "a": 4,
+          "cs": 209,
+          "gold": 10214,
+          "dmg": 17506,
+          "taken": 18035,
+          "vs": 20,
+          "lvl": 16
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jinx",
+          "player": "MurphyyLOL",
+          "k": 3,
+          "d": 6,
+          "a": 2,
+          "cs": 217,
+          "gold": 10317,
+          "dmg": 10980,
+          "taken": 13125,
+          "vs": 16,
+          "lvl": 13
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rakan",
+          "player": "Triplos",
+          "k": 1,
+          "d": 6,
+          "a": 6,
+          "cs": 32,
+          "gold": 6417,
+          "dmg": 3313,
+          "taken": 17623,
+          "vs": 70,
+          "lvl": 11
+        }
+      ],
+      "SC Victoria Braunschweig": [
+        {
+          "role": "TOP",
+          "champ": "Gnar",
+          "player": "Xen",
+          "k": 2,
+          "d": 3,
+          "a": 10,
+          "cs": 209,
+          "gold": 11339,
+          "dmg": 27294,
+          "taken": 22018,
+          "vs": 29,
+          "lvl": 18
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Sejuani",
+          "player": "ShendNoods",
+          "k": 4,
+          "d": 1,
+          "a": 14,
+          "cs": 183,
+          "gold": 11660,
+          "dmg": 13400,
+          "taken": 32958,
+          "vs": 16,
+          "lvl": 16
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Lissandra",
+          "player": "Hyro",
+          "k": 9,
+          "d": 0,
+          "a": 4,
+          "cs": 259,
+          "gold": 13423,
+          "dmg": 19188,
+          "taken": 10569,
+          "vs": 16,
+          "lvl": 16
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Sivir",
+          "player": "Salzu",
+          "k": 14,
+          "d": 3,
+          "a": 8,
+          "cs": 269,
+          "gold": 18108,
+          "dmg": 32264,
+          "taken": 14738,
+          "vs": 8,
+          "lvl": 16
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "Kneu",
+          "k": 1,
+          "d": 4,
+          "a": 19,
+          "cs": 13,
+          "gold": 8079,
+          "dmg": 4539,
+          "taken": 19028,
+          "vs": 77,
+          "lvl": 12
+        }
+      ]
+    },
+    "bans": {
+      "TSV Salzgitter": [
+        "Thresh",
+        "Yunara",
+        "Viego",
+        "Galio",
+        "Syndra"
+      ],
+      "SC Victoria Braunschweig": [
+        "Vladimir",
+        "Briar",
+        "Yone",
+        "Yasuo",
+        "Hwei"
+      ]
+    },
+    "time": "2026-10-13T18:31:24.491749+00:00",
+    "dauer": 1612,
+    "teamStats": {
+      "TSV Salzgitter": {
+        "tuerme": 0,
+        "drachen": 1,
+        "barone": 0,
+        "herolde": 0,
+        "inhibitoren": 0,
+        "firstBlood": false,
+        "firstTower": false
+      },
+      "SC Victoria Braunschweig": {
+        "tuerme": 10,
+        "drachen": 3,
+        "barone": 1,
+        "herolde": 1,
+        "inhibitoren": 2,
+        "firstBlood": true,
+        "firstTower": true
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "Salzu",
+        "champ": "Sivir"
+      },
+      {
+        "name": "Der Unsterbliche",
+        "was": "Gewonnen, ohne ein einziges Mal zu sterben.",
+        "wer": "Hyro",
+        "champ": "Lissandra"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "Kneu",
+        "champ": "Braum"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "Kneu",
+        "champ": "Braum"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "Salzu",
+        "champ": "Sivir"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "Salzu",
+        "champ": "Sivir"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "Hyro",
+        "champ": "Lissandra"
+      }
+    ]
+  },
+  {
+    "series": "AFC1 vs Hub Hannover I - Best-of-3 (13.10.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-10-13",
+    "matchId": "EUW1_8012685072",
+    "blue": "Hub Hannover I",
+    "red": "AFC1",
+    "winner": "Hub Hannover I",
+    "picks": {
+      "Hub Hannover I": [
+        {
+          "role": "TOP",
+          "champ": "Gwen",
+          "player": "Facking Luigi",
+          "k": 1,
+          "d": 0,
+          "a": 1,
+          "cs": 231,
+          "gold": 11137,
+          "dmg": 13598,
+          "taken": 18264,
+          "vs": 26,
+          "lvl": 16
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "ZEN Preacher",
+          "k": 5,
+          "d": 0,
+          "a": 2,
+          "cs": 191,
+          "gold": 11622,
+          "dmg": 9616,
+          "taken": 19003,
+          "vs": 21,
+          "lvl": 14
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Lissandra",
+          "player": "Arisé",
+          "k": 2,
+          "d": 0,
+          "a": 4,
+          "cs": 212,
+          "gold": 9539,
+          "dmg": 9393,
+          "taken": 5426,
+          "vs": 13,
+          "lvl": 15
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Xayah",
+          "player": "TooLateForMercy",
+          "k": 5,
+          "d": 1,
+          "a": 4,
+          "cs": 220,
+          "gold": 11479,
+          "dmg": 22758,
+          "taken": 9595,
+          "vs": 17,
+          "lvl": 13
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Milio",
+          "player": "midnight rain",
+          "k": 1,
+          "d": 3,
+          "a": 8,
+          "cs": 18,
+          "gold": 6655,
+          "dmg": 2109,
+          "taken": 8970,
+          "vs": 37,
+          "lvl": 11
+        }
+      ],
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Gragas",
+          "player": "jasxnbrg",
+          "k": 0,
+          "d": 2,
+          "a": 0,
+          "cs": 182,
+          "gold": 6765,
+          "dmg": 9789,
+          "taken": 20862,
+          "vs": 14,
+          "lvl": 14
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Sejuani",
+          "player": "HartzFor",
+          "k": 2,
+          "d": 2,
+          "a": 1,
+          "cs": 128,
+          "gold": 6940,
+          "dmg": 8118,
+          "taken": 16939,
+          "vs": 20,
+          "lvl": 12
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Viktor",
+          "player": "Køstja",
+          "k": 0,
+          "d": 4,
+          "a": 0,
+          "cs": 205,
+          "gold": 7161,
+          "dmg": 6915,
+          "taken": 10178,
+          "vs": 15,
+          "lvl": 13
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Zeri",
+          "player": "smiling",
+          "k": 1,
+          "d": 4,
+          "a": 2,
+          "cs": 192,
+          "gold": 8259,
+          "dmg": 10376,
+          "taken": 12029,
+          "vs": 8,
+          "lvl": 11
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lulu",
+          "player": "Aaghn",
+          "k": 1,
+          "d": 2,
+          "a": 1,
+          "cs": 23,
+          "gold": 5060,
+          "dmg": 2619,
+          "taken": 10871,
+          "vs": 40,
+          "lvl": 10
+        }
+      ]
+    },
+    "bans": {
+      "Hub Hannover I": [
+        "Thresh",
+        "Jarvan IV",
+        "Seraphine",
+        "Akali",
+        "Xerath"
+      ],
+      "AFC1": [
+        "Ambessa",
+        "Syndra",
+        "Jayce",
+        "Rakan",
+        "Aatrox"
+      ]
+    },
+    "time": "2026-10-13T19:08:52.350711+00:00",
+    "dauer": 1343,
+    "teamStats": {
+      "Hub Hannover I": {
+        "tuerme": 11,
+        "drachen": 2,
+        "barone": 1,
+        "herolde": 1,
+        "inhibitoren": 3,
+        "firstBlood": true,
+        "firstTower": true
+      },
+      "AFC1": {
+        "tuerme": 0,
+        "drachen": 1,
+        "barone": 0,
+        "herolde": 0,
+        "inhibitoren": 0,
+        "firstBlood": false,
+        "firstTower": false
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Der Unsterbliche",
+        "was": "Gewonnen, ohne ein einziges Mal zu sterben.",
+        "wer": "Facking Luigi",
+        "champ": "Gwen"
+      },
+      {
+        "name": "Der Unsterbliche",
+        "was": "Gewonnen, ohne ein einziges Mal zu sterben.",
+        "wer": "ZEN Preacher",
+        "champ": "Wukong"
+      },
+      {
+        "name": "Der Unsterbliche",
+        "was": "Gewonnen, ohne ein einziges Mal zu sterben.",
+        "wer": "Arisé",
+        "champ": "Lissandra"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "Aaghn",
+        "champ": "Lulu"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "Facking Luigi",
+        "champ": "Gwen"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "TooLateForMercy",
+        "champ": "Xayah"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "ZEN Preacher",
+        "champ": "Wukong"
+      }
+    ]
+  },
+  {
+    "series": "Hub Hannover II vs SSV Remlingen 2 - Best-of-3 (14.10.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-10-14",
+    "matchId": "EUW1_8013503357",
+    "blue": "SSV Remlingen 2",
+    "red": "Hub Hannover II",
+    "winner": "Hub Hannover II",
+    "picks": {
+      "SSV Remlingen 2": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "Meister FiTTi",
+          "k": 1,
+          "d": 8,
+          "a": 0,
+          "cs": 118,
+          "gold": 5926,
+          "dmg": 8118,
+          "taken": 20951,
+          "vs": 19,
+          "lvl": 12
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Sejuani",
+          "player": "KOOOOAHLLLL",
+          "k": 1,
+          "d": 5,
+          "a": 3,
+          "cs": 160,
+          "gold": 7676,
+          "dmg": 11467,
+          "taken": 26593,
+          "vs": 13,
+          "lvl": 13
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Syndra",
+          "player": "Discalon",
+          "k": 3,
+          "d": 4,
+          "a": 2,
+          "cs": 178,
+          "gold": 8211,
+          "dmg": 16793,
+          "taken": 11184,
+          "vs": 22,
+          "lvl": 14
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jinx",
+          "player": "ChaosIVIaster",
+          "k": 2,
+          "d": 6,
+          "a": 1,
+          "cs": 181,
+          "gold": 9065,
+          "dmg": 11027,
+          "taken": 13390,
+          "vs": 14,
+          "lvl": 12
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rakan",
+          "player": "ziggler10",
+          "k": 0,
+          "d": 6,
+          "a": 3,
+          "cs": 30,
+          "gold": 5159,
+          "dmg": 3197,
+          "taken": 12634,
+          "vs": 55,
+          "lvl": 10
+        }
+      ],
+      "Hub Hannover II": [
+        {
+          "role": "TOP",
+          "champ": "Sett",
+          "player": "chungi",
+          "k": 6,
+          "d": 2,
+          "a": 9,
+          "cs": 194,
+          "gold": 11908,
+          "dmg": 25693,
+          "taken": 28329,
+          "vs": 17,
+          "lvl": 17
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Trundle",
+          "player": "Eurospike",
+          "k": 7,
+          "d": 0,
+          "a": 13,
+          "cs": 185,
+          "gold": 11748,
+          "dmg": 13337,
+          "taken": 24466,
+          "vs": 29,
+          "lvl": 15
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Taliyah",
+          "player": "AOM Shadowgream",
+          "k": 4,
+          "d": 2,
+          "a": 7,
+          "cs": 206,
+          "gold": 10134,
+          "dmg": 13855,
+          "taken": 10827,
+          "vs": 22,
+          "lvl": 15
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Xayah",
+          "player": "Salemx",
+          "k": 12,
+          "d": 2,
+          "a": 5,
+          "cs": 192,
+          "gold": 13958,
+          "dmg": 17124,
+          "taken": 9888,
+          "vs": 13,
+          "lvl": 13
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Nautilus",
+          "player": "Ghaast",
+          "k": 0,
+          "d": 1,
+          "a": 18,
+          "cs": 14,
+          "gold": 6554,
+          "dmg": 5029,
+          "taken": 11462,
+          "vs": 67,
+          "lvl": 12
+        }
+      ]
+    },
+    "bans": {
+      "SSV Remlingen 2": [
+        "Yunara",
+        "Aatrox",
+        "Sylas",
+        "Hwei"
+      ],
+      "Hub Hannover II": [
+        "Wukong",
+        "Twitch",
+        "Urgot",
+        "Veigar",
+        "Ambessa"
+      ]
+    },
+    "time": "2026-10-14T18:00:00+00:00",
+    "dauer": 1357,
+    "teamStats": {
+      "SSV Remlingen 2": {
+        "tuerme": 0,
+        "drachen": 0,
+        "barone": 0,
+        "herolde": 0,
+        "inhibitoren": 0,
+        "firstBlood": false,
+        "firstTower": false
+      },
+      "Hub Hannover II": {
+        "tuerme": 9,
+        "drachen": 3,
+        "barone": 1,
+        "herolde": 1,
+        "inhibitoren": 1,
+        "firstBlood": true,
+        "firstTower": true
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "Salemx",
+        "champ": "Xayah"
+      },
+      {
+        "name": "Der Unsterbliche",
+        "was": "Gewonnen, ohne ein einziges Mal zu sterben.",
+        "wer": "Eurospike",
+        "champ": "Trundle"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "Ghaast",
+        "champ": "Nautilus"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "Ghaast",
+        "champ": "Nautilus"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "AOM Shadowgream",
+        "champ": "Taliyah"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "chungi",
+        "champ": "Sett"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "chungi",
+        "champ": "Sett"
+      }
+    ]
+  },
+  {
+    "series": "Hub Hannover II vs SSV Remlingen 2 - Best-of-3 (14.10.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-10-14",
+    "matchId": "EUW1_8013552327",
+    "blue": "Hub Hannover II",
+    "red": "SSV Remlingen 2",
+    "winner": "Hub Hannover II",
+    "picks": {
+      "Hub Hannover II": [
+        {
+          "role": "TOP",
+          "champ": "Ambessa",
+          "player": "KEK Wowpurple",
+          "k": 7,
+          "d": 3,
+          "a": 4,
+          "cs": 239,
+          "gold": 13107,
+          "dmg": 24201,
+          "taken": 26530,
+          "vs": 22,
+          "lvl": 18
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Skarner",
+          "player": "Ghaast",
+          "k": 4,
+          "d": 0,
+          "a": 12,
+          "cs": 187,
+          "gold": 12053,
+          "dmg": 15237,
+          "taken": 31283,
+          "vs": 21,
+          "lvl": 16
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Viktor",
+          "player": "AOM Shadowgream",
+          "k": 4,
+          "d": 5,
+          "a": 11,
+          "cs": 245,
+          "gold": 12327,
+          "dmg": 31432,
+          "taken": 20679,
+          "vs": 31,
+          "lvl": 16
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Ashe",
+          "player": "Salemx",
+          "k": 2,
+          "d": 8,
+          "a": 8,
+          "cs": 265,
+          "gold": 12238,
+          "dmg": 18559,
+          "taken": 18851,
+          "vs": 24,
+          "lvl": 14
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Seraphine",
+          "player": "KillMyADC",
+          "k": 3,
+          "d": 5,
+          "a": 13,
+          "cs": 33,
+          "gold": 8762,
+          "dmg": 12638,
+          "taken": 15597,
+          "vs": 65,
+          "lvl": 14
+        }
+      ],
+      "SSV Remlingen 2": [
+        {
+          "role": "TOP",
+          "champ": "Shen",
+          "player": "Meister FiTTi",
+          "k": 4,
+          "d": 6,
+          "a": 2,
+          "cs": 165,
+          "gold": 9497,
+          "dmg": 13639,
+          "taken": 28530,
+          "vs": 43,
+          "lvl": 16
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "KOOOOAHLLLL",
+          "k": 1,
+          "d": 3,
+          "a": 9,
+          "cs": 174,
+          "gold": 9864,
+          "dmg": 10942,
+          "taken": 29682,
+          "vs": 17,
+          "lvl": 15
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Xerath",
+          "player": "Discalon",
+          "k": 7,
+          "d": 0,
+          "a": 5,
+          "cs": 220,
+          "gold": 10581,
+          "dmg": 34853,
+          "taken": 12066,
+          "vs": 43,
+          "lvl": 16
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Tristana",
+          "player": "ChaosIVIaster",
+          "k": 9,
+          "d": 5,
+          "a": 1,
+          "cs": 215,
+          "gold": 13602,
+          "dmg": 23787,
+          "taken": 20738,
+          "vs": 24,
+          "lvl": 14
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "ziggler10",
+          "k": 0,
+          "d": 6,
+          "a": 13,
+          "cs": 32,
+          "gold": 7807,
+          "dmg": 4635,
+          "taken": 24259,
+          "vs": 94,
+          "lvl": 12
+        }
+      ]
+    },
+    "bans": {
+      "Hub Hannover II": [
+        "Twitch",
+        "Urgot",
+        "Veigar",
+        "Ziggs",
+        "Ahri"
+      ],
+      "SSV Remlingen 2": [
+        "Hwei",
+        "Sylas",
+        "Yunara",
+        "Mordekaiser",
+        "Vex"
+      ]
+    },
+    "time": "2026-10-14T18:34:46.498688+00:00",
+    "dauer": 1807,
+    "teamStats": {
+      "Hub Hannover II": {
+        "tuerme": 8,
+        "drachen": 2,
+        "barone": 1,
+        "herolde": 1,
+        "inhibitoren": 1,
+        "firstBlood": false,
+        "firstTower": true
+      },
+      "SSV Remlingen 2": {
+        "tuerme": 2,
+        "drachen": 1,
+        "barone": 0,
+        "herolde": 0,
+        "inhibitoren": 0,
+        "firstBlood": true,
+        "firstTower": false
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "ChaosIVIaster",
+        "champ": "Tristana"
+      },
+      {
+        "name": "Der Unsterbliche",
+        "was": "Gewonnen, ohne ein einziges Mal zu sterben.",
+        "wer": "Ghaast",
+        "champ": "Skarner"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "KillMyADC",
+        "champ": "Seraphine"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "ziggler10",
+        "champ": "Braum"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "ziggler10",
+        "champ": "Braum"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "Salemx",
+        "champ": "Ashe"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "Discalon",
+        "champ": "Xerath"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "Meister FiTTi",
+        "champ": "Shen"
+      }
+    ]
+  },
+  {
+    "series": "Hub Hannover II vs SV Innerstetal - Best-of-3 (15.10.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-10-15",
+    "matchId": "EUW1_8014437278",
+    "blue": "Hub Hannover II",
+    "red": "SV Innerstetal",
+    "winner": "Hub Hannover II",
+    "picks": {
+      "Hub Hannover II": [
+        {
+          "role": "TOP",
+          "champ": "Fiora",
+          "player": "chungi",
+          "k": 10,
+          "d": 4,
+          "a": 3,
+          "cs": 248,
+          "gold": 16020,
+          "dmg": 35619,
+          "taken": 31324,
+          "vs": 23,
+          "lvl": 18
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Diana",
+          "player": "Ghaast",
+          "k": 1,
+          "d": 1,
+          "a": 16,
+          "cs": 190,
+          "gold": 10837,
+          "dmg": 12867,
+          "taken": 19414,
+          "vs": 33,
+          "lvl": 15
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Sylas",
+          "player": "Morigren",
+          "k": 9,
+          "d": 6,
+          "a": 4,
+          "cs": 168,
+          "gold": 11196,
+          "dmg": 17972,
+          "taken": 31131,
+          "vs": 25,
+          "lvl": 15
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Yunara",
+          "player": "Salemx",
+          "k": 10,
+          "d": 4,
+          "a": 9,
+          "cs": 228,
+          "gold": 14281,
+          "dmg": 27302,
+          "taken": 18594,
+          "vs": 14,
+          "lvl": 14
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "KillMyADC",
+          "k": 0,
+          "d": 3,
+          "a": 17,
+          "cs": 24,
+          "gold": 7506,
+          "dmg": 7297,
+          "taken": 17829,
+          "vs": 41,
+          "lvl": 13
+        }
+      ],
+      "SV Innerstetal": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "Tamashi",
+          "k": 2,
+          "d": 7,
+          "a": 2,
+          "cs": 146,
+          "gold": 7502,
+          "dmg": 15991,
+          "taken": 28261,
+          "vs": 14,
+          "lvl": 15
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Cho'Gath",
+          "player": "AutoAttackAndy",
+          "k": 3,
+          "d": 6,
+          "a": 8,
+          "cs": 153,
+          "gold": 9775,
+          "dmg": 11009,
+          "taken": 29333,
+          "vs": 17,
+          "lvl": 14
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Veigar",
+          "player": "Verveigar",
+          "k": 7,
+          "d": 7,
+          "a": 3,
+          "cs": 179,
+          "gold": 11161,
+          "dmg": 27882,
+          "taken": 17798,
+          "vs": 21,
+          "lvl": 15
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Tristana",
+          "player": "Rät",
+          "k": 5,
+          "d": 3,
+          "a": 7,
+          "cs": 214,
+          "gold": 12174,
+          "dmg": 23840,
+          "taken": 19573,
+          "vs": 16,
+          "lvl": 13
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Thresh",
+          "player": "zPiro",
+          "k": 1,
+          "d": 7,
+          "a": 9,
+          "cs": 26,
+          "gold": 6831,
+          "dmg": 7804,
+          "taken": 21771,
+          "vs": 77,
+          "lvl": 11
+        }
+      ]
+    },
+    "bans": {
+      "Hub Hannover II": [],
+      "SV Innerstetal": []
+    },
+    "time": "2026-10-15T18:00:00+00:00",
+    "dauer": 1557,
+    "teamStats": {
+      "Hub Hannover II": {
+        "tuerme": 11,
+        "drachen": 1,
+        "barone": 1,
+        "herolde": 1,
+        "inhibitoren": 2,
+        "firstBlood": true,
+        "firstTower": true
+      },
+      "SV Innerstetal": {
+        "tuerme": 2,
+        "drachen": 2,
+        "barone": 0,
+        "herolde": 0,
+        "inhibitoren": 0,
+        "firstBlood": false,
+        "firstTower": false
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "chungi",
+        "champ": "Fiora"
+      },
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "Salemx",
+        "champ": "Yunara"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "KillMyADC",
+        "champ": "Braum"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "zPiro",
+        "champ": "Thresh"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "chungi",
+        "champ": "Fiora"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "chungi",
+        "champ": "Fiora"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "chungi",
+        "champ": "Fiora"
+      }
+    ]
+  },
+  {
+    "series": "Hub Hannover II vs SV Innerstetal - Best-of-3 (15.10.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-10-15",
+    "matchId": "EUW1_8014505785",
+    "blue": "SV Innerstetal",
+    "red": "Hub Hannover II",
+    "winner": "Hub Hannover II",
+    "picks": {
+      "SV Innerstetal": [
+        {
+          "role": "TOP",
+          "champ": "Gragas",
+          "player": "Tamashi",
+          "k": 1,
+          "d": 7,
+          "a": 7,
+          "cs": 176,
+          "gold": 9812,
+          "dmg": 13101,
+          "taken": 38884,
+          "vs": 17,
+          "lvl": 18
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "AutoAttackAndy",
+          "k": 8,
+          "d": 8,
+          "a": 7,
+          "cs": 162,
+          "gold": 12972,
+          "dmg": 19081,
+          "taken": 34019,
+          "vs": 40,
+          "lvl": 15
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Ahri",
+          "player": "Verveigar",
+          "k": 6,
+          "d": 8,
+          "a": 7,
+          "cs": 201,
+          "gold": 12509,
+          "dmg": 18206,
+          "taken": 28667,
+          "vs": 25,
+          "lvl": 16
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Xayah",
+          "player": "Rät",
+          "k": 8,
+          "d": 8,
+          "a": 4,
+          "cs": 244,
+          "gold": 14226,
+          "dmg": 26971,
+          "taken": 26629,
+          "vs": 23,
+          "lvl": 15
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rakan",
+          "player": "zPiro",
+          "k": 1,
+          "d": 3,
+          "a": 15,
+          "cs": 30,
+          "gold": 9384,
+          "dmg": 10225,
+          "taken": 29791,
+          "vs": 86,
+          "lvl": 14
+        }
+      ],
+      "Hub Hannover II": [
+        {
+          "role": "TOP",
+          "champ": "Heimerdinger",
+          "player": "chungi",
+          "k": 8,
+          "d": 5,
+          "a": 5,
+          "cs": 290,
+          "gold": 15516,
+          "dmg": 45463,
+          "taken": 21112,
+          "vs": 15,
+          "lvl": 19
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Nocturne",
+          "player": "Eurospike",
+          "k": 4,
+          "d": 4,
+          "a": 10,
+          "cs": 230,
+          "gold": 13449,
+          "dmg": 12282,
+          "taken": 32205,
+          "vs": 50,
+          "lvl": 17
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Orianna",
+          "player": "AOM Shadowgream",
+          "k": 10,
+          "d": 2,
+          "a": 14,
+          "cs": 243,
+          "gold": 16059,
+          "dmg": 41814,
+          "taken": 13815,
+          "vs": 26,
+          "lvl": 17
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Kai'Sa",
+          "player": "Salemx",
+          "k": 4,
+          "d": 5,
+          "a": 10,
+          "cs": 216,
+          "gold": 14509,
+          "dmg": 25433,
+          "taken": 20970,
+          "vs": 12,
+          "lvl": 14
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Pyke",
+          "player": "Morigren",
+          "k": 8,
+          "d": 8,
+          "a": 11,
+          "cs": 25,
+          "gold": 11444,
+          "dmg": 17338,
+          "taken": 32120,
+          "vs": 96,
+          "lvl": 14
+        }
+      ]
+    },
+    "bans": {
+      "SV Innerstetal": [
+        "Pantheon",
+        "LeBlanc",
+        "Shen",
+        "Taliyah",
+        "Garen"
+      ],
+      "Hub Hannover II": [
+        "Malzahar",
+        "Master Yi",
+        "Blitzcrank",
+        "Malphite",
+        "Syndra"
+      ]
+    },
+    "time": "2026-10-15T18:49:23.189517+00:00",
+    "dauer": 1947,
+    "teamStats": {
+      "SV Innerstetal": {
+        "tuerme": 1,
+        "drachen": 1,
+        "barone": 1,
+        "herolde": 0,
+        "inhibitoren": 0,
+        "firstBlood": false,
+        "firstTower": false
+      },
+      "Hub Hannover II": {
+        "tuerme": 11,
+        "drachen": 4,
+        "barone": 0,
+        "herolde": 0,
+        "inhibitoren": 2,
+        "firstBlood": true,
+        "firstTower": true
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "AOM Shadowgream",
+        "champ": "Orianna"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "zPiro",
+        "champ": "Rakan"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "Morigren",
+        "champ": "Pyke"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "chungi",
+        "champ": "Heimerdinger"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "chungi",
+        "champ": "Heimerdinger"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "chungi",
+        "champ": "Heimerdinger"
+      }
+    ]
+  },
+  {
+    "series": "Hub Hannover II vs SV Innerstetal - Freundschaftsspiel (15.10.2026)",
+    "game": 1,
+    "format": "normal",
+    "date": "2026-10-15",
+    "matchId": "EUW1_8014578978",
+    "blue": "SV Innerstetal",
+    "red": "Hub Hannover II",
+    "winner": "Hub Hannover II",
+    "picks": {
+      "SV Innerstetal": [
+        {
+          "role": "TOP",
+          "champ": "Shen",
+          "player": "Tamashi",
+          "k": 5,
+          "d": 7,
+          "a": 1,
+          "cs": 134,
+          "gold": 7722,
+          "dmg": 14553,
+          "taken": 28262,
+          "vs": 15,
+          "lvl": 14
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Vi",
+          "player": "AutoAttackAndy",
+          "k": 1,
+          "d": 10,
+          "a": 2,
+          "cs": 114,
+          "gold": 6514,
+          "dmg": 7860,
+          "taken": 25210,
+          "vs": 22,
+          "lvl": 11
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Viktor",
+          "player": "Verveigar",
+          "k": 0,
+          "d": 8,
+          "a": 1,
+          "cs": 140,
+          "gold": 6331,
+          "dmg": 11598,
+          "taken": 18012,
+          "vs": 14,
+          "lvl": 12
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Kalista",
+          "player": "Rät",
+          "k": 4,
+          "d": 8,
+          "a": 4,
+          "cs": 162,
+          "gold": 10106,
+          "dmg": 21873,
+          "taken": 19740,
+          "vs": 21,
+          "lvl": 12
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Renata Glasc",
+          "player": "zPiro",
+          "k": 3,
+          "d": 8,
+          "a": 5,
+          "cs": 28,
+          "gold": 7118,
+          "dmg": 10100,
+          "taken": 21445,
+          "vs": 51,
+          "lvl": 10
+        }
+      ],
+      "Hub Hannover II": [
+        {
+          "role": "TOP",
+          "champ": "Kayn",
+          "player": "chungi",
+          "k": 13,
+          "d": 6,
+          "a": 5,
+          "cs": 205,
+          "gold": 13244,
+          "dmg": 34162,
+          "taken": 32868,
+          "vs": 12,
+          "lvl": 17
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "Eurospike",
+          "k": 13,
+          "d": 0,
+          "a": 12,
+          "cs": 159,
+          "gold": 12292,
+          "dmg": 17940,
+          "taken": 15675,
+          "vs": 22,
+          "lvl": 14
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Taliyah",
+          "player": "AOM Shadowgream",
+          "k": 8,
+          "d": 1,
+          "a": 13,
+          "cs": 195,
+          "gold": 10861,
+          "dmg": 22646,
+          "taken": 11503,
+          "vs": 28,
+          "lvl": 14
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Caitlyn",
+          "player": "Salemx",
+          "k": 5,
+          "d": 2,
+          "a": 10,
+          "cs": 190,
+          "gold": 11349,
+          "dmg": 16884,
+          "taken": 12559,
+          "vs": 17,
+          "lvl": 13
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rell",
+          "player": "Ghaast",
+          "k": 2,
+          "d": 4,
+          "a": 24,
+          "cs": 12,
+          "gold": 7271,
+          "dmg": 6452,
+          "taken": 16329,
+          "vs": 60,
+          "lvl": 11
+        }
+      ]
+    },
+    "bans": {
+      "SV Innerstetal": [
+        "Pantheon"
+      ],
+      "Hub Hannover II": []
+    },
+    "time": "2026-10-15T19:42:22.282699+00:00",
+    "dauer": 1386,
+    "teamStats": {
+      "SV Innerstetal": {
+        "tuerme": 0,
+        "drachen": 0,
+        "barone": 0,
+        "herolde": 0,
+        "inhibitoren": 0,
+        "firstBlood": false,
+        "firstTower": false
+      },
+      "Hub Hannover II": {
+        "tuerme": 10,
+        "drachen": 3,
+        "barone": 0,
+        "herolde": 1,
+        "inhibitoren": 2,
+        "firstBlood": true,
+        "firstTower": true
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "chungi",
+        "champ": "Kayn"
+      },
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "Eurospike",
+        "champ": "Jarvan IV"
+      },
+      {
+        "name": "Der Unsterbliche",
+        "was": "Gewonnen, ohne ein einziges Mal zu sterben.",
+        "wer": "Eurospike",
+        "champ": "Jarvan IV"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "Ghaast",
+        "champ": "Rell"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "Ghaast",
+        "champ": "Rell"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "chungi",
+        "champ": "Kayn"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "chungi",
+        "champ": "Kayn"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "chungi",
+        "champ": "Kayn"
+      }
+    ]
+  },
+  {
+    "series": "AFC2 vs Braunschweig eSports e.V. B - Saison Herbst 2026 - Spieltag 1 (18.10.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-10-18",
+    "matchId": "EUW1_8017692599",
+    "blue": "Braunschweig eSports e.V. B",
+    "red": "AFC2",
+    "winner": "AFC2",
+    "picks": {
+      "Braunschweig eSports e.V. B": [
+        {
+          "role": "TOP",
+          "champ": "Vayne",
+          "player": "Glaceon",
+          "k": 10,
+          "d": 5,
+          "a": 4,
+          "cs": 361,
+          "gold": 20882,
+          "dmg": 40123,
+          "taken": 36099,
+          "vs": 57,
+          "lvl": 20
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Sejuani",
+          "player": "Gambler",
+          "k": 5,
+          "d": 5,
+          "a": 7,
+          "cs": 293,
+          "gold": 17855,
+          "dmg": 26264,
+          "taken": 54730,
+          "vs": 50,
+          "lvl": 18
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Malzahar",
+          "player": "BSeS Dezzad",
+          "k": 3,
+          "d": 9,
+          "a": 11,
+          "cs": 270,
+          "gold": 15605,
+          "dmg": 20979,
+          "taken": 34022,
+          "vs": 44,
+          "lvl": 18
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Mel",
+          "player": "BSeS Angel",
+          "k": 6,
+          "d": 8,
+          "a": 9,
+          "cs": 343,
+          "gold": 18580,
+          "dmg": 40635,
+          "taken": 22511,
+          "vs": 37,
+          "lvl": 18
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Pantheon",
+          "player": "SteilerHengst",
+          "k": 3,
+          "d": 10,
+          "a": 11,
+          "cs": 46,
+          "gold": 12813,
+          "dmg": 19788,
+          "taken": 26883,
+          "vs": 181,
+          "lvl": 14
+        }
+      ],
+      "AFC2": [
+        {
+          "role": "TOP",
+          "champ": "Renekton",
+          "player": "AFC AFC",
+          "k": 4,
+          "d": 5,
+          "a": 13,
+          "cs": 320,
+          "gold": 17334,
+          "dmg": 20241,
+          "taken": 46570,
+          "vs": 47,
+          "lvl": 20
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Xin Zhao",
+          "player": "PlayboiiHieu",
+          "k": 5,
+          "d": 6,
+          "a": 15,
+          "cs": 249,
+          "gold": 16592,
+          "dmg": 20911,
+          "taken": 51552,
+          "vs": 70,
+          "lvl": 18
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Aurora",
+          "player": "Vermilion",
+          "k": 18,
+          "d": 5,
+          "a": 10,
+          "cs": 342,
+          "gold": 21559,
+          "dmg": 63923,
+          "taken": 32010,
+          "vs": 62,
+          "lvl": 18
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Caitlyn",
+          "player": "AFC Bernard Bär",
+          "k": 8,
+          "d": 5,
+          "a": 11,
+          "cs": 343,
+          "gold": 20869,
+          "dmg": 34193,
+          "taken": 22009,
+          "vs": 12,
+          "lvl": 18
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Leona",
+          "player": "AFC Captain Hook",
+          "k": 2,
+          "d": 6,
+          "a": 21,
+          "cs": 37,
+          "gold": 12249,
+          "dmg": 8433,
+          "taken": 33376,
+          "vs": 138,
+          "lvl": 17
+        }
+      ]
+    },
+    "bans": {
+      "Braunschweig eSports e.V. B": [
+        "Akali",
+        "Ashe",
+        "LeBlanc",
+        "Nasus",
+        "Dr. Mundo"
+      ],
+      "AFC2": [
+        "Quinn",
+        "Darius",
+        "Karma",
+        "Nami",
+        "Ornn"
+      ]
+    },
+    "time": "2026-10-18T18:55:40.293316+00:00",
+    "dauer": 2669,
+    "teamStats": {
+      "Braunschweig eSports e.V. B": {
+        "tuerme": 12,
+        "drachen": 4,
+        "barone": 1,
+        "herolde": 1,
+        "inhibitoren": 2,
+        "firstBlood": true,
+        "firstTower": true
+      },
+      "AFC2": {
+        "tuerme": 6,
+        "drachen": 2,
+        "barone": 1,
+        "herolde": 0,
+        "inhibitoren": 1,
+        "firstBlood": false,
+        "firstTower": false
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "Vermilion",
+        "champ": "Aurora"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "AFC Captain Hook",
+        "champ": "Leona"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "SteilerHengst",
+        "champ": "Pantheon"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "Glaceon",
+        "champ": "Vayne"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "Vermilion",
+        "champ": "Aurora"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "Gambler",
+        "champ": "Sejuani"
+      }
+    ]
+  },
+  {
+    "series": "AFC2 vs Braunschweig eSports e.V. B - Saison Herbst 2026 - Spieltag 1 (18.10.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-10-18",
+    "matchId": "EUW1_8017777445",
+    "blue": "AFC2",
+    "red": "Braunschweig eSports e.V. B",
+    "winner": "Braunschweig eSports e.V. B",
+    "picks": {
+      "AFC2": [
+        {
+          "role": "TOP",
+          "champ": "Sion",
+          "player": "AFC AFC",
+          "k": 2,
+          "d": 4,
+          "a": 2,
+          "cs": 208,
+          "gold": 9013,
+          "dmg": 12590,
+          "taken": 38707,
+          "vs": 25,
+          "lvl": 17
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Wukong",
+          "player": "PlayboiiHieu",
+          "k": 1,
+          "d": 4,
+          "a": 4,
+          "cs": 192,
+          "gold": 9772,
+          "dmg": 8558,
+          "taken": 25235,
+          "vs": 47,
+          "lvl": 14
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Locke",
+          "player": "Vermilion",
+          "k": 4,
+          "d": 7,
+          "a": 2,
+          "cs": 237,
+          "gold": 10713,
+          "dmg": 17134,
+          "taken": 25693,
+          "vs": 15,
+          "lvl": 15
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Yunara",
+          "player": "AFC Bernard Bär",
+          "k": 2,
+          "d": 2,
+          "a": 1,
+          "cs": 271,
+          "gold": 12028,
+          "dmg": 14702,
+          "taken": 10662,
+          "vs": 13,
+          "lvl": 13
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lulu",
+          "player": "AFC Captain Hook",
+          "k": 0,
+          "d": 2,
+          "a": 3,
+          "cs": 32,
+          "gold": 6342,
+          "dmg": 4231,
+          "taken": 12779,
+          "vs": 72,
+          "lvl": 12
+        }
+      ],
+      "Braunschweig eSports e.V. B": [
+        {
+          "role": "TOP",
+          "champ": "Yone",
+          "player": "Glaceon",
+          "k": 6,
+          "d": 2,
+          "a": 4,
+          "cs": 256,
+          "gold": 12774,
+          "dmg": 31199,
+          "taken": 21803,
+          "vs": 23,
+          "lvl": 18
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Maokai",
+          "player": "KINGREX",
+          "k": 3,
+          "d": 1,
+          "a": 7,
+          "cs": 200,
+          "gold": 11756,
+          "dmg": 9096,
+          "taken": 24231,
+          "vs": 42,
+          "lvl": 15
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Anivia",
+          "player": "BSeS Dezzad",
+          "k": 2,
+          "d": 3,
+          "a": 8,
+          "cs": 237,
+          "gold": 12443,
+          "dmg": 22021,
+          "taken": 18281,
+          "vs": 22,
+          "lvl": 17
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Kai'Sa",
+          "player": "BSeS Angel",
+          "k": 8,
+          "d": 2,
+          "a": 4,
+          "cs": 234,
+          "gold": 13947,
+          "dmg": 22049,
+          "taken": 13371,
+          "vs": 25,
+          "lvl": 15
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Nami",
+          "player": "SteilerHengst",
+          "k": 0,
+          "d": 1,
+          "a": 14,
+          "cs": 28,
+          "gold": 8349,
+          "dmg": 9025,
+          "taken": 7081,
+          "vs": 99,
+          "lvl": 13
+        }
+      ]
+    },
+    "bans": {
+      "AFC2": [
+        "Quinn",
+        "Nocturne",
+        "Darius",
+        "Galio",
+        "Jayce"
+      ],
+      "Braunschweig eSports e.V. B": [
+        "Akali",
+        "LeBlanc",
+        "Ashe",
+        "Ornn",
+        "Hwei"
+      ]
+    },
+    "time": "2026-10-18T19:44:03.172430+00:00",
+    "dauer": 1771,
+    "teamStats": {
+      "AFC2": {
+        "tuerme": 0,
+        "drachen": 2,
+        "barone": 0,
+        "herolde": 0,
+        "inhibitoren": 0,
+        "firstBlood": true,
+        "firstTower": false
+      },
+      "Braunschweig eSports e.V. B": {
+        "tuerme": 10,
+        "drachen": 2,
+        "barone": 1,
+        "herolde": 1,
+        "inhibitoren": 2,
+        "firstBlood": false,
+        "firstTower": true
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "BSeS Angel",
+        "champ": "Kai'Sa"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "SteilerHengst",
+        "champ": "Nami"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "SteilerHengst",
+        "champ": "Nami"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "AFC Bernard Bär",
+        "champ": "Yunara"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "Glaceon",
+        "champ": "Yone"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "Vermilion",
+        "champ": "Locke"
+      }
+    ]
+  },
+  {
+    "series": "AFC2 vs Braunschweig eSports e.V. B - Saison Herbst 2026 - Spieltag 1 (18.10.2026)",
+    "game": 3,
+    "format": "fearless",
+    "date": "2026-10-18",
+    "matchId": "EUW1_8017860851",
+    "blue": "Braunschweig eSports e.V. B",
+    "red": "AFC2",
+    "winner": "Braunschweig eSports e.V. B",
+    "picks": {
+      "Braunschweig eSports e.V. B": [
+        {
+          "role": "TOP",
+          "champ": "Gwen",
+          "player": "Glaceon",
+          "k": 4,
+          "d": 0,
+          "a": 5,
+          "cs": 334,
+          "gold": 15193,
+          "dmg": 26410,
+          "taken": 28818,
+          "vs": 33,
+          "lvl": 19
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Warwick",
+          "player": "Gambler",
+          "k": 4,
+          "d": 1,
+          "a": 6,
+          "cs": 227,
+          "gold": 13549,
+          "dmg": 7573,
+          "taken": 32171,
+          "vs": 20,
+          "lvl": 16
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Galio",
+          "player": "BSeS Dezzad",
+          "k": 1,
+          "d": 2,
+          "a": 7,
+          "cs": 194,
+          "gold": 9501,
+          "dmg": 10319,
+          "taken": 25050,
+          "vs": 19,
+          "lvl": 16
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Ashe",
+          "player": "BSeS Angel",
+          "k": 7,
+          "d": 2,
+          "a": 11,
+          "cs": 249,
+          "gold": 14888,
+          "dmg": 21704,
+          "taken": 12168,
+          "vs": 26,
+          "lvl": 16
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "SteilerHengst",
+          "k": 2,
+          "d": 5,
+          "a": 13,
+          "cs": 30,
+          "gold": 9267,
+          "dmg": 5819,
+          "taken": 20935,
+          "vs": 103,
+          "lvl": 13
+        }
+      ],
+      "AFC2": [
+        {
+          "role": "TOP",
+          "champ": "Shen",
+          "player": "AFC AFC",
+          "k": 0,
+          "d": 3,
+          "a": 4,
+          "cs": 203,
+          "gold": 8471,
+          "dmg": 14145,
+          "taken": 25818,
+          "vs": 29,
+          "lvl": 17
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Vi",
+          "player": "PlayboiiHieu",
+          "k": 2,
+          "d": 4,
+          "a": 7,
+          "cs": 199,
+          "gold": 10318,
+          "dmg": 11279,
+          "taken": 19892,
+          "vs": 44,
+          "lvl": 14
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Orianna",
+          "player": "Vermilion",
+          "k": 4,
+          "d": 2,
+          "a": 4,
+          "cs": 289,
+          "gold": 12022,
+          "dmg": 30108,
+          "taken": 12945,
+          "vs": 27,
+          "lvl": 16
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Xayah",
+          "player": "AFC Bernard Bär",
+          "k": 3,
+          "d": 3,
+          "a": 7,
+          "cs": 261,
+          "gold": 12959,
+          "dmg": 23026,
+          "taken": 14039,
+          "vs": 13,
+          "lvl": 14
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Nautilus",
+          "player": "AFC Captain Hook",
+          "k": 1,
+          "d": 6,
+          "a": 8,
+          "cs": 26,
+          "gold": 7144,
+          "dmg": 4228,
+          "taken": 15733,
+          "vs": 79,
+          "lvl": 12
+        }
+      ]
+    },
+    "bans": {
+      "Braunschweig eSports e.V. B": [
+        "Akali",
+        "LeBlanc",
+        "Ornn",
+        "Rakan",
+        "Blitzcrank"
+      ],
+      "AFC2": [
+        "Quinn",
+        "Jarvan IV",
+        "Darius",
+        "Seraphine",
+        "Karma"
+      ]
+    },
+    "time": "2026-10-18T20:30:03.760687+00:00",
+    "dauer": 1842,
+    "teamStats": {
+      "Braunschweig eSports e.V. B": {
+        "tuerme": 11,
+        "drachen": 1,
+        "barone": 1,
+        "herolde": 1,
+        "inhibitoren": 3,
+        "firstBlood": true,
+        "firstTower": true
+      },
+      "AFC2": {
+        "tuerme": 2,
+        "drachen": 3,
+        "barone": 0,
+        "herolde": 0,
+        "inhibitoren": 0,
+        "firstBlood": false,
+        "firstTower": false
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Der Unsterbliche",
+        "was": "Gewonnen, ohne ein einziges Mal zu sterben.",
+        "wer": "Glaceon",
+        "champ": "Gwen"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "SteilerHengst",
+        "champ": "Braum"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "SteilerHengst",
+        "champ": "Braum"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "Glaceon",
+        "champ": "Gwen"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "Vermilion",
+        "champ": "Orianna"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "SteilerHengst",
+        "champ": "Braum"
+      }
+    ]
   }
 ]

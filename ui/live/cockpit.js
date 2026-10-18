@@ -355,12 +355,14 @@
           el("strong", {}, r.champion),
           el("span", {class: "cp-marken-zeile"},
             v.plan ? el("span", {class: "cp-plan"}, v.plan === "blind" ? "Plan: blind" : "Plan: gerne") : null,
-            v.pool ? el("span", {class: "cp-plan"}, "Pool") : null)),
+            v.pool ? el("span", {class: "cp-plan"}, "Pool") : null),
+          cpChanceNach(r.champion, rolle)),
         el("span", {class: "cp-score", title: "Note · Entscheidungswert "
                     + (v.entscheidung === null ? "–" : Math.round(v.entscheidung))}, String(r.score))),
       v.gruende.length ? el("ul", {class: "cp-gruende"},
         v.gruende.slice(0, 4).map((g) => el("li", {}, cpIcon("haken"), el("span", {}, g)))) : null,
       v.risiken.length ? el("p", {class: "cp-risiko"}, v.risiken[0]) : null,
+      wrBlock(cpWr(r.champion, rolle), ROLES[rolle][1]),
       cpDanach(r),
       cpWerte(v),
       el("div", {class: "cp-aktionen"}, picken, cpMerkKnoepfe(r.champion)));
@@ -393,9 +395,30 @@
       src ? el("img", {class: "cp-bild", src, alt: ""}) : el("span"),
       el("span", {class: "cp-zeile-text"},
         el("b", {}, r.champion),
-        !kompakt && v.gruende[0] ? el("span", {class: "cp-zeile-grund"}, v.gruende[0]) : null),
+        !kompakt && v.gruende[0] ? el("span", {class: "cp-zeile-grund"}, v.gruende[0]) : null,
+        wrKurz(cpWr(r.champion, rolle)),
+        cpChanceNach(r.champion, rolle),
+        // Die ganze Begruendung und alle Matchups - aufklappbar, damit die
+        // Liste kurz bleibt (Wunsch des Nutzers, 18.10.2026).
+        kompakt ? null : el("details", {class: "cp-warum"},
+          el("summary", {}, "Warum?"),
+          wrBegruendung(v.gruende, v.risiken),
+          wrBlock(cpWr(r.champion, rolle), ROLES[rolle][1]))),
       el("span", {class: "cp-score klein"}, String(r.score)),
       cpMerkKnoepfe(r.champion), picken);
+  }
+
+  /* Alle Kandidaten der Rolle als filterbare Tabelle: gegen jeden
+     Lanegegner, mit unserem Lanepartner (Bot <-> Support), Team -> und
+     allgemein (ui/live/winrate.js laneTabelle). */
+  function cpKonter(rolle) {
+    const sp = liveSpielerVon("eigen", rolle);
+    return [laneTabelle({
+      z: cpZustandJetzt || liveZustand(), rolle,
+      gesperrt: new Map([...liveGesperrt()].map(([c, v]) => [c, v.text])),
+      pool: poolVon(sp), plan: sp ? planOf(sp) : null, wer: sp ? sp.label : null,
+      picken: (c) => cpPicken(c, rolle), neuZeichnen: renderLiveDraft,
+    })];
   }
 
   function cpEmpfehlungen(rolle) {
@@ -808,6 +831,7 @@
       if (e.t2.length) box.append(el("div", {class: "cp-tier2"},
         el("span", {class: "cp-klein"}, "Starke Alternativen"),
         e.t2.map((r, i) => cpZeile(r, e.ansicht(r), rolle, {taste: i + 2}))));
+      box.append(...cpKonter(rolle));
       // Taste 5 erreicht die erste weitere Option und klappt sie dafuer auf.
       if (e.t3.length) box.append(el("details", {class: "cp-tier3"},
         el("summary", {}, "Weitere Optionen (" + e.t3.length + ")"),
@@ -909,8 +933,17 @@
   }
 
   /* ------------------------------------------------------------ Aufbau */
+  // Die Lage fuer die Winraten - einmal je Zeichnen, nicht je Zeile.
+  let cpZustandJetzt = null, cpChanceJetzt = null;
+  const cpWr = (champ, rolle) => liveWinraten(cpZustandJetzt || liveZustand(), champ, rolle);
+  // Draft laut Patchdaten, wenn wir diesen Champion picken (engine/chance.js).
+  const cpChanceNach = (champ, rolle) =>
+    chanceNach(liveChanceMit(cpZustandJetzt || liveZustand(), champ, rolle), cpChanceJetzt);
+
   function renderCockpit(ziel) {
-    const a = ENGINE.ablauf(liveZustand());
+    cpZustandJetzt = liveZustand();
+    cpChanceJetzt = liveDraftChance(cpZustandJetzt);
+    const a = ENGINE.ablauf(cpZustandJetzt);
     cpJetztGesehen = {neu: {marken: new Set(), shortlist: new Set(), meldung: new Set()}};
     const schrittVorher = cockpit.lies().gesehen ? cockpit.lies().gesehen.schritt : null;
     const schrittJetzt = a.zustand + "|" + (a.schritt ? a.schritt.nr : "");
@@ -942,6 +975,8 @@
         return st;
       })(),
       cpUndoLeiste(),
+      // Draft laut Patchdaten - bei jedem Zeichnen neu, also live.
+      chanceLeiste(cpChanceJetzt, {gegnerName: liveGegnerName() || "Gegner"}),
       el("div", {class: "cp-buehne"}, cpTeam("eigen", a, rolle), cpMitte(a), cpTeam("gegner", a, null)),
       el("div", {class: "ld-protokoll"})].filter(Boolean));
     liveBanListeZeichnen();

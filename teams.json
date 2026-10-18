@@ -356,6 +356,12 @@
         "riotId": "Du hast ne Lux#Xayah",
         "role": "TOP",
         "bench": true
+      },
+      {
+        "label": "KAIHUA",
+        "riotId": "KAIHUA#3406",
+        "role": "UTILITY",
+        "bench": true
       }
     ],
     "ligaTeamId": 23
@@ -411,7 +417,7 @@
       {
         "label": "BSeS Angel",
         "riotId": "BSeS Angel#EUW",
-        "role": "UNKNOWN"
+        "role": "BOTTOM"
       },
       {
         "label": "TGameRex23",
@@ -426,12 +432,12 @@
       {
         "label": "BSeS Dezzad",
         "riotId": "BSeS Dezzad#381",
-        "role": "UNKNOWN"
+        "role": "MIDDLE"
       },
       {
         "label": "Glaceon",
         "riotId": "Glaceon#evo",
-        "role": "UNKNOWN"
+        "role": "TOP"
       },
       {
         "label": "N0k0ri",
@@ -441,7 +447,17 @@
       {
         "label": "KINGREX",
         "riotId": "KINGREX#ADN",
-        "role": "UNKNOWN"
+        "role": "JUNGLE"
+      },
+      {
+        "label": "SteilerHengst",
+        "riotId": "SteilerHengst#EUW",
+        "role": "UTILITY"
+      },
+      {
+        "label": "Gambler",
+        "riotId": "Gambler#243",
+        "role": "JUNGLE"
       }
     ],
     "ligaName": "Braunschweig eSports e.V. I",
@@ -679,6 +695,89 @@
         "label": "Paulenzer",
         "riotId": "Paulenzer#123",
         "role": "UNKNOWN"
+      }
+    ]
+  },
+  {
+    "team": "Hub Braunschweig I",
+    "region": "euw",
+    "ligaTeamId": 34,
+    "ligaName": "Hub Braunschweig I",
+    "players": []
+  },
+  {
+    "team": "Hub Goslar I",
+    "region": "euw",
+    "ligaTeamId": 33,
+    "ligaName": "Hub Goslar I",
+    "players": []
+  },
+  {
+    "team": "Hub Helmstedt I",
+    "region": "euw",
+    "ligaTeamId": 35,
+    "ligaName": "Hub Helmstedt I",
+    "players": []
+  },
+  {
+    "team": "Hub Peine I",
+    "region": "euw",
+    "ligaTeamId": 36,
+    "ligaName": "Hub Peine I",
+    "players": []
+  },
+  {
+    "team": "Hub Salzgitter I",
+    "region": "euw",
+    "ligaTeamId": 32,
+    "ligaName": "Hub Salzgitter I",
+    "players": [
+      {
+        "label": "Rikuu",
+        "riotId": "Rikuu#1803",
+        "role": "UNKNOWN"
+      }
+    ]
+  },
+  {
+    "team": "Hub Wolfenbüttel I",
+    "region": "euw",
+    "ligaTeamId": 37,
+    "ligaName": "Hub Wolfenbüttel I",
+    "players": []
+  },
+  {
+    "team": "Hub Wolfsburg I",
+    "region": "euw",
+    "ligaTeamId": 38,
+    "ligaName": "Hub Wolfsburg I",
+    "players": []
+  },
+  {
+    "team": "SC Langenhagen I",
+    "region": "euw",
+    "ligaTeamId": 31,
+    "ligaName": "SC Langenhagen I",
+    "players": [
+      {
+        "label": "Chaoslime09",
+        "riotId": "Chaoslime09#8623",
+        "role": "MIDDLE"
+      },
+      {
+        "label": "Benxi",
+        "riotId": "Benxi#5324",
+        "role": "UTILITY"
+      },
+      {
+        "label": "Weuifgnwen",
+        "riotId": "Weuifgnwen#1111",
+        "role": "TOP"
+      },
+      {
+        "label": "Demoo",
+        "riotId": "Demoo#0911",
+        "role": "JUNGLE"
       }
     ]
   }

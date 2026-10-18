@@ -238,7 +238,12 @@ def main():
         pruefe("null" not in lage, "Lagebild ohne 'null'")
         rolle = int(p.input_value("#solo-draft .so-ich select >> nth=1"))
         erste = namen[0]
-        p.locator("#solo-draft .so-rec.gross summary").click()
+        # Seit 18.10.2026 steht die grosse Empfehlung offen (Begruendung und
+        # Winrate sofort sichtbar) - nur aufklappen, wenn sie es nicht ist.
+        pruefe(p.evaluate("() => document.querySelector('#solo-draft .so-rec.gross').open"),
+               "grosse Solo-Empfehlung steht offen")
+        if not p.evaluate("() => document.querySelector('#solo-draft .so-rec.gross').open"):
+            p.locator("#solo-draft .so-rec.gross summary").click()
         p.locator("#solo-draft .so-rec.gross .so-picken").click()
         p.wait_for_timeout(600)
         feld = p.input_value(f"#solo-draft [name='so-eigen-picks-{rolle}']")
