@@ -52,6 +52,17 @@ export function quelleAnlegen(roh) {
     return wert(e[1] / 1000, {quelle: "draftgap", patch, stichprobe: e[0]});
   }
 
+  /* Staerke aus dem 30-Tage-Datensatz - dieselbe Quelle wie Matchups und
+     Synergien. Dient als Erwartung, an der ein Paar gemessen wird
+     (engine/chance.js); ohne Eintrag null. */
+  function staerke30(champ, rolle) {
+    const i = nr.get(champ);
+    if (i === undefined || !roh.basis30) return null;
+    const e = (roh.basis30[i] || {})[String(rollenNr(rolle))];
+    if (!e || !e[0]) return null;
+    return wert(e[1] / 1000, {quelle: "draftgap", patch: patchPaare, stichprobe: e[0], hinweis: paareHinweis});
+  }
+
   /* ------------------------------------------------- Rollenverteilung / Flex */
   /* Wie oft wird dieser Champion auf welcher Rolle gespielt? Das ist die
      Grundlage fuer Rollenunsicherheit UND fuer den Flexwert: ein Champion,
@@ -225,7 +236,7 @@ export function quelleAnlegen(roh) {
     fenster,
     champions: roh.namen.slice(),
     kennt: (champ) => nr.has(champ),
-    staerke, rollenVerteilung, matchup, synergie, schaden, kurve,
+    staerke, staerke30, rollenVerteilung, matchup, synergie, schaden, kurve,
     skalierung, prioritaet, streuung, paarMittel,
   };
 }
@@ -234,7 +245,7 @@ function leereQuelle() {
   const nix = () => null;
   return {
     patch: null, stand: null, fenster: null, champions: [], kennt: () => false,
-    staerke: nix, rollenVerteilung: nix, matchup: nix, synergie: nix,
+    staerke: nix, staerke30: nix, rollenVerteilung: nix, matchup: nix, synergie: nix,
     schaden: nix, kurve: nix, skalierung: nix, prioritaet: nix,
     streuung: nix, paarMittel: nix,
   };

@@ -65,6 +65,12 @@
     && window.matchMedia("(hover: none) and (pointer: coarse)").matches;
   const CP_UNDO_MS = 6000;
   const cockpitAn = () => cockpit.lies().an;
+  if (window.matchMedia) {
+    const mq = window.matchMedia("(max-width: 680px)");
+    const neu = () => { if (document.querySelector("#live-draft.cp")) renderLiveDraft(); };
+    if (mq.addEventListener) mq.addEventListener("change", neu);
+    else if (mq.addListener) mq.addListener(neu);
+  }
 
   function cockpitUmschalten() {
     const an = !cockpitAn();
@@ -190,7 +196,7 @@
   /* ------------------------------------------------------ Zustandskopf */
   const CP_RUNDE = {ban1: "1. Banrunde", pick1: "1. Pickrunde", ban2: "2. Banrunde", pick2: "2. Pickrunde"};
 
-  function cpStatus(a) {
+  function cpStatus(a, eingabe = null) {
     const s = a.schritt;
     const gegner = liveGegnerName() || "Gegner";
     let titel, unter = "";
@@ -205,14 +211,38 @@
       unter = (s.art === "ban" ? "Ban " : "Pick ") + (getan + 1) + " von 5 · "
         + CP_RUNDE[s.runde] + " · " + (s.seite === "blue" ? "Blau" : "Rot");
       if (a.zustand === "IDLE") unter = "Erster Schritt: " + unter;
+      // Bei unserem Pick: fuer welche Rolle und wen (Entwurf B+C, 20.10.2026).
+      const rolle = s.wir && s.art === "pick" ? cpRolle() : null;
+      if (rolle !== null) {
+        const sp = liveSpielerVon("eigen", rolle);
+        titel += " " + ROLES[rolle][1];
+        if (sp) unter += " · für " + sp.label;
+      }
     }
+    // Die Jetzt-Leiste (Entwurf B+C): wer dran ist, gross - daneben, was man
+    // jetzt tut: die Rolle waehlen, eintragen (am Bildschirm steht die Suche
+    // hier, am Handy unten), rueckgaengig machen.
+    const unserPick = s && s.wir && s.art === "pick" && cpRolle() !== null;
     return el("div", {class: "cp-status"},
       el("div", {class: "cp-zustand"},
         el("span", {class: "cp-klein"}, a.zustand === "IDLE" ? "Warten auf den Draft"
           : a.zustand === "OUR_TURN" ? "Wir sind dran" : a.zustand === "OPPONENT_TURN" ? "Gegner ist dran" : "Fertig"),
         el("strong", {class: "cp-titel"}, titel),
         el("span", {class: "cp-unter"}, unter)),
-      cpFortschritt(a));
+      unserPick ? el("div", {class: "cp-entscheidung-kopf"},
+        el("span", {class: "cp-klein"}, "Empfehlung f\u00fcr"), cpRollenWahl(cpRolle())) : null,
+      eingabe || null,
+      cpUndoLeiste());
+  }
+
+  /* Die Spielstand-Leiste (Entwurf B, 20.10.2026): links wir, rechts der
+     Gegner - je Name, Bans und Picks -, in der Mitte der Draft laut
+     Patchdaten. Wie eine Einblendung bei einer Uebertragung. */
+  function cpAnzeige(a, chance) {
+    const f = cpFortschritt(a);
+    const [wir, sie] = f.children;
+    return el("section", {class: "cp-anzeige", "aria-label": "Stand des Drafts"},
+      wir, chanceLeiste(chance, {gegnerName: liveGegnerName() || "Gegner", anzeige: true}), sie);
   }
 
   /* Je Seite fuenf Bans und fuenf Picks. Fertig zeigt den Champion, der
@@ -240,7 +270,10 @@
     const zeile = (farbe) => {
       const seite = cpSeiteUI(farbe);
       return el("div", {class: "cp-fortschritt-zeile " + seite},
-        el("span", {class: "cp-klein"}, seite === "eigen" ? team.team : (liveGegnerName() || "Gegner")),
+        el("span", {class: "cp-klein cp-seite-name"},
+          el("span", {class: "cp-seite-farbe"}, (farbe === "blue" ? "Blau" : "Rot")
+             + (seite === "eigen" ? " \u00b7 wir" : " \u00b7 Gegner")),
+          el("b", {}, seite === "eigen" ? team.team : (liveGegnerName() || "Gegner"))),
         el("span", {class: "cp-klein cp-art"}, "Bans"), reihe(farbe, "ban"),
         el("span", {class: "cp-klein cp-art"}, "Picks"), reihe(farbe, "pick"));
     };
@@ -295,10 +328,118 @@
               : el("span", {class: "cp-wer"}, sp ? sp.label : "");
           })());
       })),
-      el("div", {class: "cp-bans"},
-        el("span", {class: "cp-klein"}, "Bans"),
+      // Die Bans stehen oben in der Spielstand-Leiste; hier nur zum Aendern.
+      el("details", {class: "cp-bans"},
+        el("summary", {class: "cp-klein"}, "Bans \u00e4ndern"),
         el("div", {class: "cp-bans-felder"},
-          [0, 1, 2, 3, 4].map((i) => cpFeld(seite, "bans", i, "Ban " + (i + 1))))));
+          [0, 1, 2, 3, 4].map((i) => cpFeld(seite, "bans", i, "Ban " + (i + 1))))),
+      // Spielplan unter den Teams (Wunsch des Nutzers, 20.10.2026): bei uns
+      // wie wir gewinnen und wie wir skalieren, beim Gegner die Lanes, seine
+      // groesste Gefahr und unser Bedarf.
+      eigen ? cpSpielplanWir() : cpSpielplanSie());
+  }
+
+  /* ------------------------------------------------------- Spielplan
+     Aus dem Lagebild der Engine (engine/strategie.js lagebild) und den
+     gemessenen Kurven (engine/comp.js profil): nichts Neues gerechnet, nur
+     im Cockpit gezeigt. Jede Angabe sagt, ob sie gemessen (DraftGap) oder
+     eingeschaetzt (Heuristik) ist. */
+  const CP_PHASE = [["frueh", "Früh"], ["mittel", "Mitte"], ["spaet", "Spät"]];
+  const cpPunkte = (d) => (d >= 0 ? "+" : "\u2212") + Math.abs(d * 100).toFixed(1).replace(".", ",");
+  const cpProzent = (v) => (v * 100).toFixed(1).replace(".", ",") + " %";
+  const cpHerkunft = (q) => {
+    const gem = /draftgap/.test(q || ""), heur = /heuristik/.test(q || "");
+    return el("span", {class: "cp-herkunft" + (heur ? " geschaetzt" : ""),
+                       title: gem && !heur ? "aus DraftGap-Daten berechnet" : "aus der Heuristiktabelle – keine Messung"},
+      gem && heur ? "gemessen + Einschätzung" : gem ? "gemessen" : "Einschätzung");
+  };
+  const cpKasten = (titel, quelle, ...inhalt) => el("section", {class: "cp-plan-kasten", "aria-label": titel},
+    el("div", {class: "cp-plan-kopf"}, el("span", {class: "cp-klein"}, titel), quelle ? cpHerkunft(quelle) : null),
+    ...inhalt);
+  const cpPlanLeer = (text) => el("p", {class: "cp-leer"}, text);
+
+  function cpSpielplanWir() {
+    const L = liveLage();
+    if (!L) return null;
+    const s = L.siegbedingung;
+    const traeger = (xs) => xs && xs.length ? xs.join(", ") : "niemand";
+    const sieg = s
+      ? cpKasten("Wie wir gewinnen", s.quelle,
+          el("b", {class: "cp-plan-wort"}, s.wort),
+          s.phase ? el("span", {class: "cp-plan-phase"}, s.phase) : null,
+          s.idee ? el("p", {class: "cp-plan-text"}, s.idee) : null,
+          el("p", {class: "cp-plan-text klein"}, "Getragen von: " + s.achsen.map((a) =>
+            a.wort + " (" + traeger(a.traeger) + ")").join(" · ")),
+          s.gefaehrdet.length ? el("p", {class: "cp-plan-text klein warn"}, "Gefährdet durch: "
+            + s.gefaehrdet.map((x) => "ihr " + x.wort + " (" + traeger(x.traeger) + ")").join(" · ")) : null)
+      : cpKasten("Wie wir gewinnen", null, cpPlanLeer("ab zwei eigenen Picks"));
+    // Skalierung: Winrate je Spieldauer-Abschnitt, Mittel unserer Picks
+    // gegen das ihrer - gemessen (DraftGap), gleich gewichtet.
+    const z = cpZustandJetzt || liveZustand();
+    const sie = z.wirSind === "blue" ? "red" : "blue";
+    const unser = liveTeile.comp.profil(z.picks[z.wirSind] || []);
+    const ihr = liveTeile.comp.profil(z.picks[sie] || []);
+    const zeilen = CP_PHASE.map(([ph, wort]) => {
+      const w = unser.kurve && unser.kurve[ph], g = ihr.kurve && ihr.kurve[ph];
+      if (!w) return null;
+      const d = g ? w.value - g.value : null;
+      return el("div", {class: "cp-kurve-zeile"},
+        el("span", {class: "cp-kurve-wort"}, wort),
+        el("span", {class: "cp-kurve-balken", "aria-hidden": "true"},
+          el("span", {class: "wir", style: "width:" + Math.max(0, Math.min(100, (w.value - 0.4) / 0.2 * 100)) + "%"}),
+          g ? el("span", {class: "sie", style: "width:" + Math.max(0, Math.min(100, (g.value - 0.4) / 0.2 * 100)) + "%"}) : null),
+        el("span", {class: "cp-kurve-zahl"}, cpProzent(w.value)),
+        el("span", {class: "cp-kurve-diff" + (d === null ? "" : d >= 0.005 ? " plus" : d <= -0.005 ? " minus" : "")},
+          d === null ? "–" : cpPunkte(d)));
+    }).filter(Boolean);
+    const kurve = zeilen.length
+      ? cpKasten("Skalierung", "draftgap",
+          el("div", {class: "cp-kurve"}, zeilen),
+          el("p", {class: "cp-plan-text klein"}, "Winrate nach Spieldauer, Mittel unserer "
+            + unser.picks.length + " Picks; Zahl rechts: wir minus sie"
+            + (ihr.kurve ? "" : " (Gegner noch ohne Pick)") + ". Balken: 40–60 %."))
+      : cpKasten("Skalierung", null, cpPlanLeer("ab dem ersten eigenen Pick"));
+    return el("div", {class: "cp-spielplan"}, sieg, kurve);
+  }
+
+  function cpSpielplanSie() {
+    const L = liveLage();
+    if (!L) return null;
+    const z = cpZustandJetzt || liveZustand();
+    const sie = z.wirSind === "blue" ? "red" : "blue";
+    // Lanes: je Rolle unser Pick gegen ihren auf derselben Rolle, gemessene
+    // Winrate aus unserer Sicht mit Abstand zum Schnitt (wie die Tabelle).
+    const lanes = ROLES.map(([wert, wort], i) => {
+      const w = (z.picks[z.wirSind] || []).find((x) => x && x.rolle === wert);
+      const g = (z.picks[sie] || []).find((x) => x && x.rolle === wert);
+      const m = w && g ? (liveWinraten(z, w.champ, i).matchups || []).find((x) => x.gegner === g.champ) : null;
+      const v = m && m.wert;
+      return el("div", {class: "cp-lane-zeile"},
+        el("span", {class: "cp-lane-rolle", style: "--cp-rolle-kante: var(" + CP_ROLLE_VAR[wert] + ")"}, wort),
+        el("span", {class: "cp-lane-champ"}, w ? w.champ : "–"),
+        el("span", {class: "cp-lane-wert lt-wert" + (v ? ltHitze(v, m.schnitt, "matchup") : ""),
+                    title: v ? w.champ + " gegen " + g.champ + ": " + cpProzent(v.value) + " aus "
+                      + (v.sampleSize || 0).toLocaleString("de-DE") + " Spielen · Ø aller "
+                      + cpProzent(m.schnitt) : "noch nicht beide gepickt"},
+          el("b", {}, v ? cpProzent(v.value) : "–"),
+          v && m.schnitt !== null && m.schnitt !== undefined ? el("small", {}, cpPunkte(v.value - m.schnitt)) : null),
+        el("span", {class: "cp-lane-champ sie"}, g ? g.champ : "–"));
+    });
+    const lanesKasten = cpKasten("Lanes · wir gegen sie", "draftgap",
+      el("div", {class: "cp-lanes"}, lanes),
+      el("p", {class: "cp-plan-text klein"}, "Winrate unseres Picks gegen ihren auf derselben Rolle, "
+        + "kleine Zahl: Abstand zum Schnitt aller gegen ihn. Letzte 30 Tage."));
+    const g = L.groessteGefahr, b = L.groessterBedarf;
+    const gefahr = g
+      ? cpKasten("Größte Gefahr", g.quelle, el("b", {class: "cp-plan-wort"}, g.wort),
+          el("p", {class: "cp-plan-text klein"}, g.grund || ""))
+      : cpKasten("Größte Gefahr", null, cpPlanLeer("ab ihrem ersten Pick"));
+    const bedarf = b
+      ? cpKasten("Unser Bedarf", b.quelle, el("b", {class: "cp-plan-wort"}, b.wort),
+          el("p", {class: "cp-plan-text klein"}, (b.grund || "")
+            + (b.bringer && b.bringer.length ? " · bringen mit: " + b.bringer.slice(0, 3).map((x) => x.champ).join(", ") : "")))
+      : null;
+    return el("div", {class: "cp-spielplan"}, lanesKasten, gefahr, bedarf);
   }
 
   /* ------------------------------------------------------ Empfehlungen */
@@ -343,29 +484,46 @@
     return knopf;
   }
 
+  /* Die Empfehlung als Buehne (Entwurf B): ein Banner - links auf ruhiger
+     Flaeche Name, Note, Gruende und Knoepfe, rechts der Splash, unten rechts
+     Komfort/Matchup/Comp/Meta. Darunter die Winraten als Kachelreihe und
+     "Wenn wir das picken". Der Splash kommt nur aus den eingebetteten Bildern
+     (meistgespielte Champions der Spieler) - sonst die ruhige Fassung mit
+     Icon, nichts aus dem Netz. */
   function cpTier1(r, v, rolle) {
     const src = iconUrl(r.champion);
-    const picken = cpTasteAn(el("button", {class: "cp-picken", type: "button"}, "Picken"), 1);
+    const picken = cpTasteAn(el("button", {class: "cp-picken", type: "button"}, r.champion + " picken"), 1);
     picken.addEventListener("click", () => cpPicken(r.champion, rolle));
+    const splash = SPLASH[r.champion];
+    const marke = ["Empfehlung", v.pool ? "Pool" : null,
+                   v.plan ? (v.plan === "blind" ? "Plan: blind" : "Plan: gerne") : null].filter(Boolean).join(" \u00b7 ");
     return el("article", {class: "cp-tier1" + (ENGINE.merkStatus(cpMerkliste(), r.champion) === "SHORTLISTED" ? " gemerkt" : ""),
                           "data-champ": r.champion},
-      el("div", {class: "cp-tier1-kopf"},
-        src ? el("img", {class: "cp-bild-gross", src, alt: ""}) : null,
-        el("div", {class: "cp-tier1-name"},
-          el("strong", {}, r.champion),
-          el("span", {class: "cp-marken-zeile"},
-            v.plan ? el("span", {class: "cp-plan"}, v.plan === "blind" ? "Plan: blind" : "Plan: gerne") : null,
-            v.pool ? el("span", {class: "cp-plan"}, "Pool") : null),
-          cpChanceNach(r.champion, rolle)),
-        el("span", {class: "cp-score", title: "Note · Entscheidungswert "
-                    + (v.entscheidung === null ? "–" : Math.round(v.entscheidung))}, String(r.score))),
-      v.gruende.length ? el("ul", {class: "cp-gruende"},
-        v.gruende.slice(0, 4).map((g) => el("li", {}, cpIcon("haken"), el("span", {}, g)))) : null,
-      v.risiken.length ? el("p", {class: "cp-risiko"}, v.risiken[0]) : null,
+      el("div", {class: "cp-held" + (splash ? " mit-splash" : ""),
+                 style: splash ? "--cp-splash: url(" + JSON.stringify(splash) + ")" : null},
+        el("div", {class: "cp-held-text"},
+          el("span", {class: "cp-klein cp-held-marke"}, marke),
+          el("div", {class: "cp-tier1-kopf"},
+            !splash && src ? el("img", {class: "cp-bild-gross", src, alt: ""}) : null,
+            el("div", {class: "cp-tier1-name"}, el("strong", {}, r.champion)),
+            el("span", {class: "cp-score", title: "Note · Entscheidungswert "
+                        + (v.entscheidung === null ? "–" : Math.round(v.entscheidung))}, String(r.score))),
+          cpChanceNach(r.champion, rolle),
+          (() => {
+            // Pro-Picks (pro.py): nur Anzeige, die Note rechnet sie nicht mit.
+            if (!PRO) return null;
+            const x = proVon(r.champion, ROLES[rolle][0]);
+            return el("span", {class: "cp-held-pro", title: proTitel(r.champion, ROLES[rolle][0])},
+              x ? "Pro " + proFenster() + ": " + x.picks + "× gepickt, " + x.blind + "× blind"
+                : "Pro " + proFenster() + ": nicht auf " + ROLES[rolle][1] + " gepickt");
+          })(),
+          v.gruende.length ? el("ul", {class: "cp-gruende"},
+            v.gruende.slice(0, 4).map((g) => el("li", {}, cpIcon("haken"), el("span", {}, g)))) : null,
+          v.risiken.length ? el("p", {class: "cp-risiko"}, v.risiken[0]) : null,
+          el("div", {class: "cp-aktionen"}, picken, cpMerkKnoepfe(r.champion))),
+        cpWerte(v)),
       wrBlock(cpWr(r.champion, rolle), ROLES[rolle][1]),
-      cpDanach(r),
-      cpWerte(v),
-      el("div", {class: "cp-aktionen"}, picken, cpMerkKnoepfe(r.champion)));
+      cpDanach(r));
   }
 
   /* Was der Gegner danach wahrscheinlich tut - aus dem Lookahead dieses
@@ -411,13 +569,16 @@
   /* Alle Kandidaten der Rolle als filterbare Tabelle: gegen jeden
      Lanegegner, mit unserem Lanepartner (Bot <-> Support), Team -> und
      allgemein (ui/live/winrate.js laneTabelle). */
-  function cpKonter(rolle) {
+  function cpKonter(rolle, liste = null) {
     const sp = liveSpielerVon("eigen", rolle);
     return [laneTabelle({
       z: cpZustandJetzt || liveZustand(), rolle,
       gesperrt: new Map([...liveGesperrt()].map(([c, v]) => [c, v.text])),
       pool: poolVon(sp), plan: sp ? planOf(sp) : null, wer: sp ? sp.label : null,
       picken: (c) => cpPicken(c, rolle), neuZeichnen: renderLiveDraft,
+      noten: liste ? new Map(liste.map((x) => [x.champion, {score: x.score}])) : null,
+      bedarf: (liveLage() || {}).bedarf || [],
+      bringt: (c, achse) => liveTeile.strategie.bringt(c, ROLES[rolle][0], achse) !== null,
     })];
   }
 
@@ -815,13 +976,11 @@
       box.append(cpLog());
       return box;
     }
-    box.append(cpEingabe(a));
+    if (cpEng()) box.append(cpEingabe(a));
     const unsererPick = s.wir && s.art === "pick";
     const rolle = cpRolle();
     if (unsererPick && rolle !== null) {
       const e = cpEmpfehlungen(rolle);
-      box.append(el("div", {class: "cp-entscheidung-kopf"},
-        el("span", {class: "cp-klein"}, "Empfehlung f\u00fcr"), cpRollenWahl(rolle)));
       const plan = cpPlan(rolle);
       if (plan) box.append(plan);
       if (e.t1) box.append(cpTier1(e.t1, e.ansicht(e.t1), rolle));
@@ -831,7 +990,7 @@
       if (e.t2.length) box.append(el("div", {class: "cp-tier2"},
         el("span", {class: "cp-klein"}, "Starke Alternativen"),
         e.t2.map((r, i) => cpZeile(r, e.ansicht(r), rolle, {taste: i + 2}))));
-      box.append(...cpKonter(rolle));
+      box.append(...cpKonter(rolle, e.liste));
       // Taste 5 erreicht die erste weitere Option und klappt sie dafuer auf.
       if (e.t3.length) box.append(el("details", {class: "cp-tier3"},
         el("summary", {}, "Weitere Optionen (" + e.t3.length + ")"),
@@ -913,11 +1072,13 @@
       + team.team + " vs " + (liveGegnerName() || "Gegner offen")
       + " \u00b7 " + (liveSeite === "blue" ? "Blau" : "Rot")
       + " \u00b7 Risiko " + liveRisiko + (liveFearless ? " \u00b7 Fearless" : "");
-    const d = el("details", {class: "cp-einstellungen", open: !eng || cockpit.lies().einstellungenOffen},
+    // Seit 20.10.2026 auch am Bildschirm eingeklappt: oben steht dann sofort
+    // die Spielstand-Leiste (Entwurf B+C).
+    const d = el("details", {class: "cp-einstellungen", open: !!cockpit.lies().einstellungenOffen},
       el("summary", {}, el("span", {class: "cp-klein"}, "Draft"), el("span", {}, zusammen)), kopf,
       // Gemerkte Spiele der Serie (Fearless) - wie in der klassischen Ansicht.
       serienLeiste());
-    d.addEventListener("toggle", () => { if (cpEng()) cockpit.setze({einstellungenOffen: d.open}); });
+    d.addEventListener("toggle", () => cockpit.setze({einstellungenOffen: d.open}));
     return d;
   }
 
@@ -965,18 +1126,20 @@
     const rolle = a.schritt && a.schritt.wir && a.schritt.art === "pick" ? cpRolle() : null;
     // schritt-ban / schritt-pick: am Handy steht das Suchfeld bei unserem
     // Pick hinter den Teams, sonst oben (dort ist es die Aktion).
+    // seite-blue/-red: wir in der Farbe unserer Seite, der Gegner in seiner
+    // (Entwurf B, 20.10.2026) - wie im Client und in Uebertragungen.
     ziel.className = "cp " + a.zustand.toLowerCase().replace("_", "-")
-      + (a.schritt ? " schritt-" + a.schritt.art : "");
+      + (a.schritt ? " schritt-" + a.schritt.art : "") + " seite-" + liveSeite;
     ziel.append(...[el("datalist", {id: "ld-ban-liste"}),
       cpEinstellungen(liveKopf(liveSerien())),
+      // Spielstand: Bans und Picks beider Seiten, in der Mitte der Draft
+      // laut Patchdaten - bei jedem Zeichnen neu, also live.
+      cpAnzeige(a, cpChanceJetzt),
       (() => {
-        const st = cpStatus(a);
+        const st = cpStatus(a, a.zustand !== "COMPLETE" && !cpEng() ? cpEingabe(a) : null);
         if (schrittVorher !== null && schrittVorher !== schrittJetzt) st.classList.add("wechsel");
         return st;
       })(),
-      cpUndoLeiste(),
-      // Draft laut Patchdaten - bei jedem Zeichnen neu, also live.
-      chanceLeiste(cpChanceJetzt, {gegnerName: liveGegnerName() || "Gegner"}),
       el("div", {class: "cp-buehne"}, cpTeam("eigen", a, rolle), cpMitte(a), cpTeam("gegner", a, null)),
       el("div", {class: "ld-protokoll"})].filter(Boolean));
     liveBanListeZeichnen();

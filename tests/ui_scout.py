@@ -166,6 +166,8 @@ def main():
         p.locator("body").click(position={"x": 5, "y": 300})
         p.keyboard.press("/")
         pruefe(p.evaluate("() => document.activeElement.id") == "cp-eingabe-feld", "/ im Cockpit: Championsuche")
+        # Einstellungen sind seit 20.10.2026 auch am Bildschirm eingeklappt.
+        p.evaluate("() => document.querySelectorAll('#live-draft details.cp-einstellungen').forEach((d) => { d.open = true; })")
         p.click("#live-draft .cp-schalter")
         p.wait_for_timeout(800)
         p.locator("body").click(position={"x": 5, "y": 300})

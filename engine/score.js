@@ -212,11 +212,30 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik,
       // Komfort darf einen strategischen Nachteil daempfen, aber nicht
       // ueberstimmen. Darum ein Deckel auf seinen Anteil am Ganzen.
       const deckel = KOMFORT.hoechstanteil * (hoechst + GEWICHTE.komfort);
-      nimm("komfort", k.value, {
-        quelle: "team", konfidenz: k.confidence, text: k.note,
+      /* Viel gespielt heisst nicht gut in JEDEM Matchup (Nutzer,
+         20.10.2026: Shen mit vollem Komfort stand gegen Gnar auf Platz 12,
+         obwohl er dort 2 Punkte unter dem Schnitt liegt). Steht der
+         Lanegegner fest und liegt unser Champion gegen ihn unter dem
+         Schnitt, zaehlt der Komfort-BONUS (alles ueber der Mitte 0,5)
+         nur noch anteilig: bei -1 Punkt halb, ab der Begruendungsgrenze
+         "schwach gegen" (BEGRUENDUNG.matchup, -2 Punkte) gar nicht mehr.
+         Gemessen am rauschbereinigten Vorteil - wenige Spiele daempfen
+         weniger. Fehlende Erfahrung bleibt ein Abzug wie bisher. */
+      const laneV = gegenLane ? gegenLane.vorteil : null;
+      const anteil = laneV !== null && laneV < 0 ? klemm(1 + laneV / BEGRUENDUNG.matchup, 0, 1) : 1;
+      const wertK = k.value > KOMFORT.mitte ? KOMFORT.mitte + (k.value - KOMFORT.mitte) * anteil : k.value;
+      const gedaempft = wertK < k.value - 1e-9;
+      nimm("komfort", wertK, {
+        quelle: "team", konfidenz: k.confidence,
+        text: gedaempft ? k.note + " · gegen diesen Lanegegner nur zu " + Math.round(anteil * 100)
+                          + " % gezählt" : k.note,
         gewicht: Math.min(GEWICHTE.komfort, deckel),
       });
-      if (k.value >= 0.7) gruende.push("Komfort: " + k.note);
+      if (gedaempft) {
+        risiken.push("viel gespielt, aber schwach in dieser Lane – Komfort zählt nur zu "
+                     + Math.round(anteil * 100) + " %");
+      }
+      if (wertK >= 0.7) gruende.push("Komfort: " + k.note);
       // Am Beleg festgemacht, nicht am Wert: vorher <= 0,1, aber Komfort
       // ohne Beleg ist KOMFORT.ohneBeleg (0,15) - der Text erschien nie
       // (Audit P2.8: 0 von 684 Bewertungen, 387 haetten ihn verdient).

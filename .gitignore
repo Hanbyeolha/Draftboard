@@ -22,3 +22,6 @@ out/
 
 # Zwischenablage: Liga-Benutzernummer -> Riot-ID (liga.py riot_ids_aus_partien) - nur lokal
 data/liga/profil-riot-ids.json
+
+# Pro-Spieldaten (Oracle's Elixir): Rohdatei nur lokal, ins Board kommt nur die Zusammenfassung
+data/pro/roh/

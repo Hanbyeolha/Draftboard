@@ -251,6 +251,32 @@ def main():
         prot = p.evaluate("() => JSON.parse(localStorage.getItem('draft-protokoll-solo') || '{\"eintraege\": []}').eintraege")
         pruefe(len(prot) == 1 and prot[0].get("gewaehlt") == erste,
                "Solo-Protokoll: genau ein Eintrag, mit Wahl")
+        # Duo/Gruppe (20.10.2026): ein Mitspieler aus dem Kader kommt dazu,
+        # bekommt eine freie Rolle, und die Empfehlung laesst sich umschalten.
+        dazu = p.evaluate("""() => [...document.querySelector('#solo-draft .so-dazu').options]
+          .map((o) => o.value).filter(Boolean)[0]""")
+        p.select_option("#solo-draft .so-dazu", dazu)
+        p.wait_for_timeout(1200)
+        duo = p.evaluate("""() => ({art: document.querySelector('.so-gruppe-art').textContent,
+          knoepfe: document.querySelectorAll('#solo-draft .so-fuer-knopf').length,
+          kumpel: [...document.querySelectorAll('#solo-draft .so-zeile.kumpel .so-wer')].map((s) => s.textContent),
+          ich: document.querySelectorAll('#solo-draft .so-zeile.ich').length})""")
+        pruefe(duo["art"] == "Duo" and duo["knoepfe"] == 2 and duo["kumpel"] == [dazu] and duo["ich"] == 1,
+               "Duo: Mitspieler mit Rolle, Umschalter fuer zwei " + str(duo))
+        p.locator("#solo-draft .so-fuer-knopf").nth(1).click()
+        p.wait_for_timeout(1200)
+        fuer = p.evaluate("""() => ({fuer: [...document.querySelectorAll('#solo-draft .so-team.eigen .so-zeile')]
+            .findIndex((z) => z.classList.contains('fuer')),
+          kumpel: [...document.querySelectorAll('#solo-draft .so-team.eigen .so-zeile')]
+            .findIndex((z) => z.classList.contains('kumpel')),
+          gemerkt: JSON.parse(localStorage.getItem('live-solo') || '{}')})""")
+        pruefe(fuer["fuer"] == fuer["kumpel"] and fuer["fuer"] >= 0,
+               "Empfehlung fuer den Mitspieler: seine Rolle ist markiert")
+        pruefe(any((e or {}).get("mit") for e in fuer["gemerkt"].values()), "Mitspieler gemerkt (live-solo)")
+        p.locator("#solo-draft .so-chip-weg").first.click()
+        p.wait_for_timeout(1000)
+        pruefe(p.evaluate("() => document.querySelector('.so-gruppe-art').textContent") == "Solo"
+               and p.locator("#solo-draft .so-fuer").count() == 0, "Mitspieler entfernt: wieder Solo")
         pruefe(not p.evaluate(UEBERLAUF), "ohne waagerechten Ueberlauf")
         pruefe(not p.seitenfehler, "keine Seitenfehler " + str(p.seitenfehler[:2]))
         ctx.close()

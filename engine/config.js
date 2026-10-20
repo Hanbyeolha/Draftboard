@@ -239,6 +239,9 @@ export const KOMFORT = {
   // Komfort darf einen strategischen Nachteil daempfen, aber nicht
   // ueberstimmen: so viel vom Gesamtergebnis darf er hoechstens ausmachen.
   hoechstanteil: 0.25,
+  /* Die Mitte der Komfortskala: darueber ist es ein Bonus, der gegen einen
+     klar schwachen Lanegegner nicht mehr zaehlt (score.js, 20.10.2026). */
+  mitte: 0.5,
 };
 
 /* ------------------------------------------------------ Aufstellung */

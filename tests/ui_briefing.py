@@ -118,6 +118,8 @@ def main():
         # Neu zeichnen ohne Aenderung am Draft: das Risikoprofil zeichnet das
         # Cockpit neu, der Draft bleibt gleich.
         p.wait_for_timeout(300)
+        # Einstellungen sind seit 20.10.2026 auch am Bildschirm eingeklappt.
+        p.evaluate("() => document.querySelectorAll('#live-draft details.cp-einstellungen').forEach((d) => { d.open = true; })")
         p.select_option("#live-draft .ld-risikowahl", "sicher")
         p.wait_for_timeout(900)
         pruefe(p.locator(".cp-marke.neu").count() == 0 and p.locator(".cp-status.wechsel").count() == 0,

@@ -288,6 +288,11 @@ Tokens ein drittes Mal.
   `--red-soft`.
 
 ### Tertiary
+- **Jetzt-Gold** (`--jetzt` `#f2c14e`, Schrift `--jetzt-ink` `#14110a`, seit
+  20.10.2026, in beiden Fassungen gleich, 14,9:1): heißt nur „jetzt“ – die
+  Jetzt-Leiste im Cockpit, wenn wir dran sind, die Note der Top-Empfehlung, ihr
+  Picken-Knopf auf der Splash-Bühne, die aktive Rolle, der Pool-Strich in der
+  Lane-Tabelle und in der Solo Queue „du“ und der gewählte „Empfehlung für“.
 - **Messing** (`--brass`): nur noch zwei Dinge — der Vorlieben-Marker
   (`.plan-tag.likes`) und der linke Rand der Spielnotiz. In der dunklen Fassung
   teilt es seinen Wert mit `--warn`.
@@ -693,20 +698,54 @@ Klassen `cp-`). Ein Werkzeug, keine Sammlung schwebender Karten:
 (Flächen) und `--radius-live-sm: 3px` (Knöpfe, Felder) — die SCOUT-Welt bleibt
 bei `--radius` und dem Schattenpaar.
 
-- **Zustandskopf** (`.cp-status`): „Wir picken / Gegner bannt“ in Rajdhani
-  `2rem`, darunter „Pick 1 von 5 · 1. Pickrunde · Blau“; bei unserem Zug Rand
-  und 9 % Tönung in `--eigen`. Rechts der **Fortschritt**: je Seite 5 Bans und
-  5 Picks als 26-px-Marken — fertig mit Icon, aktueller Schritt umrandet mit
-  „jetzt“, übersprungen gestrichelt. Nie nur Farbe. Bis 900 px steht der
-  Fortschritt unter dem Titel, unter 640 px eine Zeile je Seite (Bans | Picks).
-- **Bühne**: unser Team | Mitte | Gegner. Slots mit Rolle, Feld und
-  **Spielerwahl** (Wechsel, Rollentausch); die aktive Rolle als Fläche in der
-  Rollenfarbe (18 %), die Rollenmarke darin in `--role-ink`.
+**Look B+C (seit 20.10.2026).** Auf einer Claude-Design-Arbeitsfläche lagen drei
+Richtungen (A „Ruhiger Profi“, B „Esport-Bühne“, C „Kompakte Analyse“); der
+Nutzer hat **B** gewählt, gemischt mit der **Heatmap-Tabelle aus C** und der
+Solo-Ansicht als **eine Tabelle** (C). Nur Aussehen und Aufbau, keine Rechnung.
+
+**Zweiter Durchgang (20.10.2026, nach „sieht überhaupt nicht aus wie das
+Design“):** der erste Umbau hatte nur umgefärbt. Jetzt nach dem Artboard: die
+**Draft-Einstellungen auch am Bildschirm eingeklappt** (eine Zeile mit dem
+Stand), **Rollenwahl, Suche und Rückgängig in der Jetzt-Leiste** (am Handy
+bleibt die Suche unten), **Seitenfarben** im Cockpit (`.cp.seite-blue/-red`
+setzen `--eigen`/`--gegner` auf `--blue`/`--red` – wir in der Farbe unserer
+Seite, wie im Client; Spielerkarten und Matchkarte behalten Orange), in der
+Spielstand-Leiste am Bildschirm nur die Bans (Picks stehen in den Teams),
+**Picks als 76-px-Kacheln** (Bild 64 px, Rollen-Pille, Name als randloses Feld,
+Spielerwahl darunter; der Gegner gespiegelt), Bans der Teams eingeklappt
+(„Bans ändern“), **Empfehlung als Banner** (`.cp-held`: links 56 % ruhige
+Fläche mit Name `5rem`, goldener Note, Gründen, „Jinx picken“; Splash dahinter;
+Komfort/Matchup/Comp/Meta unten rechts), **Winraten als Kachelreihe** darunter,
+Flächen eckig (`--radius-live: 0`). Schrift bleibt Source Sans 3 / Rajdhani
+(Inter aus dem Entwurf nicht übernommen).
+
+- **Spielstand-Leiste** (`.cp-anzeige`): links wir, rechts der Gegner – je Name
+  in Rajdhani `1.55rem` mit Seite („· Blau“), 6-px-Kante in `--eigen` bzw.
+  `--gegner`, darunter Bans und Picks als 30-px-Marken (fertig mit Icon,
+  aktueller Schritt umrandet mit „jetzt“, übersprungen gestrichelt – nie nur
+  Farbe). In der Mitte **Draft laut Patchdaten** als „55 % : 45 %“
+  (`.ch-leiste.anzeige`; die zweite Zahl ist nur der Rest zu 100). Bis 900 px
+  steht die Mitte unter beiden Seiten, unter 640 px eine Zeile je Seite
+  (≤ 30 px).
+- **Jetzt-Leiste** (`.cp-status`): „Wir picken Bot“ in Rajdhani `1.75rem`,
+  daneben „Pick 3 von 5 · 1. Pickrunde · Blau · für AFC Bernard Bär“. Bei
+  unserem Zug die ganze Fläche in `--jetzt` mit `--jetzt-ink`, im Gegnerzug
+  ruhig mit 6-px-Kante in `--gegner`.
+- **Bühne**: unser Team | Mitte | Gegner, die Teams fest `14–17rem`, die Mitte
+  nimmt den Rest. Slots als **Rollenflächen**: 5-px-Kante in der Rollenfarbe,
+  oben Rolle links und **Spielerwahl** rechts (Wechsel, Rollentausch), darunter
+  Bild (40 px) und Feld – belegt steht der Name in Rajdhani ohne Rahmen. Die
+  aktive Rolle golden umrandet. Eingetragene Bans nur als gegrautes 30-px-Bild,
+  das Feld liegt unsichtbar darüber und erscheint beim Anklicken.
 - **Mitte**: zentrales Suchfeld (Schrittfolge: trägt ein, wo der Schritt es
-  verlangt), Rollenwahl, Plan der Rolle als Kärtchen, **Tier 1** groß (Name
-  Rajdhani `1.75rem`, Note `2.6rem`, bis vier Gründe mit Häkchen, ein Risiko,
-  „Wenn wir das picken“, Komfort/Matchup/Comp/Meta als Zahl + 4-px-Balken),
-  **Tier 2** drei Zeilen, **Tier 3** eingeklappt. Im Gegnerzug: „Gegner wählt
+  verlangt), Rollenwahl, Plan der Rolle als Kärtchen, **Tier 1** als **Bühne**
+  (Name Rajdhani `2.6rem`, Note als goldenes Feld, bis vier Gründe mit Häkchen,
+  ein Risiko, „Wenn wir das picken“, Komfort/Matchup/Comp/Meta als Zahl +
+  4-px-Balken). Ist der Splash des Champions eingebettet (die meistgespielten
+  der Spieler), steht er rechts oben mit weichem linken Rand, die Karte ist dann
+  in beiden Fassungen dunkel (`.mit-splash`); ohne Splash die ruhige Fassung mit
+  Icon – kein Nachladen aus dem Netz. **Tier 2** als **drei Karten**
+  nebeneinander (bis 1100 px untereinander), **Tier 3** eingeklappt. Im Gegnerzug: „Gegner wählt
   wahrscheinlich“ (mit „Modell, keine Gewissheit“) und „Antwort vorbereiten“.
   Darunter Shortlist und eingeklapptes Draft-Log.
 - **Rückgängig statt Rückfrage**: 6 s eine Leiste „Thresh gepickt (Support) ·
@@ -718,7 +757,9 @@ bei `--radius` und dem Schattenpaar.
   Begründung) und Spielen; Tier 2 eine Kurzzeile „52,9 % allgemein · 56,8 % vs
   Syndra +1“ und „Warum?“ zum Aufklappen (ganze Begründung, alle Matchups).
   Farbe wie die Rangzeile (grün ab 52 %, rot unter 48 %), Zahl immer dabei.
-- **Draft laut Patchdaten** (`.ch-leiste`, seit 18.10.2026, auch Solo): unter dem
+- **Draft laut Patchdaten** (Rechnung korrigiert 20.10.2026: Erwartung der Paare aus
+  denselben 30 Tagen wie die Paare – vorher 30 % wo DraftGap 55,5 % zeigte, jetzt
+  55,9 %; Trefferquote 51 von 87, Brier 0,250). (`.ch-leiste`, seit 18.10.2026, auch Solo): unter dem
   Zustandskopf, bei jedem Zeichnen neu – Zahl in Rajdhani `1.9rem`, „für uns
   (+2,3 Punkte)“, Balken (unser Anteil in `--eigen`, Mitte markiert),
   Aufschlüsselung Champions · Matchups · Synergien in Punkten und **immer**
@@ -727,13 +768,38 @@ bei `--radius` und dem Schattenpaar.
   Vorschlag „Team → 53 % (+0,7)“ (`.ch-nach`).
 - **Lane-Tabelle** (`.lt`, ui/live/winrate.js `laneTabelle`, seit 18.10.2026,
   auch Solo): bei unserem Pick alle Champions der Rolle mit den Spalten
-  Team → · vs je Lanegegner · mit Lanepartner (Bot ↔ Support, Duo-Winrate) ·
-  allgemein; Filter Alle/Pool/Plan + „vergebene zeigen“, Sortieren nach jeder
-  Spalte (Winraten rauschbereinigt), 10 Zeilen, aufklappbar. Jede Zeile ist
-  ein eigenes Raster mit **festen** Spaltenbreiten (eine auto-Spalte ließ die
-  Köpfe versetzt stehen). Matchups und Duos sind **am Schnitt** gefärbt, mit
-  den Grenzen der Begründung (`BEGRUENDUNG`: ±2 bzw. ±1,5 Punkte); allgemein
-  52/48 wie die Rangzeile. Am Handy zweizeilig mit beschrifteten Werten.
+  **Note** (seit 20.10.) · Team → · vs je Lanegegner · mit Lanepartner (Bot ↔
+  Support, Duo-Winrate) · allgemein; in der Solo Queue zusätzlich **Grund**
+  (Grund oder Risiko der Engine, Risiko in `--warn`). Filter Alle/Pool/Plan +
+  „vergebene zeigen“, Sortieren nach jeder Spalte (Winraten rauschbereinigt),
+  10 Zeilen, aufklappbar. Jede Zeile ist ein eigenes Raster mit **festen**
+  Spaltenbreiten (eine auto-Spalte ließ die Köpfe versetzt stehen).
+  **Heatmap** (aus Entwurf C): die Zelle trägt die Farbe – kräftig
+  (`--good`/`--red` 30 %) ab der Begründungsgrenze über/unter dem Schnitt
+  (`BEGRUENDUNG`: 2 bzw. 1,5 Punkte), hell (11 %) nur darüber/darunter;
+  allgemein 52/48 wie die Rangzeile. Darunter klein der **Abstand zum Schnitt**
+  und die Spiele („+5,1 · 15,8k“) – Status nie nur über Farbe. Pool-Zeilen mit
+  goldenem Strich links. Am Handy Name und Picken oben, alle Werte in **einer**
+  Zeile darunter (Beschriftung klein über der Zahl), der Grund darunter.
+  **Eingrenzen** (20.10.2026, zusätzlich zu Alle/Pool/Plan, kombinierbar):
+  „stark in der Lane“ (gegen jeden Lanegegner ≥ 2 Punkte über dem Schnitt),
+  „bringt X“ je Bedarf aus dem Lagebild (strategie.bringt – dieselbe Regel wie
+  „bringen das mit“), „Pro blind gepickt“; jeder Chip mit der Zahl, die übrig
+  bliebe. Darüber die Leiste **„Pro · übliche Blind Picks <Rolle>“** (die acht
+  meistgeblindeten der Rolle mit Anzahl und Winrate, gebannte durchgestrichen).
+  Die Spalte heißt jetzt **„Pro blind“**: wie oft blind, darunter „von N
+  Picks · Winrate blind“; sortiert nach blind.
+  **Pro** (seit 20.10.2026, pro.py): Picks des Champions auf der Rolle in den
+  Pro-Ligen, darunter „7 blind · 58 %“; nicht eingefärbt (keine Winrate gegen
+  einen Schnitt), Herkunft im Tooltip und unter der Tabelle. Die Top-Empfehlung
+  nennt dieselbe Zahl („Pro 16.15–16.20: 8× gepickt, 2× blind“).
+- **Spielplan** (`.cp-spielplan`, seit 20.10.2026) in den Teamspalten unter den
+  Picks: bei uns „Wie wir gewinnen“ (Siegbedingung mit Phase, Idee, Trägern,
+  Gefährdung) und „Skalierung“ (Winrate nach Spieldauer früh/Mitte/spät, wir
+  gegen sie, Differenz in Punkten); beim Gegner „Lanes · wir gegen sie“ (je
+  Rolle gemessene Winrate als Heatmap-Zelle mit Abstand zum Schnitt),
+  „Größte Gefahr“, „Unser Bedarf“. Je Kasten die Herkunft (gemessen /
+  Einschätzung).
 - **Tastatur**: Ziffer auf dem Knopf (`.cp-kbd`, am Touch-Gerät ausgeblendet).
 - **Handy (≤640 px)**: die Mitte gibt ihre Teile per `display: contents` an die
   Bühne ab; Reihenfolge Aktion → Empfehlungen → Shortlist → wir → Gegner →
@@ -742,6 +808,35 @@ bei `--radius` und dem Schattenpaar.
 - Neue Ausnahmen im Cockpit-CSS mit **doppelter Klasse**
   (`.cp-zeile.cp-gegner-zeile`): die allgemeinen Handy-Regeln stehen weiter
   unten und gewinnen sonst still.
+
+**Komfort gegen schwache Lanes** (engine/score.js, 20.10.2026): steht der
+Lanegegner fest und liegt der Champion gegen ihn unter dem Schnitt, zählt der
+Komfort-Bonus nur anteilig (ab −2 Punkten gar nicht); die Empfehlung nennt es
+als Risiko („viel gespielt, aber schwach in dieser Lane – Komfort zählt nur zu
+7 %“).
+
+### Solo Queue (LIVE)
+`ui/live/solo.js`, Klassen `so-`, Look B+C seit 20.10.2026.
+
+- **Kopf**: „Du [Spieler] auf [Rolle]“, Datenstand, Draft leeren, Einstellungen
+  (Risiko).
+- **In der Queue** (`.so-gruppe`): Solo, Duo oder „Gruppe · n“ – die Art folgt
+  aus der Zahl der Mitspieler, kein eigener Schalter. Ich und jeder Mitspieler
+  als Chip mit Rollenkante; Mitspieler mit Rollenwahl (belegte Rollen gesperrt)
+  und ×; „+ Mitspieler aus dem Kader“ (bis 4, Hauptrolle wenn frei).
+  Mitspieler bringen ihren Pool mit, alle anderen bleiben fremd.
+- **Empfehlung für** (`.so-fuer`, nur mit Mitspielern): „Du · Top | PlayboiiHieu
+  · Jungle – hat Xin Zhao“; der gewählte golden. Die Mitte rechnet dann für
+  dessen Rolle und Pool.
+- **Teams**: Rollenflächen mit 5-px-Rollenkante, Rolle und Marke oben, Feld in
+  voller Breite darunter (belegt: Name in Rajdhani ohne Rahmen). „du“ golden
+  getönt, Mitspieler in seiner Rollenfarbe mit „Duo“/„Gruppe“ und Name, die
+  Rolle, für die gerade empfohlen wird, golden umrandet, Lanegegner in
+  `--gegner` umrandet mit „Lane“.
+- **Mitte**: die große Empfehlung als Bühne (goldene Kante oben, Name Rajdhani
+  `2.4rem`, Note und Picken golden), darunter **eine** Tabelle (`laneTabelle`
+  mit Note und Grund, nach Note sortiert, Filter Pool/Plan) statt der zwei
+  Listen „Dein Pool“ / „Außerhalb“. Darunter das Lagebild.
 
 ### Team-Draft, klassische Ansicht (Signature)
 Per „Klassische Ansicht“ einen Klick entfernt: alle Rollen, Lagebild, Filter,

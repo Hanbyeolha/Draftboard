@@ -69,7 +69,8 @@ bestätigt):**
   (Blind Picks und Vorlieben), `data/raw/*.json` (op.gg-Scrape),
   `data/liga/*.json` (Liga).
 - Drei Modi mit Reitern (seit Draftboard 2.0): **LIVE** — Briefing,
-  Team-Draft (Cockpit; klassische Ansicht per Schalter), Solo Queue ·
+  Team-Draft (Cockpit; klassische Ansicht per Schalter), Solo Queue (allein,
+  im Duo oder in der Flex-Gruppe mit Mitspielern aus dem Kader, seit 20.10.2026) ·
   **SCOUT** — Spieler, Liga, Draftplan, Einschätzung · **REVIEW** —
   Turnierspiele, Plan gegen Ist.
 - Eine Darstellung für die Spielerkarten. Der Umschalter „Ansicht: Liste" ist

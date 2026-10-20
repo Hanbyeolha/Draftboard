@@ -449,7 +449,7 @@ export function strategieAnlegen({quelle, merkmale, comp, heuristik, blind,
     };
   }
 
-  return {lagebild, warten, stufen, bringer, achsenProfil};
+  return {lagebild, warten, stufen, bringer, bringt, achsenProfil};
 }
 
 /* Ausgepraegt vor teilweise, Pool vor nicht, auf der Rolle viel gespielt

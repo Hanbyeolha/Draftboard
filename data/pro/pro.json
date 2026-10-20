@@ -1,0 +1,1465 @@
+{
+ "ausgelassen": 0,
+ "bans": {
+  "Aatrox": 2,
+  "Ahri": 36,
+  "Akali": 210,
+  "Alistar": 30,
+  "Ambessa": 45,
+  "Anivia": 45,
+  "Annie": 48,
+  "Aphelios": 5,
+  "Ashe": 11,
+  "Aurora": 10,
+  "Azir": 12,
+  "Bard": 105,
+  "Blitzcrank": 2,
+  "Braum": 1,
+  "Caitlyn": 98,
+  "Camille": 111,
+  "Cassiopeia": 422,
+  "Cho'Gath": 8,
+  "Corki": 18,
+  "Diana": 2,
+  "Dr. Mundo": 4,
+  "Draven": 6,
+  "Ezreal": 159,
+  "Galio": 42,
+  "Gnar": 63,
+  "Gragas": 1,
+  "Gwen": 10,
+  "Hwei": 1,
+  "Irelia": 1,
+  "Ivern": 1,
+  "Jarvan IV": 146,
+  "Jax": 44,
+  "Jayce": 154,
+  "Jhin": 26,
+  "Jinx": 1,
+  "K'Sante": 69,
+  "Kai'Sa": 27,
+  "Kalista": 47,
+  "Karma": 52,
+  "Kennen": 5,
+  "Kha'Zix": 3,
+  "Kindred": 1,
+  "Kled": 9,
+  "Kog'Maw": 1,
+  "LeBlanc": 21,
+  "Lee Sin": 122,
+  "Leona": 10,
+  "Lissandra": 6,
+  "Locke": 122,
+  "Lucian": 163,
+  "Lulu": 64,
+  "Lux": 1,
+  "Malphite": 1,
+  "Maokai": 25,
+  "Mel": 9,
+  "Milio": 1,
+  "Miss Fortune": 8,
+  "Mordekaiser": 1,
+  "Naafiri": 68,
+  "Nami": 1,
+  "Nasus": 3,
+  "Nautilus": 135,
+  "Neeko": 16,
+  "Nidalee": 3,
+  "Nocturne": 343,
+  "Olaf": 191,
+  "Orianna": 239,
+  "Ornn": 5,
+  "Pantheon": 92,
+  "Poppy": 219,
+  "Pyke": 5,
+  "Qiyana": 45,
+  "Rakan": 31,
+  "Rell": 6,
+  "Renata Glasc": 15,
+  "Renekton": 47,
+  "Rumble": 88,
+  "Ryze": 64,
+  "Sejuani": 4,
+  "Senna": 1,
+  "Seraphine": 59,
+  "Shen": 39,
+  "Shyvana": 15,
+  "Sion": 4,
+  "Sivir": 24,
+  "Skarner": 44,
+  "Sylas": 44,
+  "Syndra": 115,
+  "Tahm Kench": 1,
+  "Taliyah": 19,
+  "Thresh": 2,
+  "Tristana": 10,
+  "Trundle": 56,
+  "Twisted Fate": 47,
+  "Varus": 36,
+  "Vayne": 164,
+  "Vi": 300,
+  "Viktor": 51,
+  "Volibear": 2,
+  "Warwick": 1,
+  "Wukong": 43,
+  "Xayah": 27,
+  "Xerath": 2,
+  "Xin Zhao": 47,
+  "Yasuo": 3,
+  "Yone": 46,
+  "Yorick": 33,
+  "Yunara": 22,
+  "Yuumi": 1,
+  "Zaahen": 12,
+  "Zeri": 13,
+  "Ziggs": 45,
+  "Zoe": 1,
+  "Zyra": 2
+ },
+ "champions": {
+  "Aatrox": {
+   "JUNGLE": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 5,
+    "siege": 2
+   },
+   "MIDDLE": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 1
+   },
+   "TOP": {
+    "blind": 2,
+    "blindSiege": 1,
+    "picks": 22,
+    "siege": 12
+   }
+  },
+  "Ahri": {
+   "MIDDLE": {
+    "blind": 27,
+    "blindSiege": 18,
+    "picks": 70,
+    "siege": 36
+   }
+  },
+  "Akali": {
+   "MIDDLE": {
+    "blind": 22,
+    "blindSiege": 13,
+    "picks": 63,
+    "siege": 34
+   },
+   "TOP": {
+    "blind": 1,
+    "blindSiege": 1,
+    "picks": 2,
+    "siege": 2
+   }
+  },
+  "Alistar": {
+   "UTILITY": {
+    "blind": 28,
+    "blindSiege": 14,
+    "picks": 70,
+    "siege": 35
+   }
+  },
+  "Ambessa": {
+   "JUNGLE": {
+    "blind": 1,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   },
+   "TOP": {
+    "blind": 44,
+    "blindSiege": 26,
+    "picks": 114,
+    "siege": 56
+   }
+  },
+  "Amumu": {
+   "UTILITY": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 1
+   }
+  },
+  "Anivia": {
+   "MIDDLE": {
+    "blind": 17,
+    "blindSiege": 8,
+    "picks": 45,
+    "siege": 21
+   },
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 7,
+    "siege": 3
+   }
+  },
+  "Annie": {
+   "MIDDLE": {
+    "blind": 24,
+    "blindSiege": 12,
+    "picks": 52,
+    "siege": 25
+   }
+  },
+  "Aphelios": {
+   "BOTTOM": {
+    "blind": 3,
+    "blindSiege": 1,
+    "picks": 11,
+    "siege": 4
+   }
+  },
+  "Ashe": {
+   "BOTTOM": {
+    "blind": 44,
+    "blindSiege": 27,
+    "picks": 85,
+    "siege": 54
+   }
+  },
+  "Aurora": {
+   "MIDDLE": {
+    "blind": 10,
+    "blindSiege": 8,
+    "picks": 29,
+    "siege": 13
+   },
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   }
+  },
+  "Azir": {
+   "MIDDLE": {
+    "blind": 5,
+    "blindSiege": 2,
+    "picks": 23,
+    "siege": 9
+   }
+  },
+  "Bard": {
+   "UTILITY": {
+    "blind": 49,
+    "blindSiege": 18,
+    "picks": 98,
+    "siege": 33
+   }
+  },
+  "Bel'Veth": {
+   "JUNGLE": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   }
+  },
+  "Blitzcrank": {
+   "UTILITY": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 2,
+    "siege": 2
+   }
+  },
+  "Braum": {
+   "UTILITY": {
+    "blind": 1,
+    "blindSiege": 0,
+    "picks": 5,
+    "siege": 2
+   }
+  },
+  "Caitlyn": {
+   "BOTTOM": {
+    "blind": 31,
+    "blindSiege": 16,
+    "picks": 76,
+    "siege": 33
+   }
+  },
+  "Camille": {
+   "TOP": {
+    "blind": 12,
+    "blindSiege": 8,
+    "picks": 44,
+    "siege": 24
+   },
+   "UTILITY": {
+    "blind": 26,
+    "blindSiege": 13,
+    "picks": 35,
+    "siege": 16
+   }
+  },
+  "Cassiopeia": {
+   "BOTTOM": {
+    "blind": 4,
+    "blindSiege": 3,
+    "picks": 6,
+    "siege": 4
+   },
+   "MIDDLE": {
+    "blind": 47,
+    "blindSiege": 31,
+    "picks": 53,
+    "siege": 35
+   }
+  },
+  "Cho'Gath": {
+   "JUNGLE": {
+    "blind": 4,
+    "blindSiege": 1,
+    "picks": 25,
+    "siege": 11
+   },
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 1
+   }
+  },
+  "Corki": {
+   "BOTTOM": {
+    "blind": 23,
+    "blindSiege": 13,
+    "picks": 60,
+    "siege": 30
+   },
+   "MIDDLE": {
+    "blind": 1,
+    "blindSiege": 0,
+    "picks": 3,
+    "siege": 1
+   },
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   }
+  },
+  "Diana": {
+   "MIDDLE": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 1
+   }
+  },
+  "Dr. Mundo": {
+   "JUNGLE": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 2,
+    "siege": 0
+   },
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 15,
+    "siege": 5
+   }
+  },
+  "Draven": {
+   "BOTTOM": {
+    "blind": 1,
+    "blindSiege": 1,
+    "picks": 4,
+    "siege": 3
+   }
+  },
+  "Elise": {
+   "UTILITY": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 2,
+    "siege": 2
+   }
+  },
+  "Ezreal": {
+   "BOTTOM": {
+    "blind": 116,
+    "blindSiege": 65,
+    "picks": 146,
+    "siege": 78
+   }
+  },
+  "Fiora": {
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   }
+  },
+  "Galio": {
+   "MIDDLE": {
+    "blind": 4,
+    "blindSiege": 1,
+    "picks": 54,
+    "siege": 28
+   },
+   "TOP": {
+    "blind": 1,
+    "blindSiege": 1,
+    "picks": 13,
+    "siege": 9
+   },
+   "UTILITY": {
+    "blind": 1,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   }
+  },
+  "Gangplank": {
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   }
+  },
+  "Garen": {
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 1
+   }
+  },
+  "Gnar": {
+   "TOP": {
+    "blind": 65,
+    "blindSiege": 33,
+    "picks": 102,
+    "siege": 49
+   }
+  },
+  "Gragas": {
+   "TOP": {
+    "blind": 1,
+    "blindSiege": 1,
+    "picks": 7,
+    "siege": 3
+   }
+  },
+  "Gwen": {
+   "TOP": {
+    "blind": 4,
+    "blindSiege": 1,
+    "picks": 20,
+    "siege": 12
+   }
+  },
+  "Hecarim": {
+   "JUNGLE": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   }
+  },
+  "Hwei": {
+   "MIDDLE": {
+    "blind": 2,
+    "blindSiege": 1,
+    "picks": 8,
+    "siege": 2
+   }
+  },
+  "Irelia": {
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 1
+   }
+  },
+  "Ivern": {
+   "JUNGLE": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 2,
+    "siege": 2
+   }
+  },
+  "Jarvan IV": {
+   "JUNGLE": {
+    "blind": 95,
+    "blindSiege": 50,
+    "picks": 140,
+    "siege": 73
+   }
+  },
+  "Jax": {
+   "TOP": {
+    "blind": 9,
+    "blindSiege": 4,
+    "picks": 36,
+    "siege": 15
+   }
+  },
+  "Jayce": {
+   "BOTTOM": {
+    "blind": 1,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   },
+   "JUNGLE": {
+    "blind": 5,
+    "blindSiege": 1,
+    "picks": 5,
+    "siege": 1
+   },
+   "MIDDLE": {
+    "blind": 2,
+    "blindSiege": 1,
+    "picks": 3,
+    "siege": 2
+   },
+   "TOP": {
+    "blind": 88,
+    "blindSiege": 36,
+    "picks": 95,
+    "siege": 38
+   }
+  },
+  "Jhin": {
+   "BOTTOM": {
+    "blind": 52,
+    "blindSiege": 26,
+    "picks": 123,
+    "siege": 55
+   }
+  },
+  "Jinx": {
+   "BOTTOM": {
+    "blind": 2,
+    "blindSiege": 2,
+    "picks": 8,
+    "siege": 6
+   }
+  },
+  "K'Sante": {
+   "MIDDLE": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   },
+   "TOP": {
+    "blind": 44,
+    "blindSiege": 18,
+    "picks": 110,
+    "siege": 55
+   }
+  },
+  "Kai'Sa": {
+   "BOTTOM": {
+    "blind": 6,
+    "blindSiege": 3,
+    "picks": 35,
+    "siege": 19
+   },
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 3,
+    "siege": 1
+   }
+  },
+  "Kalista": {
+   "BOTTOM": {
+    "blind": 38,
+    "blindSiege": 19,
+    "picks": 65,
+    "siege": 33
+   }
+  },
+  "Karma": {
+   "UTILITY": {
+    "blind": 67,
+    "blindSiege": 40,
+    "picks": 103,
+    "siege": 61
+   }
+  },
+  "Kennen": {
+   "TOP": {
+    "blind": 2,
+    "blindSiege": 2,
+    "picks": 11,
+    "siege": 6
+   }
+  },
+  "Kha'Zix": {
+   "JUNGLE": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 4,
+    "siege": 1
+   }
+  },
+  "Kindred": {
+   "JUNGLE": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 1
+   }
+  },
+  "Kled": {
+   "TOP": {
+    "blind": 1,
+    "blindSiege": 0,
+    "picks": 20,
+    "siege": 11
+   }
+  },
+  "Kog'Maw": {
+   "BOTTOM": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 2,
+    "siege": 2
+   },
+   "MIDDLE": {
+    "blind": 2,
+    "blindSiege": 1,
+    "picks": 3,
+    "siege": 2
+   },
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   }
+  },
+  "LeBlanc": {
+   "MIDDLE": {
+    "blind": 1,
+    "blindSiege": 1,
+    "picks": 13,
+    "siege": 8
+   }
+  },
+  "Lee Sin": {
+   "JUNGLE": {
+    "blind": 76,
+    "blindSiege": 37,
+    "picks": 123,
+    "siege": 58
+   }
+  },
+  "Leona": {
+   "UTILITY": {
+    "blind": 22,
+    "blindSiege": 15,
+    "picks": 48,
+    "siege": 31
+   }
+  },
+  "Lillia": {
+   "JUNGLE": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   }
+  },
+  "Lissandra": {
+   "MIDDLE": {
+    "blind": 3,
+    "blindSiege": 1,
+    "picks": 15,
+    "siege": 7
+   },
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   }
+  },
+  "Locke": {
+   "MIDDLE": {
+    "blind": 15,
+    "blindSiege": 6,
+    "picks": 58,
+    "siege": 28
+   }
+  },
+  "Lucian": {
+   "BOTTOM": {
+    "blind": 94,
+    "blindSiege": 39,
+    "picks": 124,
+    "siege": 51
+   }
+  },
+  "Lulu": {
+   "UTILITY": {
+    "blind": 70,
+    "blindSiege": 35,
+    "picks": 97,
+    "siege": 50
+   }
+  },
+  "Lux": {
+   "UTILITY": {
+    "blind": 2,
+    "blindSiege": 1,
+    "picks": 13,
+    "siege": 8
+   }
+  },
+  "Malphite": {
+   "JUNGLE": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   },
+   "TOP": {
+    "blind": 1,
+    "blindSiege": 0,
+    "picks": 3,
+    "siege": 1
+   }
+  },
+  "Maokai": {
+   "JUNGLE": {
+    "blind": 15,
+    "blindSiege": 5,
+    "picks": 35,
+    "siege": 17
+   }
+  },
+  "Mel": {
+   "BOTTOM": {
+    "blind": 1,
+    "blindSiege": 0,
+    "picks": 4,
+    "siege": 0
+   },
+   "MIDDLE": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   }
+  },
+  "Milio": {
+   "UTILITY": {
+    "blind": 70,
+    "blindSiege": 28,
+    "picks": 111,
+    "siege": 45
+   }
+  },
+  "Miss Fortune": {
+   "BOTTOM": {
+    "blind": 5,
+    "blindSiege": 4,
+    "picks": 25,
+    "siege": 15
+   }
+  },
+  "Mordekaiser": {
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 1
+   }
+  },
+  "Naafiri": {
+   "JUNGLE": {
+    "blind": 47,
+    "blindSiege": 21,
+    "picks": 102,
+    "siege": 44
+   }
+  },
+  "Nami": {
+   "UTILITY": {
+    "blind": 1,
+    "blindSiege": 0,
+    "picks": 11,
+    "siege": 7
+   }
+  },
+  "Nasus": {
+   "JUNGLE": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   },
+   "TOP": {
+    "blind": 1,
+    "blindSiege": 1,
+    "picks": 4,
+    "siege": 2
+   }
+  },
+  "Nautilus": {
+   "JUNGLE": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   },
+   "UTILITY": {
+    "blind": 27,
+    "blindSiege": 13,
+    "picks": 90,
+    "siege": 43
+   }
+  },
+  "Neeko": {
+   "UTILITY": {
+    "blind": 5,
+    "blindSiege": 4,
+    "picks": 26,
+    "siege": 17
+   }
+  },
+  "Nidalee": {
+   "JUNGLE": {
+    "blind": 1,
+    "blindSiege": 1,
+    "picks": 4,
+    "siege": 3
+   },
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 2,
+    "siege": 2
+   }
+  },
+  "Nocturne": {
+   "JUNGLE": {
+    "blind": 60,
+    "blindSiege": 31,
+    "picks": 81,
+    "siege": 45
+   }
+  },
+  "Olaf": {
+   "JUNGLE": {
+    "blind": 1,
+    "blindSiege": 1,
+    "picks": 3,
+    "siege": 2
+   },
+   "TOP": {
+    "blind": 96,
+    "blindSiege": 55,
+    "picks": 111,
+    "siege": 61
+   }
+  },
+  "Orianna": {
+   "BOTTOM": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   },
+   "MIDDLE": {
+    "blind": 96,
+    "blindSiege": 46,
+    "picks": 122,
+    "siege": 60
+   }
+  },
+  "Ornn": {
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 21,
+    "siege": 7
+   }
+  },
+  "Pantheon": {
+   "JUNGLE": {
+    "blind": 44,
+    "blindSiege": 17,
+    "picks": 103,
+    "siege": 50
+   },
+   "UTILITY": {
+    "blind": 1,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   }
+  },
+  "Poppy": {
+   "JUNGLE": {
+    "blind": 3,
+    "blindSiege": 2,
+    "picks": 17,
+    "siege": 7
+   },
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 2,
+    "siege": 1
+   },
+   "UTILITY": {
+    "blind": 2,
+    "blindSiege": 2,
+    "picks": 7,
+    "siege": 4
+   }
+  },
+  "Pyke": {
+   "UTILITY": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 2,
+    "siege": 0
+   }
+  },
+  "Qiyana": {
+   "JUNGLE": {
+    "blind": 21,
+    "blindSiege": 17,
+    "picks": 50,
+    "siege": 31
+   }
+  },
+  "Rakan": {
+   "UTILITY": {
+    "blind": 26,
+    "blindSiege": 15,
+    "picks": 64,
+    "siege": 37
+   }
+  },
+  "Rell": {
+   "UTILITY": {
+    "blind": 11,
+    "blindSiege": 3,
+    "picks": 56,
+    "siege": 20
+   }
+  },
+  "Renata Glasc": {
+   "UTILITY": {
+    "blind": 36,
+    "blindSiege": 16,
+    "picks": 64,
+    "siege": 35
+   }
+  },
+  "Renekton": {
+   "TOP": {
+    "blind": 38,
+    "blindSiege": 17,
+    "picks": 51,
+    "siege": 22
+   }
+  },
+  "Rumble": {
+   "MIDDLE": {
+    "blind": 4,
+    "blindSiege": 1,
+    "picks": 5,
+    "siege": 1
+   },
+   "TOP": {
+    "blind": 127,
+    "blindSiege": 77,
+    "picks": 145,
+    "siege": 90
+   }
+  },
+  "Ryze": {
+   "MIDDLE": {
+    "blind": 129,
+    "blindSiege": 63,
+    "picks": 148,
+    "siege": 72
+   },
+   "TOP": {
+    "blind": 1,
+    "blindSiege": 0,
+    "picks": 2,
+    "siege": 0
+   }
+  },
+  "Sejuani": {
+   "JUNGLE": {
+    "blind": 3,
+    "blindSiege": 2,
+    "picks": 15,
+    "siege": 9
+   }
+  },
+  "Senna": {
+   "BOTTOM": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 2,
+    "siege": 1
+   }
+  },
+  "Seraphine": {
+   "BOTTOM": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 3,
+    "siege": 2
+   },
+   "UTILITY": {
+    "blind": 63,
+    "blindSiege": 38,
+    "picks": 103,
+    "siege": 59
+   }
+  },
+  "Shen": {
+   "TOP": {
+    "blind": 2,
+    "blindSiege": 1,
+    "picks": 5,
+    "siege": 3
+   },
+   "UTILITY": {
+    "blind": 44,
+    "blindSiege": 23,
+    "picks": 73,
+    "siege": 36
+   }
+  },
+  "Shyvana": {
+   "JUNGLE": {
+    "blind": 1,
+    "blindSiege": 0,
+    "picks": 9,
+    "siege": 5
+   },
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 1
+   }
+  },
+  "Sion": {
+   "TOP": {
+    "blind": 2,
+    "blindSiege": 2,
+    "picks": 12,
+    "siege": 7
+   }
+  },
+  "Sivir": {
+   "BOTTOM": {
+    "blind": 8,
+    "blindSiege": 4,
+    "picks": 47,
+    "siege": 28
+   }
+  },
+  "Skarner": {
+   "JUNGLE": {
+    "blind": 16,
+    "blindSiege": 10,
+    "picks": 71,
+    "siege": 37
+   },
+   "UTILITY": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   }
+  },
+  "Soraka": {
+   "UTILITY": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   }
+  },
+  "Swain": {
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 1
+   }
+  },
+  "Sylas": {
+   "MIDDLE": {
+    "blind": 9,
+    "blindSiege": 5,
+    "picks": 39,
+    "siege": 21
+   }
+  },
+  "Syndra": {
+   "BOTTOM": {
+    "blind": 3,
+    "blindSiege": 1,
+    "picks": 3,
+    "siege": 1
+   },
+   "MIDDLE": {
+    "blind": 59,
+    "blindSiege": 27,
+    "picks": 119,
+    "siege": 58
+   }
+  },
+  "Tahm Kench": {
+   "UTILITY": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 3,
+    "siege": 2
+   }
+  },
+  "Taliyah": {
+   "BOTTOM": {
+    "blind": 2,
+    "blindSiege": 1,
+    "picks": 7,
+    "siege": 4
+   },
+   "MIDDLE": {
+    "blind": 6,
+    "blindSiege": 4,
+    "picks": 27,
+    "siege": 14
+   }
+  },
+  "Thresh": {
+   "UTILITY": {
+    "blind": 5,
+    "blindSiege": 3,
+    "picks": 14,
+    "siege": 6
+   }
+  },
+  "Tristana": {
+   "BOTTOM": {
+    "blind": 1,
+    "blindSiege": 0,
+    "picks": 3,
+    "siege": 1
+   },
+   "MIDDLE": {
+    "blind": 4,
+    "blindSiege": 2,
+    "picks": 8,
+    "siege": 4
+   },
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 1
+   }
+  },
+  "Trundle": {
+   "JUNGLE": {
+    "blind": 27,
+    "blindSiege": 15,
+    "picks": 61,
+    "siege": 32
+   },
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 9,
+    "siege": 5
+   }
+  },
+  "Twisted Fate": {
+   "MIDDLE": {
+    "blind": 8,
+    "blindSiege": 4,
+    "picks": 26,
+    "siege": 14
+   },
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 12,
+    "siege": 6
+   }
+  },
+  "Twitch": {
+   "BOTTOM": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   }
+  },
+  "Udyr": {
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   }
+  },
+  "Varus": {
+   "BOTTOM": {
+    "blind": 25,
+    "blindSiege": 11,
+    "picks": 50,
+    "siege": 23
+   },
+   "TOP": {
+    "blind": 8,
+    "blindSiege": 6,
+    "picks": 19,
+    "siege": 12
+   }
+  },
+  "Vayne": {
+   "TOP": {
+    "blind": 1,
+    "blindSiege": 0,
+    "picks": 21,
+    "siege": 9
+   }
+  },
+  "Vel'Koz": {
+   "UTILITY": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 2,
+    "siege": 2
+   }
+  },
+  "Vex": {
+   "MIDDLE": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 2,
+    "siege": 1
+   }
+  },
+  "Vi": {
+   "JUNGLE": {
+    "blind": 101,
+    "blindSiege": 54,
+    "picks": 109,
+    "siege": 59
+   }
+  },
+  "Viktor": {
+   "BOTTOM": {
+    "blind": 8,
+    "blindSiege": 3,
+    "picks": 13,
+    "siege": 8
+   },
+   "MIDDLE": {
+    "blind": 54,
+    "blindSiege": 25,
+    "picks": 92,
+    "siege": 47
+   }
+  },
+  "Vladimir": {
+   "BOTTOM": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 1
+   }
+  },
+  "Volibear": {
+   "JUNGLE": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   },
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 4,
+    "siege": 2
+   }
+  },
+  "Warwick": {
+   "TOP": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 1
+   }
+  },
+  "Wukong": {
+   "JUNGLE": {
+    "blind": 27,
+    "blindSiege": 14,
+    "picks": 65,
+    "siege": 33
+   }
+  },
+  "Xayah": {
+   "BOTTOM": {
+    "blind": 22,
+    "blindSiege": 15,
+    "picks": 54,
+    "siege": 35
+   }
+  },
+  "Xerath": {
+   "BOTTOM": {
+    "blind": 1,
+    "blindSiege": 1,
+    "picks": 6,
+    "siege": 1
+   }
+  },
+  "Xin Zhao": {
+   "JUNGLE": {
+    "blind": 12,
+    "blindSiege": 5,
+    "picks": 74,
+    "siege": 34
+   }
+  },
+  "Yone": {
+   "MIDDLE": {
+    "blind": 8,
+    "blindSiege": 4,
+    "picks": 34,
+    "siege": 15
+   },
+   "TOP": {
+    "blind": 2,
+    "blindSiege": 0,
+    "picks": 2,
+    "siege": 0
+   }
+  },
+  "Yorick": {
+   "TOP": {
+    "blind": 6,
+    "blindSiege": 4,
+    "picks": 37,
+    "siege": 15
+   }
+  },
+  "Yunara": {
+   "BOTTOM": {
+    "blind": 44,
+    "blindSiege": 18,
+    "picks": 91,
+    "siege": 45
+   }
+  },
+  "Yuumi": {
+   "UTILITY": {
+    "blind": 3,
+    "blindSiege": 0,
+    "picks": 16,
+    "siege": 6
+   }
+  },
+  "Zaahen": {
+   "JUNGLE": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 5,
+    "siege": 3
+   },
+   "TOP": {
+    "blind": 1,
+    "blindSiege": 1,
+    "picks": 22,
+    "siege": 6
+   }
+  },
+  "Zed": {
+   "JUNGLE": {
+    "blind": 0,
+    "blindSiege": 0,
+    "picks": 1,
+    "siege": 0
+   }
+  },
+  "Zeri": {
+   "BOTTOM": {
+    "blind": 9,
+    "blindSiege": 3,
+    "picks": 18,
+    "siege": 6
+   }
+  },
+  "Ziggs": {
+   "BOTTOM": {
+    "blind": 16,
+    "blindSiege": 4,
+    "picks": 45,
+    "siege": 17
+   }
+  },
+  "Zoe": {
+   "MIDDLE": {
+    "blind": 1,
+    "blindSiege": 0,
+    "picks": 2,
+    "siege": 0
+   }
+  }
+ },
+ "datei": "2026_oe.csv",
+ "erzeugt": "2026-10-20",
+ "jeLiga": {
+  "LCK": 129,
+  "LCS": 117,
+  "LEC": 122,
+  "LPL": 158,
+  "Worlds": 34
+ },
+ "ligen": [
+  "LCK",
+  "LPL",
+  "LEC",
+  "LCS",
+  "Worlds",
+  "MSI"
+ ],
+ "patches": [
+  "16.15",
+  "16.16",
+  "16.17",
+  "16.20"
+ ],
+ "quelle": "Oracle's Elixir (oracleselixir.com) · Spieldaten von Riot Games",
+ "spiele": 560,
+ "stand": "2026-10-18"
+}

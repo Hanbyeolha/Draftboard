@@ -362,6 +362,20 @@ def draft_daten(neu=False):
         if rollen:
             zeit[str(nr[c["name"]])] = rollen
 
+    # Staerke je Champion und Rolle aus DEMSELBEN 30-Tage-Datensatz wie
+    # die Paare (20.10.2026): die Erwartung, an der ein Matchup oder eine
+    # Synergie gemessen wird, muss aus demselben Fenster kommen - sonst
+    # zaehlt der Unterschied Patch/30 Tage je Champion neunmal mit (5
+    # Matchups, 4 Synergien). Ein Draft stand so bei 30 %, DraftGap bei 55 %.
+    basis30 = {}
+    for c in tage30["championData"].values():
+        rollen = {}
+        for r, st in (c.get("statsByRole") or {}).items():
+            if st.get("games"):
+                rollen[r] = [st["games"], round(1000 * st["wins"] / st["games"])]
+        if rollen and c["name"] in nr:
+            basis30[str(nr[c["name"]])] = rollen
+
     # Matchups und Synergien aus den letzten 30 Tagen.
     nach_id = tage30["championData"]
     paare = {}
@@ -411,7 +425,7 @@ def draft_daten(neu=False):
     return {"version": aktuell.get("version"),
             "stand": (aktuell.get("date") or "")[:10],
             "fenster": fenster,
-            "namen": namen, "basis": basis, "paare": paare,
+            "namen": namen, "basis": basis, "basis30": basis30, "paare": paare,
             "schaden": schaden, "zeit": zeit}
 
 
@@ -526,6 +540,19 @@ def own_teams(teams):
             if first in names:
                 return [n for n in names if any(t["team"] == n for t in teams)]
     return [first]
+
+
+def pro_lesen():
+    """Die Zusammenfassung von pro.py (data/pro/pro.json) - oder None, wenn
+    noch keine Rohdatei ausgewertet wurde. Ohne sie fehlt nur die Pro-Spalte."""
+    pfad = ROOT / "data" / "pro" / "pro.json"
+    if not pfad.exists():
+        return None
+    try:
+        return json.loads(pfad.read_text(encoding="utf-8"))
+    except ValueError:
+        print("  ! data/pro/pro.json ist kein gueltiges JSON - Pro-Picks fehlen")
+        return None
 
 
 def league_opponents(teams):
@@ -1188,6 +1215,9 @@ def build(embed=False, pages=False, draftgap_neu=False):
         "ownTeams": own_teams(teams),
         # Erkannte Riot-ID-Wechsel (namenswechsel.py) - Hinweis im Board.
         "namenswechsel": namenswechsel.lesen(),
+        # Pro-Picks (pro.py, Oracle's Elixir): nur die Zusammenfassung je
+        # Champion und Rolle, die Rohdatei bleibt in data/pro/roh/.
+        "pro": pro_lesen(),
     }
     if embed:
         data["iconData"] = embed_icons(icons, version)

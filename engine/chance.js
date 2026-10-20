@@ -10,12 +10,17 @@
                 logit(Matchup) - (logit(a) - logit(b))
      Synergien  je Paar im selben Team ebenso: logit(Duo) - (logit(a) + logit(b))
 
+   Die Erwartung a, b kommt seit 20.10.2026 aus DEMSELBEN 30-Tage-Datensatz
+   wie die Paare (quelle.staerke30). Vorher stand dort die Patch-Winrate: der
+   kleine Unterschied Patch/30 Tage zaehlte je Champion neunmal (5 Matchups,
+   4 Synergien) - ein Draft stand bei 30 %, DraftGap bei 55,5 %, jetzt 55,9 %.
+
    Paarwerte werden rauschbereinigt wie ueberall in der Engine
    (BLIND.schrumpfK): bei wenigen Partien zaehlt die Abweichung weniger.
 
-   WICHTIG, gemessen am 18.10.2026 an 75 Turnierspielen der Liga: die volle
-   Rechnung traf 39-mal (52 %), Brier 0,272 - nicht besser als ein
-   Muenzwurf (0,250). Der Wert beschreibt den Draft auf dem Patch, nicht eure
+   WICHTIG, gemessen an unseren Turnierspielen: am 18.10.2026 39 von 75,
+   Brier 0,272; nach der Korrektur der Erwartung (20.10.2026) 51 von 87,
+   Brier 0,250 - so gut wie ein Muenzwurf (0,250), nicht besser. Der Wert beschreibt den Draft auf dem Patch, nicht eure
    Siegchance; die Oberflaeche zeigt die Trefferquote darum direkt daneben
    (treffer()). Er fliesst in KEINE Empfehlung ein. */
 
@@ -31,6 +36,13 @@ function rechne(quelle, wir, sie) {
   const r = (p) => {
     const s = p && p.champ && p.rolle ? quelle.staerke(p.champ, p.rolle) : null;
     return s ? logit(s.value) : null;
+  };
+  // Erwartung fuer Paare aus DEMSELBEN Fenster wie die Paare (30 Tage),
+  // sonst zaehlt der Unterschied Patch/30 Tage je Champion neunmal mit
+  // (20.10.2026: ein Draft stand bei 30 %, DraftGap und diese Rechnung bei 55 %).
+  const e = (p) => {
+    const s = p && p.champ && p.rolle ? (quelle.staerke30 && quelle.staerke30(p.champ, p.rolle)) : null;
+    return s ? logit(s.value) : r(p);
   };
   const schrumpf = (d, n) => d * n / (n + BLIND.schrumpfK);
   const teile = {champions: 0, matchups: 0, synergien: 0};
@@ -58,7 +70,7 @@ function rechne(quelle, wir, sie) {
       const n = (ab ? ab.sampleSize : 0) + (ba ? ba.sampleSize : 0);
       if (!n) continue;
       const q = ((ab ? ab.value * ab.sampleSize : 0) + (ba ? (1 - ba.value) * ba.sampleSize : 0)) / n;
-      teile.matchups += schrumpf(logit(q) - (ra - rb), n / ((ab ? 1 : 0) + (ba ? 1 : 0)));
+      teile.matchups += schrumpf(logit(q) - (e(a) - e(b)), n / ((ab ? 1 : 0) + (ba ? 1 : 0)));
       gezaehlt.matchups += 1;
     }
   }
@@ -74,7 +86,7 @@ function rechne(quelle, wir, sie) {
         const n = (ab ? ab.sampleSize : 0) + (ba ? ba.sampleSize : 0);
         if (!n) continue;
         const q = ((ab ? ab.value * ab.sampleSize : 0) + (ba ? ba.value * ba.sampleSize : 0)) / n;
-        teile.synergien += vz * schrumpf(logit(q) - (ra + rb), n / ((ab ? 1 : 0) + (ba ? 1 : 0)));
+        teile.synergien += vz * schrumpf(logit(q) - (e(a) + e(b)), n / ((ab ? 1 : 0) + (ba ? 1 : 0)));
         gezaehlt.synergien += 1;
       }
     }

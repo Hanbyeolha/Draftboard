@@ -329,11 +329,11 @@ def main():
             p.click("#tab-draft")
             p.wait_for_timeout(800)
 
-            # Am Handy steckt der Schalter in den eingeklappten Einstellungen.
-            if breite <= 680:
-                pruefe(not p.evaluate("() => document.querySelector('.cp-einstellungen').open"),
-                       "Handy: Draft-Einstellungen eingeklappt")
-                p.click(".cp-einstellungen > summary")
+            # Der Schalter steckt in den eingeklappten Einstellungen - seit
+            # 20.10.2026 auch am Bildschirm (oben steht die Spielstand-Leiste).
+            pruefe(not p.evaluate("() => document.querySelector('.cp-einstellungen').open"),
+                   "Draft-Einstellungen eingeklappt")
+            p.click(".cp-einstellungen > summary")
             p.click("#live-draft .cp-schalter")
             p.wait_for_timeout(800)
             pruefe(p.locator("#live-draft .ld-pickzeile").count() == 10, "klassische Ansicht mit 10 Pickzeilen")
