@@ -77,7 +77,13 @@ export function compAnlegen(merkmale, heuristik) {
   function schadenAus(mit) {
     const xs = mit.map((p) => p.merkmal.schaden).filter(Boolean);
     if (!xs.length) return null;
-    const magisch = xs.reduce((a, w) => a + w.value, 0) / xs.length;
+    // Nach Schaden je Partie gewichtet, wo bekannt: ein Support zaehlt so
+    // viel, wie er Schaden macht - pro Kopf blieb AFC1 mit drei AP-Carries bei
+    // 68 % "magisch", gewichtet sind es 72 % (22.10.2026).
+    const mitMenge = xs.every((w) => w.menge > 0);
+    const magisch = mitMenge
+      ? xs.reduce((a, w) => a + w.value * w.menge, 0) / xs.reduce((a, w) => a + w.menge, 0)
+      : xs.reduce((a, w) => a + w.value, 0) / xs.length;
     return {
       magisch: wert(magisch, {quelle: "draftgap",
                               hinweis: xs.length + " von " + mit.length + " Picks"}),

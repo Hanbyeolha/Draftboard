@@ -23,7 +23,7 @@ import { BLIND } from "./config.js";
 
 export const ANSICHT_TEILE = {
   spieler: ["komfort"],
-  matchup: ["lane", "matchup", "blindSicherheit"],
+  matchup: ["lane", "matchup", "blindSicherheit", "proBlind"],
   comp: ["synergie", "compFit"],
   meta: ["meta"],
 };

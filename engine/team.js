@@ -86,9 +86,10 @@ export function teamAnlegen(teams, {queue = "RANKED", season = null} = {}) {
     const s = hole(team, label);
     if (!s) return null;
     const e = s.pool.get(champ) || null;
-    const imPlan = s.plan.blind.has(champ) ? "blind"
-                 : s.plan.likes.has(champ) ? "likes" : null;
-    if (!e && !imPlan) {
+    // Der Draftplan zaehlt seit 22.10.2026 nicht mehr in den Komfort (Nutzer:
+    // "der Draftplan soll fuer Pickvorschlaege nicht berechnet werden") - nur
+    // gespielte Partien. Angezeigt wird der Plan weiter (Plan-Leiste, Marken).
+    if (!e) {
       // Kein Beleg - und das ist NICHT dasselbe wie "kann er nicht".
       //
       // Frueher stand hier eine belegte 0. Das war ein Verstoss gegen die
@@ -111,29 +112,19 @@ export function teamAnlegen(teams, {queue = "RANKED", season = null} = {}) {
       return {...wert(KOMFORT.ohneBeleg, {
         quelle: "team", stichprobe: 0,
         konfidenz: KOMFORT.ohneBelegKonfidenz,
-        hinweis: "keine Rankedpartien, nicht im Draftplan ("
+        hinweis: "keine Rankedpartien ("
                  + queue + (gewaehlt !== null ? " S" + gewaehlt : "") + ")",
       }), ohneBeleg: true};
     }
 
-    const partien = e ? e.play : 0;
+    const partien = e.play;
     const erfahrung = Math.log10(1 + partien) / Math.log10(1 + KOMFORT.volleErfahrung);
-    const planWert = imPlan === "blind" ? KOMFORT.blindPick
-                   : imPlan === "likes" ? KOMFORT.spieltGerne : 0;
-
-    // Erfahrung und Ansage ergaenzen sich: der hoehere der beiden traegt,
-    // der andere hebt noch etwas an. Addieren wuerde dieselbe Aussage
-    // zweimal zaehlen - wer einen Champion blind pickt, hat ihn meist
-    // auch gespielt.
-    const hoch = Math.max(erfahrung, planWert);
-    const tief = Math.min(erfahrung, planWert);
-    let v = hoch + (1 - hoch) * tief * 0.5;
+    let v = erfahrung;
 
     // Die eigene Quote justiert nach oben oder unten - aber nur, wenn sie
     // auf genug entschiedenen Partien beruht.
     const teile = [];
     if (partien) teile.push(partien + " Partien");
-    if (imPlan) teile.push(imPlan === "blind" ? "blind pickbar" : "spielt gerne");
     if (e && e.decided >= KOMFORT.winrateAbPartien) {
       const q = e.win / e.decided;
       v *= 0.85 + 0.3 * klemm((q - 0.42) / 0.16, 0, 1);
@@ -143,9 +134,7 @@ export function teamAnlegen(teams, {queue = "RANKED", season = null} = {}) {
     return wert(klemm(v, 0, 1), {
       quelle: "team",
       stichprobe: partien,
-      // Konfidenz nicht aus der Stichprobe allein: eine Ansage im
-      // Draftplan ist auch ohne viele Partien ein Beleg.
-      konfidenz: klemm(0.35 + 0.45 * erfahrung + (imPlan ? 0.2 : 0), 0, 1),
+      konfidenz: klemm(0.35 + 0.45 * erfahrung, 0, 1),
       // Die Quelle gehoert in den Text: sonst liest jemand "107 Partien"
       // und denkt an Turnierpartien.
       hinweis: (teile.join(" · ") || "nichts bekannt")

@@ -86,3 +86,22 @@ test("Lane-Analyse Bot: gegen ADC und Support, mit unserem Support, Chance je Ka
   // Mid hat keinen Lanepartner.
   assert.deepEqual(laneAnalyse(quelle, z, "MIDDLE").partner, []);
 });
+
+test("Posten: jeder Einzelwert einmal, zusammen genau die Punkte", () => {
+  const c = draftChance(quelle, lage([["Ahri", "MIDDLE"], ["Thresh", "UTILITY"], ["Jinx", "BOTTOM"]],
+                                     [["Syndra", "MIDDLE"], ["Lee Sin", "JUNGLE"]]));
+  const je = (art) => c.posten.filter((p) => p.art === art).length;
+  assert.deepEqual({champions: je("champion"), matchups: je("matchup"), synergien: je("synergie")}, c.gezaehlt);
+  const summe = c.posten.reduce((s, p) => s + p.punkte, 0);
+  assert.ok(Math.abs(summe - c.punkte) < 1e-9);
+  const ahri = c.posten.find((p) => p.art === "champion" && p.a.champ === "Ahri");
+  assert.equal(ahri.wert, quelle.staerke("Ahri", "MIDDLE").value);
+  assert.ok(c.posten.filter((p) => p.art !== "champion").every((p) => p.n > 0 && p.erwartet > 0 && p.erwartet < 1));
+  // Angezeigt wird die gerechnete Zahl: sie liegt zwischen den beiden Sichten,
+  // und die erste Sicht ist die der Begruendung.
+  for (const p of c.posten.filter((x) => x.art === "matchup" && x.sichten)) {
+    const ab = quelle.matchup(p.a.champ, p.a.rolle, p.b.champ, p.b.rolle);
+    assert.equal(p.sichten[0], ab.value);
+    assert.ok(p.wert >= Math.min(...p.sichten) - 1e-12 && p.wert <= Math.max(...p.sichten) + 1e-12);
+  }
+});

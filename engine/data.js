@@ -107,8 +107,11 @@ export function quelleAnlegen(roh) {
     if (i === undefined || !roh.schaden) return null;
     const e = (roh.schaden[i] || {})[String(rollenNr(rolle))];
     if (e === undefined) return null;
-    return wert(e / 100, {quelle: "draftgap", patch, konfidenz: 0.9,
+    // Neu [Anteil, Schaden je Partie]; aeltere Daten nur der Anteil.
+    const w = wert((Array.isArray(e) ? e[0] : e) / 100, {quelle: "draftgap", patch, konfidenz: 0.9,
                           hinweis: "Anteil magischen Schadens"});
+    w.menge = Array.isArray(e) ? e[1] : null;
+    return w;
   }
 
   /* ----------------------------------------------------- Skalierungskurve */

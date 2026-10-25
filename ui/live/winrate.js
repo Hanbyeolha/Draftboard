@@ -91,11 +91,11 @@
 
   /* ------------------------------------- Draft-Vorteil (engine/chance.js)
      Wunsch des Nutzers (18.10.2026): die Gesamtchance, live. Bewusst als
-     "Draft laut Patchdaten" beschriftet und mit der Trefferquote an unseren
-     Turnierspielen daneben - gemessen am 18.10.: 39 von 75, seit der
-     Korrektur der Erwartung (20.10.) 51 von 87 - nicht besser
-     als ein Muenzwurf. Entschieden vom Nutzer: Variante "Draft-Vorteil mit
-     Trefferquote". Fliesst in keine Empfehlung ein. */
+     "Draft laut Patchdaten" beschriftet. Die Trefferquote an unseren
+     Turnierspielen stand bis 24.10.2026 daneben; der Nutzer wollte sie
+     dort nicht mehr (engine/chance.js treffer() misst sie weiter). Statt
+     dessen klappt jede eingehende Winrate auf. Fliesst in keine
+     Empfehlung ein. */
   function liveDraftChance(z) {
     return liveTeile && liveTeile.quelle ? ENGINE.draftChance(liveTeile.quelle, z) : null;
   }
@@ -103,26 +103,6 @@
     return liveTeile && liveTeile.quelle ? ENGINE.chanceMitPick(liveTeile.quelle, z, champ, ROLES[rolle][0]) : null;
   }
 
-  // Trefferquote an den eingebetteten Turnierspielen - einmal je Seitenaufruf.
-  // DATA.games fuehrt jede Partie zweimal (je Mannschaft); gepaart ueber
-  // matchId, sonst Serie + Spielnummer.
-  function chanceTreffer() {
-    if (chanceTreffer.wert !== undefined) return chanceTreffer.wert;
-    const je = new Map();
-    for (const g of DATA.games || []) {
-      const k = g.matchId || ((g.series || "") + "|" + (g.game || ""));
-      if (!je.has(k)) je.set(k, []);
-      je.get(k).push(g);
-    }
-    const partien = [];
-    for (const zwei of je.values()) {
-      if (zwei.length !== 2 || !zwei[0].result) continue;
-      const auf = (g) => (g.picks || []).map((p) => ({champ: p.champ, rolle: p.role}));
-      partien.push({a: auf(zwei[0]), b: auf(zwei[1]), aGewinnt: zwei[0].result === "win"});
-    }
-    chanceTreffer.wert = liveTeile && liveTeile.quelle ? ENGINE.treffer(liveTeile.quelle, partien) : null;
-    return chanceTreffer.wert;
-  }
 
   const punkteText = (x) => (x >= 0 ? "+" : "\u2212") + Math.abs(x).toLocaleString("de-DE",
     {minimumFractionDigits: 1, maximumFractionDigits: 1});
@@ -133,9 +113,8 @@
   /* anzeige: die Mitte der Spielstand-Leiste (Cockpit, Entwurf B+C vom
      20.10.2026) - "55 % : 45 %" mit Balken, dieselben Zahlen. Die zweite
      Zahl ist nur der Rest zu 100, keine eigene Rechnung. */
-  function chanceLeiste(c, {gegnerName = "Gegner", anzeige = false} = {}) {
+  function chanceLeiste(c, {gegnerName = "Gegner", anzeige = false, duelle = !anzeige} = {}) {
     if (!c) return null;
-    const t = chanceTreffer();
     const fuerUns = c.chance >= 0.5;
     const balken = el("span", {class: "ch-balken", "aria-hidden": "true"},
       el("span", {class: "ch-wir", style: "width:" + (c.chance * 100).toFixed(1) + "%"}),
@@ -156,8 +135,121 @@
         "Champions " + punkteText(c.teile.champions) + " · Matchups " + punkteText(c.teile.matchups)
         + " · Synergien " + punkteText(c.teile.synergien)
         + (c.ohneDaten.length ? " · ohne Patchdaten: " + c.ohneDaten.join(", ") : "")),
-      t && t.n ? el("span", {class: "ch-treffer"}, "traf in unseren " + t.n + " Turnierspielen "
-        + t.richtig + "-mal – Spieler entscheiden mehr als der Draft") : null);
+      // Ohne die Trefferquote stand die Zahl wie eine Siegchance da (Nutzer, 25.10.2026).
+      c.leer ? null : el("span", {class: "ch-einordnung"},
+        "Draft auf dem Patch bei durchschnittlichen Spielern – keine Siegchance."),
+      // In der Spielstand-Leiste des Cockpits ist dafuer kein Platz.
+      duelle ? chanceDuelle(c) : null,
+      chanceAufbau(c));
+  }
+
+  /* Lane-Duell (Variante A, Nutzer 25.10.2026): unser Champion gegen den
+     Lanegegner. Der Balken teilt sich nach der gemessenen Matchup-Winrate,
+     der Strich steht bei dem, was die beiden allein erwarten lassen. Die
+     Punkte sind derselbe Posten wie in der Aufschluesselung. */
+  function laneDuell(c, m) {
+    // Nur der Name: "allgemein" steht schon im Kopf der Karte, ein zweites
+    // "allgemein" mit anderer Zahl verwirrte (Nutzer, 25.10.2026).
+    const seite = (p, s) => {
+      const src = iconUrl(p.champ);
+      return el("span", {class: "du-seite " + s},
+        src ? el("img", {src, alt: "", loading: "lazy"}) : null,
+        el("span", {class: "du-name"}, el("b", {}, p.champ)));
+    };
+    const d = m.wert - m.erwartet;
+    const ton = d >= 0.015 ? " gut" : d <= -0.015 ? " schwach" : "";
+    // Sichtbar machen, dass der Balken das direkte Duell ist (Nutzer, 25.10.2026).
+    const urteil = !ton ? "normales Duell" : (d < 0 ? m.b.champ : m.a.champ) + " kontert";
+    return el("div", {class: "du", role: "group",
+                      "aria-label": m.a.champ + " gegen " + m.b.champ + ": " + wrProzent({value: m.wert})},
+      el("span", {class: "ch-rolle"}, roleLabel(m.a.rolle)
+         + (m.a.rolle !== m.b.rolle ? " · " + roleLabel(m.b.rolle) : "")),
+      seite(m.a, "wir"),
+      el("span", {class: "du-mitte"},
+        el("span", {class: "du-zahlen"},
+          el("span", {}, el("b", {}, wrProzent({value: m.wert})), " ", el("small", {}, "im Duell")),
+          el("span", {class: "du-paar"}, m.a.champ + " gegen " + m.b.champ),
+          el("span", {}, el("small", {}, "im Duell"), " ", el("b", {class: "du-sie"}, wrProzent({value: 1 - m.wert})))),
+        el("span", {class: "du-balken", "aria-hidden": "true"},
+          el("span", {class: "du-wir", style: "width:" + (m.wert * 100).toFixed(1) + "%"}),
+          el("span", {class: "du-erwartet", style: "left:" + (m.erwartet * 100).toFixed(1) + "%"})),
+        el("small", {class: "du-satz"}, "gewinnt ", el("b", {}, wrProzent({value: m.wert})),
+           " statt erwarteter " + wrProzent({value: m.erwartet}) + " → " + urteil + " · ",
+           el("span", {class: "du-punkte" + ton}, punkteText(m.punkte) + " Punkte"),
+           " · " + tausend(m.n) + " Partien"),
+        // Die Begruendung nennt nur die erste Sicht - weicht die zweite
+        // spuerbar ab, stehen beide da, damit die Zahlen zusammenpassen.
+        m.sichten && Math.abs(m.sichten[0] - m.sichten[1]) > 0.01
+          ? el("small", {class: "du-sichten"}, "gemittelt aus " + m.a.champ + "-Sicht "
+               + wrProzent({value: m.sichten[0]}) + " und " + m.b.champ + "-Sicht "
+               + wrProzent({value: m.sichten[1]})) : null),
+      seite(m.b, "sie"));
+  }
+
+  /* Alle fertigen Lanes, sofort sichtbar. Die Matchups ueber Kreuz zaehlen
+     auch - darum ihre Summe darunter, sonst wirkten die Lanes wie die ganze
+     Rechnung. */
+  function chanceDuelle(c) {
+    if (c.leer) return null;
+    const nr = (r) => ROLES.findIndex((x) => x[0] === r);
+    const lane = c.posten.filter((p) => p.art === "matchup" && p.a.rolle === p.b.rolle)
+      .sort((x, y) => nr(x.a.rolle) - nr(y.a.rolle));
+    if (!lane.length) return null;
+    const kreuz = c.posten.filter((p) => p.art === "matchup" && p.a.rolle !== p.b.rolle);
+    return el("div", {class: "du-liste"},
+      el("span", {class: "ch-gruppe-kopf"}, "Lane-Duelle · wie oft gewinnt unser Champion genau gegen diesen Gegner"),
+      lane.map((m) => laneDuell(c, m)),
+      kreuz.length ? el("small", {class: "du-rest"}, "Übrige " + kreuz.length + " Matchups über Kreuz zusammen "
+        + punkteText(kreuz.reduce((s, p) => s + p.punkte, 0)) + " Punkte") : null);
+  }
+
+  /* Wie die Zahl entsteht (Wunsch des Nutzers, 24.10.2026: "jegliche
+     Winrates auf den Rollen sehen"). Jeder Posten aus engine/chance.js mit
+     seinem Anteil an den Punkten - zusammen genau die Punkte der Leiste. */
+  function chanceAufbau(c) {
+    if (c.leer || !c.posten.length) return null;
+    const wer = (p) => [el("span", {class: "ch-rolle"}, roleLabel(p.rolle)), " " + p.champ];
+    const prozent = (x) => wrProzent({value: x});
+    const seite = (p) => el("span", {class: "ch-seite"}, p.seite === "wir" ? "wir" : "Gegner");
+    const ART = {champion: "Champion", matchup: "Matchup", synergie: "Synergie"};
+    const wo = {
+      champion: (p) => [seite(p), " ", ...wer(p.a)],
+      matchup: (p) => [...wer(p.a), " gegen ", ...wer(p.b)],
+      synergie: (p) => [seite(p), " ", ...wer(p.a), " + ", ...wer(p.b)],
+    };
+    // Groesster Anteil zuerst. Was gerundet +-0,0 ergibt, steht eingeklappt
+    // am Ende - weg ist es nicht, jede Winrate bleibt abrufbar.
+    const nichts = (p) => Math.abs(p.punkte) < 0.05;
+    const posten = [...c.posten].sort((a, b) => Math.abs(b.punkte) - Math.abs(a.punkte));
+    const zeilen = posten.map((p) => el("li", {hidden: nichts(p)},
+      el("span", {class: "ch-wer"}, el("span", {class: "ch-art"}, ART[p.art]), " ", ...wo[p.art](p)),
+      el("span", {class: "ch-wert"}, prozent(p.wert)),
+      el("span", {class: "ch-erwartet"}, p.erwartet === undefined ? "" : "erwartet " + prozent(p.erwartet)),
+      el("span", {class: "ch-n"}, tausend(p.n) + " Partien"),
+      el("span", {class: "ch-punkte"}, punkteText(p.punkte))));
+    const anzahlNichts = posten.filter(nichts).length;
+    if (anzahlNichts) {
+      const knopf = el("button", {class: "ch-mehr", type: "button"},
+        anzahlNichts + " weitere mit ±0,0 zeigen");
+      const zeile = el("li", {class: "ch-mehr-zeile"}, knopf);
+      knopf.addEventListener("click", () => {
+        for (const z of zeilen) z.hidden = false;
+        zeile.remove();
+      });
+      zeilen.push(zeile);
+    }
+    const d = el("details", {class: "ch-aufbau"},
+      el("summary", {}, "Wie die " + chanceProzent(c) + " entstehen"),
+      el("div", {class: "ch-aufbau-inhalt"},
+        el("span", {class: "ch-gruppe-kopf"}, "Was die Zahl bewegt · größter Anteil zuerst"),
+        el("ul", {class: "ch-posten"}, zeilen),
+        el("p", {class: "ch-hinweis"}, "Champion: Patch-Winrate auf der Rolle. Matchup und Synergie: "
+          + "gemessen gegen das, was die beiden Winrates erwarten lassen. Rechts der Anteil an den "
+          + punkteText(c.punkte) + " Punkten; Paare mit wenigen Partien zählen weniger (rauschbereinigt).")));
+    // Jeder Pick zeichnet die Leiste neu - offen bleibt sie trotzdem.
+    d.open = chanceAufbau.offen === true;
+    d.addEventListener("toggle", () => { chanceAufbau.offen = d.open; });
+    return d;
   }
 
   /** Klein je Vorschlag: "Team → 56 % (+2,0)" - was dieser Pick am Draft aendert. */
@@ -252,6 +344,16 @@
     const rolleName = ROLES[rolle][0];
     const a = ENGINE.laneAnalyse(liveTeile.quelle, z, rolleName);
     const note = (x) => noten && noten.has(x.champ) ? noten.get(x.champ) : null;
+    // Blind (Lanegegner offen) oder Counter (steht) - je Modus eigener Stand,
+    // damit beim Wechsel die passende Sortierung greift (Nutzer, 22.10.2026).
+    const modus = a.gegner.length ? "counter" : "blind";
+    // Mehrere Lanegegner (Bot: ADC und Support): Mittel der bereinigten
+    // Abstaende zum Schnitt - der Counter gegen die ganze Lane.
+    const laneMittel = (x) => {
+      const ds = a.gegner.map((g, i) => x.gegenBereinigt[i] === null || g.schnitt === null ? null
+        : x.gegenBereinigt[i] - g.schnitt).filter((d) => d !== null);
+      return ds.length ? ds.reduce((p, q) => p + q, 0) / ds.length : null;
+    };
     const spalten = [
       ...(noten ? [{id: "note", wort: "Note", titel: "Note der Empfehlung (Komfort, Matchup, Comp, Meta)",
                     ordnung: (x) => note(x) ? note(x).score : null, note: true}] : []),
@@ -260,6 +362,9 @@
       ...a.gegner.map((g, i) => ({id: "gegen:" + g.champ, wort: "vs " + g.champ, schnitt: g.schnitt,
        titel: "Winrate gegen " + g.champ + " (" + (ENGINE.ROLLEN_WORT[g.rolle] || g.rolle) + ") – wie gut er gegen ihn steht",
        roh: (x) => x.gegen[i], ordnung: (x) => x.gegenBereinigt[i], art: "matchup"})),
+      ...(a.gegner.length > 1 ? [{id: "lane", wort: "Lane Ø", laneGesamt: true, ordnung: laneMittel,
+           titel: "Gegen die ganze Lane: Mittel der Abstände zum Schnitt gegen "
+                  + a.gegner.map((g) => g.champ).join(" und ") + " (rauschbereinigt), in Punkten"}] : []),
       ...a.partner.map((p, i) => ({id: "mit:" + p.champ, wort: "mit " + p.champ, schnitt: p.schnitt,
        titel: "Duo-Winrate mit unserem " + (ENGINE.ROLLEN_WORT[p.rolle] || p.rolle) + " " + p.champ
               + " – wie gut sie zusammen sind",
@@ -272,17 +377,20 @@
       {id: "allgemein", wort: "allgemein", titel: "Patch-Winrate auf der Rolle",
        roh: (x) => x.allgemein, ordnung: (x) => x.allgemein.value},
     ];
-    const st = {filter: "alle", sort: null, vergebene: false, offen: false, lane: false, braucht: [], proBlind: false,
-                ...(laneStand.get(rolleName) || {})};
+    const st = {filter: "alle", sort: null, vergebene: false, offen: false, lane: false, braucht: [], proBlind: false, typ: null,
+                ...(laneStand.get(rolleName + "|" + modus) || {})};
     // Standard: gegen den ersten Lanegegner, sonst Team -> (die Spalte, die
     // alles zusammennimmt). Eine gemerkte Spalte, die es nicht mehr gibt,
     // faellt zurueck.
+    // Blind: die in Pro ueblichen Blind Picks zuerst; Counter: wer gegen die
+    // ganze Lane am besten steht.
     if (!spalten.some((s) => s.id === st.sort)) {
       const erstesMatchup = spalten.find((s) => s.art === "matchup");
-      st.sort = sortStandard && spalten.some((s) => s.id === sortStandard) ? sortStandard
-        : erstesMatchup ? erstesMatchup.id : "chance";
+      st.sort = modus === "blind" ? (PRO ? "pro" : sortStandard && spalten.some((s) => s.id === sortStandard)
+                                      ? sortStandard : "chance")
+        : a.gegner.length > 1 ? "lane" : erstesMatchup.id;
     }
-    const setze = (teil) => { laneStand.set(rolleName, {...st, ...teil}); neuZeichnen(); };
+    const setze = (teil) => { laneStand.set(rolleName + "|" + modus, {...st, ...teil}); neuZeichnen(); };
 
     const imPlan = (c) => !!plan && (plan.blind.includes(c) || plan.likes.includes(c));
     const gegenSpalten = spalten.filter((s) => s.art === "matchup" && s.schnitt !== null && s.schnitt !== undefined);
@@ -293,13 +401,24 @@
     const bedarfDa = (bedarf || []).filter((b) => b && b.achse && bringt);
     const braucht = (st.braucht || []).filter((a) => bedarfDa.some((b) => b.achse === a));
     const proBlind = (x) => { const v = proVon(x.champ, rolleName); return !!(v && v.blind); };
+    // AD/AP (22.10.2026): Schadenstyp des Kandidaten auf der Rolle - dieselbe
+    // Regel wie "bringt physischen/magischen Schaden" im Lagebild.
+    const typVon = (x) => !bringt ? null : bringt(x.champ, "magisch") ? "AP" : bringt(x.champ, "physisch") ? "AD" : null;
+    const unsere = (z.picks[z.wirSind] || []).filter(Boolean);
+    const mischung = (picks) => { const p = liveTeile.comp.profil(picks); return p.schaden ? p.schaden.magisch.value : null; };
+    const jetztMagisch = unsere.length ? mischung(unsere) : null;
+    const danach = (xs) => {
+      const ws = xs.map((x) => mischung([...unsere, {champ: x.champ, rolle: rolleName}])).filter((w) => w !== null);
+      return ws.length ? ws.reduce((p, q) => p + q, 0) / ws.length : null;
+    };
     const grundPasst = (x) => (st.vergebene || !gesperrt.has(x.champ));
     const passt = (x) => (st.filter !== "pool" || (pool && pool.has(x.champ)))
       && (st.filter !== "plan" || imPlan(x.champ))
       && grundPasst(x)
       && (!st.lane || laneStark(x))
       && braucht.every((a) => bringt(x.champ, a))
-      && (!st.proBlind || proBlind(x));
+      && (!st.proBlind || proBlind(x))
+      && (!st.typ || typVon(x) === st.typ);
     const spalte = spalten.find((s) => s.id === st.sort);
     const zeilen = a.zeilen.filter(passt).sort((x, y) => {
       const vx = spalte.ordnung(x), vy = spalte.ordnung(y);
@@ -320,9 +439,14 @@
     vergebeneHaken.addEventListener("change", () => setze({vergebene: vergebeneHaken.checked}));
 
     const gegnerText = a.gegner.length ? "gegen " + a.gegner.map((g) => g.champ).join(" + ") : "Lanegegner noch offen";
-    const box = el("section", {class: "ko-liste lt", "aria-label": "Kandidaten für " + ROLES[rolle][1]},
+    const box = el("section", {class: "ko-liste lt " + modus, "aria-label": "Kandidaten für " + ROLES[rolle][1]},
       el("div", {class: "ko-kopf"},
-        el("span", {class: "cp-klein"}, "Kandidaten für " + ROLES[rolle][1] + " · " + gegnerText),
+        el("span", {class: "cp-klein"}, (modus === "blind" ? "Blind Pick " : "Counterpick ")
+          + ROLES[rolle][1] + " · " + gegnerText),
+        el("span", {class: "lt-modus"}, modus === "blind"
+          ? (PRO ? "sortiert: in Pro am häufigsten blind gepickt" : "")
+          : "sortiert: " + (a.gegner.length > 1 ? "stärkster gegen die ganze Lane" : "stärkster gegen " + a.gegner[0].champ)
+            + " · wenige Spiele zählen weniger („zählt“)"),
         wer ? el("span", {class: "cp-klein ko-fuer"}, "für " + wer) : null,
         el("span", {class: "wr-neben"}, zeilen.length + (zeilen.length === 1 ? " Champion" : " Champions"))),
       el("div", {class: "lt-steuer"},
@@ -356,28 +480,41 @@
         () => setze({braucht: braucht.includes(b.achse) ? braucht.filter((q) => q !== b.achse) : [...braucht, b.achse],
                      offen: false}),
         "Team braucht " + b.wort + (b.grund ? " (" + b.grund + ")" : "") + " – dieselbe Regel wie im Lagebild")),
+      ...(bringt ? ["AD", "AP"].map((typ) => {
+        const xs = basis.filter((x) => typVon(x) === typ), d = danach(xs);
+        return chip(typ + (d === null ? "" : " · danach Ø " + Math.round(d * 100) + " % magisch"), st.typ === typ, xs.length,
+          () => setze({typ: st.typ === typ ? null : typ, offen: false}),
+          typ === "AD" ? "Vor allem physischer Schaden auf dieser Rolle (gemessen)"
+                       : "Vor allem magischer Schaden auf dieser Rolle (gemessen)");
+      }) : []),
       PRO ? chip("Pro blind gepickt", st.proBlind, basis.filter(proBlind).length,
         () => setze({proBlind: !st.proBlind, offen: false}),
         "In den Pro-Ligen (Patches " + proFenster() + ") auf dieser Rolle blind gepickt") : null,
     ].filter(Boolean);
     if (eingrenzen.length) {
       box.append(el("div", {class: "lt-eingrenzen", role: "group", "aria-label": "Eingrenzen"},
-        el("span", {class: "cp-klein"}, "Eingrenzen"), eingrenzen));
+        el("span", {class: "cp-klein"}, "Eingrenzen"), eingrenzen,
+        jetztMagisch === null ? null : el("span", {class: "lt-modus"},
+          "Team jetzt " + Math.round(jetztMagisch * 100) + " % magisch")));
     }
     // Pro: die uebliche Blind Picks dieser Rolle auf einen Blick.
     if (PRO) {
+      const blind = modus === "blind";
+      const zahl = (v) => blind ? v.blind : v.picks - v.blind;
       const ueblich = Object.entries(PRO.champions)
-        .map(([c, je]) => [c, je[rolleName]]).filter(([, v]) => v && v.blind > 0)
-        .sort((p, q) => q[1].blind - p[1].blind || q[1].picks - p[1].picks).slice(0, 8);
+        .map(([c, je]) => [c, je[rolleName]]).filter(([, v]) => v && zahl(v) > 0)
+        .sort((p, q) => zahl(q[1]) - zahl(p[1]) || q[1].picks - p[1].picks).slice(0, 8);
       if (ueblich.length) {
         box.append(el("div", {class: "lt-pro-leiste"},
-          el("span", {class: "cp-klein"}, "Pro · übliche Blind Picks " + ROLES[rolle][1]),
+          el("span", {class: "cp-klein"}, blind ? "Pro · übliche Blind Picks " + ROLES[rolle][1]
+            : "Pro · häufig als Antwort gepickt (nach dem Lanegegner) · " + ROLES[rolle][1]),
           el("div", {class: "lt-pro-liste"}, ueblich.map(([c, v]) => el("span", {
               class: "lt-pro-chip" + (gesperrt.has(c) ? " weg" : ""), title: proTitel(c, rolleName)
                 + (gesperrt.has(c) ? " · " + gesperrt.get(c) : "")},
             iconUrl(c) ? el("img", {src: iconUrl(c), alt: ""}) : null,
             el("b", {}, c),
-            el("span", {}, v.blind + "× blind · " + Math.round(v.blindSiege / v.blind * 100) + " %"))))));
+            el("span", {}, blind ? v.blind + "× blind · " + Math.round(v.blindSiege / v.blind * 100) + " %"
+              : zahl(v) + "× als Antwort · " + Math.round((v.siege - v.blindSiege) / zahl(v) * 100) + " %"))))));
       }
     }
 
@@ -386,6 +523,13 @@
         + " gepickt hat, kommt je Lanegegner eine Spalte „vs …“ dazu."));
     }
     const zelle = (s, x) => {
+      if (s.laneGesamt) {
+        const d = laneMittel(x), g = ENGINE.BEGRUENDUNG.matchup;
+        return el("span", {class: "lt-wert" + (d === null ? "" : d >= g ? " h2" : d >= 0 ? " h1" : d > -g ? " l1" : " l2")
+                             + (s.id === st.sort ? " sortiert" : ""), "data-wort": s.wort, role: "cell", title: s.titel},
+          el("b", {}, d === null ? "–" : (d >= 0 ? "+" : "−") + Math.abs(d * 100).toLocaleString("de-DE",
+            {minimumFractionDigits: 1, maximumFractionDigits: 1})));
+      }
       if (s.pro) {
         const v = proVon(x.champ, rolleName);
         return el("span", {class: "lt-wert lt-pro" + (s.id === st.sort ? " sortiert" : ""), "data-wort": s.wort,
@@ -412,7 +556,11 @@
                            + (mitSchnitt ? " · Ø aller " + wrProzent({value: s.schnitt}) : "")
                            : s.titel},
         el("b", {class: "wr-zahl"}, text),
-        klein ? el("small", {class: "wr-neben"}, klein) : null);
+        klein ? el("small", {class: "wr-neben"}, klein) : null,
+        // In der sortierten Spalte der Wert, nach dem sortiert wird: wenige
+        // Spiele zaehlen weniger (Nutzer, 22.10.2026: "nicht in Reihenfolge").
+        s.id === st.sort && s.art && mitSchnitt && w && s.ordnung(x) !== null
+          ? el("small", {class: "wr-neben lt-zaehlt"}, "zählt " + ltAbstand({value: s.ordnung(x)}, s.schnitt)) : null);
     };
     // Feste Breiten statt "auto": jede Zeile ist ihr eigenes Raster - eine
     // auto-Spalte waere im Kopf (leer) schmaler als in den Zeilen (Knopf),
@@ -452,7 +600,7 @@
           pick);
       })));
     if (!zeilen.length) {
-      box.append(el("p", {class: "cp-leer"}, st.lane || braucht.length || st.proBlind
+      box.append(el("p", {class: "cp-leer"}, st.lane || braucht.length || st.proBlind || st.typ
         ? "Kein Champion erfüllt alle gewählten Eingrenzungen – eine davon lösen."
         : st.filter === "pool" ? "Kein Champion aus dem Pool spielt diese Rolle."
         : st.filter === "plan" ? "Im Draftplan steht für diese Rolle nichts." : "Kein freier Champion."));

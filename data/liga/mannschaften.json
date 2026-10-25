@@ -9,7 +9,13 @@
     "name": "AllianceForChampions II",
     "ligaTeamId": 5,
     "verein": "AllianceForChampions",
-    "spieler": 10
+    "spieler": 8
+  },
+  {
+    "name": "AllianceForChampions Jr.",
+    "ligaTeamId": 40,
+    "verein": "AllianceForChampions",
+    "spieler": 4
   },
   {
     "name": "Braunschweig eSports e.V. I",
@@ -98,6 +104,12 @@
   {
     "name": "SC Langenhagen I",
     "ligaTeamId": 31,
+    "verein": "SC Langenhagen",
+    "spieler": 0
+  },
+  {
+    "name": "SC Langenhagen Jr.",
+    "ligaTeamId": 39,
     "verein": "SC Langenhagen",
     "spieler": 4
   },

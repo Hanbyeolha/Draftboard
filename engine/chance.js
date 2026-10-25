@@ -21,8 +21,8 @@
    WICHTIG, gemessen an unseren Turnierspielen: am 18.10.2026 39 von 75,
    Brier 0,272; nach der Korrektur der Erwartung (20.10.2026) 51 von 87,
    Brier 0,250 - so gut wie ein Muenzwurf (0,250), nicht besser. Der Wert beschreibt den Draft auf dem Patch, nicht eure
-   Siegchance; die Oberflaeche zeigt die Trefferquote darum direkt daneben
-   (treffer()). Er fliesst in KEINE Empfehlung ein. */
+   Siegchance. treffer() misst das weiter; auf der Leiste steht es seit
+   24.10.2026 nicht mehr (Nutzer). Er fliesst in KEINE Empfehlung ein. */
 
 import { BLIND } from "./config.js";
 import { gegenseite } from "./state.js";
@@ -45,9 +45,15 @@ function rechne(quelle, wir, sie) {
     return s ? logit(s.value) : r(p);
   };
   const schrumpf = (d, n) => d * n / (n + BLIND.schrumpfK);
+  // Angezeigt wird die gerechnete Zahl q; dazu beide Sichten aus der Sicht
+  // des ersten Champions, wenn es beide gibt - bei wenigen Partien liegen
+  // sie bis zu 2 Punkte auseinander (Nutzer, 25.10.2026).
+  const sichten = (ab, ba, gegen) => ab && ba ? [ab.value, gegen ? 1 - ba.value : ba.value] : null;
   const teile = {champions: 0, matchups: 0, synergien: 0};
   const gezaehlt = {champions: 0, matchups: 0, synergien: 0};
   const ohneDaten = [];
+  // Jeder Einzelposten, damit die Oberflaeche zeigen kann, wie die Zahl entsteht.
+  const posten = [];
 
   for (const [team, vz] of [[wir, 1], [sie, -1]]) {
     for (const p of team) {
@@ -55,6 +61,9 @@ function rechne(quelle, wir, sie) {
       if (x === null) { ohneDaten.push(p.champ); continue; }
       teile.champions += vz * x;
       gezaehlt.champions += 1;
+      const s = quelle.staerke(p.champ, p.rolle);
+      posten.push({art: "champion", seite: vz > 0 ? "wir" : "sie", a: p,
+                   wert: s.value, n: s.sampleSize, beitrag: vz * x});
     }
   }
   for (const a of wir) {
@@ -70,8 +79,13 @@ function rechne(quelle, wir, sie) {
       const n = (ab ? ab.sampleSize : 0) + (ba ? ba.sampleSize : 0);
       if (!n) continue;
       const q = ((ab ? ab.value * ab.sampleSize : 0) + (ba ? (1 - ba.value) * ba.sampleSize : 0)) / n;
-      teile.matchups += schrumpf(logit(q) - (e(a) - e(b)), n / ((ab ? 1 : 0) + (ba ? 1 : 0)));
+      // Beide Richtungen sind dieselben Spiele - Partien je Richtung, nicht die Summe.
+      const spiele = n / ((ab ? 1 : 0) + (ba ? 1 : 0));
+      const beitrag = schrumpf(logit(q) - (e(a) - e(b)), spiele);
+      teile.matchups += beitrag;
       gezaehlt.matchups += 1;
+      posten.push({art: "matchup", seite: "wir", a, b, wert: q, sichten: sichten(ab, ba, true),
+                   erwartet: sigmoid(e(a) - e(b)), n: Math.round(spiele), beitrag});
     }
   }
   for (const [team, vz] of [[wir, 1], [sie, -1]]) {
@@ -86,21 +100,28 @@ function rechne(quelle, wir, sie) {
         const n = (ab ? ab.sampleSize : 0) + (ba ? ba.sampleSize : 0);
         if (!n) continue;
         const q = ((ab ? ab.value * ab.sampleSize : 0) + (ba ? ba.value * ba.sampleSize : 0)) / n;
-        teile.synergien += vz * schrumpf(logit(q) - (e(a) + e(b)), n / ((ab ? 1 : 0) + (ba ? 1 : 0)));
+        const spiele = n / ((ab ? 1 : 0) + (ba ? 1 : 0));
+        const beitrag = vz * schrumpf(logit(q) - (e(a) + e(b)), spiele);
+        teile.synergien += beitrag;
         gezaehlt.synergien += 1;
+        posten.push({art: "synergie", seite: vz > 0 ? "wir" : "sie", a, b, wert: q,
+                     sichten: sichten(ab, ba, false),
+                     erwartet: sigmoid(e(a) + e(b)), n: Math.round(spiele), beitrag});
       }
     }
   }
   const summe = teile.champions + teile.matchups + teile.synergien;
-  return {summe, teile, gezaehlt, ohneDaten};
+  return {summe, teile, gezaehlt, ohneDaten, posten};
 }
 
 /**
  * Draft-Vorteil fuer UNS in der aktuellen Lage.
  * @returns {{chance:number, punkte:number, teile:{champions,matchups,synergien},
- *            gezaehlt:object, ohneDaten:string[], leer:boolean}}
+ *            gezaehlt:object, ohneDaten:string[], posten:object[], leer:boolean}}
  *   chance 0..1; punkte = (chance - 0,5) * 100; teile in Prozentpunkten,
  *   anteilig aufgeteilt, so dass sie zusammen genau punkte ergeben.
+ *   posten: jeder Einzelwert {art, seite, a, b?, wert, erwartet?, n, punkte},
+ *   punkte ebenso anteilig - alle posten zusammen ergeben punkte.
  */
 export function draftChance(quelle, zustand) {
   const sie = gegenseite(zustand.wirSind);
@@ -115,6 +136,7 @@ export function draftChance(quelle, zustand) {
     teile: {champions: anteil(k.teile.champions), matchups: anteil(k.teile.matchups),
             synergien: anteil(k.teile.synergien)},
     gezaehlt: k.gezaehlt, ohneDaten: k.ohneDaten,
+    posten: k.posten.map(({beitrag, ...p}) => ({...p, punkte: anteil(beitrag)})),
     leer: !wir.length && !ihre.length,
   };
 }

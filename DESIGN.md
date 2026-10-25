@@ -784,9 +784,14 @@ Flächen eckig (`--radius-live: 0`). Schrift bleibt Source Sans 3 / Rajdhani
   **Eingrenzen** (20.10.2026, zusätzlich zu Alle/Pool/Plan, kombinierbar):
   „stark in der Lane“ (gegen jeden Lanegegner ≥ 2 Punkte über dem Schnitt),
   „bringt X“ je Bedarf aus dem Lagebild (strategie.bringt – dieselbe Regel wie
-  „bringen das mit“), „Pro blind gepickt“; jeder Chip mit der Zahl, die übrig
+  „bringen das mit“), „AD“/„AP“ (mit „danach Ø X % magisch“, daneben „Team jetzt X %
+  magisch“, seit 22.10.2026), „Pro blind gepickt“; jeder Chip mit der Zahl, die übrig
   bliebe. Darüber die Leiste **„Pro · übliche Blind Picks <Rolle>“** (die acht
   meistgeblindeten der Rolle mit Anzahl und Winrate, gebannte durchgestrichen).
+  **Modus** (22.10.2026): Lanegegner offen → „Blind Pick“, sortiert nach Pro
+  blind; Lanegegner steht → „Counterpick gegen …“, bei zwei (Bot) Spalte
+  „Lane Ø“ und danach sortiert, die Pro-Leiste zeigt dann die üblichen
+  Antworten. Filter und Sortierung merkt sich die Tabelle je Rolle und Modus.
   Die Spalte heißt jetzt **„Pro blind“**: wie oft blind, darunter „von N
   Picks · Winrate blind“; sortiert nach blind.
   **Pro** (seit 20.10.2026, pro.py): Picks des Champions auf der Rolle in den
@@ -814,6 +819,11 @@ Lanegegner fest und liegt der Champion gegen ihn unter dem Schnitt, zählt der
 Komfort-Bonus nur anteilig (ab −2 Punkten gar nicht); die Empfehlung nennt es
 als Risiko („viel gespielt, aber schwach in dieser Lane – Komfort zählt nur zu
 7 %“).
+
+**Pro-Blindquote** (engine/score.js, 22.10.2026): beim Blind Pick zählt mit,
+wie oft Pros den Champion auf der Rolle blind picken (Teil „proBlind“, Gewicht
+8, geschrumpft); die Empfehlung nennt „in Pro oft/selten blind gepickt (x von
+y)“, der Komforttext „blind pickbar laut Draftplan“.
 
 ### Solo Queue (LIVE)
 `ui/live/solo.js`, Klassen `so-`, Look B+C seit 20.10.2026.

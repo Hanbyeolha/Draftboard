@@ -216,7 +216,8 @@ def main():
           .find((x) => (x.querySelector('.ld-karte-name') || {}).textContent === 'Lux');
           const t = k && [...k.querySelectorAll('.ld-spur-teil')].find((s) => s.title.startsWith('komfort'));
           return t ? t.title : null; }""")
-        pruefe(bool(lux) and "blind pickbar" in lux, "Browserplan zaehlt im Komfort (Lux)")
+        # Seit 22.10.2026 zaehlt der Draftplan nicht mehr in den Komfort.
+        pruefe(bool(lux) and "blind pickbar" not in lux, "Browserplan zaehlt nicht im Komfort (Lux)")
         ctx.close()
 
         print("Solo Queue (eigener Reiter)")

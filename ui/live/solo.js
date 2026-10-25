@@ -64,14 +64,14 @@
     const z = soloZustand();
     const person = soloPerson();
     const rolle = person.rolle;
-    const sp = person.p;
-    const k = ENGINE.schluessel(z, "solo|" + rolle + "|" + soloRisiko + "|"
+    const sp = liveObjektiv ? null : person.p;
+    const k = ENGINE.schluessel(z, "solo|" + rolle + "|" + soloRisiko + "|" + (liveObjektiv ? "objektiv|" : "")
                                 + soloLeute().map((m) => (m.p ? m.p.label : "") + "@" + m.rolle).join(","));
     if (!soloCache.has(k)) {
       if (soloCache.size > 40) soloCache.clear();
       soloCache.set(k, liveTeile.suche.rangliste(z, ROLES[rolle][0], {
         spielerTeam: sp ? sp.team : null, spielerLabel: sp ? sp.label : null,
-        spielerFuer: soloSpielerFuer, risikoprofil: soloRisiko, gegnerFuer: () => null,
+        spielerFuer: liveObjektiv ? () => null : soloSpielerFuer, risikoprofil: soloRisiko, gegnerFuer: () => null,
       }));
     }
     return {z, liste: soloCache.get(k)};
@@ -198,6 +198,11 @@
     const grund = soloGrund(r), gefahr = soloGefahr(r);
     const knopf = el("button", {class: "so-picken", type: "button"}, "Picken");
     knopf.addEventListener("click", (e) => { e.preventDefault(); soloPicken(r.champion); });
+    // Wie stuende er gegen den Lanegegner - vor dem Picken (Nutzer, 25.10.2026).
+    const nach = liveChanceMit(z, r.champion, rolle);
+    const lane = new Set(ENGINE.LANE_GEGNER[ROLES[rolle][0]] || []);
+    const duelle = nach ? nach.posten.filter((p) => p.art === "matchup"
+      && p.a.champ === r.champion && lane.has(p.b.rolle)) : [];
     const kopf = el("summary", {class: "so-rec-kopf"},
       src ? el("img", {class: "so-bild", src, alt: "", loading: "lazy"}) : null,
       el("span", {class: "so-rec-name"},
@@ -209,8 +214,9 @@
       gefahr ? el("span", {class: "so-gefahr"}, gefahr) : null,
       // Winrate allgemein und gegen den Lanegegner - immer sichtbar.
       el("span", {class: "so-wr"}, wrKurz(w), " ",
-         chanceNach(liveChanceMit(z, r.champion, rolle), liveDraftChance(z))));
+         chanceNach(nach, liveDraftChance(z))));
     const mehr = el("div", {class: "so-rec-mehr"},
+      duelle.length ? el("div", {class: "du-liste"}, duelle.map((m) => laneDuell(nach, m))) : null,
       wrBegruendung(r.reasons, r.risks),
       wrBlock(w, ROLES[rolle][1]),
       knopf);
@@ -340,7 +346,8 @@
       el("h2", {class: "so-titel"}, "Solo Queue"),
       el("div", {class: "so-ich"}, el("span", {class: "so-klein"}, "Du"), wer,
          el("span", {class: "so-klein"}, "auf"), rolle),
-      el("div", {class: "so-kopf-rechts"}, liveDatenstand(), leeren, einst));
+      el("div", {class: "so-kopf-rechts"}, objektivSchalter(() => { soloCache.clear(); renderSolo(); }),
+         liveDatenstand(), leeren, einst));
   }
 
   /* In der Queue: Solo, Duo oder Gruppe (bis 5) - Mitspieler aus dem
@@ -398,7 +405,7 @@
     host.querySelector(".so-mitte").replaceWith(soloMitte());
     host.querySelector(".so-lage").replaceWith(soloLage(z));
     const leiste = host.querySelector(".ch-leiste");
-    if (leiste) leiste.replaceWith(chanceLeiste(liveDraftChance(z), {gegnerName: "Gegner"}));
+    if (leiste) leiste.replaceWith(chanceLeiste(liveDraftChance(z), {gegnerName: "Gegner", anzeige: true, duelle: true}));
     soloFreiListe();
   }
 
@@ -415,7 +422,7 @@
       el("datalist", {id: "so-frei"}),
       soloKopf(),
       soloGruppe(),
-      chanceLeiste(liveDraftChance(z), {gegnerName: "Gegner"}),
+      chanceLeiste(liveDraftChance(z), {gegnerName: "Gegner", anzeige: true, duelle: true}),
       el("div", {class: "so-buehne"}, soloTeam("eigen"), soloMitte(), soloTeam("gegner")),
       soloLage(z),
       el("p", {class: "so-fuss"}, "Entscheidungshilfe, keine Prognose \u00b7 es zählen nur die Pools von dir "

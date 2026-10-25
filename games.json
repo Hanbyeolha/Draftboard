@@ -20450,5 +20450,2329 @@
         "champ": "Braum"
       }
     ]
+  },
+  {
+    "series": "SC Victoria Braunschweig vs SSV Remlingen 2 - Saison Herbst 2026 - Spieltag 1 (19.10.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-10-19",
+    "matchId": "EUW1_8018664073",
+    "blue": "SC Victoria Braunschweig",
+    "red": "SSV Remlingen 2",
+    "winner": "SC Victoria Braunschweig",
+    "picks": {
+      "SC Victoria Braunschweig": [
+        {
+          "role": "TOP",
+          "champ": "Dr. Mundo",
+          "player": "Xen",
+          "k": 7,
+          "d": 2,
+          "a": 5,
+          "cs": 219,
+          "gold": 13274,
+          "dmg": 27721,
+          "taken": 42586,
+          "vs": 30,
+          "lvl": 18
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "ShendNoods",
+          "k": 6,
+          "d": 4,
+          "a": 15,
+          "cs": 192,
+          "gold": 12857,
+          "dmg": 13920,
+          "taken": 21721,
+          "vs": 30,
+          "lvl": 15
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Hwei",
+          "player": "LegendOctavian",
+          "k": 2,
+          "d": 1,
+          "a": 7,
+          "cs": 213,
+          "gold": 10476,
+          "dmg": 13749,
+          "taken": 10604,
+          "vs": 14,
+          "lvl": 15
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Xayah",
+          "player": "Salzu",
+          "k": 10,
+          "d": 2,
+          "a": 5,
+          "cs": 258,
+          "gold": 15359,
+          "dmg": 19716,
+          "taken": 15345,
+          "vs": 23,
+          "lvl": 15
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Leona",
+          "player": "Kneu",
+          "k": 1,
+          "d": 5,
+          "a": 18,
+          "cs": 19,
+          "gold": 8379,
+          "dmg": 7631,
+          "taken": 20943,
+          "vs": 64,
+          "lvl": 13
+        }
+      ],
+      "SSV Remlingen 2": [
+        {
+          "role": "TOP",
+          "champ": "Gwen",
+          "player": "KOOOOAHLLLL",
+          "k": 4,
+          "d": 5,
+          "a": 4,
+          "cs": 207,
+          "gold": 9967,
+          "dmg": 15320,
+          "taken": 25444,
+          "vs": 26,
+          "lvl": 15
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Amumu",
+          "player": "Meister FiTTi",
+          "k": 2,
+          "d": 8,
+          "a": 6,
+          "cs": 150,
+          "gold": 8590,
+          "dmg": 13497,
+          "taken": 26323,
+          "vs": 23,
+          "lvl": 13
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Xerath",
+          "player": "Discalon",
+          "k": 5,
+          "d": 5,
+          "a": 5,
+          "cs": 220,
+          "gold": 11509,
+          "dmg": 26952,
+          "taken": 14728,
+          "vs": 25,
+          "lvl": 15
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jinx",
+          "player": "ChaosIVIaster",
+          "k": 3,
+          "d": 5,
+          "a": 5,
+          "cs": 247,
+          "gold": 10817,
+          "dmg": 21440,
+          "taken": 16559,
+          "vs": 12,
+          "lvl": 14
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rakan",
+          "player": "ziggler10",
+          "k": 0,
+          "d": 3,
+          "a": 10,
+          "cs": 27,
+          "gold": 6381,
+          "dmg": 3524,
+          "taken": 12800,
+          "vs": 80,
+          "lvl": 12
+        }
+      ]
+    },
+    "bans": {
+      "SC Victoria Braunschweig": [
+        "Braum",
+        "Karma",
+        "Malphite",
+        "Yone",
+        "Wukong"
+      ],
+      "SSV Remlingen 2": [
+        "Smolder",
+        "Kalista",
+        "Nautilus",
+        "Swain",
+        "Illaoi"
+      ]
+    },
+    "time": "2026-10-19T18:40:01.352500+00:00",
+    "dauer": 1620,
+    "teamStats": {
+      "SC Victoria Braunschweig": {
+        "tuerme": 11,
+        "drachen": 3,
+        "barone": 1,
+        "herolde": 1,
+        "inhibitoren": 2,
+        "firstBlood": true,
+        "firstTower": true
+      },
+      "SSV Remlingen 2": {
+        "tuerme": 0,
+        "drachen": 1,
+        "barone": 0,
+        "herolde": 0,
+        "inhibitoren": 0,
+        "firstBlood": false,
+        "firstTower": false
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "Salzu",
+        "champ": "Xayah"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "Kneu",
+        "champ": "Leona"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "ziggler10",
+        "champ": "Rakan"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "Salzu",
+        "champ": "Xayah"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "Xen",
+        "champ": "Dr. Mundo"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "ShendNoods",
+        "champ": "Jarvan IV"
+      }
+    ]
+  },
+  {
+    "series": "MTV Hattorf vs TSV Salzgitter - Saison Herbst 2026 - Spieltag 1 (19.10.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-10-19",
+    "matchId": "EUW1_8018665283",
+    "blue": "MTV Hattorf",
+    "red": "TSV Salzgitter",
+    "winner": "MTV Hattorf",
+    "picks": {
+      "MTV Hattorf": [
+        {
+          "role": "TOP",
+          "champ": "Shen",
+          "player": "GeneralKnabe",
+          "k": 2,
+          "d": 4,
+          "a": 19,
+          "cs": 156,
+          "gold": 9946,
+          "dmg": 14545,
+          "taken": 25938,
+          "vs": 28,
+          "lvl": 18
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Amumu",
+          "player": "Daddy JosCo",
+          "k": 10,
+          "d": 2,
+          "a": 21,
+          "cs": 218,
+          "gold": 14495,
+          "dmg": 25655,
+          "taken": 27941,
+          "vs": 30,
+          "lvl": 17
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Mel",
+          "player": "JackSh3ppard",
+          "k": 11,
+          "d": 6,
+          "a": 6,
+          "cs": 197,
+          "gold": 13144,
+          "dmg": 24387,
+          "taken": 17287,
+          "vs": 24,
+          "lvl": 16
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Tristana",
+          "player": "Xîmon",
+          "k": 17,
+          "d": 5,
+          "a": 13,
+          "cs": 239,
+          "gold": 18307,
+          "dmg": 35877,
+          "taken": 20392,
+          "vs": 25,
+          "lvl": 16
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Leona",
+          "player": "BigMeeks",
+          "k": 1,
+          "d": 3,
+          "a": 33,
+          "cs": 34,
+          "gold": 10742,
+          "dmg": 11842,
+          "taken": 20472,
+          "vs": 76,
+          "lvl": 15
+        }
+      ],
+      "TSV Salzgitter": [
+        {
+          "role": "TOP",
+          "champ": "Volibear",
+          "player": "xHydralisk",
+          "k": 9,
+          "d": 6,
+          "a": 4,
+          "cs": 204,
+          "gold": 12825,
+          "dmg": 27606,
+          "taken": 34026,
+          "vs": 28,
+          "lvl": 17
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Vi",
+          "player": "Rias Gremory",
+          "k": 3,
+          "d": 8,
+          "a": 7,
+          "cs": 162,
+          "gold": 10297,
+          "dmg": 11329,
+          "taken": 26786,
+          "vs": 23,
+          "lvl": 14
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Vladimir",
+          "player": "mazl",
+          "k": 4,
+          "d": 7,
+          "a": 8,
+          "cs": 196,
+          "gold": 11662,
+          "dmg": 29007,
+          "taken": 31870,
+          "vs": 23,
+          "lvl": 15
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Ashe",
+          "player": "MurphyyLOL",
+          "k": 4,
+          "d": 9,
+          "a": 6,
+          "cs": 224,
+          "gold": 12221,
+          "dmg": 12232,
+          "taken": 20128,
+          "vs": 14,
+          "lvl": 15
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rakan",
+          "player": "Triplos",
+          "k": 0,
+          "d": 11,
+          "a": 9,
+          "cs": 34,
+          "gold": 7097,
+          "dmg": 2860,
+          "taken": 21276,
+          "vs": 68,
+          "lvl": 12
+        }
+      ]
+    },
+    "bans": {
+      "MTV Hattorf": [
+        "Yone",
+        "Jax",
+        "Twitch",
+        "Jinx"
+      ],
+      "TSV Salzgitter": [
+        "Elise",
+        "Mordekaiser",
+        "Xayah",
+        "Malzahar",
+        "Braum"
+      ]
+    },
+    "time": "2026-10-19T18:48:45.421193+00:00",
+    "dauer": 1799,
+    "teamStats": {
+      "MTV Hattorf": {
+        "tuerme": 10,
+        "drachen": 4,
+        "barone": 2,
+        "herolde": 0,
+        "inhibitoren": 3,
+        "firstBlood": false,
+        "firstTower": true
+      },
+      "TSV Salzgitter": {
+        "tuerme": 2,
+        "drachen": 0,
+        "barone": 0,
+        "herolde": 1,
+        "inhibitoren": 0,
+        "firstBlood": true,
+        "firstTower": false
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "Xîmon",
+        "champ": "Tristana"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "BigMeeks",
+        "champ": "Leona"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "BigMeeks",
+        "champ": "Leona"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "Xîmon",
+        "champ": "Tristana"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "Xîmon",
+        "champ": "Tristana"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "xHydralisk",
+        "champ": "Volibear"
+      }
+    ]
+  },
+  {
+    "series": "SC Victoria Braunschweig vs SSV Remlingen 2 - Saison Herbst 2026 - Spieltag 1 (19.10.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-10-19",
+    "matchId": "EUW1_8018734544",
+    "blue": "SSV Remlingen 2",
+    "red": "SC Victoria Braunschweig",
+    "winner": "SC Victoria Braunschweig",
+    "picks": {
+      "SSV Remlingen 2": [
+        {
+          "role": "TOP",
+          "champ": "Shen",
+          "player": "KOOOOAHLLLL",
+          "k": 1,
+          "d": 3,
+          "a": 3,
+          "cs": 171,
+          "gold": 8148,
+          "dmg": 6621,
+          "taken": 22403,
+          "vs": 21,
+          "lvl": 15
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Shyvana",
+          "player": "Meister FiTTi",
+          "k": 5,
+          "d": 4,
+          "a": 4,
+          "cs": 189,
+          "gold": 10767,
+          "dmg": 17009,
+          "taken": 22547,
+          "vs": 26,
+          "lvl": 14
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Ziggs",
+          "player": "Discalon",
+          "k": 2,
+          "d": 5,
+          "a": 1,
+          "cs": 208,
+          "gold": 8521,
+          "dmg": 26470,
+          "taken": 14891,
+          "vs": 29,
+          "lvl": 14
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Kai'Sa",
+          "player": "ChaosIVIaster",
+          "k": 1,
+          "d": 7,
+          "a": 5,
+          "cs": 205,
+          "gold": 9750,
+          "dmg": 14868,
+          "taken": 18907,
+          "vs": 15,
+          "lvl": 13
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Nautilus",
+          "player": "ziggler10",
+          "k": 1,
+          "d": 6,
+          "a": 5,
+          "cs": 23,
+          "gold": 6728,
+          "dmg": 3749,
+          "taken": 15753,
+          "vs": 64,
+          "lvl": 12
+        }
+      ],
+      "SC Victoria Braunschweig": [
+        {
+          "role": "TOP",
+          "champ": "Sett",
+          "player": "Xen",
+          "k": 4,
+          "d": 1,
+          "a": 7,
+          "cs": 220,
+          "gold": 12794,
+          "dmg": 16288,
+          "taken": 25439,
+          "vs": 26,
+          "lvl": 18
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Sejuani",
+          "player": "ShendNoods",
+          "k": 3,
+          "d": 1,
+          "a": 10,
+          "cs": 166,
+          "gold": 10383,
+          "dmg": 12337,
+          "taken": 33495,
+          "vs": 29,
+          "lvl": 15
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Sylas",
+          "player": "Hyro",
+          "k": 7,
+          "d": 2,
+          "a": 7,
+          "cs": 181,
+          "gold": 10609,
+          "dmg": 19975,
+          "taken": 22335,
+          "vs": 13,
+          "lvl": 15
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Caitlyn",
+          "player": "Salzu",
+          "k": 10,
+          "d": 2,
+          "a": 7,
+          "cs": 243,
+          "gold": 15503,
+          "dmg": 28243,
+          "taken": 13339,
+          "vs": 16,
+          "lvl": 14
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rell",
+          "player": "Kneu",
+          "k": 1,
+          "d": 4,
+          "a": 14,
+          "cs": 16,
+          "gold": 7683,
+          "dmg": 3943,
+          "taken": 16454,
+          "vs": 74,
+          "lvl": 12
+        }
+      ]
+    },
+    "bans": {
+      "SSV Remlingen 2": [
+        "Kalista",
+        "Smolder",
+        "Illaoi",
+        "Ornn",
+        "Galio"
+      ],
+      "SC Victoria Braunschweig": [
+        "Braum",
+        "Karma",
+        "Yone",
+        "Cho'Gath",
+        "Gangplank"
+      ]
+    },
+    "time": "2026-10-19T19:30:05.243797+00:00",
+    "dauer": 1604,
+    "teamStats": {
+      "SSV Remlingen 2": {
+        "tuerme": 0,
+        "drachen": 1,
+        "barone": 0,
+        "herolde": 0,
+        "inhibitoren": 0,
+        "firstBlood": true,
+        "firstTower": false
+      },
+      "SC Victoria Braunschweig": {
+        "tuerme": 10,
+        "drachen": 3,
+        "barone": 1,
+        "herolde": 1,
+        "inhibitoren": 2,
+        "firstBlood": false,
+        "firstTower": true
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "Salzu",
+        "champ": "Caitlyn"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "Kneu",
+        "champ": "Rell"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "Kneu",
+        "champ": "Rell"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "Salzu",
+        "champ": "Caitlyn"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "Salzu",
+        "champ": "Caitlyn"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "Meister FiTTi",
+        "champ": "Shyvana"
+      }
+    ]
+  },
+  {
+    "series": "MTV Hattorf vs TSV Salzgitter - Saison Herbst 2026 - Spieltag 1 (19.10.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-10-19",
+    "matchId": "EUW1_8018751607",
+    "blue": "TSV Salzgitter",
+    "red": "MTV Hattorf",
+    "winner": "MTV Hattorf",
+    "picks": {
+      "TSV Salzgitter": [
+        {
+          "role": "TOP",
+          "champ": "Kennen",
+          "player": "KAIHUA",
+          "k": 3,
+          "d": 3,
+          "a": 3,
+          "cs": 248,
+          "gold": 11461,
+          "dmg": 23695,
+          "taken": 16685,
+          "vs": 43,
+          "lvl": 18
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Viego",
+          "player": "Rias Gremory",
+          "k": 7,
+          "d": 8,
+          "a": 0,
+          "cs": 172,
+          "gold": 13016,
+          "dmg": 18439,
+          "taken": 31099,
+          "vs": 30,
+          "lvl": 15
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Sett",
+          "player": "mazl",
+          "k": 2,
+          "d": 10,
+          "a": 8,
+          "cs": 211,
+          "gold": 10929,
+          "dmg": 31074,
+          "taken": 40828,
+          "vs": 27,
+          "lvl": 15
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jinx",
+          "player": "MurphyyLOL",
+          "k": 2,
+          "d": 8,
+          "a": 3,
+          "cs": 221,
+          "gold": 11650,
+          "dmg": 9987,
+          "taken": 17759,
+          "vs": 10,
+          "lvl": 15
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lulu",
+          "player": "Triplos",
+          "k": 3,
+          "d": 7,
+          "a": 5,
+          "cs": 31,
+          "gold": 8184,
+          "dmg": 2841,
+          "taken": 15871,
+          "vs": 86,
+          "lvl": 14
+        }
+      ],
+      "MTV Hattorf": [
+        {
+          "role": "TOP",
+          "champ": "Cho'Gath",
+          "player": "GeneralKnabe",
+          "k": 2,
+          "d": 2,
+          "a": 7,
+          "cs": 228,
+          "gold": 11837,
+          "dmg": 10611,
+          "taken": 34269,
+          "vs": 27,
+          "lvl": 18
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Ambessa",
+          "player": "Daddy JosCo",
+          "k": 10,
+          "d": 1,
+          "a": 9,
+          "cs": 303,
+          "gold": 18327,
+          "dmg": 19806,
+          "taken": 24129,
+          "vs": 29,
+          "lvl": 18
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Vex",
+          "player": "JackSh3ppard",
+          "k": 4,
+          "d": 6,
+          "a": 14,
+          "cs": 194,
+          "gold": 13096,
+          "dmg": 27008,
+          "taken": 20302,
+          "vs": 23,
+          "lvl": 17
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Yunara",
+          "player": "Xîmon",
+          "k": 17,
+          "d": 5,
+          "a": 4,
+          "cs": 284,
+          "gold": 19763,
+          "dmg": 32418,
+          "taken": 26181,
+          "vs": 31,
+          "lvl": 16
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Blitzcrank",
+          "player": "BigMeeks",
+          "k": 3,
+          "d": 3,
+          "a": 22,
+          "cs": 29,
+          "gold": 10768,
+          "dmg": 9743,
+          "taken": 20780,
+          "vs": 77,
+          "lvl": 16
+        }
+      ]
+    },
+    "bans": {
+      "TSV Salzgitter": [
+        "Mordekaiser",
+        "Elise",
+        "Xayah",
+        "Braum",
+        "Caitlyn"
+      ],
+      "MTV Hattorf": [
+        "Twitch",
+        "Yone",
+        "Yasuo",
+        "Sylas",
+        "Nautilus"
+      ]
+    },
+    "time": "2026-10-19T19:47:34.847686+00:00",
+    "dauer": 1935,
+    "teamStats": {
+      "TSV Salzgitter": {
+        "tuerme": 2,
+        "drachen": 1,
+        "barone": 0,
+        "herolde": 1,
+        "inhibitoren": 0,
+        "firstBlood": false,
+        "firstTower": false
+      },
+      "MTV Hattorf": {
+        "tuerme": 10,
+        "drachen": 4,
+        "barone": 2,
+        "herolde": 0,
+        "inhibitoren": 3,
+        "firstBlood": true,
+        "firstTower": true
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "Xîmon",
+        "champ": "Yunara"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "BigMeeks",
+        "champ": "Blitzcrank"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "Triplos",
+        "champ": "Lulu"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "Daddy JosCo",
+        "champ": "Ambessa"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "Xîmon",
+        "champ": "Yunara"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "Xîmon",
+        "champ": "Yunara"
+      }
+    ]
+  },
+  {
+    "series": "AFC1 vs SSV Remlingen - Saison Herbst 2026 - Spieltag 1 (20.10.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-10-20",
+    "matchId": "EUW1_8019696079",
+    "blue": "AFC1",
+    "red": "SSV Remlingen",
+    "winner": "SSV Remlingen",
+    "picks": {
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Mordekaiser",
+          "player": "bandit",
+          "k": 1,
+          "d": 3,
+          "a": 3,
+          "cs": 271,
+          "gold": 10605,
+          "dmg": 14973,
+          "taken": 18979,
+          "vs": 18,
+          "lvl": 17
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Pantheon",
+          "player": "HartzFor",
+          "k": 5,
+          "d": 4,
+          "a": 3,
+          "cs": 198,
+          "gold": 11689,
+          "dmg": 12675,
+          "taken": 23743,
+          "vs": 28,
+          "lvl": 15
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Syndra",
+          "player": "Køstja",
+          "k": 1,
+          "d": 2,
+          "a": 3,
+          "cs": 260,
+          "gold": 10254,
+          "dmg": 8825,
+          "taken": 8334,
+          "vs": 32,
+          "lvl": 16
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Ashe",
+          "player": "smiling",
+          "k": 2,
+          "d": 4,
+          "a": 6,
+          "cs": 258,
+          "gold": 12349,
+          "dmg": 14039,
+          "taken": 13356,
+          "vs": 33,
+          "lvl": 13
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Nautilus",
+          "player": "Aaghn",
+          "k": 0,
+          "d": 5,
+          "a": 7,
+          "cs": 34,
+          "gold": 6911,
+          "dmg": 4428,
+          "taken": 16090,
+          "vs": 66,
+          "lvl": 12
+        }
+      ],
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "JaybLm",
+          "k": 1,
+          "d": 1,
+          "a": 7,
+          "cs": 256,
+          "gold": 10315,
+          "dmg": 11441,
+          "taken": 24088,
+          "vs": 21,
+          "lvl": 18
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Xin Zhao",
+          "player": "snekvin",
+          "k": 2,
+          "d": 1,
+          "a": 12,
+          "cs": 260,
+          "gold": 12900,
+          "dmg": 11261,
+          "taken": 26525,
+          "vs": 52,
+          "lvl": 17
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Ahri",
+          "player": "Schnallo",
+          "k": 6,
+          "d": 2,
+          "a": 5,
+          "cs": 261,
+          "gold": 12436,
+          "dmg": 11775,
+          "taken": 9449,
+          "vs": 33,
+          "lvl": 16
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jinx",
+          "player": "Weltwunder24",
+          "k": 8,
+          "d": 1,
+          "a": 6,
+          "cs": 275,
+          "gold": 15317,
+          "dmg": 22988,
+          "taken": 11211,
+          "vs": 25,
+          "lvl": 14
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "NebelFlasche",
+          "k": 1,
+          "d": 4,
+          "a": 14,
+          "cs": 23,
+          "gold": 7938,
+          "dmg": 4694,
+          "taken": 11691,
+          "vs": 72,
+          "lvl": 13
+        }
+      ]
+    },
+    "bans": {
+      "AFC1": [
+        "Sylas",
+        "Caitlyn",
+        "Lee Sin",
+        "Lucian",
+        "Vladimir"
+      ],
+      "SSV Remlingen": [
+        "Jarvan IV",
+        "Thresh",
+        "Amumu",
+        "Hwei",
+        "Xayah"
+      ]
+    },
+    "time": "2026-10-20T19:14:11.519677+00:00",
+    "dauer": 1808,
+    "teamStats": {
+      "AFC1": {
+        "tuerme": 2,
+        "drachen": 2,
+        "barone": 1,
+        "herolde": 1,
+        "inhibitoren": 0,
+        "firstBlood": true,
+        "firstTower": false
+      },
+      "SSV Remlingen": {
+        "tuerme": 6,
+        "drachen": 3,
+        "barone": 0,
+        "herolde": 0,
+        "inhibitoren": 1,
+        "firstBlood": false,
+        "firstTower": true
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "Weltwunder24",
+        "champ": "Jinx"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "NebelFlasche",
+        "champ": "Braum"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "NebelFlasche",
+        "champ": "Braum"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "Weltwunder24",
+        "champ": "Jinx"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "Weltwunder24",
+        "champ": "Jinx"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "smiling",
+        "champ": "Ashe"
+      }
+    ]
+  },
+  {
+    "series": "AFC1 vs SSV Remlingen - Saison Herbst 2026 - Spieltag 1 (20.10.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-10-20",
+    "matchId": "EUW1_8019776511",
+    "blue": "SSV Remlingen",
+    "red": "AFC1",
+    "winner": "SSV Remlingen",
+    "picks": {
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Gwen",
+          "player": "JaybLm",
+          "k": 5,
+          "d": 5,
+          "a": 8,
+          "cs": 241,
+          "gold": 13277,
+          "dmg": 29009,
+          "taken": 36456,
+          "vs": 30,
+          "lvl": 18
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Vi",
+          "player": "snekvin",
+          "k": 6,
+          "d": 3,
+          "a": 8,
+          "cs": 234,
+          "gold": 13847,
+          "dmg": 13270,
+          "taken": 23611,
+          "vs": 46,
+          "lvl": 17
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Annie",
+          "player": "Schnallo",
+          "k": 5,
+          "d": 2,
+          "a": 6,
+          "cs": 283,
+          "gold": 13507,
+          "dmg": 15019,
+          "taken": 11868,
+          "vs": 34,
+          "lvl": 17
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Swain",
+          "player": "Weltwunder24",
+          "k": 7,
+          "d": 0,
+          "a": 12,
+          "cs": 267,
+          "gold": 15558,
+          "dmg": 29670,
+          "taken": 23105,
+          "vs": 18,
+          "lvl": 16
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lulu",
+          "player": "NebelFlasche",
+          "k": 0,
+          "d": 1,
+          "a": 16,
+          "cs": 33,
+          "gold": 8749,
+          "dmg": 2166,
+          "taken": 8178,
+          "vs": 57,
+          "lvl": 14
+        }
+      ],
+      "AFC1": [
+        {
+          "role": "TOP",
+          "champ": "Yone",
+          "player": "bandit",
+          "k": 7,
+          "d": 6,
+          "a": 2,
+          "cs": 238,
+          "gold": 12904,
+          "dmg": 31045,
+          "taken": 31530,
+          "vs": 34,
+          "lvl": 17
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Sejuani",
+          "player": "HartzFor",
+          "k": 0,
+          "d": 4,
+          "a": 8,
+          "cs": 207,
+          "gold": 10328,
+          "dmg": 12222,
+          "taken": 22248,
+          "vs": 40,
+          "lvl": 15
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Galio",
+          "player": "Køstja",
+          "k": 2,
+          "d": 3,
+          "a": 4,
+          "cs": 283,
+          "gold": 11614,
+          "dmg": 17597,
+          "taken": 22471,
+          "vs": 34,
+          "lvl": 17
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Sivir",
+          "player": "smiling",
+          "k": 0,
+          "d": 5,
+          "a": 5,
+          "cs": 263,
+          "gold": 11731,
+          "dmg": 11913,
+          "taken": 15368,
+          "vs": 17,
+          "lvl": 15
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Blitzcrank",
+          "player": "Aaghn",
+          "k": 2,
+          "d": 5,
+          "a": 4,
+          "cs": 22,
+          "gold": 7408,
+          "dmg": 5931,
+          "taken": 18644,
+          "vs": 84,
+          "lvl": 12
+        }
+      ]
+    },
+    "bans": {
+      "SSV Remlingen": [
+        "Thresh",
+        "Hwei",
+        "Amumu",
+        "Viktor",
+        "Xerath"
+      ],
+      "AFC1": [
+        "Sylas",
+        "Lee Sin",
+        "Jarvan IV",
+        "Zaahen",
+        "Vladimir"
+      ]
+    },
+    "time": "2026-10-20T20:10:02.854646+00:00",
+    "dauer": 1910,
+    "teamStats": {
+      "SSV Remlingen": {
+        "tuerme": 8,
+        "drachen": 4,
+        "barone": 1,
+        "herolde": 1,
+        "inhibitoren": 1,
+        "firstBlood": true,
+        "firstTower": true
+      },
+      "AFC1": {
+        "tuerme": 3,
+        "drachen": 1,
+        "barone": 0,
+        "herolde": 0,
+        "inhibitoren": 0,
+        "firstBlood": false,
+        "firstTower": false
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Der Unsterbliche",
+        "was": "Gewonnen, ohne ein einziges Mal zu sterben.",
+        "wer": "Weltwunder24",
+        "champ": "Swain"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "NebelFlasche",
+        "champ": "Lulu"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "Aaghn",
+        "champ": "Blitzcrank"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "Schnallo",
+        "champ": "Annie"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "Køstja",
+        "champ": "Galio"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "bandit",
+        "champ": "Yone"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "JaybLm",
+        "champ": "Gwen"
+      }
+    ]
+  },
+  {
+    "series": "Hub Hannover II vs SSV Remlingen - Best-of-3 (21.10.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-10-21",
+    "matchId": "EUW1_8020662797",
+    "blue": "SSV Remlingen",
+    "red": "Hub Hannover II",
+    "winner": "Hub Hannover II",
+    "picks": {
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Zaahen",
+          "player": "JaybLm",
+          "k": 3,
+          "d": 3,
+          "a": 1,
+          "cs": 263,
+          "gold": 12343,
+          "dmg": 23339,
+          "taken": 38743,
+          "vs": 22,
+          "lvl": 17
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "snekvin",
+          "k": 2,
+          "d": 6,
+          "a": 4,
+          "cs": 224,
+          "gold": 11567,
+          "dmg": 8302,
+          "taken": 27032,
+          "vs": 41,
+          "lvl": 15
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Ahri",
+          "player": "Schnallo",
+          "k": 2,
+          "d": 5,
+          "a": 3,
+          "cs": 272,
+          "gold": 11689,
+          "dmg": 15288,
+          "taken": 19788,
+          "vs": 30,
+          "lvl": 15
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Jinx",
+          "player": "Weltwunder24",
+          "k": 1,
+          "d": 7,
+          "a": 2,
+          "cs": 288,
+          "gold": 11740,
+          "dmg": 11248,
+          "taken": 16511,
+          "vs": 16,
+          "lvl": 14
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Braum",
+          "player": "NebelFlasche",
+          "k": 0,
+          "d": 6,
+          "a": 4,
+          "cs": 25,
+          "gold": 6897,
+          "dmg": 4694,
+          "taken": 18420,
+          "vs": 76,
+          "lvl": 13
+        }
+      ],
+      "Hub Hannover II": [
+        {
+          "role": "TOP",
+          "champ": "Olaf",
+          "player": "KEK Wowpurple",
+          "k": 10,
+          "d": 1,
+          "a": 1,
+          "cs": 289,
+          "gold": 15607,
+          "dmg": 33997,
+          "taken": 28178,
+          "vs": 31,
+          "lvl": 19
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Skarner",
+          "player": "Ghaast",
+          "k": 0,
+          "d": 3,
+          "a": 17,
+          "cs": 218,
+          "gold": 11994,
+          "dmg": 9334,
+          "taken": 25035,
+          "vs": 20,
+          "lvl": 17
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Taliyah",
+          "player": "AOM Shadowgream",
+          "k": 4,
+          "d": 2,
+          "a": 17,
+          "cs": 262,
+          "gold": 13101,
+          "dmg": 22525,
+          "taken": 14663,
+          "vs": 52,
+          "lvl": 17
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Lucian",
+          "player": "Salemx",
+          "k": 13,
+          "d": 1,
+          "a": 8,
+          "cs": 317,
+          "gold": 19025,
+          "dmg": 31678,
+          "taken": 16823,
+          "vs": 22,
+          "lvl": 16
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Milio",
+          "player": "KillMyADC",
+          "k": 0,
+          "d": 1,
+          "a": 20,
+          "cs": 25,
+          "gold": 9206,
+          "dmg": 3291,
+          "taken": 7584,
+          "vs": 63,
+          "lvl": 15
+        }
+      ]
+    },
+    "bans": {
+      "SSV Remlingen": [
+        "Yunara",
+        "Hwei",
+        "Taric",
+        "Ambessa",
+        "Vex"
+      ],
+      "Hub Hannover II": [
+        "Lee Sin",
+        "Mordekaiser",
+        "Vladimir",
+        "Ornn",
+        "Gwen"
+      ]
+    },
+    "time": "2026-10-21T18:00:00+00:00",
+    "dauer": 1916,
+    "teamStats": {
+      "SSV Remlingen": {
+        "tuerme": 3,
+        "drachen": 1,
+        "barone": 0,
+        "herolde": 1,
+        "inhibitoren": 0,
+        "firstBlood": false,
+        "firstTower": false
+      },
+      "Hub Hannover II": {
+        "tuerme": 10,
+        "drachen": 4,
+        "barone": 2,
+        "herolde": 0,
+        "inhibitoren": 2,
+        "firstBlood": true,
+        "firstTower": true
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "Salemx",
+        "champ": "Lucian"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "KillMyADC",
+        "champ": "Milio"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "NebelFlasche",
+        "champ": "Braum"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "Salemx",
+        "champ": "Lucian"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "KEK Wowpurple",
+        "champ": "Olaf"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "Salemx",
+        "champ": "Lucian"
+      }
+    ]
+  },
+  {
+    "series": "SC Victoria Braunschweig vs SV Innerstetal - Best-of-3 (21.10.2026)",
+    "game": 1,
+    "format": "fearless",
+    "date": "2026-10-21",
+    "matchId": "EUW1_8020634490",
+    "blue": "SV Innerstetal",
+    "red": "SC Victoria Braunschweig",
+    "winner": "SC Victoria Braunschweig",
+    "picks": {
+      "SV Innerstetal": [
+        {
+          "role": "TOP",
+          "champ": "Shen",
+          "player": "Thueringerkloss",
+          "k": 8,
+          "d": 4,
+          "a": 5,
+          "cs": 222,
+          "gold": 12390,
+          "dmg": 21236,
+          "taken": 34367,
+          "vs": 25,
+          "lvl": 18
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Trundle",
+          "player": "AutoAttackAndy",
+          "k": 6,
+          "d": 9,
+          "a": 14,
+          "cs": 186,
+          "gold": 12780,
+          "dmg": 21537,
+          "taken": 52553,
+          "vs": 38,
+          "lvl": 15
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Malzahar",
+          "player": "Verveigar",
+          "k": 5,
+          "d": 7,
+          "a": 14,
+          "cs": 196,
+          "gold": 11188,
+          "dmg": 33306,
+          "taken": 28930,
+          "vs": 26,
+          "lvl": 16
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Xayah",
+          "player": "Rät",
+          "k": 9,
+          "d": 6,
+          "a": 10,
+          "cs": 226,
+          "gold": 14548,
+          "dmg": 33623,
+          "taken": 26919,
+          "vs": 28,
+          "lvl": 15
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lulu",
+          "player": "Tamashi",
+          "k": 1,
+          "d": 10,
+          "a": 14,
+          "cs": 24,
+          "gold": 7950,
+          "dmg": 7772,
+          "taken": 27455,
+          "vs": 73,
+          "lvl": 13
+        }
+      ],
+      "SC Victoria Braunschweig": [
+        {
+          "role": "TOP",
+          "champ": "Gnar",
+          "player": "",
+          "k": 6,
+          "d": 2,
+          "a": 9,
+          "cs": 256,
+          "gold": 15656,
+          "dmg": 29686,
+          "taken": 24595,
+          "vs": 39,
+          "lvl": 19
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Sejuani",
+          "player": "ShendNoods",
+          "k": 8,
+          "d": 7,
+          "a": 17,
+          "cs": 152,
+          "gold": 13550,
+          "dmg": 21620,
+          "taken": 51193,
+          "vs": 19,
+          "lvl": 15
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Orianna",
+          "player": "Hyro",
+          "k": 7,
+          "d": 4,
+          "a": 14,
+          "cs": 224,
+          "gold": 13120,
+          "dmg": 33653,
+          "taken": 16710,
+          "vs": 17,
+          "lvl": 17
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Yunara",
+          "player": "Salzu",
+          "k": 14,
+          "d": 8,
+          "a": 16,
+          "cs": 265,
+          "gold": 20230,
+          "dmg": 56991,
+          "taken": 30935,
+          "vs": 19,
+          "lvl": 16
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Leona",
+          "player": "Kneu",
+          "k": 1,
+          "d": 8,
+          "a": 23,
+          "cs": 23,
+          "gold": 9583,
+          "dmg": 10231,
+          "taken": 24786,
+          "vs": 102,
+          "lvl": 14
+        }
+      ]
+    },
+    "bans": {
+      "SV Innerstetal": [
+        "Smolder",
+        "Ahri",
+        "Braum",
+        "Jarvan IV",
+        "Nocturne"
+      ],
+      "SC Victoria Braunschweig": [
+        "Veigar",
+        "Ornn",
+        "Tristana",
+        "Xin Zhao",
+        "Wukong"
+      ]
+    },
+    "time": "2026-10-21T18:00:00+00:00",
+    "dauer": 1898,
+    "teamStats": {
+      "SV Innerstetal": {
+        "tuerme": 3,
+        "drachen": 4,
+        "barone": 0,
+        "herolde": 0,
+        "inhibitoren": 0,
+        "firstBlood": true,
+        "firstTower": false
+      },
+      "SC Victoria Braunschweig": {
+        "tuerme": 12,
+        "drachen": 1,
+        "barone": 1,
+        "herolde": 1,
+        "inhibitoren": 2,
+        "firstBlood": false,
+        "firstTower": true
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "Salzu",
+        "champ": "Yunara"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "Kneu",
+        "champ": "Leona"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "Kneu",
+        "champ": "Leona"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "Salzu",
+        "champ": "Yunara"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "Salzu",
+        "champ": "Yunara"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "AutoAttackAndy",
+        "champ": "Trundle"
+      }
+    ]
+  },
+  {
+    "series": "SC Victoria Braunschweig vs SV Innerstetal - Best-of-3 (21.10.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-10-21",
+    "matchId": "EUW1_8020708659",
+    "blue": "SC Victoria Braunschweig",
+    "red": "SV Innerstetal",
+    "winner": "SC Victoria Braunschweig",
+    "picks": {
+      "SC Victoria Braunschweig": [
+        {
+          "role": "TOP",
+          "champ": "Sion",
+          "player": "LegendOctavian",
+          "k": 3,
+          "d": 7,
+          "a": 3,
+          "cs": 166,
+          "gold": 9899,
+          "dmg": 12216,
+          "taken": 35010,
+          "vs": 32,
+          "lvl": 17
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Jarvan IV",
+          "player": "ShendNoods",
+          "k": 6,
+          "d": 4,
+          "a": 16,
+          "cs": 211,
+          "gold": 14249,
+          "dmg": 13326,
+          "taken": 30194,
+          "vs": 30,
+          "lvl": 16
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Lux",
+          "player": "Hyro",
+          "k": 15,
+          "d": 3,
+          "a": 12,
+          "cs": 268,
+          "gold": 16817,
+          "dmg": 42970,
+          "taken": 16532,
+          "vs": 19,
+          "lvl": 18
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Vayne",
+          "player": "Salzu",
+          "k": 13,
+          "d": 4,
+          "a": 3,
+          "cs": 235,
+          "gold": 16861,
+          "dmg": 26228,
+          "taken": 18558,
+          "vs": 19,
+          "lvl": 15
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Nautilus",
+          "player": "Kneu",
+          "k": 1,
+          "d": 5,
+          "a": 13,
+          "cs": 15,
+          "gold": 8255,
+          "dmg": 7566,
+          "taken": 14923,
+          "vs": 82,
+          "lvl": 13
+        }
+      ],
+      "SV Innerstetal": [
+        {
+          "role": "TOP",
+          "champ": "Olaf",
+          "player": "Thueringerkloss",
+          "k": 11,
+          "d": 5,
+          "a": 1,
+          "cs": 206,
+          "gold": 12894,
+          "dmg": 30651,
+          "taken": 31715,
+          "vs": 32,
+          "lvl": 17
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Amumu",
+          "player": "AutoAttackAndy",
+          "k": 6,
+          "d": 9,
+          "a": 8,
+          "cs": 172,
+          "gold": 12158,
+          "dmg": 19534,
+          "taken": 33504,
+          "vs": 31,
+          "lvl": 14
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Viktor",
+          "player": "Verveigar",
+          "k": 2,
+          "d": 10,
+          "a": 3,
+          "cs": 198,
+          "gold": 9593,
+          "dmg": 15965,
+          "taken": 23768,
+          "vs": 25,
+          "lvl": 14
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Miss Fortune",
+          "player": "Rät",
+          "k": 3,
+          "d": 6,
+          "a": 5,
+          "cs": 237,
+          "gold": 11355,
+          "dmg": 16758,
+          "taken": 14767,
+          "vs": 27,
+          "lvl": 14
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Rell",
+          "player": "Tamashi",
+          "k": 1,
+          "d": 8,
+          "a": 14,
+          "cs": 27,
+          "gold": 8070,
+          "dmg": 10169,
+          "taken": 23970,
+          "vs": 70,
+          "lvl": 12
+        }
+      ]
+    },
+    "bans": {
+      "SC Victoria Braunschweig": [
+        "Veigar",
+        "Ornn",
+        "Gwen",
+        "Syndra",
+        "Dr. Mundo"
+      ],
+      "SV Innerstetal": [
+        "Smolder",
+        "Braum",
+        "Ahri",
+        "Ryze"
+      ]
+    },
+    "time": "2026-10-21T18:48:06.425188+00:00",
+    "dauer": 1790,
+    "teamStats": {
+      "SC Victoria Braunschweig": {
+        "tuerme": 10,
+        "drachen": 4,
+        "barone": 1,
+        "herolde": 0,
+        "inhibitoren": 2,
+        "firstBlood": true,
+        "firstTower": true
+      },
+      "SV Innerstetal": {
+        "tuerme": 1,
+        "drachen": 1,
+        "barone": 0,
+        "herolde": 1,
+        "inhibitoren": 0,
+        "firstBlood": false,
+        "firstTower": false
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "Hyro",
+        "champ": "Lux"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "ShendNoods",
+        "champ": "Jarvan IV"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "Kneu",
+        "champ": "Nautilus"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "Hyro",
+        "champ": "Lux"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "Hyro",
+        "champ": "Lux"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "Salzu",
+        "champ": "Vayne"
+      }
+    ]
+  },
+  {
+    "series": "Hub Hannover II vs SSV Remlingen - Best-of-3 (21.10.2026)",
+    "game": 2,
+    "format": "fearless",
+    "date": "2026-10-21",
+    "matchId": "EUW1_8020719800",
+    "blue": "Hub Hannover II",
+    "red": "SSV Remlingen",
+    "winner": "Hub Hannover II",
+    "picks": {
+      "Hub Hannover II": [
+        {
+          "role": "TOP",
+          "champ": "Volibear",
+          "player": "KEK Wowpurple",
+          "k": 5,
+          "d": 4,
+          "a": 8,
+          "cs": 316,
+          "gold": 15590,
+          "dmg": 23584,
+          "taken": 32365,
+          "vs": 44,
+          "lvl": 20
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Aatrox",
+          "player": "Ghaast",
+          "k": 8,
+          "d": 3,
+          "a": 7,
+          "cs": 287,
+          "gold": 16757,
+          "dmg": 14614,
+          "taken": 29100,
+          "vs": 41,
+          "lvl": 18
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Orianna",
+          "player": "AOM Shadowgream",
+          "k": 4,
+          "d": 4,
+          "a": 16,
+          "cs": 298,
+          "gold": 16020,
+          "dmg": 24024,
+          "taken": 20255,
+          "vs": 54,
+          "lvl": 18
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Xayah",
+          "player": "Salemx",
+          "k": 7,
+          "d": 4,
+          "a": 11,
+          "cs": 423,
+          "gold": 23154,
+          "dmg": 27786,
+          "taken": 20399,
+          "vs": 28,
+          "lvl": 18
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Nautilus",
+          "player": "KillMyADC",
+          "k": 1,
+          "d": 4,
+          "a": 14,
+          "cs": 38,
+          "gold": 10284,
+          "dmg": 5500,
+          "taken": 20793,
+          "vs": 107,
+          "lvl": 16
+        }
+      ],
+      "SSV Remlingen": [
+        {
+          "role": "TOP",
+          "champ": "Ornn",
+          "player": "JaybLm",
+          "k": 3,
+          "d": 6,
+          "a": 10,
+          "cs": 295,
+          "gold": 14272,
+          "dmg": 17625,
+          "taken": 37103,
+          "vs": 28,
+          "lvl": 20
+        },
+        {
+          "role": "JUNGLE",
+          "champ": "Ambessa",
+          "player": "snekvin",
+          "k": 4,
+          "d": 6,
+          "a": 8,
+          "cs": 262,
+          "gold": 15037,
+          "dmg": 15954,
+          "taken": 29180,
+          "vs": 61,
+          "lvl": 18
+        },
+        {
+          "role": "MIDDLE",
+          "champ": "Annie",
+          "player": "Schnallo",
+          "k": 3,
+          "d": 8,
+          "a": 8,
+          "cs": 300,
+          "gold": 14180,
+          "dmg": 22966,
+          "taken": 21506,
+          "vs": 58,
+          "lvl": 18
+        },
+        {
+          "role": "BOTTOM",
+          "champ": "Sivir",
+          "player": "Weltwunder24",
+          "k": 9,
+          "d": 2,
+          "a": 6,
+          "cs": 416,
+          "gold": 23435,
+          "dmg": 34045,
+          "taken": 18824,
+          "vs": 37,
+          "lvl": 18
+        },
+        {
+          "role": "UTILITY",
+          "champ": "Lulu",
+          "player": "NebelFlasche",
+          "k": 0,
+          "d": 3,
+          "a": 15,
+          "cs": 31,
+          "gold": 9463,
+          "dmg": 4466,
+          "taken": 11566,
+          "vs": 101,
+          "lvl": 15
+        }
+      ]
+    },
+    "bans": {
+      "Hub Hannover II": [
+        "Mordekaiser",
+        "Lee Sin",
+        "Vladimir",
+        "Vayne",
+        "Sylas"
+      ],
+      "SSV Remlingen": [
+        "Yunara",
+        "Hwei",
+        "Taric",
+        "Lux",
+        "Yasuo"
+      ]
+    },
+    "time": "2026-10-21T19:03:40.830150+00:00",
+    "dauer": 2397,
+    "teamStats": {
+      "Hub Hannover II": {
+        "tuerme": 9,
+        "drachen": 3,
+        "barone": 1,
+        "herolde": 1,
+        "inhibitoren": 1,
+        "firstBlood": false,
+        "firstTower": true
+      },
+      "SSV Remlingen": {
+        "tuerme": 5,
+        "drachen": 3,
+        "barone": 1,
+        "herolde": 0,
+        "inhibitoren": 1,
+        "firstBlood": true,
+        "firstTower": false
+      }
+    },
+    "auszeichnungen": [
+      {
+        "name": "Killdemon",
+        "was": "Die meisten Kills im Spiel.",
+        "wer": "Weltwunder24",
+        "champ": "Sivir"
+      },
+      {
+        "name": "Schutzpatron",
+        "was": "Die meisten Assists im Spiel.",
+        "wer": "AOM Shadowgream",
+        "champ": "Orianna"
+      },
+      {
+        "name": "Allsehendes Auge",
+        "was": "Der beste Vision-Score im Spiel.",
+        "wer": "KillMyADC",
+        "champ": "Nautilus"
+      },
+      {
+        "name": "Erntemeister",
+        "was": "Die meisten Vasallen und Monster im Spiel.",
+        "wer": "Salemx",
+        "champ": "Xayah"
+      },
+      {
+        "name": "Verwüster",
+        "was": "Der meiste Schaden an Champions im Spiel.",
+        "wer": "Weltwunder24",
+        "champ": "Sivir"
+      },
+      {
+        "name": "Blutzoll",
+        "was": "Den ersten Kill des Spiels geholt.",
+        "wer": "Schnallo",
+        "champ": "Annie"
+      }
+    ]
   }
 ]

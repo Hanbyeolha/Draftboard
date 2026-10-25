@@ -98,7 +98,9 @@ test("der Wert des Wartens ist nie negativ und ordnet die Rollen", () => {
 });
 
 test("steht der Lanegegner schon, ist der Counterpick jetzt dran", () => {
-  const s = lage([], [["Darius", "TOP"]], q.patch);
+  // Fiora: 96 % Top. Darius stand hier bis Patch 16.21 - seitdem 15,7 %
+  // Jungle, ueber ROLLEN.flexAbAnteil, also zu Recht kein sicherer Toplaner.
+  const s = lage([], [["Fiora", "TOP"]], q.patch);
   const L = E.lagebild(s);
   assert.equal(L.naechsteRolle.rolle, "TOP");
   assert.equal(L.naechsteRolle.modus, "counter");

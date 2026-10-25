@@ -384,13 +384,13 @@ test("aus der Sicht des Gegners: mit SEINEN Picks, gegen UNSERE", () => {
    Beleg ist aber KOMFORT.ohneBeleg (0,15). Gemessen: 0 von 684
    Bewertungen trugen den Text, 387 haetten ihn verdient. Jetzt haengt er
    am Beleg selbst: 0 Partien und nicht im Draftplan. */
-test("P2.8: ohne Partien und ohne Plan steht 'kaum Erfahrung' im Risiko", () => {
+test("P2.8: ohne Partien steht 'kaum Erfahrung' im Risiko", () => {
   const top = team.aufRolle("AFC1", "TOP");
   const opt = {spielerTeam: "AFC1", spielerLabel: top.label};
   let ohne = null, belegt = null;
   for (const k of merkmale.kandidaten("TOP")) {
     const ko = team.komfort("AFC1", top.label, k.champ);
-    if (!ohne && ko && ko.sampleSize === 0 && /nicht im Draftplan/.test(ko.note)) ohne = k.champ;
+    if (!ohne && ko && ko.sampleSize === 0 && ko.ohneBeleg) ohne = k.champ;
     if (!belegt && ko && ko.sampleSize >= 20) belegt = k.champ;
   }
   assert.ok(ohne && belegt, "Testfaelle gefunden: " + ohne + ", " + belegt);

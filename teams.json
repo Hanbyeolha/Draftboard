@@ -133,7 +133,8 @@
         "role": "MIDDLE"
       }
     ],
-    "ligaTeamId": 5
+    "ligaTeamId": 40,
+    "ligaName": "AllianceForChampions Jr."
   },
   {
     "team": "SV Innerstetal",
@@ -294,6 +295,11 @@
         "riotId": "hnes#xdd",
         "role": "BOTTOM",
         "bench": true
+      },
+      {
+        "label": "Kyojuro",
+        "riotId": "Kyojuro#eug",
+        "role": "UNKNOWN"
       }
     ],
     "ligaTeamId": 1
@@ -756,8 +762,8 @@
   {
     "team": "SC Langenhagen I",
     "region": "euw",
-    "ligaTeamId": 31,
-    "ligaName": "SC Langenhagen I",
+    "ligaTeamId": 39,
+    "ligaName": "SC Langenhagen Jr.",
     "players": [
       {
         "label": "Chaoslime09",

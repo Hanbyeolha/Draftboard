@@ -557,7 +557,7 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
 .so-mitte { display: flex; flex-direction: column; gap: 0.7rem; min-width: 0; }
 .so-modus { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6rem; }
 .so-modus-text { font-size: 0.78rem; font-weight: 600; color: var(--ink-muted); }
-.so-modus.counter .so-modus-text { color: var(--good); }
+.so-modus.counter .so-modus-text { color: var(--good-klein); }
 .so-rec { border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); }
 .so-rec[open] { border-color: var(--border-strong); }
 .so-rec-kopf { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center;
@@ -584,6 +584,8 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
 .wr-kurz { font-size: 0.74rem; color: var(--ink-muted); }
 .wr-zahl { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); }
 .wr-zahl.gut { color: var(--good); }
+/* In der Kurzzeile ist die Zahl kleine Schrift (0,74rem). */
+.wr-kurz .wr-zahl.gut { color: var(--good-klein); }
 .wr-zahl.schwach { color: var(--red); }
 .wr-neben { font-size: 0.72rem; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
 .wr-block, .wr-begruendung { display: flex; flex-direction: column; gap: 0.25rem; }
@@ -606,7 +608,85 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
 .ch-wir { position: absolute; inset: 0 auto 0 0; background: var(--eigen); }
 .ch-mitte { position: absolute; left: 50%; top: -2px; bottom: -2px; width: 2px; background: var(--ink); opacity: 0.6; }
 .ch-teile { font-size: 0.78rem; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
-.ch-treffer { font-size: 0.72rem; color: var(--ink-faint); }
+.ch-aufbau { font-size: 0.76rem; color: var(--ink-muted); }
+.ch-aufbau summary { cursor: pointer; width: fit-content; font-weight: 600; color: var(--ink); }
+.ch-aufbau summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ch-einordnung { font-size: 0.72rem; color: var(--ink); }
+.ch-gruppe-kopf { display: block; margin-top: 0.45rem; font-weight: 600; }
+.ch-posten { list-style: none; margin: 0.15rem 0 0; padding: 0; display: grid; row-gap: 0.1rem;
+             grid-template-columns: minmax(0, 1fr) auto auto auto auto; column-gap: 0.75rem; }
+.ch-posten li { display: contents; }
+.ch-posten li[hidden] { display: none; }
+.ch-art { display: inline-block; min-width: 5.6rem; font-size: 0.66rem; font-weight: 700;
+          letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
+.ch-mehr-zeile > .ch-mehr { grid-column: 1 / -1; justify-self: start; }
+.ch-mehr { font: inherit; padding: 0; border: 0; background: none; cursor: pointer;
+           color: var(--ink-muted); text-decoration: underline; text-underline-offset: 2px; }
+.ch-mehr:hover { color: var(--ink); }
+.ch-mehr:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ch-wer { min-width: 0; }
+.ch-seite { color: var(--ink-muted); }
+.ch-rolle { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--ink-muted); }
+.ch-wert, .ch-erwartet, .ch-n, .ch-punkte { text-align: right; white-space: nowrap;
+                                            font-variant-numeric: tabular-nums; }
+.ch-wert, .ch-punkte { font-weight: 700; color: var(--ink); }
+.ch-hinweis { margin: 0.45rem 0 0; }
+/* Lane-Duell: wir links, sie rechts, Balken nach Matchup-Winrate. */
+.du-liste { display: flex; flex-direction: column; gap: 0.55rem; max-width: 46rem; margin: 0.3rem 0;
+            font-size: 0.76rem; color: var(--ink-muted); }
+.du { display: grid; grid-template-columns: 3.6rem minmax(0, 8.5rem) minmax(0, 1fr) minmax(0, 8.5rem);
+      gap: 0.7rem; align-items: center; }
+.du-seite { display: flex; align-items: center; gap: 0.45rem; min-width: 0; }
+.du-seite.sie { flex-direction: row-reverse; text-align: right; }
+.du-seite img { flex: none; width: 30px; height: 30px; border-radius: 3px; box-shadow: 0 0 0 2px var(--eigen); }
+.du-seite.sie img { box-shadow: 0 0 0 2px var(--gegner); }
+.du-name { display: flex; flex-direction: column; min-width: 0; }
+.du-name b { color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.du-name small, .du-mitte small { font-size: 0.7rem; }
+.du-mitte { display: grid; gap: 3px; }
+.du-mitte small { text-align: center; font-variant-numeric: tabular-nums; }
+.du-zahlen { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: baseline;
+             gap: 0.5rem; font-variant-numeric: tabular-nums; }
+.du-zahlen > span { white-space: nowrap; }
+.du-zahlen b { font-size: 0.9rem; color: var(--ink); }
+.du-zahlen small { font-size: 0.7rem; }
+.du-paar { min-width: 0; font-weight: 600; color: var(--ink); text-align: center;
+           white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.du-satz b { color: var(--ink); }
+.du-satz .du-punkte { white-space: nowrap; }
+.du-mitte small.du-sichten { margin-top: -2px; }
+.du-zahlen b.du-sie { color: var(--ink-muted); }
+.du-punkte { font-weight: 700; }
+.du-punkte.gut { color: var(--good-klein); }
+.du-punkte.schwach { color: var(--red); }
+.du-balken { position: relative; height: 10px; border-radius: 5px; overflow: hidden; background: var(--gegner); }
+.du-wir { position: absolute; inset: 0 auto 0 0; background: var(--eigen); }
+.du-erwartet { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--ink); }
+.du-rest { font-size: 0.72rem; }
+@media (max-width: 640px) {
+  /* Am Handy: die beiden Champions oben, der Balken darunter ueber die ganze Breite. */
+  .du { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); row-gap: 0.25rem; }
+  .du > .ch-rolle { grid-column: 1 / -1; }
+  .du-mitte { grid-column: 1 / -1; grid-row: 3; }
+}
+/* Breit gezogen standen die Zahlen zu weit weg von den Namen. */
+.ch-aufbau-inhalt { max-width: 46rem; }
+/* Im Cockpit sitzt die Leiste mitten in der Spielstand-Leiste: aufgeklappt
+   haette sie die ganze Leiste in die Hoehe gezogen - darum darunter
+   schwebend. */
+.cp-anzeige .ch-leiste.anzeige { position: relative; }
+.ch-leiste.anzeige .ch-aufbau summary { margin: 0 auto; }
+.cp-anzeige .ch-leiste.anzeige .ch-aufbau-inhalt { position: absolute; z-index: 30; top: calc(100% + 4px); left: 50%;
+  transform: translateX(-50%); width: min(46rem, calc(100vw - 2rem)); max-height: 70vh; overflow: auto;
+  padding: 0.6rem 0.9rem; text-align: left; background: var(--surface);
+  border: 1px solid var(--border-strong); border-radius: var(--radius-sm); box-shadow: var(--shadow); }
+@media (max-width: 640px) {
+  /* Am Handy: Wert, Erwartung, Partien und Punkte unter den Namen. */
+  .ch-posten { grid-template-columns: auto auto auto 1fr; }
+  .ch-wer { grid-column: 1 / -1; margin-top: 0.2rem; }
+  .ch-punkte { text-align: right; }
+}
 .ch-leiste.leer .ch-zahl { color: var(--ink-faint); }
 .ch-nach { font-size: 0.72rem; color: var(--ink-muted); white-space: nowrap; }
 .ch-nach b { color: var(--ink); font-variant-numeric: tabular-nums; }
@@ -1206,8 +1286,13 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
                                 background: var(--gegner); }
 .ch-leiste.anzeige .ch-wir { background: var(--eigen); }
 .ch-leiste.anzeige .ch-teile { font-size: 0.7rem; }
-.ch-leiste.anzeige .ch-treffer { font-size: 0.66rem; max-width: 22rem; }
 .ch-leiste.anzeige.leer .ch-zahl, .ch-leiste.anzeige.leer .ch-gegenzahl { color: var(--ink-faint); }
+/* Solo Queue: dieselbe grosse Anzeige, mittig; Duelle und Aufschluesselung
+   stehen darunter im Fluss, links ausgerichtet. */
+#solo-draft .ch-leiste.anzeige { align-items: center; text-align: center; }
+#solo-draft .ch-leiste.anzeige .du-liste,
+#solo-draft .ch-leiste.anzeige .ch-aufbau-inhalt { width: 100%; max-width: 46rem; margin-inline: auto; text-align: left; }
+#solo-draft .ch-leiste.anzeige .ch-aufbau { width: 100%; }
 
 /* Jetzt-Leiste */
 .cp-status { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1.2rem; padding: 0.7rem 1.1rem;
@@ -1310,6 +1395,11 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
            background: transparent; color: var(--ink-muted); }
 .lt-chip[aria-pressed="true"] { background: var(--jetzt); border-color: var(--jetzt); color: var(--jetzt-ink); }
 .lt-chip-zahl { font-variant-numeric: tabular-nums; opacity: 0.75; }
+.lt-modus { font-size: 0.74rem; font-weight: 600; color: var(--ink-muted); }
+.lt-wert .lt-zaehlt { font-weight: 700; color: var(--ink); }
+/* Schalter "Spieler-Komfort an/aus" in der goldenen Jetzt-Leiste: an = dunkel, aus = Rahmen. */
+.cp.our-turn .cp-status .objektiv-schalter { border-color: var(--jetzt-ink); color: var(--jetzt-ink); background: transparent; }
+.cp.our-turn .cp-status .objektiv-schalter[aria-pressed="true"] { background: var(--jetzt-ink); color: var(--jetzt); }
 .lt-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .lt-pro-leiste { display: flex; flex-direction: column; gap: 0.3rem; padding: 0.4rem 1rem 0.7rem;
                  border-bottom: 1px solid var(--border); }
@@ -1388,6 +1478,10 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
 .lt-wert.l2 { background: color-mix(in srgb, var(--red) 28%, transparent); }
 .lt-wert b { font-family: Rajdhani, Archivo, sans-serif; font-size: 1.12rem; }
 .lt-wert small { color: var(--ink-muted); }
+/* Kraeftige Zellen (30 %/28 % Toenung): graue Kleinschrift kam dort auf
+   3,2-4,0:1, darum hier volle Tinte. */
+.lt-wert.h2 small, .lt-wert.l2 small,
+.lt-wert.h2::before, .lt-wert.l2::before { color: var(--ink); }
 .lt-zeile:not(.lt-kopfzeile) .lt-wert.sortiert b { text-decoration: none; }
 .lt-kopfzeile .lt-wert.sortiert::after { content: " \2193"; }
 .lt-note b { font-size: 1.25rem; }
@@ -1482,6 +1576,8 @@ input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); ou
 .cp-kurve-diff.plus { color: var(--good-klein); }
 .cp-kurve-diff.minus { color: var(--red); }
 .cp-lanes { display: flex; flex-direction: column; gap: 2px; }
+.cp-schaden-balken { height: 8px; background: color-mix(in srgb, var(--ink-muted) 45%, transparent); }
+.cp-schaden-balken .magisch { display: block; height: 8px; background: var(--role-mid); }
 .cp-lane-zeile { display: grid; grid-template-columns: 2.9rem minmax(0, 1fr) 3.6rem minmax(0, 1fr); gap: 0.35rem;
                  align-items: center; font-size: 0.76rem; min-height: 2rem; }
 .cp-lane-rolle { justify-self: start; padding: 0 0.25rem; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.06em;
@@ -3935,7 +4031,7 @@ details.entry > *:not(summary) { margin-top: 0.7rem; }
     const t = liveTeile;
     t.mannschaft = ENGINE.teamAnlegen(ENGINE.planEinsetzen(DATA.teams, localPlan));
     t.bewerter = ENGINE.bewerterAnlegen({quelle: t.quelle, merkmale: t.merkmale,
-      comp: t.comp, team: t.mannschaft, heuristik: t.heuristik});
+      comp: t.comp, team: t.mannschaft, heuristik: t.heuristik, pro: DATA.pro || null});
     t.suche = ENGINE.sucheAnlegen({quelle: t.quelle, merkmale: t.merkmale,
                                   bewerter: t.bewerter});
     t.strategie = ENGINE.strategieAnlegen({quelle: t.quelle, merkmale: t.merkmale,

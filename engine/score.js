@@ -31,7 +31,7 @@
 
 import { wert, konfidenzWort } from "./provenance.js";
 import {
-  GEWICHTE, KOMFORT, STOERUNG, STANDARD_RISIKO, ANZEIGE, VERSION, ROLLEN,
+  GEWICHTE, KOMFORT, PRO_BLIND, STOERUNG, STANDARD_RISIKO, ANZEIGE, VERSION, ROLLEN,
   BLIND,
 } from "./config.js";
 import { normQuote, normVorteil, klemm } from "./features.js";
@@ -47,7 +47,7 @@ import { blindAnlegen, LANE_GEGNER } from "./blind.js";
 export const BEGRUENDUNG = {matchup: 0.02, synergie: 0.015};
 
 export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik,
-                                 blind = null}) {
+                                 blind = null, pro = null}) {
   // Ein Blindmodell fuer alle Bewertungen - sein Feldcache gilt ueber
   // Kandidaten hinweg.
   const blindModell = blind || blindAnlegen({quelle, team});
@@ -273,6 +273,26 @@ export function bewerterAnlegen({quelle, merkmale, comp, team, heuristik,
       }
       if (blindWert.wert <= 0.3) {
         risiken.push("blind riskant: " + blindWert.text);
+      }
+    }
+
+    /* 8b ----------------------------------------- Pro-Blindquote */
+    /* Blind gepickt in den Pro-Ligen (pro.py) - nur fuer den unbekannten
+       Teil der Lane. Die Blind-Sicherheit oben misst Solo-Queue-Matchups;
+       Pros meiden manche dort sichere Champions blind (Jinx 2 von 8). */
+    if (pro && pro.champions && lage.unbekannt > 0) {
+      const x = (pro.champions[champ] || {})[rolle] || null;
+      const picks = x ? x.picks : 0, blindN = x ? x.blind : 0;
+      const quote = (blindN + PRO_BLIND.mitte * PRO_BLIND.schrumpf) / (picks + PRO_BLIND.schrumpf);
+      nimm("proBlind", quote, {
+        quelle: "pro", konfidenz: picks / (picks + PRO_BLIND.schrumpf),
+        text: picks ? blindN + " von " + picks + " Pro-Picks blind" : "in Pro nicht auf der Rolle gepickt",
+        gewicht: GEWICHTE.proBlind * lage.unbekannt,
+      });
+      if (picks >= PRO_BLIND.abPicks && quote >= PRO_BLIND.gutAb) {
+        gruende.push("in Pro oft blind gepickt (" + blindN + " von " + picks + ")");
+      } else if (picks >= PRO_BLIND.abPicks && quote <= PRO_BLIND.schwachAb) {
+        risiken.push("in Pro selten blind gepickt (" + blindN + " von " + picks + ")");
       }
     }
 
@@ -506,7 +526,7 @@ export const SCORE_GRUPPEN = {
   draftgap: {wort: "DraftGap", teile: ["meta", "lane", "matchup", "synergie"]},
   team: {wort: "Team-Fit", teile: ["compFit", "gegnerStoerung", "flex", "lookahead"]},
   spieler: {wort: "Spieler-Fit", teile: ["komfort"]},
-  blind: {wort: "Blind-Sicherheit", teile: ["blindSicherheit"]},
+  blind: {wort: "Blind-Sicherheit", teile: ["blindSicherheit", "proBlind"]},
 };
 
 /** Gewichtetes Mittel der Rohwerte einer Liste von Teilen, 0..100 - oder

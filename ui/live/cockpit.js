@@ -230,7 +230,8 @@
         el("strong", {class: "cp-titel"}, titel),
         el("span", {class: "cp-unter"}, unter)),
       unserPick ? el("div", {class: "cp-entscheidung-kopf"},
-        el("span", {class: "cp-klein"}, "Empfehlung f\u00fcr"), cpRollenWahl(cpRolle())) : null,
+        el("span", {class: "cp-klein"}, "Empfehlung f\u00fcr"), cpRollenWahl(cpRolle()),
+        objektivSchalter(renderLiveDraft)) : null,
       eingabe || null,
       cpUndoLeiste());
   }
@@ -399,7 +400,20 @@
             + unser.picks.length + " Picks; Zahl rechts: wir minus sie"
             + (ihr.kurve ? "" : " (Gegner noch ohne Pick)") + ". Balken: 40–60 %."))
       : cpKasten("Skalierung", null, cpPlanLeer("ab dem ersten eigenen Pick"));
-    return el("div", {class: "cp-spielplan"}, sieg, kurve);
+    // Schadensmischung, nach Schaden je Partie gewichtet (gemessen). Ausser-
+    // halb des Bandes (COMP) kann der Gegner einseitig Resistenzen bauen.
+    const anteil = (p) => p.schaden ? p.schaden.magisch.value : null;
+    const um = anteil(unser), im = anteil(ihr);
+    const schaden = um === null ? null : cpKasten("Schaden", "draftgap",
+      el("div", {class: "cp-schaden-balken", "aria-hidden": "true"},
+        el("span", {class: "magisch", style: "width:" + Math.round(um * 100) + "%"})),
+      el("p", {class: "cp-plan-text"}, Math.round(um * 100) + " % magisch · " + Math.round((1 - um) * 100)
+        + " % physisch/true" + (im === null ? "" : " · Gegner " + Math.round(im * 100) + " % magisch")),
+      um > ENGINE.COMP.schadenBandBis || um < ENGINE.COMP.schadenBandVon
+        ? el("p", {class: "cp-plan-text klein warn"}, "einseitig: der Gegner kann fast nur "
+            + (um > 0.5 ? "Magieresistenz" : "Rüstung") + " bauen")
+        : null);
+    return el("div", {class: "cp-spielplan"}, sieg, kurve, schaden);
   }
 
   function cpSpielplanSie() {

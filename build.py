@@ -21,7 +21,9 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-import namenswechsel
+# Auch mit python -I (Skriptordner dann nicht im Pfad) die Nachbardatei finden.
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import namenswechsel  # noqa: E402
 
 ROOT = pathlib.Path(__file__).parent
 RAW = ROOT / "data" / "raw"
@@ -339,7 +341,10 @@ def draft_daten(neu=False):
             d = st.get("damageProfile") or {}
             summe = (d.get("physical") or 0) + (d.get("magic") or 0) + (d.get("true") or 0)
             if st.get("games") and summe > 0:
-                rollen[r] = round(100 * (d.get("magic") or 0) / summe)
+                # Anteil magisch in Prozent UND der Schaden je Partie: eine
+                # Aufstellung wird nach echtem Schaden gemischt, nicht pro
+                # Kopf (Leona macht ~10k, Viktor ~29k; 22.10.2026).
+                rollen[r] = [round(100 * (d.get("magic") or 0) / summe), round(summe)]
         if rollen:
             schaden[str(nr[c["name"]])] = rollen
 

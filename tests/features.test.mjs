@@ -139,13 +139,13 @@ test("ohne Beleg: niedrig und unsicher, nicht 0 und nicht weg", () => {
             "Jarvan IV: " + (wenig && wenig.value));
 });
 
-test("der Draftplan traegt auch ohne viele Partien", () => {
-  // HartzFor nennt Cho'Gath als Blindpick bei wenigen Ranked-Partien.
+test("der Draftplan zaehlt nicht in den Komfort (22.10.2026)", () => {
+  // HartzFor nennt Cho'Gath als Blindpick bei wenigen Ranked-Partien - der
+  // Komfort kommt trotzdem nur aus den Partien.
   const jgl = T.aufRolle("AFC1", "JUNGLE");
   const k = T.komfort("AFC1", jgl.label, "Cho'Gath");
-  assert.ok(k.value > 0.5, "Blindpick trotz weniger Partien: " + k.value);
-  assert.match(k.note, /blind pickbar/);
-  assert.ok(k.confidence > 0.5, "Ansage hebt die Konfidenz");
+  assert.ok(k.value < 0.5, "nur wenige Partien: " + k.value);
+  assert.doesNotMatch(k.note, /Draftplan|blind pickbar/);
 });
 
 test("ein unbekannter Spieler liefert null statt einer Zahl", () => {
@@ -164,7 +164,7 @@ test("eine leere Teamliste kracht nicht", () => {
    Ein im Browser eingetragener Blindpick zeigte "blind" - die Note
    rechnete ohne. Jetzt setzt planEinsetzen den Browserplan ein, nach
    derselben Regel wie planOf: ein lokaler Eintrag ersetzt den Spieler. */
-test("P2.7: ein im Browser eingetragener Blindpick zaehlt im Komfort", async () => {
+test("P2.7: ein im Browser eingetragener Blindpick aendert den Komfort nicht (seit 22.10.2026)", async () => {
   const { planEinsetzen } = await import("../engine/team.js");
   const D = ladeDaten();
   const afc = D.teams.find((t) => t.team === "AFC1");
@@ -175,9 +175,7 @@ test("P2.7: ein im Browser eingetragener Blindpick zaehlt im Komfort", async () 
   const lokal = {AFC1: {[mid.label]: {blind: [champ], likes: []}}};
   const T = teamAnlegen(planEinsetzen(D.teams, lokal));
   const nachher = T.komfort("AFC1", mid.label, champ);
-  assert.ok(nachher.value > (vorher ? vorher.value : 0),
-            "Komfort steigt: " + (vorher && vorher.value) + " -> " + nachher.value);
-  assert.match(nachher.note || "", /blind/);
+  assert.equal(nachher.value, vorher ? vorher.value : nachher.value, "Plan zaehlt nicht in den Komfort");
   // Andere Spieler und Mannschaften bleiben unberuehrt.
   const top = afc.players.find((p) => p.role === "TOP" && !p.bench);
   assert.deepEqual(T.komfort("AFC1", top.label, "Ornn"),

@@ -44,6 +44,11 @@ export const GEWICHTE = {
      zusammen in jedem Modus 18. */
   blindSicherheit: 18,
   lookahead: 10,       // Erwartungswert ueber wahrscheinliche Antworten
+  /* Pro-Blindquote (22.10.2026, Wunsch des Nutzers): wie oft Pros den
+     Champion auf der Rolle blind picken. Nur solange der Lanegegner
+     unbekannt ist, nach diesem Anteil. Gesetzt, nicht gemessen - kleiner
+     als die gemessene Blind-Sicherheit (18), so viel wie gegnerStoerung. */
+  proBlind: 8,
   /* Ein eigener Risikoabzug steht hier nicht mehr. Er enthielt die
      Streuung (die schon als Bonus zaehlte - dieselbe Zahl zweimal) und
      (1 - Konfidenz). Der schlechteste Ausgang wirkt jetzt in
@@ -216,14 +221,16 @@ export const ROLLEN = {
 };
 
 /* --------------------------------------------------------------- Komfort */
+/* Pro-Blindquote: zur Mitte (0,5 - jeder zweite Pick ist blind) hin
+   geschrumpft wie ein Paarwert, damit 2 von 2 nicht als sicher gilt.
+   Grund bzw. Risiko im Text ab gutAb/schwachAb und abPicks Pro-Picks. */
+export const PRO_BLIND = {schrumpf: 10, mitte: 0.5, gutAb: 0.6, schwachAb: 0.4, abPicks: 5};
+
 export const KOMFORT = {
   // Eigene Partien, ab denen Erfahrung voll zaehlt
   volleErfahrung: 100,
   // Eigene Winrate zaehlt erst ab so vielen entschiedenen Partien
   winrateAbPartien: 10,
-  // Zuschlag aus dem Draftplan
-  blindPick: 1.0,
-  spieltGerne: 0.65,
   /* Kein einziger Beleg: weder Partien noch Draftplan.
      Beide Extreme waren falsch und beide gemessen:
        0        -> der Champion bekam 14 Punkte Abzug dafuer, dass wir

@@ -17,7 +17,7 @@
     // Mannschaft, Bewerter, Suche und Lagebild neu an.
     const mannschaft = ENGINE.teamAnlegen(ENGINE.planEinsetzen(DATA.teams, localPlan));
     const bewerter = ENGINE.bewerterAnlegen(
-      {quelle, merkmale, comp, team: mannschaft, heuristik});
+      {quelle, merkmale, comp, team: mannschaft, heuristik, pro: DATA.pro || null});
     const suche = ENGINE.sucheAnlegen({quelle, merkmale, bewerter});
     const protokoll = ENGINE.protokollAnlegen({
       speicher: (() => { try { return window.localStorage; }
@@ -90,6 +90,23 @@
   // Risikoprofil (config.js RISIKOPROFILE): sicher gewichtet den
   // schlechtesten Ausgang mit, aggressiv den besten. Vorher fest
   // "ausgewogen" - die Engine konnte es, die Oberflaeche nicht.
+  /* Ohne Spielerwertung (Nutzer, 22.10.2026: "objektiver"): die Note ohne
+     den Komfort unserer Spieler - nur Patch- und Paardaten. Pro Browser. */
+  let liveObjektiv = (() => {
+    try { return window.localStorage.getItem("live-objektiv") === "1"; } catch (e) { return false; }
+  })();
+  function objektivSchalter(neuZeichnen) {
+    const k = el("button", {type: "button", class: "lt-chip objektiv-schalter", "aria-pressed": String(!liveObjektiv),
+                            title: "Aus: die Note rechnet ohne den Komfort unserer Spieler – nur Patchdaten"},
+      "Spieler-Komfort " + (liveObjektiv ? "aus" : "an"));
+    k.addEventListener("click", () => {
+      liveObjektiv = !liveObjektiv;
+      try { window.localStorage.setItem("live-objektiv", liveObjektiv ? "1" : "0"); } catch (e) { /* egal */ }
+      liveCache.clear();
+      neuZeichnen();
+    });
+    return k;
+  }
   let liveRisiko = (() => {
     try {
       const r = window.localStorage.getItem("live-risiko");
@@ -402,10 +419,10 @@
   function liveRangliste(rolle, seite = liveAktiv.seite) {
     if (!liveTeile) return {liste: [], ms: 0, ausCache: false};
     const z = liveSicht(seite);
-    const spieler = liveSpielerVon(seite, rolle);
+    const spieler = liveObjektiv ? null : liveSpielerVon(seite, rolle);
     // Der Gegner gehoert in den Schluessel: sein Pool aendert die
     // Blindszenarien.
-    const k = ENGINE.schluessel(z, rolle + "|" + liveRisiko
+    const k = ENGINE.schluessel(z, rolle + "|" + liveRisiko + "|" + (liveObjektiv ? "objektiv" : "")
       + "|" + seite + "|" + (liveGegner || "")
       + "|" + (spieler ? spieler.team + "/" + spieler.label : ""));
     if (liveCache.has(k)) return {...liveCache.get(k), ausCache: true};
@@ -417,6 +434,7 @@
       spielerTeam: spieler ? spieler.team : null,
       spielerLabel: spieler ? spieler.label : null,
       spielerFuer: (r) => {
+        if (liveObjektiv) return null;
         const sp = liveSpielerVon(seite, ROLES.findIndex(([w]) => w === r));
         return sp ? {team: sp.team, label: sp.label} : null;
       },
@@ -1675,7 +1693,7 @@
   const SPUR_WORT = {
     meta: "Patch", matchup: "gegen", synergie: "mit", compFit: "Comp",
     gegnerStoerung: "st\u00f6rt", flex: "Flex", komfort: "Komfort",
-    blindSicherheit: "blind", lane: "Lane", lookahead: "Vorschau",
+    blindSicherheit: "blind", proBlind: "Pro blind", lane: "Lane", lookahead: "Vorschau",
   };
 
   const DB_QUOTE = new Intl.NumberFormat("de-DE", {minimumFractionDigits: 1});
