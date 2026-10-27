@@ -4,11 +4,6 @@
     "region": "euw",
     "players": [
       {
-        "label": "bandit",
-        "riotId": "bandit#0059",
-        "role": "TOP"
-      },
-      {
         "label": "HartzFor",
         "riotId": "HartzFor#EUW",
         "role": "JUNGLE"
@@ -57,6 +52,11 @@
         "riotId": "Dasizz#4121",
         "role": "UTILITY",
         "bench": true
+      },
+      {
+        "label": "Malkas",
+        "riotId": "Malkas#EUW",
+        "role": "TOP"
       }
     ],
     "ligaTeamId": 3

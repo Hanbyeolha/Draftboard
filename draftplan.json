@@ -2,7 +2,6 @@
   {
     "team": "AFC1",
     "players": {
-      "bandit":    {"blind":[],"likes":[]},
       "HartzFor":  {"blind":["Jarvan IV","Amumu","Sejuani","Lee Sin","Cho'Gath"],"likes":["Gragas"],"note":"Ausprobieren: Skarner, Shyvana, Zac?, Maokai, Rammus, Pantheon, Naafiri,"},
       "Køstja":    {"blind":["Ahri","Syndra","Viktor","Hwei","Orianna"],"likes":["Xerath","Sylas","Taliyah","Azir","Diana","Annie","Aurora","Lissandra","Twisted Fate","Galio","Cassiopeia","Ryze","Akali","Jayce","Tristana","Vex"]},
       "smiling":   {"blind":["Jhin","Kai'Sa","Seraphine","Syndra","Jinx","Yunara","Sivir","Xayah","Caitlyn","Zeri"],"likes":["Ashe","Miss Fortune","Nilah","Senna","Varus","Karthus","Aphelios","Ziggs","Ezreal","Samira"],"note":"Kann jeden ap mage spielen."},
